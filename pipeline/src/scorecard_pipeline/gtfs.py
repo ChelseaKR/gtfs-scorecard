@@ -262,6 +262,25 @@ class FeedDates:
         candidates = [d for d in (self.feed_end_date, self.last_service_date) if d is not None]
         return min(candidates) if candidates else None
 
+    def expiry_limited_by(self) -> str | None:
+        """Which date sets ``effective_expiry``, so the earlier-of rule is never
+        silent (ADR 0061).
+
+        ``"feed_end_date"`` when feed_info ends strictly before the last service
+        date: the calendar runs on, but GTFS tells consumers to trust the feed
+        only through feed_end_date. ``"service_calendar"`` when service ends
+        first, or when feed_info states no end. ``"both"`` when they agree.
+        ``None`` when neither date is known.
+        """
+        end, last = self.feed_end_date, self.last_service_date
+        if end is None:
+            return "service_calendar" if last is not None else None
+        if last is None:
+            return "feed_end_date"
+        if end < last:
+            return "feed_end_date"
+        return "both" if end == last else "service_calendar"
+
 
 # A break of at least this many service-free days between calendar spans is
 # read as a deliberate service-period boundary (a school break, an off-season)

@@ -250,6 +250,78 @@ class TestFreshness:
         assert result.details["days_until_expiry"] == 10
         assert result.score < 100.0
 
+    def test_expiry_names_which_date_set_it(self) -> None:
+        later, sooner = TODAY + dt.timedelta(days=90), TODAY + dt.timedelta(days=10)
+        cases = [
+            (feed_dates(sooner, last_service=later), "feed_end_date"),
+            (feed_dates(later, last_service=sooner), "service_calendar"),
+            (feed_dates(later), "both"),
+            (FeedDates(True, None, None, None, None, later), "service_calendar"),
+            (FeedDates(True, None, None, TODAY, later, None), "feed_end_date"),
+        ]
+        for dates, expected in cases:
+            assert freshness(dates, TODAY).details["expiry_limited_by"] == expected
+        unknown = freshness(FeedDates(False, None, None, None, None, None), TODAY)
+        assert unknown.details["expiry_limited_by"] is None
+
+    def test_feed_end_date_before_a_longer_calendar_is_its_own_fix(self) -> None:
+        """BART's shape: feed_info ends 2026-08-30, weekday service to 2027-01-08."""
+        today = dt.date(2026, 10, 1)
+        dates = FeedDates(
+            has_feed_info=True,
+            feed_publisher_name="Bay Area Rapid Transit",
+            feed_version="72",
+            feed_start_date=dt.date(2026, 1, 12),
+            feed_end_date=dt.date(2026, 8, 30),
+            last_service_date=dt.date(2027, 1, 10),
+        )
+        result = freshness(dates, today)
+        # The score still reads the declared validity: GTFS says data past
+        # feed_end_date is not authoritative.
+        assert result.score == 0.0
+        assert result.details["days_until_expiry"] == -32
+        codes = [f.code for f in result.findings]
+        assert codes == ["scorecard_feed_end_date_before_calendar"]
+        finding = result.findings[0]
+        assert finding.severity == "ERROR"
+        assert finding.deduction == 100.0
+        assert "2026-08-30" in finding.what and "2027-01-10" in finding.what
+        assert "Correct feed_end_date" in finding.fix
+        assert "2026-08-30" in result.summary and "2027-01-10" in result.summary
+        assert "32 day(s) ago" in result.summary
+
+    def test_feed_end_date_before_calendar_within_thirty_days_is_a_warning(self) -> None:
+        dates = feed_dates(
+            TODAY + dt.timedelta(days=24), last_service=TODAY + dt.timedelta(days=200)
+        )
+        result = freshness(dates, TODAY)
+        plain = freshness(feed_dates(TODAY + dt.timedelta(days=24)), TODAY)
+        assert result.score == plain.score
+        [finding] = result.findings
+        assert finding.code == "scorecard_feed_end_date_before_calendar"
+        assert finding.severity == "WARNING"
+        # Same display estimate as the expiring-soon card it replaces.
+        assert finding.deduction == plain.findings[0].deduction
+        assert "in 24 day(s)" in result.summary
+
+    def test_a_later_feed_end_date_keeps_the_ordinary_expiry_fix(self) -> None:
+        # Calendar ends first: re-exporting service is the real fix.
+        result = freshness(
+            feed_dates(TODAY + dt.timedelta(days=200), last_service=TODAY - dt.timedelta(days=5)),
+            TODAY,
+        )
+        assert [f.code for f in result.findings] == ["scorecard_feed_expired"]
+
+    def test_a_short_feed_end_date_with_runway_left_is_not_a_finding(self) -> None:
+        # GTFS recommends publishing service past feed_end_date; with 60+ days of
+        # declared validity left there is nothing to fix.
+        result = freshness(
+            feed_dates(TODAY + dt.timedelta(days=90), last_service=TODAY + dt.timedelta(days=300)),
+            TODAY,
+        )
+        assert result.findings == []
+        assert result.details["expiry_limited_by"] == "feed_end_date"
+
     def test_normal_multi_year_horizon_is_unchanged(self) -> None:
         expiry = TODAY.replace(year=TODAY.year + 5)
         result = freshness(feed_dates(expiry), TODAY)
@@ -493,6 +565,7 @@ class TestFreshnessPublishedFields:
             "scorecard_intermittent_calendar_ended": "WARNING",
             "scorecard_planned_service_boundary": "WARNING",
             "scorecard_missing_feed_info_dates": "WARNING",
+            "scorecard_feed_end_date_before_calendar": "ERROR",
         }
         lapsed = TODAY - dt.timedelta(days=30)
         results = [
@@ -505,6 +578,7 @@ class TestFreshnessPublishedFields:
             freshness(FeedDates(False, None, None, None, None, TODAY), TODAY),
             freshness(feed_dates(TODAY + dt.timedelta(days=90)), TODAY),
             freshness(feed_dates(dt.date(2100, 12, 31)), TODAY),
+            freshness(feed_dates(lapsed, last_service=TODAY + dt.timedelta(days=90)), TODAY),
         ]
         seen: set[str] = set()
         for result in results:

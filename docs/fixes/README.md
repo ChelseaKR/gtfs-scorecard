@@ -83,6 +83,7 @@ Freshness (scorecard codes):
 
 - [`scorecard_feed_expired`](scorecard_feed_expired.md)
 - [`scorecard_feed_expiring_soon`](scorecard_feed_expiring_soon.md)
+- [`scorecard_feed_end_date_before_calendar`](scorecard_feed_end_date_before_calendar.md)
 - [`scorecard_missing_feed_info_dates`](scorecard_missing_feed_info_dates.md)
 
 Rider experience completeness (scorecard codes):

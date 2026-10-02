@@ -14,6 +14,7 @@ CAMPAIGNS: dict[str, dict[str, Any]] = {
         "codes": {
             "scorecard_feed_expired",
             "scorecard_feed_expiring_soon",
+            "scorecard_feed_end_date_before_calendar",
             "expired_calendar",
             "feed_expiration_date7_days",
             "feed_expiration_date30_days",

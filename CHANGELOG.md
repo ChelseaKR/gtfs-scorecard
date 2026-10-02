@@ -29,6 +29,14 @@ the declared public surface).
 
 ### Added
 
+- **The rubric states how far one style notice can move a grade (ADR 0062).**
+  Correctness deducts per notice code, so `mixed_case_recommended_field` costs
+  at most 8 correctness points however many names it flags. A review read
+  VTA's F 49.4 as driven by 9,620 mixed-case notices; the published artifact
+  shows they cost 8.0 of 60.5 points and the F came from two days of freshness
+  runway. No separate cap on style notices was added, and the ADR records the
+  numbers and the alternatives checked.
+
 - **A structured `license` block for registry records, an advisory lint, a
   dry-run migration, and a reuse notice for share-alike feeds
   ([#372](https://github.com/ChelseaKR/gtfs-scorecard/issues/372), part 2).**
@@ -267,6 +275,28 @@ the declared public surface).
   and ADR 0031 say the same thing the site does.
 
 ### Fixed
+
+- **A `feed_end_date` earlier than the service calendar is named as its own
+  fix (ADR 0061).** Freshness takes the earlier of `feed_info.feed_end_date`
+  and the last calendar date, and said nothing about which one it used. BART's
+  feed says it ends 2026-08-30 while its weekday service runs to 2027-01-08,
+  so its top fix read "service data ended 32 days ago, re-export the feed".
+  When `feed_end_date` sets an expiry that has passed or is under 30 days away
+  and the calendar runs past it, the finding is now
+  `scorecard_feed_end_date_before_calendar`: it names both dates and asks for
+  `feed_end_date` to be corrected. The score still reads the declared date, as
+  the GTFS reference directs, so no grade moves. Freshness details add
+  `expiry_limited_by`.
+
+- **A `stop_headsign` at every stop now counts as a headsign (rubric 1.4,
+  ADR 0060).** The headsign component read `trip_headsign` only. TriMet
+  publishes no `trip_headsign` and a `stop_headsign` on every stop time, so it
+  scored 0% headsigns and lost 15 rider-experience points for destinations its
+  riders do see. A trip now counts when it has `trip_headsign` or a
+  `stop_headsign` on every one of its stop times. The pass streams
+  `stop_times.txt` keeping only trip IDs, so it runs on feeds of any size.
+  Artifacts keep `headsign_pct` as the literal `trip_headsign` share and add
+  `headsign_stop_headsign_trips`.
 
 - **The Daily's slowest score shard no longer runs within two minutes of its
   bound, and the Watchdog now measures it.** The `ovapi-netherlands` runner

@@ -56,7 +56,7 @@ def test_every_authored_article_has_valid_dates() -> None:
 
     paths = sorted(FIXES_DIR.glob("*.md"))
     fix_paths = [path for path in paths if path.stem != "README"]
-    assert len(fix_paths) == 40
+    assert len(fix_paths) == 41
     for path in fix_paths:
         document = _parse_authored_markdown(path.read_text(), str(path))
         assert document.body.lstrip().startswith("# "), path

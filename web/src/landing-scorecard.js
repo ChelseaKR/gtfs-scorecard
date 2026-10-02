@@ -29,6 +29,7 @@
   var FRESHNESS_CODES = new Set([
     "scorecard_feed_expired",
     "scorecard_feed_expiring_soon",
+    "scorecard_feed_end_date_before_calendar",
     "scorecard_intermittent_calendar_ended",
     "scorecard_missing_feed_info_dates",
     "scorecard_no_expiry_date",

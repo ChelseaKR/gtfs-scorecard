@@ -227,8 +227,12 @@ def test_oversized_stop_times_falls_back_to_the_ordinary_headsign_check(
         gtfs_zip_path: str,
         name: str,
         *,
-        max_member_bytes: int,
+        max_member_bytes: int | None,
     ) -> list[dict[str, str]]:
+        # The stop_headsign pass streams without a cap; only the capped loop
+        # analysis refuses the table.
+        if max_member_bytes is None:
+            return []
         raise TableTooLargeError("stop_times.txt exceeds the analysis cap")
 
     monkeypatch.setattr(
@@ -240,6 +244,161 @@ def test_oversized_stop_times_falls_back_to_the_ordinary_headsign_check(
 
     assert any(f.code == "scorecard_missing_headsigns" for f in result.findings)
     assert result.details["headsign_loop_exempt_trips"] == 0
+
+
+def test_stop_headsign_on_every_stop_time_counts_as_a_headsign(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    """TriMet's shape: no trip_headsign anywhere, stop_headsign on every row."""
+    feed = {
+        **COMPLETE_FEED,
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,wheelchair_accessible\n"
+            "R1,WK,T1,,1\n"
+            "R1,WK,T2,,1\n"
+        ),
+        "stop_times.txt": (
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign\n"
+            "T1,08:00:00,08:00:00,S1,1,Gresham\n"
+            "T1,08:10:00,08:10:00,S2,2,Gresham\n"
+            "T2,09:00:00,09:00:00,S2,1,Hillsboro via Beaverton\n"
+            "T2,09:10:00,09:10:00,S1,2,Hillsboro\n"
+        ),
+    }
+
+    result = completeness(str(make_gtfs_zip(feed)))
+
+    assert result.score == 100.0
+    assert not any(f.code == "scorecard_missing_headsigns" for f in result.findings)
+    # The literal trip_headsign share stays literal; the score credits both trips.
+    assert result.details["headsign_pct"] == 0.0
+    assert result.details["headsign_scored_pct"] == 100.0
+    assert result.details["headsign_stop_headsign_trips"] == 2
+
+
+def test_one_blank_stop_headsign_leaves_the_trip_uncredited(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        **COMPLETE_FEED,
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,wheelchair_accessible\n"
+            "R1,WK,T1,,1\n"
+            "R1,WK,T2,,1\n"
+            "R1,WK,T3,Downtown,1\n"
+        ),
+        "stop_times.txt": (
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign\n"
+            "T1,08:00:00,08:00:00,S1,1,Gresham\n"
+            "T1,08:10:00,08:10:00,S2,2,\n"
+            "T2,09:00:00,09:00:00,S2,1,Hillsboro\n"
+            "T2,09:10:00,09:10:00,S1,2,Hillsboro\n"
+            "T3,10:00:00,10:00:00,S1,1,\n"
+        ),
+    }
+
+    result = completeness(str(make_gtfs_zip(feed)))
+
+    finding = next(f for f in result.findings if f.code == "scorecard_missing_headsigns")
+    assert finding.count == 1
+    assert "stop_headsign at every stop" in finding.what
+    assert result.details["headsign_stop_headsign_trips"] == 1
+    assert result.details["headsign_scored_pct"] == pytest.approx(66.7)
+
+
+def test_trip_with_no_stop_times_is_not_credited_by_stop_headsign(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        **COMPLETE_FEED,
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,wheelchair_accessible\n"
+            "R1,WK,T1,,1\n"
+            "R1,WK,T2,,1\n"
+        ),
+        "stop_times.txt": (
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign\n"
+            "T1,08:00:00,08:00:00,S1,1,Gresham\n"
+        ),
+    }
+
+    result = completeness(str(make_gtfs_zip(feed)))
+
+    assert result.details["headsign_stop_headsign_trips"] == 1
+    finding = next(f for f in result.findings if f.code == "scorecard_missing_headsigns")
+    assert finding.count == 1
+
+
+def test_stop_headsign_pass_is_not_bound_by_the_loop_analysis_cap(
+    make_gtfs_zip: Callable[..., Path],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A national-size stop_times.txt (TriMet's is 227 MB) still earns credit."""
+    monkeypatch.setattr("scorecard_pipeline.completeness.HEADSIGN_STOP_TIMES_MAX_BYTES", 1)
+    feed = {
+        **COMPLETE_FEED,
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,wheelchair_accessible\nR1,WK,T1,,1\n"
+        ),
+        "stop_times.txt": (
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign\n"
+            "T1,08:00:00,08:00:00,S1,1,Gresham\n"
+        ),
+    }
+
+    result = completeness(str(make_gtfs_zip(feed)))
+
+    assert result.details["headsign_scored_pct"] == 100.0
+
+
+def test_stop_times_without_a_stop_headsign_column_credit_nothing(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        **COMPLETE_FEED,
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,wheelchair_accessible\nR1,WK,T1,,1\n"
+        ),
+        "stop_times.txt": (
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence\n"
+            "T1,08:00:00,08:00:00,S1,1\n"
+            "T1,08:10:00,08:10:00,S2,2\n"
+        ),
+    }
+
+    result = completeness(str(make_gtfs_zip(feed)))
+
+    assert result.details["headsign_stop_headsign_trips"] == 0
+    assert any(f.code == "scorecard_missing_headsigns" for f in result.findings)
+
+
+def test_loop_trips_headed_by_stop_headsign_are_counted_once(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        **COMPLETE_FEED,
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,direction_id,shape_id,"
+            "wheelchair_accessible\n"
+            "A,WK,T1,,0,loop,1\n"
+            "A,SA,T2,,0,loop,1\n"
+        ),
+        "stop_times.txt": (
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign\n"
+            "T1,08:00:00,08:00:00,S1,1,Loop\n"
+            "T1,08:10:00,08:10:00,S2,2,Loop\n"
+            "T1,08:20:00,08:20:00,S1,3,Loop\n"
+            "T2,09:00:00,09:00:00,S1,1,\n"
+            "T2,09:10:00,09:10:00,S2,2,\n"
+            "T2,09:20:00,09:20:00,S1,3,\n"
+        ),
+    }
+
+    result = completeness(str(make_gtfs_zip(feed)))
+
+    assert result.details["headsign_scored_pct"] == 100.0
+    assert result.details["headsign_stop_headsign_trips"] == 1
+    assert result.details["headsign_loop_exempt_trips"] == 1
 
 
 def test_uncased_scripts_are_not_misread_as_all_caps() -> None:

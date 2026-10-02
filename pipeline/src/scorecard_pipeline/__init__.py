@@ -69,7 +69,7 @@ DATA_ATTRIBUTION = (
 
 # Bump when the rubric (weights, deductions, grade bands, or what is measured)
 # changes, so a trend can tell a feed change apart from a methodology change.
-RUBRIC_VERSION = "1.3"
+RUBRIC_VERSION = "1.4"
 
 # Stable identity for the scoring contract. This is deliberately distinct from
 # SCHEMA_VERSION: adding an API field must not imply a methodology change.
