@@ -337,16 +337,48 @@ def _validate_ntd_summary(
 
 
 def _retired_pattern(retired_ids: Iterable[str]) -> re.Pattern[str] | None:
+    """A retired id used as one of this site's own paths: a scorecard page
+    (``/agency/<id>/``) or an artifact (``/data/artifacts/<id>/``)."""
     alternatives = sorted((re.escape(value) for value in retired_ids), key=len, reverse=True)
     if not alternatives:
         return None
-    return re.compile(
-        rf"(?<![a-z0-9_-])(?:{'|'.join(alternatives)})(?![a-z0-9_-])",
-        flags=re.IGNORECASE,
-    )
+    return re.compile(rf"/(?:agency|data/artifacts)/(?:{'|'.join(alternatives)})(?![a-z0-9_-])")
+
+
+def _export_values(relative: str, text: str) -> Iterable[str]:
+    """Every string a release export carries: JSON keys and string values, or
+    CSV cells."""
+    if relative.endswith(".csv"):
+        for row in csv.reader(text.splitlines()):
+            yield from row
+        return
+    try:
+        stack: list[object] = [json.loads(text)]
+    except json.JSONDecodeError as exc:
+        raise DatasetReleaseError(f"{relative} is not valid JSON: {exc}") from exc
+    while stack:
+        value = stack.pop()
+        if isinstance(value, str):
+            yield value
+        elif isinstance(value, dict):
+            stack.extend(value.keys())
+            stack.extend(value.values())
+        elif isinstance(value, list):
+            stack.extend(value)
 
 
 def _require_no_retired_references(web_root: Path, retired_ids: set[str]) -> None:
+    """No export names a retired registry id, either as a whole value (an id
+    column, a key) or inside one of this site's own paths.
+
+    Registry ids are lowercase slugs, so the match is exact and case-sensitive.
+    It used to be a case-insensitive word search over the whole file text, and
+    retired ids include ordinary words and agency names (``citilink``,
+    ``embark``, ``mta``, ``metra``, ``xpress``). That search matched current
+    rows' display names ("Citilink", "Altamont Corridor Express") and
+    third-party feed URLs (web.mta.info), so it refused every release since
+    it was added on 2026-08-09, behind the latest.json and geography checks.
+    """
     pattern = _retired_pattern(retired_ids)
     if pattern is None:
         return
@@ -356,8 +388,9 @@ def _require_no_retired_references(web_root: Path, retired_ids: set[str]) -> Non
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeError) as exc:
             raise DatasetReleaseError(f"{relative} is missing or unreadable: {exc}") from exc
-        if pattern.search(text):
-            raise DatasetReleaseError(f"{relative} cites a retired registry identifier")
+        for value in _export_values(relative, text):
+            if value in retired_ids or pattern.search(value):
+                raise DatasetReleaseError(f"{relative} cites a retired registry identifier")
 
 
 def _validate_catalog_surfaces(

@@ -625,3 +625,62 @@ def test_an_agency_directory_without_latest_json_is_not_counted(tmp_path: Path) 
         retired_registry_ids={"retired-alias"},
     )
     assert summary.agencies == 1
+
+
+# --- retired identifiers: ids and site paths, not words ---------------------
+
+
+def test_retired_ids_that_are_ordinary_words_do_not_match_names_or_feed_urls(
+    tmp_path: Path,
+) -> None:
+    """Retired registry ids include plain words and agency names (citilink,
+    embark, mta, metra, xpress). A case-insensitive word search over the file
+    text matched current rows' names ("Citilink", "Altamont Corridor Express")
+    and third-party feed URLs (web.mta.info), and refused the 2026-10-01
+    artifact. Here the fixture's own name, feed host and state play that part."""
+    artifacts, web, _repo, _current = _release_tree(tmp_path)
+    summary = validate_release_inputs(
+        artifacts_root=artifacts,
+        web_root=web,
+        current_registry=_registry(),
+        retired_registry_ids={"retired-alias", "example", "california", "agency"},
+    )
+    assert summary.agencies == 1
+
+
+@pytest.mark.parametrize(
+    ("relative", "path"),
+    [
+        ("catalog.json", "https://gtfsscorecard.org/agency/retired-alias/"),
+        ("ntd.json", "https://gtfsscorecard.org/data/artifacts/retired-alias/latest.json"),
+    ],
+)
+def test_a_retired_id_in_one_of_the_sites_own_paths_is_refused(
+    tmp_path: Path, relative: str, path: str
+) -> None:
+    from scorecard_pipeline.dataset_release import _require_no_retired_references
+
+    _artifacts, web, _repo, _current = _release_tree(tmp_path)
+    document = json.loads((web / relative).read_text(encoding="utf-8"))
+    document["note"] = f"see {path}"
+    (web / relative).write_text(json.dumps(document), encoding="utf-8")
+
+    with pytest.raises(DatasetReleaseError, match=f"{relative} cites a retired"):
+        _require_no_retired_references(web, {"retired-alias"})
+
+
+def test_a_retired_id_as_a_whole_csv_cell_or_json_key_is_refused(tmp_path: Path) -> None:
+    from scorecard_pipeline.dataset_release import _require_no_retired_references
+
+    _artifacts, web, _repo, _current = _release_tree(tmp_path)
+    original = (web / "dataset.csv").read_text(encoding="utf-8")
+    (web / "dataset.csv").write_text(original + "retired-alias\n", encoding="utf-8")
+    with pytest.raises(DatasetReleaseError, match="dataset.csv cites a retired"):
+        _require_no_retired_references(web, {"retired-alias"})
+
+    (web / "dataset.csv").write_text(original, encoding="utf-8")
+    ntd = json.loads((web / "ntd.json").read_text(encoding="utf-8"))
+    ntd["by_agency"] = {"retired-alias": "ready"}
+    (web / "ntd.json").write_text(json.dumps(ntd), encoding="utf-8")
+    with pytest.raises(DatasetReleaseError, match="ntd.json cites a retired"):
+        _require_no_retired_references(web, {"retired-alias"})
