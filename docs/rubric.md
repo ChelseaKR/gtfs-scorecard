@@ -190,6 +190,18 @@ Scoring:
 - Missing `feed_info` validity dates: minus 15, because without stated dates
   no app (and no scorecard) can warn the agency before riders notice.
 
+**Open policy question: one curve for every publisher.** The 60-day curve is
+anchored on the Caltrans 30-day rule and applies to every feed, everywhere.
+It measures runway, not habit. An agency that republishes every two weeks
+with a rolling 30-to-45-day window never lapses, yet it scores 50 to 75 here
+on every snapshot, while an agency that exports once a quarter scores 100 for
+most of the quarter and then falls off a cliff. Two published options would
+address this: credit an observed republishing cadence, or keep the curve and
+label it as the California rule when it is applied outside California. Both
+change grades across the corpus, so neither is taken by an ordinary fix. A
+change here goes through the governed rubric path below with a canary impact
+report. Until then the curve stays as written.
+
 An effective end date more than ten calendar years after the check is reported
 as unusually distant. Ten years is a conservative review threshold chosen to
 leave ordinary multi-year planning alone while surfacing sentinel-like dates
