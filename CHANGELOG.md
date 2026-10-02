@@ -45,6 +45,25 @@ the declared public surface).
   `v1.5.1` changes nothing the Action does and that the floating `v1` moved to
   it on 2026-10-11.
 
+### Fixed
+
+- **The open dataset, `api/v1/agencies.json`, and the MCP scorecard say when a
+  feed has expired.** `service_horizon_status` only flags an end date more than
+  ten years out, so an expired feed reads `within_review_threshold`. On those
+  surfaces it was the only status shown: 348 of the 2,477 rows in the live
+  `agencies.json` on 2026-10-02 were lapsed or stale and carried that value,
+  Santa Rosa CityBus among them at 2,381 days past its end date. Rows in
+  `dataset.json`, `dataset.csv`, `api/v1/agencies.json`, and
+  `api/v1/agencies.parquet` now carry `expiry_status`, the same bucket
+  `catalog.json` already publishes, computed by the same function from the same
+  day count. That is flat export schema `1.5` (`1.6` when the `license_notice`
+  column is present). The MCP `get_scorecard` freshness block adds it too.
+  `scorecard explain` prints the expiry status beside the horizon line and
+  labels the horizon as a distant end-date check only. `docs/api.md`, the
+  rubric, and the catalog schema now say the horizon status does not describe
+  expiry. Nothing was renamed and no value was added to the horizon status, so
+  existing clients keep working. No score or grade changes.
+
 ## [1.5.1] - 2026-10-09
 
 ### Changed

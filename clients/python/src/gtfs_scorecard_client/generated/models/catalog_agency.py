@@ -56,8 +56,12 @@ class CatalogAgency:
         days_until_expiry (int | None | Unset):
         service_horizon_status (CatalogAgencyServiceHorizonStatus | Unset): Whether the effective service end date
             extends beyond the scorecard's conservative review threshold. Unusually distant is a display and trust advisory
-            outside category findings, not a GTFS error or score deduction.
-        expiry_status (CatalogAgencyExpiryStatus | Unset):
+            outside category findings, not a GTFS error or score deduction. This only detects an implausibly distant end
+            date and says nothing about expiry: an expired feed also reads within_review_threshold. Use expiry_status to
+            tell whether the feed has expired.
+        expiry_status (CatalogAgencyExpiryStatus | Unset): Whether the feed's service window has run out, bucketed from
+            days_until_expiry: current (more than 30 days left), expiring_soon (1 to 30), lapsed (expired within the last
+            year), stale (expired a year or more ago), or unknown (no end date).
         mdb_id (str | Unset):
         validator_version (None | str | Unset):
         rubric_version (None | str | Unset):
