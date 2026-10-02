@@ -23,19 +23,101 @@ reason. The audit never guesses, and it is a report: it blocks nothing.
 
 | Class | Share-alike | Attribution required | Listing policy |
 | --- | --- | --- | --- |
-| `ODbL-1.0` | yes | yes | Undecided (see below) |
-| `CC-BY-SA-4.0`, `CC-BY-SA-3.0`, `CC-BY-SA` (no version stated) | yes | yes | Undecided (see below) |
+| `ODbL-1.0` | yes | yes | Admitted with a reuse notice (see below) |
+| `CC-BY-SA-4.0`, `CC-BY-SA-3.0`, `CC-BY-SA` (no version stated) | yes | yes | Admitted with a reuse notice (see below) |
 | `CC-BY-4.0`, `CC-BY-2.1-JP`, `CC-BY` (no version stated) | no | yes | Reviewed record by record |
 | `etalab-2.0`, `NLOD-2.0`, `DL-DE-BY-2.0`, `OGL-UK-3.0`, `OGL-Canada-2.0`, `ODC-By-1.0` | no | yes | Reviewed record by record |
 | `CC0-1.0`, `DL-DE-ZERO-2.0`, `public-domain` | no | no | Reviewed record by record |
 | `unknown` | not known | not known | Reviewed record by record |
 
-The share-alike rows are open on purpose. The admission gates say this project
-does not redistribute share-alike GTFS, while the registry already lists
-records whose notes name a share-alike license. Which of those holds is an owner
-decision, recorded in [follow-ups.md](follow-ups.md) under "Decide the
-share-alike question for records already listed". The audit counts those
-records and lists the ones a curator has to read, and it does not decide them.
+Share-alike feeds are admitted, with a reuse notice. The decision is recorded
+below. The audit counts the records whose notes name a share-alike license and
+lists the ones a curator has to read, and it does not exclude any of them.
+
+### The structured license block
+
+The class table above comes from reading prose. A record can also carry a
+structured `license` block beside its `license_note` (field list and rules in
+[`registry/README.md`](../registry/README.md#structured-license-block-license),
+JSON Schema in `registry/license.schema.json`). It records what the terms state
+as data: the license class, whether attribution is required, whether
+redistribution is allowed, whether the license is share-alike, the terms link,
+the day the terms were read, and a review status. Every term is `true`, `false`
+or `unknown`. There is no default, so a license nobody read is recorded as
+unknown and never as a permissive one.
+
+The flow, and what is built:
+
+1. **Report.** `scorecard license-audit` reads the notes and counts records per
+   class. Built.
+2. **Advisory lint.** `scorecard license-lint` lists records that have no block,
+   whose block says `unknown`, or whose block contradicts itself, its license
+   class, or its note. It states in its own output that it is advisory and it
+   always exits 0. It changes nothing about which feeds are admitted, scored, or
+   published. The only thing a block changes is the reuse notice in step 7. Built.
+3. **Dry-run migration.** `scorecard license-migrate` proposes a block for every
+   record from its note and prints one line per record. A note that names one
+   license in the vocabulary gets that license, marked `unreviewed`. Everything
+   else (no license stated, only a link, terms outside the vocabulary, more than
+   one license) gets `unknown` and `needs_review`, with the reason. It never
+   writes a reviewer or a review date, and it writes nothing at all unless given
+   `--apply`. Built. The registry has not been migrated.
+4. **Owner reviews the dry run.** Someone reads the per-record report before any
+   block is written. Not done.
+5. **Apply.** `scorecard license-migrate --apply` inserts the blocks as text,
+   verifies every edit by re-reading the YAML, and is a no-op the second time.
+   It belongs in a pull request of its own, because it adds a block to every
+   record. Not done.
+6. **Curators review.** A curator reads a record's terms, fills in `terms_url`,
+   `retrieved_on` and `redistribution_allowed`, and sets `status: reviewed` with
+   their handle and the date. Not done.
+7. **Reuse notice.** A record whose block says `share_alike: true` carries a
+   notice on its scorecard page and in the flat exports. Built, and it appears
+   nowhere until step 5 has run, because no record has a block yet.
+8. **An admission rule.** `lint --strict` refusing a new record without a
+   reviewed license class waits on steps 5 and 6. Not built, deliberately. It
+   would not refuse a share-alike license: that is admitted.
+
+#### Share-alike: admitted with a notice
+
+**Owner decision, 2026-09-19:** a feed whose license requires share-alike is
+admitted, with a notice. It is not excluded, retired, or scored differently.
+
+- The `license` block records share-alike as a neutral fact. `scorecard
+  license-lint` reports records with no block, an unknown license, or a
+  contradictory block, and it never reports a share-alike license as a problem.
+- **The scorecard page.** When a record's block says `share_alike: true` for a
+  license it names, the page shows a section headed "Reuse notice: this feed's
+  license is share-alike". It names the license, says what share-alike asks of
+  anyone who copies, adapts, or builds on the data and shares the result (share
+  it under the same license and credit the source), gives any credit line the
+  publisher asks for, and links the publisher's terms when the block records
+  them. It is text under a real heading, so it does not depend on colour or an
+  icon, and it adds no new styling.
+- **The flat exports.** Once at least one record carries a notice, `dataset.json`,
+  `dataset.csv` and `agencies.parquet` gain a last field, `license_notice`, on
+  every row: the same words on an affected record, empty on every other record.
+  That is flat export schema `1.4`. Until then the exports are unchanged, at
+  schema `1.3`. [`docs/api.md`](api.md) ships with each dataset release as the
+  data dictionary and says what an empty value means.
+- **Only an affirmative share-alike gets a notice.** No block, `id: unknown`,
+  `share_alike: false`, and `share_alike: unknown` all get none, and none of them
+  is treated as share-alike or as permissive. An empty notice means only that no
+  share-alike license is recorded. A block that marks a license share-alike when
+  its class is not (for example `CC-BY-4.0` with `share_alike: true`) gets no
+  notice either, and the lint reports the contradiction, so the page never names
+  a license as share-alike that it is not.
+- **What has not moved.** The registry has no license blocks yet, so no scorecard
+  and no export carries a notice until a reviewed migration is applied (steps 4
+  and 5 above). Earlier passages in this documentation and in
+  [`global-expansion.md`](global-expansion.md) that describe share-alike datasets
+  as excluded or deferred predate this decision. Admitting one of those datasets
+  is still a record-by-record step: it needs a reviewed block and passes every
+  other gate. The Estonian records are a separate case, because their notes name
+  no license at all and a curator has to read the publisher's terms first.
+
+The measured size of the question is in
+[`follow-ups.md`](follow-ups.md#decide-the-share-alike-question-for-records-already-listed).
 
 ## First worldwide canaries
 

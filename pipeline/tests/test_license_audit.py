@@ -213,10 +213,10 @@ def test_the_audit_counts_every_record_once() -> None:
     assert report["unknown_by_reason"] == {MORE_THAN_ONE_LICENSE: 1, NO_LICENSE_STATED: 1}
 
 
-def test_the_audit_reports_share_alike_without_a_verdict() -> None:
+def test_the_audit_counts_share_alike_and_names_the_recorded_policy() -> None:
     share_alike = license_audit(_fixture_registry())["share_alike"]
-    assert share_alike["policy"] == SHARE_ALIKE_POLICY == "undecided"
-    assert "docs/follow-ups.md" in share_alike["policy_source"]
+    assert share_alike["policy"] == SHARE_ALIKE_POLICY == "admitted_with_notice"
+    assert "docs/feeds.md" in share_alike["policy_source"]
     assert share_alike["records"] == 2
     assert share_alike["canonical_records"] == 1
     assert share_alike["ids"] == ["rennes", "rennes-old"]
@@ -232,7 +232,7 @@ def test_the_audit_reports_share_alike_without_a_verdict() -> None:
 def test_the_text_report_names_its_basis_and_the_open_decision() -> None:
     text = render_text(license_audit(_fixture_registry()))
     assert "Basis: The license_note of every registry record" in text
-    assert "Share-alike policy: undecided" in text
+    assert "Share-alike policy: admitted_with_notice" in text
     assert "Share-alike as the only named license: 2 records (1 canonical)." in text
     assert "nvbw (DE): ODbL-1.0, DL-DE-BY-2.0" in text
     assert "wording (IE): CC-BY-4.0" in text
@@ -307,4 +307,4 @@ def test_the_verb_prints_text_by_default(
     assert main(["license-audit"]) == 0
     out = capsys.readouterr().out
     assert out.startswith("License audit: 2 registry records (2 canonical).")
-    assert "Share-alike policy: undecided" in out
+    assert "Share-alike policy: admitted_with_notice" in out

@@ -643,7 +643,11 @@ def validate_release_inputs(
     catalog = _rows_by_id(catalog_doc.get("agencies"), "catalog.json agencies")
     dataset = _rows_by_id(dataset_doc.get("rows"), "dataset.json rows")
     catalog_csv = _read_csv_rows(web_root / "catalog.csv", "catalog.csv", _CATALOG_CSV_FIELDS)
-    dataset_csv = _read_csv_rows(web_root / "dataset.csv", "dataset.csv", COLUMNS)
+    # The flat exports' own field list: COLUMNS, plus license_notice when a record
+    # carries a share-alike notice (issue #372). The catalog surfaces below keep
+    # COLUMNS, because the catalog never carries the notice.
+    dataset_fields = tuple(expected_dataset["generated_fields"])
+    dataset_csv = _read_csv_rows(web_root / "dataset.csv", "dataset.csv", dataset_fields)
     parquet = _read_parquet_rows(web_root / "api" / "v1" / "agencies.parquet", expected_rows)
 
     try:
@@ -653,9 +657,9 @@ def validate_release_inputs(
     if csv_text != to_csv(expected_dataset):
         raise DatasetReleaseError("dataset.csv is not the canonical dataset serialization")
 
-    _require_rows_match(dataset, expected_rows, label="dataset.json", fields=COLUMNS)
-    _require_rows_match(dataset_csv, expected_rows, label="dataset.csv", fields=COLUMNS)
-    _require_rows_match(parquet, expected_rows, label="agencies.parquet", fields=COLUMNS)
+    _require_rows_match(dataset, expected_rows, label="dataset.json", fields=dataset_fields)
+    _require_rows_match(dataset_csv, expected_rows, label="dataset.csv", fields=dataset_fields)
+    _require_rows_match(parquet, expected_rows, label="agencies.parquet", fields=dataset_fields)
     _validate_catalog_surfaces(
         catalog_doc=catalog_doc,
         catalog=catalog,
