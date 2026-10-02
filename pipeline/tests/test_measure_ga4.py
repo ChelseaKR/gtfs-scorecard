@@ -797,6 +797,60 @@ def test_the_space_key_toggles_the_control(tmp_path: Path) -> None:
     assert result["storage"] == _OPTED_OUT and result["prevented"] == [True]
 
 
+# The flag the site's own production Lighthouse audit opens every route with
+# (lighthouserc.production.json), so the weekly audit is not counted as visits.
+_AUDIT_FLAG = "measure=off"
+_AUDIT_CHECK = (
+    '  else if (/(?:^|[?&])measure=off(?:&|$)/.test(String(win.location.search || ""))) {\n'
+    '    root.setAttribute(STOPPED, "audit");\n'
+    "  }\n"
+)
+
+
+@pytest.mark.parametrize("search", ["?measure=off", "?l10n=xx&measure=off", "?measure=off&x=1"])
+def test_an_audit_flagged_page_sends_nothing_to_either_tool(tmp_path: Path, search: str) -> None:
+    visit = _visit(search=search, actions=["checkout", {"commerce": _VIEW}])
+    [result] = _run(tmp_path, _both(), [visit])
+    assert result["sent"] == []
+    assert not _loaded(result)
+    assert result["stopped"] == "audit"
+    # The flag holds for this page only: nothing is stored, so the next page
+    # opened without it measures as usual.
+    assert result["storage"] == {} and result["session"] == {}
+    [next_page] = _run(tmp_path, _both(), [_visit(storage=result["storage"])])
+    assert next_page["sent"] == ["$pageview"] and len(next_page["appended"]) == 1
+
+
+@pytest.mark.parametrize("search", ["", "?measure=on", "?measure=offline", "?x=measure=off"])
+def test_only_the_exact_audit_flag_stops_measurement(tmp_path: Path, search: str) -> None:
+    [result] = _run(tmp_path, _both(), [_visit(search=search)])
+    assert result["sent"] == ["$pageview"] and len(result["appended"]) == 1
+    assert result["stopped"] is None
+
+
+def test_a_stored_opt_out_wins_over_the_audit_flag(tmp_path: Path) -> None:
+    [result] = _run(tmp_path, _both(), [_visit(search="?measure=off", storage=_OPTED_OUT)])
+    assert result["stopped"] == "opted-out" and result["sent"] == []
+
+
+def test_control_without_the_audit_check_an_audit_run_is_counted(tmp_path: Path) -> None:
+    rendered = _both()
+    assert rendered.count(_AUDIT_CHECK) == 1
+    broken = rendered.replace(_AUDIT_CHECK, "")
+    assert broken != rendered
+    [result] = _run(tmp_path, broken, [_visit(search="?" + _AUDIT_FLAG)])
+    assert result["sent"] == ["$pageview"] and len(result["appended"]) == 1
+
+
+def test_the_audit_flag_is_read_only_by_the_opt_out_control() -> None:
+    """Neither measurement block reads the query string; the control alone
+    tests it for the one flag and marks the page stopped."""
+    control = _code_only(_SHIM[: _SHIM.index(_POSTHOG_START)])
+    assert _AUDIT_CHECK in control
+    assert control.count("location.search") == 1
+    assert "location.search" not in _code_only(_SHIM[_SHIM.index(_POSTHOG_START) :])
+
+
 def test_the_control_works_with_neither_tool_configured(tmp_path: Path) -> None:
     """The footer link has to work on a deploy with no key and no id, so a
     choice made then still holds once either is switched on."""
