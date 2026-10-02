@@ -234,11 +234,14 @@ def test_production_lighthouse_contract_and_report_retention() -> None:
     collect = config["ci"]["collect"]
     assertions = config["ci"]["assert"]["assertions"]
 
+    # Every audited route carries measure=off, which web/src/measure.js reads
+    # as "stop measuring this page", so the weekly audit is never counted as
+    # visitors in GA4 or PostHog.
     assert collect["url"] == [
-        "https://gtfsscorecard.org/",
-        "https://gtfsscorecard.org/agencies/",
-        "https://gtfsscorecard.org/agency/unitrans/",
-        "https://gtfsscorecard.org/fix/expired_calendar/",
+        "https://gtfsscorecard.org/?measure=off",
+        "https://gtfsscorecard.org/agencies/?measure=off",
+        "https://gtfsscorecard.org/agency/unitrans/?measure=off",
+        "https://gtfsscorecard.org/fix/expired_calendar/?measure=off",
     ]
     assert collect["numberOfRuns"] == 3
     assert assertions["categories:seo"][1]["minScore"] == 1

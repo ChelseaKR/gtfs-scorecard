@@ -2,10 +2,10 @@
   "ci": {
     "collect": {
       "url": [
-        "https://gtfsscorecard.org/",
-        "https://gtfsscorecard.org/agencies/",
-        "https://gtfsscorecard.org/agency/unitrans/",
-        "https://gtfsscorecard.org/fix/expired_calendar/"
+        "https://gtfsscorecard.org/?measure=off",
+        "https://gtfsscorecard.org/agencies/?measure=off",
+        "https://gtfsscorecard.org/agency/unitrans/?measure=off",
+        "https://gtfsscorecard.org/fix/expired_calendar/?measure=off"
       ],
       "numberOfRuns": 3,
       "settings": {
