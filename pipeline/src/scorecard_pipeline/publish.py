@@ -455,6 +455,8 @@ def publish(artifact: dict[str, Any]) -> Path:
     _write_json(agency_dir / "latest.json", artifact)
     _write_badge(agency_dir, artifact)
     _write_mark(agency_dir, artifact)
+    _write_explain(agency_dir, artifact)
+    _write_diffs(agency_dir, artifact)
     _update_index(agency_id, artifact)
     return dated
 
@@ -520,6 +522,72 @@ def _write_mark(agency_dir: Path, artifact: dict[str, Any]) -> None:
             file=sys.stderr,
         )
         mark_path.unlink()
+
+
+def _write_explain(agency_dir: Path, artifact: dict[str, Any]) -> None:
+    """Write the scoring explanation and audit trail next to the artifacts.
+
+    This reconstructs how the published grade was reached, one deduction at a
+    time, and writes it as JSON so the /explain and /audit API endpoints can
+    serve it.
+    """
+    from .explain import UnknownRubricVersion, build_trail, render_json
+
+    try:
+        trail = build_trail(artifact)
+        _write_atomic(agency_dir / "explain.json", render_json(trail))
+    except UnknownRubricVersion:
+        # Older rubric versions that this build cannot explain are skipped
+        # rather than producing a wrong trail.
+        log.debug("%s: skipping explain.json (unknown rubric version)", agency_dir.name)
+
+
+def _write_diffs(agency_dir: Path, artifact: dict[str, Any]) -> None:
+    """Write consecutive-pair diff JSON files for this agency's history.
+
+    Generates a diff between the current artifact and each preceding dated
+    artifact, writing one JSON file per pair into a ``diffs/`` subdirectory.
+    This powers the "What changed" API endpoint so consumers can fetch a
+    structured diff without re-running the pipeline.
+    """
+    from .feeddiff import diff_json
+
+    dated_pattern = "[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"
+    dated_files = sorted(agency_dir.glob(dated_pattern))
+    if len(dated_files) < 2:
+        return
+
+    diffs_dir = agency_dir / "diffs"
+    diffs_dir.mkdir(exist_ok=True)
+
+    # Build an index of parsed artifacts keyed by date for O(1) lookup.
+    artifacts_by_date: dict[str, dict[str, Any]] = {}
+    for path in dated_files:
+        try:
+            art = json.loads(path.read_text())
+            date_str = str(art.get("snapshot_date") or path.stem)
+            artifacts_by_date[date_str] = art
+        except (json.JSONDecodeError, OSError):
+            continue
+
+    dates = sorted(artifacts_by_date.keys())
+    for i in range(1, len(dates)):
+        prev_date, curr_date = dates[i - 1], dates[i]
+        prev_art = artifacts_by_date[prev_date]
+        curr_art = artifacts_by_date[curr_date]
+        try:
+            diff = diff_json(prev_art, curr_art)
+            diff_path = diffs_dir / f"{curr_date}.json"
+            _write_atomic(diff_path, json.dumps(diff, indent=2, sort_keys=True) + "\n")
+        except Exception:
+            # A diff failure for one pair must not break the whole publish.
+            log.debug(
+                "%s: skipping diff for %s -> %s",
+                agency_dir.name,
+                prev_date,
+                curr_date,
+                exc_info=True,
+            )
 
 
 _CATEGORY_KEYS = ("correctness", "freshness", "completeness", "realtime")
