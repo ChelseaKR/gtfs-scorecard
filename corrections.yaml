@@ -12,6 +12,13 @@
 # The scorer stopped producing these on 2026-09-01
 # (score.UnreadableFeedError). It could not take back the ones already out.
 #
+# One entry is a different mistake. `sacramento-regional-transit-sacrt` was
+# graded on 2026-10-02 from bytes that were read in full, but they were not
+# SacRT's current feed: the download from SacRT's own server failed, and the
+# fetch fell back to the Mobility Database's hosted copy of a catalog record
+# marked deprecated, a 2024 export. Its cause is `deprecated_catalog_mirror`.
+# The fetch stopped using deprecated records as mirrors on 2026-10-02 (#492).
+#
 # Each entry records:
 #   agency_id        the published record
 #   agency_name      the agency as the scorecard named it
@@ -333,6 +340,30 @@ corrections:
       holds 6,973 stops and 24,285 trips, so this is one of the larger feeds in
       the corpus and it was graded F on none of it. Not in the registry, so its
       scorecard is withdrawn rather than re-scored.
+
+  - agency_id: sacramento-regional-transit-sacrt
+    agency_name: Sacramento Regional Transit (SacRT)
+    snapshot_date: "2026-10-02"
+    feed_sha256: 14b96b9834dfa8912e029fa8bbc500ff6b525859d9f852e590dee4ac2cdb2632
+    grade: F
+    score: 51.1
+    published_from: "2026-10-02"
+    cause: deprecated_catalog_mirror
+    outcome: not_measured
+    evidence: >-
+      The published artifact's fetch record names source mirror, origin_error
+      SSLError, and final_url files.mobilitydatabase.org/mdb-1296/latest.zip.
+      The certificate on iportal.sacrt.com expired on 2026-09-20, so the
+      download failed its certificate check, and the fetch scored the catalog's
+      hosted copy of mdb-1296 instead, a record the catalog marks deprecated.
+      That copy is SacRT's September 2024 export (feed_version "SEP24 GTFS",
+      service 2024-08-18 to 2025-01-04, last modified 2024-10-17), which is why
+      the grade said service data ended 636 days ago. Confirmed on 2026-10-02:
+      the copy's bytes hash to the published sha256 (14b96b9834df, 2,694,731
+      bytes), and the feed at SacRT's own URL is feed_version "SEP26 GTFS",
+      service 2026-08-09 to 2027-01-02. The grade described the scorer's
+      fallback, not SacRT's current data. Until a run downloads SacRT's own
+      feed, it is not measured.
 
   - agency_id: santa-clarita-transit
     agency_name: Santa Clarita Transit
