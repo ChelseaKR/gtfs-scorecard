@@ -214,15 +214,29 @@ def test_github_client_draft_asset_setting_and_publish_operations(tmp_path: Path
         "body": desired.body,
         "draft": True,
         "prerelease": False,
+        "make_latest": "false",
     }
     assert client.calls[2][1] == "https://uploads.test/assets"
     assert client.calls[2][2]["headers"] == {"Content-Type": "text/csv"}
     assert client.calls[3][2]["headers"] == {"Accept": "application/octet-stream"}
-    assert client.calls[5][2]["json"] == {"draft": False}
+    # Publishing a dataset draft never makes it the repository's Latest
+    # release, which the Marketplace listing offers as the action to use.
+    assert client.calls[5][2]["json"] == {"draft": False, "make_latest": "false"}
 
     with pytest.raises(DatasetReleasePromotionError, match="no upload URL"):
         QueueClient().upload_asset({}, upload)
     assert QueueClient(_response({"enabled": False})).immutable_releases_enabled() is False
+
+
+def test_a_dataset_release_never_becomes_the_repository_latest(tmp_path: Path) -> None:
+    """GitHub makes a newly published release Latest unless told otherwise, and
+    the Marketplace listing offers the Latest release as the action version to
+    pin. dataset-2026-08 became Latest that way. Both requests that could set it
+    say "false", as the string the API reads."""
+    client = QueueClient(_response({"id": 7, "draft": True}), _response({"id": 7}))
+    client.create_draft(_desired(tmp_path))
+    client.publish(7)
+    assert [call[2]["json"]["make_latest"] for call in client.calls] == ["false", "false"]
 
 
 @pytest.mark.parametrize(

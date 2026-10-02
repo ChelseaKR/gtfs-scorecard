@@ -27,6 +27,7 @@ from typing import Any, cast
 
 from . import DATA_ATTRIBUTION, DATA_LICENSE, SCHEMA_VERSION
 from .agencies import load_agencies
+from .artifact_lifecycle import RESERVED_ARTIFACT_DIRS
 from .config import AGENCIES, Agency
 from .dataset import COLUMNS, build_quality_dataset, to_csv
 from .instance import BASE_URL
@@ -134,6 +135,43 @@ def _index_current(index: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
             raise DatasetReleaseError("artifact index contains an agency without current history")
         current[agency_id] = history[-1]
     return current
+
+
+def _latest_artifact_ids(artifacts_root: Path) -> set[str]:
+    """The agency ids that have a current ``latest.json`` in ``artifacts_root``.
+
+    The artifact tree also carries site-wide namespaces beside the agency
+    directories (``RESERVED_ARTIFACT_DIRS``). ``changes/latest.json``, the
+    export diff the alerts read, is one of them: it has been in every Pages
+    build since 2026-08-06, it is not an agency, and the index never lists it.
+    Counting it as an agency is what refused the 2026-09-01 and 2026-10-01
+    monthly cuts (one extra id, ``changes``, in the sorted list).
+    """
+    try:
+        children = list(artifacts_root.iterdir())
+    except OSError as exc:
+        raise DatasetReleaseError(f"artifact root is unreadable: {exc}") from exc
+    return {
+        child.name
+        for child in children
+        if child.name not in RESERVED_ARTIFACT_DIRS
+        and child.is_dir()
+        and (child / "latest.json").is_file()
+    }
+
+
+def _require_latest_coverage(artifacts_root: Path, expected_ids: set[str]) -> None:
+    """Every indexed id has exactly one current ``latest.json``, and no agency
+    directory outside the index still carries one."""
+    present = _latest_artifact_ids(artifacts_root)
+    missing = sorted(expected_ids - present)
+    extra = sorted(present - expected_ids)
+    if missing or extra:
+        raise DatasetReleaseError(
+            "current latest.json set disagrees with the artifact index: "
+            f"{len(missing)} indexed without one {missing[:5]}, "
+            f"{len(extra)} not indexed {extra[:5]}"
+        )
 
 
 def _require_exact_ids(rows: Mapping[str, object], expected_ids: set[str], label: str) -> None:
@@ -299,16 +337,48 @@ def _validate_ntd_summary(
 
 
 def _retired_pattern(retired_ids: Iterable[str]) -> re.Pattern[str] | None:
+    """A retired id used as one of this site's own paths: a scorecard page
+    (``/agency/<id>/``) or an artifact (``/data/artifacts/<id>/``)."""
     alternatives = sorted((re.escape(value) for value in retired_ids), key=len, reverse=True)
     if not alternatives:
         return None
-    return re.compile(
-        rf"(?<![a-z0-9_-])(?:{'|'.join(alternatives)})(?![a-z0-9_-])",
-        flags=re.IGNORECASE,
-    )
+    return re.compile(rf"/(?:agency|data/artifacts)/(?:{'|'.join(alternatives)})(?![a-z0-9_-])")
+
+
+def _export_values(relative: str, text: str) -> Iterable[str]:
+    """Every string a release export carries: JSON keys and string values, or
+    CSV cells."""
+    if relative.endswith(".csv"):
+        for row in csv.reader(text.splitlines()):
+            yield from row
+        return
+    try:
+        stack: list[object] = [json.loads(text)]
+    except json.JSONDecodeError as exc:
+        raise DatasetReleaseError(f"{relative} is not valid JSON: {exc}") from exc
+    while stack:
+        value = stack.pop()
+        if isinstance(value, str):
+            yield value
+        elif isinstance(value, dict):
+            stack.extend(value.keys())
+            stack.extend(value.values())
+        elif isinstance(value, list):
+            stack.extend(value)
 
 
 def _require_no_retired_references(web_root: Path, retired_ids: set[str]) -> None:
+    """No export names a retired registry id, either as a whole value (an id
+    column, a key) or inside one of this site's own paths.
+
+    Registry ids are lowercase slugs, so the match is exact and case-sensitive.
+    It used to be a case-insensitive word search over the whole file text, and
+    retired ids include ordinary words and agency names (``citilink``,
+    ``embark``, ``mta``, ``metra``, ``xpress``). That search matched current
+    rows' display names ("Citilink", "Altamont Corridor Express") and
+    third-party feed URLs (web.mta.info), so it refused every release since
+    it was added on 2026-08-09, behind the latest.json and geography checks.
+    """
     pattern = _retired_pattern(retired_ids)
     if pattern is None:
         return
@@ -318,8 +388,9 @@ def _require_no_retired_references(web_root: Path, retired_ids: set[str]) -> Non
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeError) as exc:
             raise DatasetReleaseError(f"{relative} is missing or unreadable: {exc}") from exc
-        if pattern.search(text):
-            raise DatasetReleaseError(f"{relative} cites a retired registry identifier")
+        for value in _export_values(relative, text):
+            if value in retired_ids or pattern.search(value):
+                raise DatasetReleaseError(f"{relative} cites a retired registry identifier")
 
 
 def _validate_catalog_surfaces(
@@ -628,6 +699,7 @@ def validate_release_inputs(
         raise DatasetReleaseError("authoritative current index is empty")
     if not expected_ids <= set(current_registry):
         raise DatasetReleaseError("artifact index contains retired or unregistered ids")
+    _require_latest_coverage(artifacts_root, expected_ids)
 
     expected_dataset = build_quality_dataset(index, agencies=current_registry.values())
     expected_rows = _rows_by_id(expected_dataset.get("rows"), "canonical dataset rows")

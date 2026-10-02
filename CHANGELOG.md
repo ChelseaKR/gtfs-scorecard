@@ -318,6 +318,20 @@ the declared public surface).
   own return value carried both stale. Both are now rebuilt in the sweep, and
   NTD readiness only where the full score attached it (US feeds, ADR 0026).
 
+- **Sacramento and Bay Area agencies are graded on the feeds they publish
+  now.** Several records pointed at files their agencies stopped updating, and
+  in two cases the live record was the retired one. SacRT's current iportal
+  feed is canonical again, with the January 2025 wp-content copy retired into
+  it. The dead Yolobus mdb-1295 record is retired into `yolobus`, Elk Grove
+  reads SacRT's Elk Grove feed instead of a URL that now leads to an unrelated
+  site, AC Transit gains a record for its own feed, SamTrans' keyless file is
+  canonical instead of the keyed 511 record, and the duplicate Marin Transit
+  and Santa Rosa CityBus records are retired. Santa Rosa and Petaluma say on
+  the page that the file graded is an old export. BART's URLs use https.
+  The iportal.sacrt.com certificate expired on 2026-09-20; the affected
+  records say so, and certificate checking stays on. The registry moves to
+  2,672 records.
+
 - **The Daily's slowest score shard no longer runs within two minutes of its
   bound, and the Watchdog now measures it.** The `ovapi-netherlands` runner
   death last occurred on 2026-09-05; every daily run since has finished its

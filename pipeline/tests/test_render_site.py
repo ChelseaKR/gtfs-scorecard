@@ -1848,6 +1848,68 @@ def test_states_by_agency_joins_prefixed_v2_id_to_numeric_legacy_catalog(
     assert _states_by_agency() == {"v2-feed": "California"}
 
 
+def test_states_by_agency_prefers_the_registry_subdivision_over_the_mobility_database(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The registry's curated subdivision decides a US record's state before the
+    Mobility Database is asked. Shaped on the 2026-10-01 cut: Norwalk Transit
+    District is curated as US-CT while its Mobility Database row says
+    California, and 95 records with a curated subdivision but no `state`
+    published a blank one. Either made the dataset release refuse with
+    "catalog.json geography disagrees with the canonical registry"."""
+    from scorecard_pipeline import config, mobilitydb
+    from scorecard_pipeline.config import Agency
+
+    monkeypatch.setattr(
+        config,
+        "AGENCIES",
+        {
+            "curated-state": Agency(
+                "curated-state", "Curated", "https://example.org/a.zip", state="Oregon"
+            ),
+            "norwalk": Agency(
+                "norwalk",
+                "Norwalk Transit District",
+                "https://example.org/n.zip",
+                mdb_id="mdb-2242",
+                subdivision_code="US-CT",
+                subdivision_name="Connecticut",
+            ),
+            "no-mdb-match": Agency(
+                "no-mdb-match",
+                "Curated Subdivision Only",
+                "https://example.org/c.zip",
+                mdb_id="mdb-999",
+                subdivision_code="US-CA",
+            ),
+            "mdb-only": Agency(
+                "mdb-only", "Mobility Database Only", "https://example.org/m.zip", mdb_id="mdb-7"
+            ),
+            "abroad": Agency(
+                "abroad",
+                "Abroad",
+                "https://example.org/x.zip",
+                country="CA",
+                subdivision_code="CA-ON",
+            ),
+        },
+    )
+    catalog = mobilitydb.parse_catalog(
+        "mdb_source_id,data_type,location.subdivision_name,provider,"
+        "urls.direct_download\n"
+        "2242,gtfs,California,Norwalk,https://example.org/n.zip\n"
+        "7,gtfs,Nevada,Mobility Database Only,https://example.org/m.zip\n"
+    )
+    monkeypatch.setattr(mobilitydb, "load_catalog", lambda: catalog)
+
+    assert _states_by_agency() == {
+        "curated-state": "Oregon",
+        "norwalk": "Connecticut",
+        "no-mdb-match": "California",
+        "mdb-only": "Nevada",
+    }
+
+
 def test_peer_context_renders_only_catalog_location() -> None:
     html = _peer_context(
         {

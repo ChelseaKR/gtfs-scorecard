@@ -23,7 +23,13 @@ def test_static_compare_search_filters_large_pickers(page: Page, base_url: str) 
     page.locator("#compare-a").select_option("unitrans")
 
     page.locator("#compare-b-filter").fill("yolobus")
-    expect(page.locator("#compare-b option")).to_have_count(3)
+    # Assert the filter, not a registry count: how many Yolobus records are
+    # listed depends on which are deprecated (mdb-1295 was retired 2026-10-01).
+    expect(page.locator('#compare-b option[value="yolobus"]')).to_have_count(1)
+    listed = page.locator("#compare-b option").evaluate_all(
+        "els => els.filter(e => e.value).map(e => (e.value + ' ' + e.textContent).toLowerCase())"
+    )
+    assert listed and all("yolobus" in item for item in listed)
     page.locator("#compare-b").select_option("yolobus")
     page.get_by_role("button", name="Compare").click()
 

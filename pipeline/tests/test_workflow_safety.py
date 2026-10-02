@@ -466,14 +466,31 @@ def test_dataset_release_packages_only_a_validated_canonical_deployment() -> Non
     assert "--bundle-root ../bundle" in workflow
     assert "open('bundle/catalog.json')" in workflow
     assert "jq -er '.agencies | keys[]'" in workflow
-    assert 'find "$site/data/artifacts" -mindepth 2 -maxdepth 2 -type f' in workflow
-    assert "jq -e --arg id \"$id\" '.agency.id == $id'" in workflow
+    # The latest.json set and each artifact's own id are checked by the
+    # validator (test_dataset_release.py), not by a shell listing.
+    assert "_require_latest_coverage" in workflow
     assert '--source-mode "$SOURCE_MODE"' in workflow
     assert "--stage-only" in workflow
     assert "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f" in workflow
     assert "dataset-release-promotion-${{ steps.bundle.outputs.tag }}" in workflow
     assert "pipeline/scripts/promote_dataset_release.sh ${tag} ${GITHUB_RUN_ID}" in workflow
     assert "gh release create" not in workflow
+
+
+def test_dataset_release_leaves_the_latest_json_set_to_the_validator() -> None:
+    """The cut once listed every `data/artifacts/*/latest.json` in shell and
+    compared that with the index. The Pages build also carries the site-wide
+    `changes/latest.json`, so the list always had one id too many and the
+    2026-09-01 and 2026-10-01 cuts were refused. The comparison now lives in
+    `dataset_release._require_latest_coverage`, which skips the reserved
+    namespaces; no shell listing of latest.json may come back."""
+    workflow = _workflow("dataset-release.yml")
+    run_lines = "\n".join(
+        line for line in workflow.splitlines() if not line.lstrip().startswith("#")
+    )
+    assert "-name latest.json" not in run_lines
+    assert "actual-latest-ids" not in run_lines
+    assert "python -m scorecard_pipeline.dataset_release \\" in workflow
 
 
 def test_dataset_release_mutates_tags_only_after_trusted_main_validation() -> None:
@@ -492,7 +509,6 @@ def test_dataset_release_mutates_tags_only_after_trusted_main_validation() -> No
     hydration = workflow.index('gh run download "$SOURCE_RUN_ID"')
     deployment = workflow.index('manifest_sha=$(sha256sum "$source/release-manifest.json"')
     manifest = workflow.index("sha256sum --check -)")
-    current_latest = workflow.index('cmp "$source/expected-latest-ids" "$source/actual-latest-ids"')
     canonical = workflow.index("python -m scorecard_pipeline.dataset_release")
     provenance = workflow.index("> bundle/PROVENANCE.json")
     checksums = workflow.index("> SHA256SUMS)")
@@ -507,7 +523,6 @@ def test_dataset_release_mutates_tags_only_after_trusted_main_validation() -> No
         hydration
         < deployment
         < manifest
-        < current_latest
         < canonical
         < provenance
         < checksums
