@@ -57,6 +57,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
+from .metrics import expiry_status
 from .score import CATEGORY_WEIGHTS, GRADE_BANDS, grade_margins, letter_grade, published_score
 
 # How close a reconstruction has to land before it counts as the same number.
@@ -303,7 +304,10 @@ _FRESHNESS_FIELDS = (
     ("feed_start_date", "feed_info start"),
     ("feed_end_date", "feed_info end"),
     ("last_service_date", "Last service date"),
-    ("service_horizon_status", "Service horizon"),
+    # This status only flags an implausibly distant end date (more than ten
+    # years out). It reads "within_review_threshold" for an expired feed too, so
+    # the label says what it checks and the expiry status is printed beside it.
+    ("service_horizon_status", "Service horizon (distant end-date check only)"),
     ("service_type", "Service type"),
     ("seasonal_boundary", "Seasonal boundary"),
 )
@@ -331,6 +335,10 @@ def _freshness_trail(payload: dict[str, Any], _score: float) -> tuple[list[Deduc
             value = details.get(key)
             if value is not None:
                 notes.append(f"{label}: {value}.")
+            if key == "days_until_expiry":
+                days = _as_float(value)
+                if days is not None and days.is_integer():
+                    notes.append(f"Expiry status: {expiry_status(int(days))}.")
     return deductions, notes
 
 

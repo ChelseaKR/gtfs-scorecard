@@ -37,7 +37,7 @@ Point a fork or a local preview at itself with `SCORECARD_BASE_URL`.
 | Tool | What it answers |
 | --- | --- |
 | `search_agencies` | "Which agencies in Ontario do you track?" Name, id, ISO country, ISO subdivision code or name, legacy state/province, and grade filters over the covered catalog. Results carry `country`, `subdivision_code`, and `subdivision_name`; an omitted historical country is returned as `US`. |
-| `get_scorecard` | "How is Unitrans doing and what should they fix first?" Overall grade, category summaries, every finding with its plain-language fix, effort hint, and fix-guide link, plus NTD readiness. |
+| `get_scorecard` | "How is Unitrans doing and what should they fix first?" Overall grade, category summaries, every finding with its plain-language fix, effort hint, and fix-guide link, plus NTD readiness. The freshness block carries `expiry_status` (whether the feed has expired) beside `service_horizon_status`, which only flags an implausibly distant end date. |
 | `coverage_stats` | "What countries and subdivisions do you cover?" Covered-set quality totals plus portable country and subdivision rollups. Counts describe tracked public feeds, not every operator in a country. |
 | `national_stats` | Legacy United States policy view retained for existing clients. Its `ntd_readiness` member is US-only; its historical `stats` member still describes the complete covered corpus. New clients should use `coverage_stats` for geography-neutral totals. |
 | `get_history` | "Why did my grade drop?" One feed's dated grades and scores, with every measurement-contract boundary marked, plus the findings that appeared or cleared between the two most recent snapshots — reported only when those two are the same measurement. |

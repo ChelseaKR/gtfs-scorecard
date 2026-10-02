@@ -330,6 +330,20 @@ class TestFreshness:
         assert result.details["service_horizon_status"] == "within_review_threshold"
         assert result.findings == []
 
+    def test_an_expired_feed_still_reads_within_review_threshold(self) -> None:
+        # Documents existing behavior: the horizon status only detects an
+        # implausibly distant end date. A feed that expired years ago is not
+        # distant, so it reads "within_review_threshold" like a current one.
+        # expiry_status() is the field that says the feed has lapsed, and the
+        # flat exports and MCP freshness block carry it beside this one.
+        expiry = TODAY - dt.timedelta(days=2381)
+        result = freshness(feed_dates(expiry), TODAY)
+        assert service_horizon_status(expiry, TODAY) == "within_review_threshold"
+        assert result.details["service_horizon_status"] == "within_review_threshold"
+        assert result.details["days_until_expiry"] == -2381
+        assert expiry_status(result.details["days_until_expiry"]) == "stale"
+        assert [f.code for f in result.findings] == ["scorecard_feed_expired"]
+
     def test_exact_review_boundary_is_not_flagged(self) -> None:
         expiry = TODAY.replace(year=TODAY.year + SERVICE_HORIZON_REVIEW_YEARS)
         result = freshness(feed_dates(expiry), TODAY)

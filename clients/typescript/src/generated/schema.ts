@@ -371,7 +371,7 @@ export interface paths {
         };
         /**
          * Every published feed record's latest check in one list.
-         * @description `realtime` is null when not measured.
+         * @description `realtime` is null when not measured. `expiry_status` says whether the feed has expired; `service_horizon_status` only flags an implausibly distant end date and reads `within_review_threshold` for an expired feed.
          */
         get: operations["getAgencies"];
         put?: never;
@@ -1275,11 +1275,14 @@ export interface components {
             snapshot_date?: string;
             days_until_expiry?: number | null;
             /**
-             * @description Whether the effective service end date extends beyond the scorecard's conservative review threshold. Unusually distant is a display and trust advisory outside category findings, not a GTFS error or score deduction.
+             * @description Whether the effective service end date extends beyond the scorecard's conservative review threshold. Unusually distant is a display and trust advisory outside category findings, not a GTFS error or score deduction. This only detects an implausibly distant end date and says nothing about expiry: an expired feed also reads within_review_threshold. Use expiry_status to tell whether the feed has expired.
              * @enum {string}
              */
             service_horizon_status?: "within_review_threshold" | "unusually_distant" | "unknown";
-            /** @enum {string} */
+            /**
+             * @description Whether the feed's service window has run out, bucketed from days_until_expiry: current (more than 30 days left), expiring_soon (1 to 30), lapsed (expired within the last year), stale (expired a year or more ago), or unknown (no end date).
+             * @enum {string}
+             */
             expiry_status?: "current" | "expiring_soon" | "lapsed" | "stale" | "unknown";
             mdb_id?: string;
             validator_version?: string | null;

@@ -110,9 +110,18 @@ resolve to `raw-v1`. Rows scored through `flat-single-root-v1` remain public
 and filterable, but the default cross-feed aggregate cohort requires `raw-v1`
 so a reader-view change cannot manufacture a trend or clearance claim.
 
+Flat export schema `1.5` adds `expiry_status`, right after
+`service_horizon_status`: the same bucket `catalog.json` publishes, derived from
+the row's `days_until_expiry` (see Freshness fields below). It reaches
+`dataset.json`, `dataset.csv`, `api/v1/agencies.json`, and
+`api/v1/agencies.parquet`. Schema `1.6` is `1.5` plus `license_notice`, in the
+same way `1.4` was `1.3` plus `license_notice`, so the version alone names the
+column set.
+
 Flat export schema `1.4` adds `license_notice`, the last column. It appears only
 in a build where at least one record's recorded license requires share-alike;
-until then the exports are schema `1.3` and have no such column. On an affected
+until then the exports have no such column. From flat export `1.5`, a build
+with the column is schema `1.6` and one without it is schema `1.5`. On an affected
 record it holds a short, plain-language reuse notice: it names the license and
 says what share-alike asks of anyone who copies, adapts, or builds on the data
 and shares the result (share it under the same license and credit the source).
@@ -450,11 +459,18 @@ fields are surfaced for consumers:
   date is strictly more than ten calendar years after the check. The exact
   boundary stays within the threshold. This advisory is outside category
   findings, Top 3 fixes, finding prevalence, and finding diffs; it changes no
-  score. For legacy artifacts and rows without this field, consumers can derive
+  score. It only detects an implausibly distant end date and says nothing
+  about expiry: an expired feed reads `within_review_threshold` too, so do not
+  read that value as "current". Read `expiry_status` for that. For legacy artifacts and rows without this field, consumers can derive
   it from the snapshot/date plus `effective_expiry_date` or
   `days_until_expiry`. Missing date evidence remains `unknown`.
 - `expiry_status` (string): a stable bucket derived from `days_until_expiry`,
-  published on `catalog.json` agencies and rollup members. One of:
+  published on `catalog.json` agencies and rollup members, on open-dataset rows
+  (`dataset.json`, `dataset.csv`, `api/v1/agencies.json`, and
+  `api/v1/agencies.parquet`, from flat export schema `1.5`), and in the MCP
+  `get_scorecard` freshness block. Every surface computes it with the same
+  function from the same day count. This is the field that says whether a feed
+  has expired. One of:
 
   | Value | Meaning |
   | --- | --- |
@@ -558,7 +574,7 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | --- | --- |
 | `api/v1/index.json` | The API's self-description: version, endpoint list, license, attribution. |
 | `api/v1/openapi.yaml` | An OpenAPI 3.1 description of the paths in this document, referencing the JSON Schemas above where one exists. See the OpenAPI section below. |
-| `api/v1/agencies.json` | Every published feed record's latest check in one list (id, name, date, grade, score, rubric and scoring-profile fields, validator version, reader archive profile, feed hash, category scores, days to expiry, and service-horizon review status). `realtime` is null when not measured. |
+| `api/v1/agencies.json` | Every published feed record's latest check in one list (id, name, date, grade, score, rubric and scoring-profile fields, validator version, reader archive profile, feed hash, category scores, days to expiry, service-horizon review status, and `expiry_status`). `realtime` is null when not measured. Read `expiry_status`, not the horizon status, to tell whether a feed has expired. |
 | `api/v1/leaderboard.json` | Compatibility path for named changes. `top` and `bottom` are always empty; `most_improved` and `most_declined` compare a canonical feed only with its own prior check under the same rubric, scoring profile, validator, reader archive profile, and measured category set. |
 | `api/v1/by-state.json` | Legacy U.S.-state rollups. `count` covers every U.S. published row in the state; `comparison_eligible_count`, median score, and grade distribution use the guarded comparison cohort. U.S. feeds without a known state group under `Unlocated`. |
 | `api/v1/by-location.json` | Portable country rollups with nested ISO 3166-2 subdivisions. Each `count` covers every published row in that location; `comparison_eligible_count`, median score, and grade distribution use the guarded comparison cohort. Null codes collect rows whose curated location is unknown. |

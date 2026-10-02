@@ -97,8 +97,8 @@ admitted, with a notice. It is not excluded, retired, or scored differently.
 - **The flat exports.** Once at least one record carries a notice, `dataset.json`,
   `dataset.csv` and `agencies.parquet` gain a last field, `license_notice`, on
   every row: the same words on an affected record, empty on every other record.
-  That is flat export schema `1.4`. Until then the exports are unchanged, at
-  schema `1.3`. [`docs/api.md`](api.md) ships with each dataset release as the
+  That is flat export schema `1.6` (`1.4` before `expiry_status` was added in
+  `1.5`). Until then the exports have no such column, at schema `1.5`. [`docs/api.md`](api.md) ships with each dataset release as the
   data dictionary and says what an empty value means.
 - **Only an affirmative share-alike gets a notice.** No block, `id: unknown`,
   `share_alike: false`, and `share_alike: unknown` all get none, and none of them

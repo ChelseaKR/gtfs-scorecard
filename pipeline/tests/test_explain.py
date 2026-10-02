@@ -238,6 +238,42 @@ def test_freshness_says_it_is_a_curve_rather_than_claiming_a_sum() -> None:
     assert "curve" in freshness.residual_reason
 
 
+def _freshness_notes(days: int, horizon: str = "within_review_threshold") -> list[str]:
+    art = _artifact()
+    details = art["categories"]["freshness"]["details"]
+    details["days_until_expiry"] = days
+    details["service_horizon_status"] = horizon
+    trail = build_trail(art)
+    return next(c for c in trail.categories if c.name == "freshness").notes
+
+
+def test_an_expired_feed_shows_its_expiry_status_beside_the_horizon() -> None:
+    # The horizon check only flags implausibly distant end dates, so an expired
+    # feed still reads "within_review_threshold". The trail must not leave that
+    # as the only status line: the expiry bucket is printed beside it.
+    notes = _freshness_notes(-2381)
+    assert "Days until expiry: -2381." in notes
+    assert "Expiry status: stale." in notes
+    horizon = next(n for n in notes if n.startswith("Service horizon"))
+    assert horizon == "Service horizon (distant end-date check only): within_review_threshold."
+    assert notes.index("Expiry status: stale.") < notes.index(horizon)
+    assert "Expiry status: lapsed." in _freshness_notes(-14)
+
+
+def test_a_current_feed_shows_current_expiry_status() -> None:
+    notes = _freshness_notes(120)
+    assert "Expiry status: current." in notes
+    assert not any("lapsed" in n or "stale" in n for n in notes)
+
+
+def test_no_expiry_status_line_without_a_day_count() -> None:
+    art = _artifact()
+    art["categories"]["freshness"]["details"] = {"days_until_expiry": None}
+    trail = build_trail(art)
+    notes = next(c for c in trail.categories if c.name == "freshness").notes
+    assert not any(n.startswith("Expiry status") for n in notes)
+
+
 def test_a_small_leftover_is_attributed_to_rounding_not_called_unexplained() -> None:
     art = _artifact()
     art["categories"]["correctness"]["findings"][0]["points"] = 20.1

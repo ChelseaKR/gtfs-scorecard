@@ -35,7 +35,8 @@
     "completeness",
     "realtime",
     "days_until_expiry",
-    "service_horizon_status"
+    "service_horizon_status",
+    "expiry_status"
   ],
   "pipeline_schema_version": "1.19",
   "rows": [
@@ -45,6 +46,7 @@
       "correctness": 76.0,
       "date": "2026-07-02",
       "days_until_expiry": 121,
+      "expiry_status": "current",
       "feed_sha256": "6686dff3242825b42dfd412f6ad631ce8eea73e287ff967f937fbac16973de76",
       "freshness": 100.0,
       "grade": "C",
@@ -65,6 +67,7 @@
       "correctness": 84.8,
       "date": "2026-07-02",
       "days_until_expiry": 82,
+      "expiry_status": "current",
       "feed_sha256": "3ddba2ca939679b1ba87d34babcd7f8715faab7f08c5241dc3f1d5277cf4f39d",
       "freshness": 100.0,
       "grade": "B",
@@ -85,6 +88,7 @@
       "correctness": 90.0,
       "date": "2026-07-02",
       "days_until_expiry": 67,
+      "expiry_status": "current",
       "feed_sha256": "946c49a1b1dae9b4788e9984a983b1a0c9105eecd337f65f60e5650256eca937",
       "freshness": 85.0,
       "grade": "B",
@@ -100,5 +104,5 @@
       "validator_version": "8.0.1"
     }
   ],
-  "schema_version": "1.3"
+  "schema_version": "1.5"
 }
