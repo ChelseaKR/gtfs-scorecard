@@ -70,7 +70,11 @@ agencies:
     country: FR
     subdivision_code: FR-BFC
     subdivision_name: Bourgogne-Franche-Comté
-    mdb_id: "658"
+    # Mobility Database mdb-658 is deprecated and redirects to tdg-82664.
+    # Checked 2026-10-02 in the catalog CSV: both rows name provider Le Grand
+    # Chalon in Chalon-sur-Saône, and tdg-82664 is active, marked official,
+    # and downloads this record's own URL below.
+    mdb_id: "tdg-82664"
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/f11a3766-1fe3-40ff-8d5a-27eacda3d9a7
     license_note: >-
       Licence Ouverte 2.0; published by Le Grand Chalon (réseau Zoom) through
