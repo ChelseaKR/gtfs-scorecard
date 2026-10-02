@@ -135,6 +135,16 @@ of one warning is one fix, and should not zero the score; ten distinct error
 codes is a genuinely worse feed than one. The gentle count multiplier keeps
 widespread issues ranked above isolated ones.
 
+The same rule bounds style notices. `mixed_case_recommended_field`, the
+validator's capitalization recommendation, is a WARNING, so it costs at most 8
+correctness points however many names it flags. That is 2.8 overall points with
+all four categories measured, or 3.5 when realtime is not. VTA's published
+2026-08-07 artifact shows the bound holding: 9,620 mixed-case instances cost
+8.0 of the 60.5 correctness points it lost, and the F 49.4 came mainly from
+freshness (3.3, two days of runway). Removing the mixed-case notice entirely
+would have left that feed at F 52.9. No separate cap is applied to style
+notices; ADR 0062 records why.
+
 ## Freshness (20%)
 
 What it measures: how far into the future the feed remains usable, the

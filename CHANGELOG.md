@@ -29,6 +29,14 @@ the declared public surface).
 
 ### Added
 
+- **The rubric states how far one style notice can move a grade (ADR 0062).**
+  Correctness deducts per notice code, so `mixed_case_recommended_field` costs
+  at most 8 correctness points however many names it flags. A review read
+  VTA's F 49.4 as driven by 9,620 mixed-case notices; the published artifact
+  shows they cost 8.0 of 60.5 points and the F came from two days of freshness
+  runway. No separate cap on style notices was added, and the ADR records the
+  numbers and the alternatives checked.
+
 - **A structured `license` block for registry records, an advisory lint, a
   dry-run migration, and a reuse notice for share-alike feeds
   ([#372](https://github.com/ChelseaKR/gtfs-scorecard/issues/372), part 2).**
