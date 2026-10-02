@@ -370,3 +370,28 @@ def test_open_data_page_publishes_data_catalog_jsonld() -> None:
     assert "does not\n      relicense or redistribute the underlying GTFS files" in html
     assert "feed records in the current file" in html
     assert "agencies in the current file" not in html
+
+
+def test_open_data_dataset_carries_what_google_dataset_search_requires() -> None:
+    """Google Dataset Search lists a Dataset only with both a name and a
+    description, and the description must run 50 to 5,000 characters."""
+    html = (_REPO / "web" / "data" / "index.html").read_text()
+    match = re.search(r'<script type="application/ld\+json">(.*?)</script>', html)
+    assert match is not None
+    [dataset] = json.loads(match.group(1))["dataset"]
+    assert dataset["@type"] == "Dataset"
+    assert dataset["name"].strip()
+    description = dataset["description"]
+    assert 50 <= len(description) <= 5000
+    # It describes the published file in the page's own terms: worldwide
+    # coverage, one row per feed record, the columns the page lists.
+    assert "worldwide" in description
+    assert "one row per feed record" in description
+    assert "days until the service calendar expires" in description
+    assert dataset["isAccessibleForFree"] is True
+    assert dataset["creator"] == {
+        "@type": "Organization",
+        "name": "GTFS Scorecard",
+        "url": "https://gtfsscorecard.org/",
+    }
+    assert dataset["license"] == "https://creativecommons.org/licenses/by/4.0/"
