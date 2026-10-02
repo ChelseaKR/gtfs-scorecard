@@ -192,6 +192,63 @@ def test_a_full_score_after_a_sweep_resets_the_fetch_date() -> None:
     assert swept_again["recompute"]["feed_fetched_date"] == "2026-09-13"
 
 
+def _sacrt_like_artifact() -> dict[str, Any]:
+    """A US full score shaped like SacRT's: service through 2026-08-15, scored
+    2026-07-25 with 21 days left, carrying the two verdicts that quote it."""
+    from scorecard_pipeline.conformance import assess as assess_conformance
+    from scorecard_pipeline.ntd import assess as assess_ntd
+
+    art = _artifact(last_service="2026-08-15", fresh_score=75.0, days=21)
+    art["agency"] = {
+        "id": "sacramento-regional-transit-sacrt",
+        "name": "Sacramento Regional Transit (SacRT)",
+        "country": "US",
+    }
+    art["snapshot_date"] = "2026-07-25"
+    art["feed"] = {"static_url": "https://iportal.sacrt.com/GTFS/SRTD/google_transit.zip"}
+    details = art["categories"]["freshness"]["details"]
+    details.update(
+        {
+            "has_feed_info": True,
+            "feed_version": "June_2026",
+            "feed_start_date": "2026-06-14",
+            "feed_end_date": "2026-08-15",
+            "effective_expiry_date": "2026-08-15",
+        }
+    )
+    art["conformance"] = assess_conformance(art).to_dict()
+    art["ntd_readiness"] = assess_ntd(art).to_dict()
+    assert "21 days" in art["conformance"]["summary"]
+    assert "21 days" in art["ntd_readiness"]["summary"]
+    return art
+
+
+def test_a_sweep_rebuilds_every_verdict_that_quotes_the_expiry_count() -> None:
+    """The defect: the sweep rebuilt the top fix but copied conformance and NTD
+    readiness forward. SacRT's 2026-08-07 record led with "runs out in 8
+    day(s)" while both blocks still said 21 days."""
+    new, summary = resweep(_sacrt_like_artifact(), dt.date(2026, 8, 7))
+
+    assert summary["new_days"] == 8
+    assert new["top_fixes"][0]["code"] == "scorecard_feed_expiring_soon"
+    assert "8 day" in new["top_fixes"][0]["what"]
+    current = next(c for c in new["conformance"]["criteria"] if c["key"] == "current")
+    assert current["detail"] == "Service data runs out in 8 days; renew to qualify."
+    pillar = next(p for p in new["ntd_readiness"]["pillars"] if p["key"] == "current")
+    assert pillar["detail"] == "Service data runs out in 8 days; renew before you certify."
+    for block in (new["conformance"], new["ntd_readiness"]):
+        assert "21 days" not in json.dumps(block)
+
+
+def test_a_sweep_does_not_invent_ntd_readiness_for_a_feed_without_it() -> None:
+    # NTD readiness is US-only (ADR 0026); a record scored without it stays without it.
+    art = _sacrt_like_artifact()
+    del art["ntd_readiness"]
+    new, _ = resweep(art, dt.date(2026, 8, 7))
+    assert "ntd_readiness" not in new
+    assert "8 days" in new["conformance"]["summary"]
+
+
 def _artifact_over_an_empty_archive() -> dict[str, Any]:
     """A published scorecard shaped like `boxcar`'s on 2026-09-13.
 

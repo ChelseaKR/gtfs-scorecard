@@ -13,8 +13,9 @@ often and keep the expiry countdown and grade current on its own.
 
 It carries forward the last full score's correctness, completeness, and realtime
 (those need a re-fetch to change) and recomputes only freshness for the sweep
-date, then re-derives the overall grade and top fixes the same way scoring does.
-The result is written as a new dated artifact marked `recompute`, so it never
+date, then re-derives the overall grade, the top fixes, and the two verdicts
+that read the expiry countdown (the conformance mark and NTD readiness) the same
+way scoring does. The result is written as a new dated artifact marked `recompute`, so it never
 rewrites a past snapshot's freshness (which must stay fixed at that snapshot's
 date) and trend history stays honest.
 """
@@ -204,6 +205,8 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
         "feed_fetched_date": last_fetched_date(artifact),
     }
 
+    _rederive_expiry_verdicts(new_artifact)
+
     old = artifact.get("overall", {})
     summary = {
         "id": artifact.get("agency", {}).get("id"),
@@ -217,3 +220,24 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
         "grade_changed": old.get("grade") != card["overall"]["grade"],
     }
     return new_artifact, summary
+
+
+def _rederive_expiry_verdicts(artifact: dict[str, Any]) -> None:
+    """Re-derive the stored verdicts that quote the expiry countdown, in place.
+
+    ``conformance`` and ``ntd_readiness`` each name the days left on the feed,
+    read from the freshness category. Before this, the sweep rebuilt freshness,
+    ``overall`` and ``top_fixes`` but copied both blocks forward from the last
+    full score, so one record contradicted itself. SacRT's ``latest.json`` for
+    2026-08-07 led with "Service data runs out in 8 day(s)" while both blocks
+    still said 21 days, the count from the full score two weeks earlier.
+
+    ``ntd_readiness`` is a US-only block (ADR 0026), so it is re-derived only
+    where the full score attached it; the sweep must not invent one abroad.
+    """
+    from .ntd import assess as assess_ntd_readiness
+    from .publish import _current_conformance
+
+    artifact["conformance"] = _current_conformance(artifact)
+    if isinstance(artifact.get("ntd_readiness"), dict):
+        artifact["ntd_readiness"] = assess_ntd_readiness(artifact).to_dict()
