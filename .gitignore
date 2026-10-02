@@ -69,3 +69,8 @@ infra/program-bundle/build/
 # saved terraform plans
 infra/submit/submit.tfplan
 *.tfplan
+
+# render-site output that Pages builds from the S3 artifacts at deploy time
+# (ADR 0030). The committed copy stopped at the 2026-07-10 S3 cutover and
+# nothing reads it from a checkout, so a local render must not re-add it.
+/web/dataset.csv

@@ -308,6 +308,16 @@ the declared public surface).
   predate this and are updated in the Stripe account by the owner, not by
   this script, which never touches a link that is already selling.
 
+- **A freshness sweep now rebuilds the conformance mark and NTD readiness
+  along with the top fixes, so one record cannot state two expiry counts.**
+  `resweep()` recomputed freshness, `overall` and `top_fixes` but copied the
+  `conformance` and `ntd_readiness` blocks forward from the last full score.
+  SacRT's committed record for 2026-08-07 leads with "Service data runs out in
+  8 day(s)" while both blocks say 21 days. `publish()` already re-derived
+  conformance on write; `ntd_readiness` was never re-derived, and the sweep's
+  own return value carried both stale. Both are now rebuilt in the sweep, and
+  NTD readiness only where the full score attached it (US feeds, ADR 0026).
+
 - **The Daily's slowest score shard no longer runs within two minutes of its
   bound, and the Watchdog now measures it.** The `ovapi-netherlands` runner
   death last occurred on 2026-09-05; every daily run since has finished its
@@ -621,6 +631,19 @@ the declared public surface).
   (the third is `otp-qa.yml`'s feed download) now also pass
   `--retry-all-errors`, and `test_workflow_download_retry.py` holds that for
   every workflow.
+
+### Removed
+
+- **The committed `web/dataset.csv`, a frozen 2026-07-10 copy.** Data commits
+  stopped at the S3 cutover (ADR 0002, ADR 0030); since then `render-site`
+  writes `dataset.csv` in the Pages, a11y and e2e jobs from the S3 artifacts,
+  and the deployed file is current (2,477 rows dated 2026-10-02 on
+  2026-10-01). The repository copy still listed 1,128 rows, the retired `mta`
+  Metro-North record, and NJ Transit's bare "Bus" and "Rail" names, so it
+  misled anyone who read the checkout as the dataset. Nothing reads it from a
+  checkout: the dataset release reads the Pages artifact or the deployed
+  site, and the tests render into a temporary root. It is now ignored so a
+  local render does not add it back.
 
 ### Added
 
