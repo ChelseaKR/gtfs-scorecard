@@ -276,6 +276,22 @@ the declared public surface).
 
 ### Fixed
 
+- **A deprecated catalog record's hosted copy is no longer scored in place of
+  an unreachable feed.** When iportal.sacrt.com's certificate expired on
+  2026-09-20, the fallback scored Mobility Database mdb-1296's hosted copy and
+  published it as SacRT's feed on 2026-10-02: F 51.1, "service data ended 636
+  days ago". That copy is SacRT's September 2024 export, last refreshed on
+  2024-10-17, because the catalog deprecated mdb-1296 in favor of mdb-2137.
+  SacRT's own feed runs to 2027-01-02. A row the catalog marks `deprecated` now
+  never supplies a mirror, so the run records the origin as unreachable and
+  publishes no new grade. Mirrors of active and inactive rows are unchanged.
+
+- **A feed check that failed without an HTTP status now says so on the agency
+  page.** An expired certificate, a refused connection, or a timeout left the
+  monitoring line reading "Checked for changes 35 minutes ago; last changed 103
+  days ago", which looks like a clean check. It now adds "the last N checks
+  could not download the feed".
+
 - **A `feed_end_date` earlier than the service calendar is named as its own
   fix (ADR 0061).** Freshness takes the earlier of `feed_info.feed_end_date`
   and the last calendar date, and said nothing about which one it used. BART's
