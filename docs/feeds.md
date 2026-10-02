@@ -2497,6 +2497,11 @@ transit.land still point at it, and the MDB "latest" mirror is frozen at
 monthly reports use. Reporting the correction to both registries is on the
 backlog and would be a small useful contribution.
 
+The registry record that still pointed at the dead URL,
+`yolo-county-transportation-district-yolobus` (mdb-1295), was retired into
+`yolobus` on 2026-10-01, after the URL again returned 404. Its dated artifacts
+stay available, and its page now redirects to the live record.
+
 Feed quirks the pipeline must tolerate:
 - No `feed_info.txt` (freshness falls back to the calendars).
 - No `calendar.txt`; service is expressed entirely through
