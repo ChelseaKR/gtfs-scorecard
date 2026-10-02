@@ -89,6 +89,7 @@ from .pages_tools import (
     _render_query_page,
     _render_tools_page,
 )
+from .removed_twins import RemovedTwin, load_removed_twins
 from .rollups import csv_column_headers
 from .rule_links import (
     BEST_PRACTICE,
@@ -11237,6 +11238,63 @@ def _published_alias_target(
     return ""
 
 
+def _removed_twin_redirects(
+    registry_by_id: dict[str, Agency],
+    published_ids: set[str],
+    twins: list[RemovedTwin] | None = None,
+) -> dict[str, str]:
+    """Map each removed duplicate id to the live scorecard that replaced it.
+
+    The kept record is followed through any later retained alias, the same
+    way an alias redirect resolves. Nothing is written for an id that is a
+    registry record or a published scorecard again (it owns its URL), or
+    whose successor no longer publishes a scorecard: a redirect to a page
+    that is gone would only move the 404.
+    """
+    if twins is None:
+        twins = load_removed_twins()
+    redirects: dict[str, str] = {}
+    for twin in twins:
+        if twin.id in registry_by_id or twin.id in published_ids:
+            continue
+        if twin.kept in published_ids:
+            redirects[twin.id] = twin.kept
+            continue
+        kept = registry_by_id.get(twin.kept)
+        target = _published_alias_target(kept, registry_by_id, published_ids) if kept else ""
+        if target:
+            redirects[twin.id] = target
+    return redirects
+
+
+def _write_removed_twin_redirects(
+    write: Callable[[str, str], None],
+    registry_by_id: dict[str, Agency],
+    published_ids: set[str],
+    retained_agency_redirects: dict[str, str],
+) -> None:
+    """Write a redirect page for each resolvable removed twin, and record it.
+
+    A path an alias already redirects keeps that redirect. Kept out of
+    ``render_site`` so the orchestrator's complexity does not grow
+    (docs/lint-complexity-ratchet.md).
+    """
+    for source_id, target in _removed_twin_redirects(registry_by_id, published_ids).items():
+        source_path = f"/agency/{source_id}/"
+        if source_path in retained_agency_redirects:
+            continue
+        retained_agency_redirects[source_path] = f"/agency/{target}/"
+        successor = registry_by_id.get(target)
+        write(
+            f"agency/{source_id}/index.html",
+            _redirect_page(
+                f"/agency/{target}/",
+                successor.name if successor else target,
+                link_label=successor.name if successor else None,
+            ),
+        )
+
+
 def _remove_stale_agency_index_pages(page_root: Path) -> None:
     """Remove only generated numeric directory pages before rebuilding them."""
     if not page_root.exists():
@@ -11558,6 +11616,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                     link_label=successor.name if successor else None,
                 ),
             )
+    # Records the 2026-07-11 dedupe removed as http/https twins of a kept
+    # record. Their pages were indexed and still draw search traffic, so the
+    # old URL points at the kept record's current scorecard instead of a 404.
+    _write_removed_twin_redirects(write, registry_by_id, published_ids, retained_agency_redirects)
     write(
         "_meta/retained-agency-redirects.json",
         json.dumps(
