@@ -2238,7 +2238,7 @@ main:focus { outline: none; }
 .delta-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; max-width: 26rem; }
 /* Findings absent from a later compatible check; no causal attribution. */
 .cleared-list { list-style: none; margin: 0.3rem 0 0; padding: 0; display: grid; gap: 0.45rem; max-width: 40rem; }
-.cleared-row { font-size: 0.9rem; line-height: 1.45; }
+.cleared-row { font-size: 0.9rem; line-height: 1.45; overflow-wrap: anywhere; }
 .cleared-mark { color: var(--success-text); font-weight: 700; }
 .delta-row {
   display: flex;
