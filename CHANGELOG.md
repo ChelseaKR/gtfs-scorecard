@@ -285,6 +285,13 @@ the declared public surface).
   "SEP26 GTFS" as of 2026-10-02). The index-parity test now asks
   `withdrawn_now`, as `rebuild_index` does, because the committed snapshot ends
   2026-08-07 and does not hold the withdrawn record.
+- **Rīgas satiksme pins the catalog record that replaced its old one.** The
+  registry pinned Mobility Database mdb-884, which the catalog deprecated in
+  favor of mdb-3502. Since a deprecated row no longer supplies a mirror, the
+  old pin left Rīga with no fallback when saraksti.rigassatiksme.lv times out,
+  as it did on 2026-10-02. Two more records whose catalog successor downloads
+  their own registry URL are repointed the same way: Pasažieru vilciens (Vivi),
+  mdb-2015 to mdb-3385, and Zoom (Le Grand Chalon), mdb-658 to tdg-82664.
 
 - **A deprecated catalog record's hosted copy is no longer scored in place of
   an unreachable feed.** When iportal.sacrt.com's certificate expired on

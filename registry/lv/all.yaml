@@ -28,10 +28,14 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  # Mobility Database mdb-2015 is deprecated and redirects to mdb-3385.
+  # Checked 2026-10-02 in the catalog CSV: both rows name provider Pasažieru
+  # Vilciens, and mdb-3385 is active and downloads this record's own URL,
+  # vivi.lv/uploads/GTFS.zip.
   - id: pasazieru-vilciens-vivi
     name: Pasažieru vilciens (Vivi)
     country: LV
-    mdb_id: "2015"
+    mdb_id: "3385"
     is_official: true
     static_gtfs_url: https://vivi.lv/uploads/GTFS.zip
     license_note: >-

@@ -1191,6 +1191,45 @@ def test_hosted_mirror_url_still_uses_a_row_that_is_not_deprecated(
     )
 
 
+#: The two Rīgas Satiksme rows as the catalog CSV carried them on 2026-10-02,
+#: trimmed to the columns the mirror lookup reads.
+RIGA_CATALOG = (
+    "id,data_type,location.country_code,location.subdivision_name,provider,"
+    "urls.direct_download,urls.latest,status,redirect.id\n"
+    "mdb-884,gtfs,LV,Rīga,Rīgas Satiksme,http://saraksti.rigassatiksme.lv/riga/gtfs.zip,"
+    "https://files.mobilitydatabase.org/mdb-884/latest.zip,deprecated,mdb-3502\n"
+    "mdb-3502,gtfs,LV,Rīga,Rīgas Satiksme,"
+    "https://data.gov.lv/dati/dataset/6d78358a-0095-4ce3-b119-6cde5d0ac54f/resource/"
+    "3f7719a3-cc74-416a-b3a6-d7933b0d655e/download/marsrutusaraksti06_2026.zip,"
+    "https://files.mobilitydatabase.org/mdb-3502/latest.zip,active,\n"
+)
+
+
+def test_rigas_satiksme_pins_the_catalog_successor_so_it_keeps_a_mirror(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The registry record pins the row the catalog redirects to, not the retired one.
+
+    mdb-884 is deprecated in favor of mdb-3502, and a deprecated row supplies no
+    mirror. The registry URL matches neither row's download, so the pinned id is
+    the only way to a mirror. On 2026-10-02 saraksti.rigassatiksme.lv timed out
+    and the run scored mdb-884's copy; with mdb-884 skipped, the old pin would
+    have left Rīga with no fallback at all.
+    """
+    from scorecard_pipeline import mobilitydb as m
+    from scorecard_pipeline.agencies import read_agencies
+
+    shard = Path(__file__).resolve().parents[2] / "registry" / "lv" / "rix.yaml"
+    (riga,) = [agency for agency in read_agencies(shard) if agency.id == "rigas-satiksme"]
+    monkeypatch.setattr(m, "load_catalog", lambda **_: parse_catalog(RIGA_CATALOG))
+
+    assert (
+        m.hosted_mirror_url(riga.id, riga.name, riga.static_gtfs_url, riga.mdb_id)
+        == "https://files.mobilitydatabase.org/mdb-3502/latest.zip"
+    )
+    assert m.hosted_mirror_url(riga.id, riga.name, riga.static_gtfs_url, "884") is None
+
+
 @pytest.mark.parametrize(
     "current_url",
     [
