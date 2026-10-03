@@ -5476,7 +5476,7 @@ def test_agency_page_carries_the_confidence_line() -> None:
     assert "How we measured this" in html
     title = html.split("<title>", 1)[1].split("</title>", 1)[0]
     description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
-    assert title == "Demo Transit GTFS quality report"
+    assert title == "Demo Transit GTFS feed: quality report and fixes"
     assert "grade" not in title.lower()
     assert len(title) <= 60
     assert len(description) <= 155
@@ -5487,7 +5487,7 @@ def test_agency_page_carries_the_confidence_line() -> None:
     assert html.index('id="fixes-h"') < html.index('id="rider-impact"') < html.index('id="cats-h"')
 
 
-def test_agency_page_title_truncates_long_names_and_uses_state() -> None:
+def test_agency_page_title_keeps_a_long_name_ahead_of_its_state() -> None:
     import datetime as dt
     from pathlib import Path
 
@@ -5519,8 +5519,9 @@ def test_agency_page_title_truncates_long_names_and_uses_state() -> None:
     title = html.split("<title>", 1)[1].split("</title>", 1)[0]
 
     assert len(title) <= 60
-    assert "(California) GTFS quality report" in title
-    assert "…" in title
+    # The name matters more to a searcher than the state, so the state goes
+    # first and the name is cut only after that, on a word boundary.
+    assert title == "A Very Long Regional Transportation… GTFS feed quality"
 
 
 def test_agency_metadata_planner_disambiguates_truncated_feed_variants() -> None:
@@ -5582,7 +5583,8 @@ def test_agency_metadata_bounds_long_subdivision_labels() -> None:
     )
 
     assert len(metadata.title) <= 60
-    assert "(United Kingdom) GTFS quality report" in metadata.title
+    # The whole name fits only without the location, and the name wins.
+    assert metadata.title == "Cardiff Bus (Bws Caerdydd) GTFS feed quality report"
     assert len(metadata.description) <= 155
     assert "United Kingdom" in metadata.description
 
@@ -5629,7 +5631,7 @@ def test_non_us_agency_title_and_peer_context_include_country() -> None:
     html = _render_agency(artifact, dir_record=record)
     title = html.split("<title>", 1)[1].split("</title>", 1)[0]
 
-    assert "(England, United Kingdom) GTFS quality report" in title
+    assert title == "Demo Transit (England, United Kingdom) GTFS feed quality"
     assert "Cataloged in <bdi>England, United Kingdom</bdi>." in _peer_context(record)
     assert "60%" not in _peer_context(record) and "55%" not in _peer_context(record)
     assert "Comparisons use agencies currently tracked worldwide." not in html

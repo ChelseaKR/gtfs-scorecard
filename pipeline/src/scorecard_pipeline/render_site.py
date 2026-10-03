@@ -89,6 +89,7 @@ from .pages_tools import (
     _render_query_page,
     _render_tools_page,
 )
+from .removed_twins import RemovedTwin, load_removed_twins
 from .rollups import csv_column_headers
 from .rule_links import (
     BEST_PRACTICE,
@@ -2523,11 +2524,17 @@ def _location_label(record: dict[str, Any] | None) -> str:
 
 @dataclass(frozen=True)
 class AgencySeoMetadata:
-    """Unique search metadata planned for one published feed record."""
+    """Unique search metadata planned for one published feed record.
+
+    ``identity`` is the title's agency stem (name plus its location or feed
+    qualifier), kept so derived pages such as the clearance log can reuse the
+    corpus-unique identity without parsing the title back apart.
+    """
 
     title: str
     description: str
     dataset_name: str
+    identity: str = ""
 
 
 def _ellipsize(value: str, limit: int) -> str:
@@ -2537,6 +2544,21 @@ def _ellipsize(value: str, limit: int) -> str:
     if limit <= 1:
         return "…"[:limit]
     return value[: limit - 1].rstrip(" ,-/;:") + "…"
+
+
+def _ellipsize_words(value: str, limit: int) -> str:
+    """Like ``_ellipsize``, but end on a whole word when that keeps most of it.
+
+    A search result that reads "San Francisco Municipal Tr…" spends its last
+    characters on a fragment nobody searched for.
+    """
+    if len(value) <= limit:
+        return value
+    cut = value[: max(0, limit - 1)]
+    space = cut.rfind(" ")
+    if space >= limit // 2:
+        cut = cut[:space]
+    return cut.rstrip(" ,-/;:(") + "…"
 
 
 def _seo_location_label(location_label: str, limit: int) -> str:
@@ -2549,40 +2571,151 @@ def _seo_location_label(location_label: str, limit: int) -> str:
     return _ellipsize(location_label, limit)
 
 
+_TRAILING_PARENTHETICAL = re.compile(r"^(?P<outer>.*\S)\s*\((?P<inner>[^()]+)\)$")
+
+
+def _agency_name_forms(agency_name: str) -> list[str]:
+    """Shorter forms an agency name already carries, best first, or [].
+
+    Registry names often end in a parenthetical: the form riders search
+    ("San Francisco Municipal Transportation Agency (SFMTA - Muni)"), a parent
+    body ("Orbus (Otago Regional Council)"), or a native-script name
+    ("Nagi Town Bus (なぎバス)"). When the full name cannot fit a title, one of
+    its own parts is a truer fit than a name cut partway through a word.
+    Nothing is invented: a name without a trailing parenthetical has no
+    shorter form. The parenthetical comes first only when it is the shorter
+    part and is written in Latin letters, as an acronym or nickname is.
+    """
+    match = _TRAILING_PARENTHETICAL.match(agency_name.strip())
+    if not match:
+        return []
+    outer = match.group("outer").strip()
+    inner = match.group("inner").strip()
+    forms = [outer] if len(outer) >= 2 else []
+    if len(inner) >= 2 and any("a" <= ch.lower() <= "z" for ch in inner):
+        if len(inner) < len(outer):
+            forms.insert(0, inner)
+        else:
+            forms.append(inner)
+    return forms
+
+
+def _agency_short_name(agency_name: str) -> str:
+    """The best shorter form of an agency name, or '' when it has none."""
+    forms = _agency_name_forms(agency_name)
+    return forms[0] if forms else ""
+
+
+#: The title says what the searcher's query names (the agency's GTFS feed) and
+#: what the page holds about it. It never carries the grade: a title is the
+#: page's stable identity, and a grade in it would go stale between crawls.
+_TITLE_SUFFIXES = (
+    " GTFS feed: quality report and fixes",
+    " GTFS feed quality report",
+    " GTFS feed quality",
+)
+_TITLE_MAX = 60
+_DESC_MAX = 155
+
+
+def _seo_grade_facts(artifact: dict[str, Any] | None) -> tuple[str, str, str] | None:
+    """(grade, score, checked date) exactly as the agency page shows them, or None.
+
+    The description repeats the page's own headline numbers, dated, so a result
+    never states a grade the page does not. Anything missing or malformed
+    yields None and the description simply carries no grade; it never falls
+    back to a zero or a placeholder.
+    """
+    if not isinstance(artifact, dict):
+        return None
+    overall = artifact.get("overall")
+    if not isinstance(overall, dict):
+        return None
+    grade = overall.get("grade")
+    score = overall.get("score")
+    checked = artifact.get("snapshot_date")
+    if not (isinstance(grade, str) and grade in {"A", "B", "C", "D", "F"}):
+        return None
+    if isinstance(score, bool) or not isinstance(score, (int, float)):
+        return None
+    if not (0 <= float(score) <= 100):
+        return None
+    if not (isinstance(checked, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", checked)):
+        return None
+    return grade, str(score), checked
+
+
+def _agency_title(agency_name: str, location_label: str, disambiguator: str) -> tuple[str, str]:
+    """Return (title, identity) for an agency page within the title budget.
+
+    First fit wins, in this order of what matters most to a searcher: the
+    whole agency name, then its location, then the descriptive suffix. So a
+    long name drops its location and shortens the suffix before it is ever
+    cut; next it tries the shorter forms the name itself carries; only then
+    is it cut, on a word boundary. A feed disambiguator, when the planner
+    needed one, is identity and is never dropped.
+    """
+    if disambiguator:
+        qualifiers = [f" [{_ellipsize(disambiguator, 20)}]"]
+    else:
+        location = _seo_location_label(location_label, 25)
+        qualifiers = [f" ({location})", ""] if location else [""]
+    names = [agency_name]
+    for form in _agency_name_forms(agency_name):
+        if form.casefold() not in {name.casefold() for name in names}:
+            names.append(form)
+    for name in names:
+        for qualifier in qualifiers:
+            for suffix in _TITLE_SUFFIXES:
+                identity = f"{name}{qualifier}"
+                if len(identity) + len(suffix) <= _TITLE_MAX:
+                    return f"{identity}{suffix}", identity
+    qualifier = qualifiers[-1]
+    suffix = _TITLE_SUFFIXES[-1]
+    budget = max(1, _TITLE_MAX - len(qualifier) - len(suffix))
+    identity = f"{_ellipsize_words(agency_name, budget)}{qualifier}"
+    return f"{identity}{suffix}", identity
+
+
 def _agency_seo_metadata(
     agency_name: str,
     *,
     location_label: str = "",
     rt_measured: bool = False,
     disambiguator: str = "",
+    grade_facts: tuple[str, str, str] | None = None,
 ) -> AgencySeoMetadata:
-    """Build bounded metadata while keeping any disambiguator visible."""
-    if disambiguator:
-        title_disambiguator = _ellipsize(disambiguator, 20)
-        title_suffix = f" [{title_disambiguator}] GTFS quality report"
-    else:
-        title_location = _seo_location_label(location_label, 25)
-        title_qualifier = f" ({title_location})" if title_location else ""
-        title_suffix = f"{title_qualifier} GTFS quality report"
-    title_name = _ellipsize(agency_name, max(1, 60 - len(title_suffix)))
-    title = f"{title_name}{title_suffix}"
+    """Build bounded metadata while keeping any disambiguator visible.
 
-    desc_tail = (
-        ": service dates, validator findings, rider information, realtime, and fixes."
+    ``grade_facts`` comes from ``_seo_grade_facts``; when it is None the
+    description describes the report without stating any grade.
+    """
+    title, identity = _agency_title(agency_name, location_label, disambiguator)
+
+    contents = (
+        "validator findings, service dates, rider information, realtime, and fixes."
         if rt_measured
-        else ": service dates, validator findings, rider information, and fixes."
+        else "validator findings, service dates, rider information, and fixes."
     )
-    desc_prefix = "GTFS quality report for "
     desc_disambiguator = _ellipsize(disambiguator, 24)
-    identity_prefix = f"[{desc_disambiguator}] " if desc_disambiguator else ""
+    identity_suffix = f" [{desc_disambiguator}]" if desc_disambiguator else ""
     desc_location = _seo_location_label(location_label, 35)
-    location_suffix = f" in {desc_location}" if desc_location else ""
-    max_desc_name = max(
-        1,
-        155 - len(desc_prefix) - len(identity_prefix) - len(location_suffix) - len(desc_tail),
-    )
-    desc_name = _ellipsize(agency_name, max_desc_name)
-    description = f"{desc_prefix}{identity_prefix}{desc_name}{location_suffix}{desc_tail}"
+    location_suffix = f" ({desc_location})" if desc_location else ""
+    if grade_facts is not None:
+        grade, score, checked = grade_facts
+        lead = f" GTFS feed: grade {grade}, {score} of 100, checked {checked}. "
+        tails = [f"See {contents}", "See the findings and fixes."]
+    else:
+        lead = " GTFS feed quality report: "
+        tails = [contents, "findings and fixes."]
+    description = ""
+    for tail in tails:
+        fixed = len(identity_suffix) + len(location_suffix) + len(lead) + len(tail)
+        max_desc_name = _DESC_MAX - fixed
+        if max_desc_name >= min(len(agency_name), 24) or tail is tails[-1]:
+            desc_name = _ellipsize_words(agency_name, max(1, max_desc_name))
+            description = f"{desc_name}{identity_suffix}{location_suffix}{lead}{tail}"
+            break
 
     dataset_context = ", ".join(value for value in (location_label, disambiguator) if value)
     dataset_name = (
@@ -2590,9 +2723,9 @@ def _agency_seo_metadata(
         if dataset_context
         else f"{agency_name} GTFS data quality report"
     )
-    if len(title) > 60 or len(description) > 155:
+    if len(title) > _TITLE_MAX or len(description) > _DESC_MAX:
         raise ValueError(f"agency SEO metadata exceeds its length budget for {agency_name!r}")
-    return AgencySeoMetadata(title, description, dataset_name)
+    return AgencySeoMetadata(title, description, dataset_name, identity)
 
 
 def _metadata_collision_components(
@@ -2643,6 +2776,7 @@ def _plan_agency_seo_metadata(
             rt_measured=(
                 artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
             ),
+            grade_facts=_seo_grade_facts(artifact),
         )
 
     for group in _metadata_collision_components(planned):
@@ -2673,6 +2807,7 @@ def _plan_agency_seo_metadata(
                 rt_measured=(
                     artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
                 ),
+                grade_facts=_seo_grade_facts(artifact),
                 disambiguator=qualifiers[agency_id],
             )
 
@@ -2687,6 +2822,7 @@ def _plan_agency_seo_metadata(
                 rt_measured=(
                     artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
                 ),
+                grade_facts=_seo_grade_facts(artifact),
                 disambiguator=(f"record {hashlib.sha256(agency_id.encode()).hexdigest()[:8]}"),
             )
 
@@ -2741,6 +2877,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         agency_name,
         location_label=location_label,
         rt_measured=rt_measured,
+        grade_facts=_seo_grade_facts(artifact),
     )
     title = metadata.title
     desc = metadata.description
@@ -3054,6 +3191,15 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             ),
         ],
         "license": "https://creativecommons.org/licenses/by/4.0/",
+        # Every scorecard is free to read and download, with no account.
+        "isAccessibleForFree": True,
+        # The place the directory catalogs this feed under, as the page shows
+        # it. Omitted rather than guessed when the directory has no location.
+        **(
+            {"spatialCoverage": {"@type": "Place", "name": location_label}}
+            if location_label
+            else {}
+        ),
         # Only a fetchable link belongs in a schema.org URL slot. An ad-hoc
         # score of a local zip records the feed by file name (#398), which
         # is honest as prose and wrong as a URL, so the key is omitted
@@ -3644,13 +3790,12 @@ def _render_fixlog_page(
         agency_name,
         location_label=_location_label(dir_record),
     )
-    report_suffix = " GTFS quality report"
-    if not metadata.title.endswith(report_suffix):
+    identity = metadata.identity
+    if not identity or not metadata.title.startswith(identity):
         raise ValueError(f"agency SEO title has an unexpected shape for {agency_name!r}")
-    # The planned title is corpus-unique and reserves 20 characters for the
-    # report suffix. Reusing its complete identity stem preserves location or
-    # feed disambiguation, while the shorter clearance suffix remains bounded.
-    identity = metadata.title.removesuffix(report_suffix)
+    # The planned title is corpus-unique and its identity stem leaves at least
+    # the short report suffix's 25 characters. Reusing that stem preserves
+    # location or feed disambiguation, while the clearance suffix stays bounded.
     title = f"{identity} GTFS clearance log"
     clearance_label = "clearance" if len(receipts) == 1 else "clearances"
     desc = (
@@ -11093,6 +11238,63 @@ def _published_alias_target(
     return ""
 
 
+def _removed_twin_redirects(
+    registry_by_id: dict[str, Agency],
+    published_ids: set[str],
+    twins: list[RemovedTwin] | None = None,
+) -> dict[str, str]:
+    """Map each removed duplicate id to the live scorecard that replaced it.
+
+    The kept record is followed through any later retained alias, the same
+    way an alias redirect resolves. Nothing is written for an id that is a
+    registry record or a published scorecard again (it owns its URL), or
+    whose successor no longer publishes a scorecard: a redirect to a page
+    that is gone would only move the 404.
+    """
+    if twins is None:
+        twins = load_removed_twins()
+    redirects: dict[str, str] = {}
+    for twin in twins:
+        if twin.id in registry_by_id or twin.id in published_ids:
+            continue
+        if twin.kept in published_ids:
+            redirects[twin.id] = twin.kept
+            continue
+        kept = registry_by_id.get(twin.kept)
+        target = _published_alias_target(kept, registry_by_id, published_ids) if kept else ""
+        if target:
+            redirects[twin.id] = target
+    return redirects
+
+
+def _write_removed_twin_redirects(
+    write: Callable[[str, str], None],
+    registry_by_id: dict[str, Agency],
+    published_ids: set[str],
+    retained_agency_redirects: dict[str, str],
+) -> None:
+    """Write a redirect page for each resolvable removed twin, and record it.
+
+    A path an alias already redirects keeps that redirect. Kept out of
+    ``render_site`` so the orchestrator's complexity does not grow
+    (docs/lint-complexity-ratchet.md).
+    """
+    for source_id, target in _removed_twin_redirects(registry_by_id, published_ids).items():
+        source_path = f"/agency/{source_id}/"
+        if source_path in retained_agency_redirects:
+            continue
+        retained_agency_redirects[source_path] = f"/agency/{target}/"
+        successor = registry_by_id.get(target)
+        write(
+            f"agency/{source_id}/index.html",
+            _redirect_page(
+                f"/agency/{target}/",
+                successor.name if successor else target,
+                link_label=successor.name if successor else None,
+            ),
+        )
+
+
 def _remove_stale_agency_index_pages(page_root: Path) -> None:
     """Remove only generated numeric directory pages before rebuilding them."""
     if not page_root.exists():
@@ -11414,6 +11616,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                     link_label=successor.name if successor else None,
                 ),
             )
+    # Records the 2026-07-11 dedupe removed as http/https twins of a kept
+    # record. Their pages were indexed and still draw search traffic, so the
+    # old URL points at the kept record's current scorecard instead of a 404.
+    _write_removed_twin_redirects(write, registry_by_id, published_ids, retained_agency_redirects)
     write(
         "_meta/retained-agency-redirects.json",
         json.dumps(
