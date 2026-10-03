@@ -3,12 +3,19 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-884 is deprecated and redirects to mdb-3502. Checked
+  # 2026-10-02 in the catalog CSV: both rows name provider Rīgas Satiksme with
+  # the same Rīga bounding box, and mdb-3502 is active, marked official, and
+  # sources the data.gov.lv dataset this record's reuse_evidence already cites.
+  # A deprecated row no longer supplies a mirror (#492), so the old pin left
+  # this record with no fallback; the 2026-10-02 run timed out connecting to
+  # saraksti.rigassatiksme.lv and was scored from mdb-884's copy.
   - id: rigas-satiksme
     name: Rīgas satiksme
     country: LV
     subdivision_code: LV-RIX
     subdivision_name: Rīga
-    mdb_id: "884"
+    mdb_id: "3502"
     is_official: true
     static_gtfs_url: https://saraksti.rigassatiksme.lv/gtfs.zip
     license_note: >-
