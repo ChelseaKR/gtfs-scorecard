@@ -99,8 +99,8 @@ record shows what changed and why.
 ## Grades we have taken back
 
 A grade is only as good as the data behind it. When we find that a published
-grade was computed from an archive we never actually read, we withdraw it and
-say so, rather than replacing the number quietly or leaving the page to
+grade was computed from an archive we never actually read, or from a catalog
+copy that was not the agency's current feed, we withdraw it and say so, rather than replacing the number quietly or leaving the page to
 disappear. The [corrections page](https://gtfsscorecard.org/corrections/) lists
 every withdrawn grade with what it said, how long it was public, why it was
 wrong, and what stands in its place. The machine-readable record is

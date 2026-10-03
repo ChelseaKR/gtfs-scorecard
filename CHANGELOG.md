@@ -276,6 +276,16 @@ the declared public surface).
 
 ### Fixed
 
+- **SacRT's F 51.1 from 2026-10-02 is withdrawn.** It was graded from
+  Mobility Database mdb-1296's hosted copy, SacRT's September 2024 export,
+  after the download from iportal.sacrt.com failed on its expired certificate.
+  The fix above stops the next one; `corrections.yaml` now takes back the one
+  already published, under a new cause, `deprecated_catalog_mirror`, with
+  outcome `not_measured` until a run downloads SacRT's own feed (feed_version
+  "SEP26 GTFS" as of 2026-10-02). The index-parity test now asks
+  `withdrawn_now`, as `rebuild_index` does, because the committed snapshot ends
+  2026-08-07 and does not hold the withdrawn record.
+
 - **A deprecated catalog record's hosted copy is no longer scored in place of
   an unreachable feed.** When iportal.sacrt.com's certificate expired on
   2026-09-20, the fallback scored Mobility Database mdb-1296's hosted copy and

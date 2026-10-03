@@ -374,10 +374,20 @@ def test_the_index_does_not_still_list_a_withdrawn_grade() -> None:
     each id's ``latest.json``, so a stale entry aborts the site build with
     "authoritative current artifact is malformed" -- the deploy and
     accessibility workflows both run that materializer before rendering.
+
+    The question is asked the way ``rebuild_index`` asks it, through
+    ``withdrawn_now``: an id is held out while its newest artifact on file is
+    the withdrawn record. A withdrawal newer than this committed snapshot
+    names a record the snapshot does not hold (SacRT's 2026-10-02 grade,
+    against a snapshot that ends 2026-08-07), so in the snapshot the agency's
+    current scorecard is an earlier reading, and reindex correctly keeps it
+    indexed. Testing every withdrawn id instead would demand the snapshot drop
+    a scorecard the pipeline itself would publish.
     """
     artifacts = REPO_ROOT / "data" / "artifacts"
     indexed = set(json.loads((artifacts / "index.json").read_text())["agencies"])
-    still_listed = sorted(indexed & set(read_corrections(REPO_ROOT).withdrawn))
+    in_effect = withdrawn_now(read_corrections(REPO_ROOT).withdrawn, artifacts)
+    still_listed = sorted(indexed & set(in_effect))
     assert not still_listed, (
         f"{len(still_listed)} withdrawn grade(s) are still in index.json: "
         + ", ".join(still_listed)
@@ -449,8 +459,77 @@ def test_every_cause_and_outcome_has_reader_facing_wording() -> None:
     for entry in read_corrections(REPO_ROOT).withdrawn.values():
         assert entry.cause_text and entry.cause_text[0].islower()
         assert entry.outcome_text
-    assert set(CAUSES) == {corrections.TABLES_IN_A_SUBFOLDER, corrections.NO_SCHEDULE_TABLES}
+    assert set(CAUSES) == {
+        corrections.TABLES_IN_A_SUBFOLDER,
+        corrections.NO_SCHEDULE_TABLES,
+        corrections.DEPRECATED_CATALOG_MIRROR,
+    }
     assert set(OUTCOMES) == {corrections.NOT_MEASURED, corrections.DELISTED}
+
+
+# --- a withdrawal newer than the committed snapshot ---------------------------
+
+#: The identifying fields of SacRT's published 2026-10-02 artifact, as served
+#: at data/artifacts/sacramento-regional-transit-sacrt/2026-10-02.json. The
+#: committed snapshot ends 2026-08-07 and does not hold it, so the corpus
+#: ratchets above cannot see this record; these fields are what the entry has
+#: to match on the published store.
+SACRT_PUBLISHED_2026_10_02: dict[str, Any] = {
+    "agency": {"id": "sacramento-regional-transit-sacrt"},
+    "snapshot_date": "2026-10-02",
+    "feed": {"sha256": "14b96b9834dfa8912e029fa8bbc500ff6b525859d9f852e590dee4ac2cdb2632"},
+    "fetch": {
+        "source": "mirror",
+        "origin_error": "SSLError",
+        "final_url": "https://files.mobilitydatabase.org/mdb-1296/latest.zip",
+    },
+    "overall": {"grade": "F", "score": 51.1},
+}
+
+
+def test_the_sacrt_entry_names_the_published_mirror_record(tmp_path: Path) -> None:
+    """The entry reaches the record that was published, and only that record.
+
+    Matched on date and hash, so it withdraws the 2026-10-02 mirror grade and
+    reindex holds back SacRT's current pointers while that record is the newest
+    on file. The earlier reading in the committed snapshot is a different
+    record and is untouched, and the first artifact scored from SacRT's own
+    feed supersedes the withdrawal.
+    """
+    record = read_corrections(REPO_ROOT)
+    entry = record.withdrawn["sacramento-regional-transit-sacrt"]
+    assert entry.cause == corrections.DEPRECATED_CATALOG_MIRROR
+    assert entry.outcome == corrections.NOT_MEASURED
+    assert (entry.grade, entry.score) == ("F", 51.1)
+    assert entry.withdraws(SACRT_PUBLISHED_2026_10_02)
+
+    agency_dir = tmp_path / "sacramento-regional-transit-sacrt"
+    agency_dir.mkdir()
+    (agency_dir / "2026-10-02.json").write_text(json.dumps(SACRT_PUBLISHED_2026_10_02))
+    (agency_dir / "latest.json").write_text(json.dumps(SACRT_PUBLISHED_2026_10_02))
+    assert withdrawn_now(record.withdrawn, tmp_path) == ("sacramento-regional-transit-sacrt",)
+    assert any("still publishes the grade" in p for p in correction_problems(record, tmp_path))
+
+    own_feed = {
+        **SACRT_PUBLISHED_2026_10_02,
+        "snapshot_date": "2026-10-09",
+        "feed": {"sha256": "b" * 64},
+        "fetch": {"source": "origin"},
+    }
+    (agency_dir / "2026-10-09.json").write_text(json.dumps(own_feed))
+    (agency_dir / "latest.json").write_text(json.dumps(own_feed))
+    assert withdrawn_now(record.withdrawn, tmp_path) == ()
+
+
+def test_the_snapshot_reading_of_sacrt_is_not_the_withdrawn_record() -> None:
+    """The committed snapshot predates the withdrawal, and the entry leaves it alone."""
+    entry = read_corrections(REPO_ROOT).withdrawn["sacramento-regional-transit-sacrt"]
+    current = json.loads(
+        (REPO_ROOT / "data/artifacts/sacramento-regional-transit-sacrt/latest.json").read_text()
+    )
+    assert current["snapshot_date"] < entry.snapshot_date
+    assert entry.withdraws(current) is False
+    assert corrections.suppresses_current(entry, current) is False
 
 
 # --- the page a reader who saw the old grade lands on ------------------------
