@@ -53,6 +53,9 @@ from .conformance import assess as conformance_assess
 from .consequence import CONTEXT_HEADING, NOT_A_RANKING, FeedContext
 from .constants_export import GRADE_RANK
 from .directory import build_directory
+from .embed_badge import HEIGHT as BADGE_HEIGHT
+from .embed_badge import WIDTH as BADGE_WIDTH
+from .embed_badge import BadgeState, badge_sentence, badge_state, render_named_badge
 from .feed_provenance import feed_source_lede
 from .feeddiff import FeedDiff, diff_artifacts
 from .findings_national import agency_findings, plain_language_coverage
@@ -1474,29 +1477,41 @@ _COPY_SCRIPT = (
 )
 
 
-def _embed_section(agency_id: str, agency_name: str, grade: str) -> str:
-    """A copy-paste embed so an agency can show its live grade on its own site or
-    feed README. The badge image regenerates after a completed scoring check, so
-    the embed stays in step with the scorecard and links back to it. The copied
-    Markdown's alt text names the agency and its current grade, not a generic
-    "GTFS data quality", so a reader who can't see the image (a screen reader,
-    a client that strips images) still gets the badge's actual content, and an
-    agency pasting it into a README gets human-readable anchor text instead of
-    an opaque image link with none."""
-    badge_svg = f"{BASE_URL}/data/artifacts/{agency_id}/badge.svg"
-    badge_json = f"{BASE_URL}/data/artifacts/{agency_id}/badge.json"
+def _embed_section(agency_id: str, agency_name: str, state: BadgeState | None = None) -> str:
+    """A copy-paste badge an agency can put on its own site or feed README.
+
+    The badge is a static SVG served next to this page, naming the agency and
+    showing the grade, score, and check date, or "No current score" when there
+    is none to show. Both snippets link back to this scorecard. Their alt text
+    names the agency but no grade: pasted markup is never updated, so a grade
+    in it would be the one stale number left on the agency's site after the
+    image itself has moved on. The image is a plain file request with no
+    script, cookie, or tracking parameter.
+    """
     page = f"{BASE_URL}/agency/{agency_id}/"
-    alt_text = f"{agency_name} GTFS data quality grade: {grade}"
-    markdown = f"[![{alt_text}]({badge_svg})]({page})"
+    badge = f"{page}badge.svg"
+    alt_text = f"{agency_name}: current GTFS data quality score from GTFS Scorecard"
+    html_snippet = (
+        f'<a href="{page}"><img src="{badge}" width="{BADGE_WIDTH}" '
+        f'height="{BADGE_HEIGHT}" alt="{esc(alt_text)}"></a>'
+    )
+    markdown = f"[![{alt_text}]({badge})]({page})"
+    badge_json = f"{BASE_URL}/data/artifacts/{agency_id}/badge.json"
     shields = f"https://img.shields.io/endpoint?url={badge_json}"
+    preview_alt = badge_sentence(state) if state is not None else alt_text
     return (
         '<section class="embed" id="embed" aria-labelledby="embed-h">'
         '<h2 class="section-title" id="embed-h">Show your grade</h2>'
-        '<p class="page-lede">Put a badge on your agency site or feed README. It updates '
-        "after each completed scoring check and links back to this scorecard.</p>"
-        f'<p><img src="/data/artifacts/{esc(agency_id)}/badge.svg" '
-        f'alt="{esc(alt_text)}"></p>'
-        '<label class="visually-hidden" for="embed-md">Badge Markdown</label>'
+        '<p class="page-lede">Put this badge on your agency site or feed README. It '
+        "updates after each completed scoring check, shows the date of that check, "
+        "and links back to this scorecard. When there is no current score it says "
+        "so instead of showing an old one.</p>"
+        f'<p><img src="/agency/{esc(agency_id)}/badge.svg" width="{BADGE_WIDTH}" '
+        f'height="{BADGE_HEIGHT}" alt="{esc(preview_alt)}"></p>'
+        '<label for="embed-html">Badge HTML</label>'
+        f'<textarea id="embed-html" class="outreach-text" rows="3" readonly>{esc(html_snippet)}</textarea>'
+        '<button type="button" class="copy-btn" data-copy="embed-html">Copy HTML</button>'
+        '<label for="embed-md">Badge Markdown</label>'
         f'<textarea id="embed-md" class="outreach-text" rows="2" readonly>{esc(markdown)}</textarea>'
         '<button type="button" class="copy-btn" data-copy="embed-md">Copy Markdown</button>'
         f'<p class="fineprint">Prefer a shields.io style? Point a '
@@ -2852,7 +2867,6 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
-    overall = artifact["overall"]
     canonical = f"{BASE_URL}/agency/{agency_id}/"
     location_record = dict(dir_record or {})
     location_record["country"] = location_record.get("country") or artifact.get("agency", {}).get(
@@ -3026,7 +3040,11 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     ferry_profile_block = f"\n    {ferry_profile}" if ferry_profile else ""
     _outreach_block = _outreach_section(artifact, canonical)
     _vendor_block = _vendor_section(artifact, canonical)
-    _embed_block = _embed_section(agency_id, agency_name, str(overall["grade"]))
+    _embed_block = _embed_section(
+        agency_id,
+        agency_name,
+        badge_state(agency_name, artifact, (now or dt.datetime.now(dt.UTC)).date()),
+    )
     _citation_block = _citation_section(artifact, agency_id, agency_name)
     action_links = []
     if _vendor_block:
@@ -12091,6 +12109,15 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 ),
                 f"{BASE_URL}/agency/{agency_id}/",
                 lastmod=str(artifact.get("snapshot_date") or "") or None,
+            )
+            # The named, dated badge the page's embed snippet points at. Written
+            # beside the page so it lives and dies with it, and kept out of the
+            # sitemap: it is an image, not a page.
+            write(
+                f"agency/{agency_id}/badge.svg",
+                render_named_badge(
+                    badge_state(str(artifact["agency"]["name"]), artifact, now.date())
+                ),
             )
             write(
                 f"agency/{agency_id}/brief/index.html",

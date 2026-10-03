@@ -2029,6 +2029,14 @@ main:focus { outline: none; }
   border: 1.5px solid var(--line);
   border-radius: var(--radius);
   resize: vertical;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+/* The embed badge preview is 320px wide by design; at the WCAG reflow width it
+   shrinks with its column instead of widening the page. */
+.embed img {
+  max-width: 100%;
+  height: auto;
 }
 .copy-btn {
   font: inherit;
@@ -2230,7 +2238,7 @@ main:focus { outline: none; }
 .delta-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; max-width: 26rem; }
 /* Findings absent from a later compatible check; no causal attribution. */
 .cleared-list { list-style: none; margin: 0.3rem 0 0; padding: 0; display: grid; gap: 0.45rem; max-width: 40rem; }
-.cleared-row { font-size: 0.9rem; line-height: 1.45; }
+.cleared-row { font-size: 0.9rem; line-height: 1.45; overflow-wrap: anywhere; }
 .cleared-mark { color: var(--success-text); font-weight: 700; }
 .delta-row {
   display: flex;
