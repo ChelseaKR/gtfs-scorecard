@@ -2029,6 +2029,14 @@ main:focus { outline: none; }
   border: 1.5px solid var(--line);
   border-radius: var(--radius);
   resize: vertical;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+/* The embed badge preview is 320px wide by design; at the WCAG reflow width it
+   shrinks with its column instead of widening the page. */
+.embed img {
+  max-width: 100%;
+  height: auto;
 }
 .copy-btn {
   font: inherit;
