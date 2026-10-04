@@ -641,6 +641,51 @@ def _current_rubric_history(history: list[dict[str, Any]]) -> list[dict[str, Any
     return current_producer_contract_suffix(history)
 
 
+_SHA256_HEX = re.compile(r"[0-9a-f]{64}")
+_ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+def feed_change_date(history: list[dict[str, Any]] | None) -> str | None:
+    """The date the agency's current feed file was first observed, or None.
+
+    Walks the index history (oldest first) back from the newest record while the
+    published zip's sha256 stays the same. The answer is the first date of that
+    run, and only when the record before it carries a *different* known sha256:
+    that is an observed change. After a gap in checks, the publisher may have
+    changed the file earlier; this is the first check that saw it, which is also
+    when this page's content changed. If the run reaches the start of the
+    history, or the record before it has no readable sha256 or date, the change
+    is not observed and the answer is None. It is never simply the run date.
+    """
+    rows = [
+        row
+        for row in (history or [])
+        if isinstance(row, dict)
+        and isinstance(row.get("date"), str)
+        and _ISO_DATE.fullmatch(row["date"])
+    ]
+    rows.sort(key=lambda row: row["date"])
+    if not rows:
+        return None
+
+    def sha(row: dict[str, Any]) -> str | None:
+        value = row.get("feed_sha256")
+        return value if isinstance(value, str) and _SHA256_HEX.fullmatch(value) else None
+
+    current = sha(rows[-1])
+    if current is None:
+        return None
+    index = len(rows) - 1
+    while index > 0 and sha(rows[index - 1]) == current:
+        index -= 1
+    if index == 0:
+        return None
+    previous = sha(rows[index - 1])
+    if previous is None:
+        return None
+    return str(rows[index]["date"])
+
+
 def _agency_feed_events(artifact: dict[str, Any], history: list[dict[str, Any]]) -> list[Any]:
     """Grade/score/expiry events plus, when the latest run's export changed
     structurally (EXP-18), a synthetic ``export_change`` event naming what
@@ -3847,6 +3892,18 @@ def _receipt_anchor(receipt: dict[str, str]) -> str:
     return f"r-{receipt.get('cleared', '')}-{receipt.get('code', '')}"
 
 
+#: A clearance log with fewer entries than this is a few list items under the
+#: agency's name: thin next to the agency page it belongs to, so it stays
+#: reachable (linked from the scorecard, followed) but out of the index and the
+#: sitemap. It becomes indexable on its own once it records enough clearances.
+FIXLOG_INDEX_MIN_RECEIPTS = 3
+
+
+def fixlog_is_indexable(receipts: list[dict[str, str]]) -> bool:
+    """Whether a clearance log is substantial enough to index and list."""
+    return len(receipts) >= FIXLOG_INDEX_MIN_RECEIPTS
+
+
 def _render_fixlog_page(
     artifact: dict[str, Any],
     receipts: list[dict[str, str]],
@@ -3930,6 +3987,7 @@ def _render_fixlog_page(
         canonical=canonical,
         body=body,
         country_code=country,
+        robots=None if fixlog_is_indexable(receipts) else "noindex,follow",
     )
 
 
@@ -5549,7 +5607,64 @@ def _rollup_dataset_jsonld(
     return node
 
 
-def _render_rollup(rollup: dict[str, Any]) -> str:
+def _state_slug(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", name.strip().lower()).strip("-")
+
+
+def state_hub_outside_members(
+    rollup: dict[str, Any], directory_records: list[dict[str, Any]]
+) -> tuple[str, list[dict[str, Any]]] | None:
+    """For a US state rollup, the state's published scorecards outside its members.
+
+    A state rollup's members are a curated list (rollups.yaml), so a state hub
+    can omit scorecards the site publishes for that state. This returns the
+    state name and those directory records, alphabetical, so the hub can link
+    every one of them without counting them in the rollup's figures. A rollup
+    whose id is not a US state's name (``all``, a county, a country) gets None.
+    """
+    rid = str(rollup.get("rollup", {}).get("id") or "")
+    member_ids = {str(m.get("id")) for m in rollup.get("members") or []}
+    state_name = ""
+    outside: list[dict[str, Any]] = []
+    for record in directory_records:
+        if str(record.get("country") or "") != "US":
+            continue
+        name = str(record.get("subdivision_name") or "").strip()
+        if not name or _state_slug(name) != rid:
+            continue
+        state_name = name
+        if str(record.get("id")) not in member_ids:
+            outside.append(record)
+    if not state_name:
+        return None
+    outside.sort(key=lambda r: (str(r.get("name") or "").casefold(), str(r.get("id"))))
+    return state_name, outside
+
+
+def _rollup_outside_section(others: tuple[str, list[dict[str, Any]]] | None) -> str:
+    if not others or not others[1]:
+        return ""
+    state_name, records = others
+    count = len(records)
+    noun = "scorecard" if count == 1 else "scorecards"
+    items = "".join(
+        f'<li><a href="/agency/{esc(str(r["id"]))}/">{esc(str(r.get("name") or r["id"]))}</a></li>'
+        for r in records
+    )
+    return f"""<section aria-labelledby="outside-h">
+      <h2 class="section-title" id="outside-h">Other {esc(state_name)} feed scorecards</h2>
+      <p class="fineprint">{count} more {noun} in {esc(state_name)} that this rollup's
+      member list does not include. They are linked here so every {esc(state_name)}
+      scorecard is reachable from this page, and they are not counted in any figure
+      above.</p>
+      <ul class="program-list">{items}</ul>
+    </section>"""
+
+
+def _render_rollup(
+    rollup: dict[str, Any],
+    others: tuple[str, list[dict[str, Any]]] | None = None,
+) -> str:
     rid = rollup["rollup"]["id"]
     rname = rollup["rollup"]["name"]
     canonical = f"{BASE_URL}/program/{rid}/"
@@ -5634,6 +5749,8 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     # (app.js renderProgram links back to #/programs), and it is how the other 66
     # rollups become reachable from any one of them.
     crumb = _breadcrumb([("Home", "/"), ("Program rollups", "/program/"), (rname, None)])
+    outside_html = _rollup_outside_section(others)
+    outside_section = f"\n    {outside_html}" if outside_html else ""
     body = f"""    {crumb}
     <a class="backlink" href="/program/">&larr; All program rollups</a>
     <div class="score-hero">
@@ -5654,7 +5771,7 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     <section aria-labelledby="members-h">
       <h2 class="section-title" id="members-h">Feed scorecards: attention first, then alphabetical</h2>
       <ul class="program-list">{rows}</ul>
-    </section>
+    </section>{outside_section}
     {_ROLLUP_BUNDLE_SECTION}"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
@@ -11490,7 +11607,11 @@ def _apply_registry_agency_names(
     return changed
 
 
-def _write_program_pages(art: Path, write: Callable[..., None]) -> None:
+def _write_program_pages(
+    art: Path,
+    write: Callable[..., None],
+    directory_records: list[dict[str, Any]] | None = None,
+) -> None:
     """Every ``/program/<id>/`` rollup page, then ``/program/`` listing them.
 
     The index is built from the payloads this run actually rendered, not from
@@ -11513,6 +11634,7 @@ def _write_program_pages(art: Path, write: Callable[..., None]) -> None:
             continue
         payload = json.loads(payload_file.read_text())
         rendered.append(payload)
+        others = state_hub_outside_members(payload, directory_records or [])
         # A real <lastmod>, in the convention the sitemap comment already sets:
         # generated pages pass a date they can source, hand-authored pages pass
         # none. The rollups were the only generated family passing none, so a
@@ -11522,7 +11644,7 @@ def _write_program_pages(art: Path, write: Callable[..., None]) -> None:
         # restate "today" on 68 pages that did not change.
         write(
             f"program/{entry['id']}/index.html",
-            _render_rollup(payload),
+            _render_rollup(payload, others),
             f"{BASE_URL}/program/{entry['id']}/",
             lastmod=_rollup_content_date(payload) or None,
         )
@@ -12207,7 +12329,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                     license_notice=notice_for_agency(agency_cfg),
                 ),
                 f"{BASE_URL}/agency/{agency_id}/",
-                lastmod=str(artifact.get("snapshot_date") or "") or None,
+                # The sitemap's <lastmod> is the date the published feed file
+                # last changed, as observed in the history. It is omitted when
+                # that is unknown. Never the snapshot date: every daily check
+                # moves that, and it would tell crawlers 2,400 pages changed
+                # every day when most did not.
+                lastmod=feed_change_date(history),
             )
             # The named, dated badge the page's embed snippet points at. Written
             # beside the page so it lives and dies with it, and kept out of the
@@ -12259,7 +12386,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                         by_id[agency_id],
                         seo_metadata=agency_seo_metadata[agency_id],
                     ),
-                    f"{BASE_URL}/agency/{agency_id}/fixes/",
+                    # A thin log is noindex and kept out of the sitemap.
+                    (
+                        f"{BASE_URL}/agency/{agency_id}/fixes/"
+                        if fixlog_is_indexable(receipts)
+                        else None
+                    ),
                 )
             elif fixlog_page_dir.exists():
                 shutil.rmtree(fixlog_page_dir)
@@ -12768,7 +12900,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/equity/",
     )
 
-    _write_program_pages(art, write)
+    _write_program_pages(art, write, directory["agencies"])
 
     write("sitemap.xml", _sitemap(urls, sitemap_lastmods))
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n")
