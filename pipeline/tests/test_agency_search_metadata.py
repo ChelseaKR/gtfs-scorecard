@@ -23,6 +23,7 @@ from scorecard_pipeline.render_site import (
     _agency_name_forms,
     _agency_seo_metadata,
     _agency_short_name,
+    _derived_page_title,
     _ellipsize_words,
     _plan_agency_seo_metadata,
     _render_agency,
@@ -207,6 +208,113 @@ def test_clearance_log_title_reuses_the_planned_identity() -> None:
     page = _render_fixlog_page(_artifact(), receipts, seo_metadata=meta)
     title, _desc = _head(page)
     assert title == "SFMTA - Muni (California) GTFS clearance log"
+
+
+_RECEIPTS = [
+    {
+        "code": "expired_calendar",
+        "what": "The old calendar was replaced.",
+        "last_seen": "2026-06-30",
+        "cleared": "2026-07-01",
+    }
+]
+
+
+def test_clearance_log_title_fits_when_the_identity_leaves_no_room() -> None:
+    # Regression: the 2026-10-03 outage. #496 lets the agency title keep this
+    # 42-character name whole with the 18-character " GTFS feed quality"
+    # suffix, so the old "{identity} GTFS clearance log" came to 61 characters
+    # and the render raised, aborting every page on the site.
+    meta = _agency_seo_metadata("Athens-Clarke County Transit (ACC Transit)")
+    assert meta.title == "Athens-Clarke County Transit (ACC Transit) GTFS feed quality"
+    assert len(f"{meta.identity} GTFS clearance log") > 60  # the overflow is real
+
+    page = _render_fixlog_page(_artifact(), _RECEIPTS, seo_metadata=meta)
+    title, desc = _head(page)
+    assert title == "ACC Transit GTFS clearance log"
+    assert len(desc) <= 155
+    assert "ACC Transit" in desc
+
+    located = _agency_seo_metadata(
+        "Athens-Clarke County Transit (ACC Transit)", location_label="Georgia"
+    )
+    page = _render_fixlog_page(_artifact(), _RECEIPTS, seo_metadata=located)
+    assert _head(page)[0] == "ACC Transit (Georgia) GTFS clearance log"
+
+
+def test_derived_title_keeps_the_disambiguator_and_cuts_on_a_word() -> None:
+    meta = _agency_seo_metadata(
+        "Athens-Clarke County Transit (ACC Transit)",
+        location_label="Georgia",
+        disambiguator="MDB 1234",
+    )
+    title, identity = _derived_page_title(meta, " GTFS clearance log")
+    assert title == "ACC Transit [MDB 1234] GTFS clearance log"
+    assert identity == "ACC Transit [MDB 1234]"
+
+    # No shorter form to fall back on: the name is cut on a word boundary,
+    # never mid-word, and the title still fits.
+    long_name = "Consolidated Metropolitan Regional Transportation Authority District"
+    title, _identity = _derived_page_title(_agency_seo_metadata(long_name), " GTFS clearance log")
+    assert len(title) <= 60
+    assert title.endswith("… GTFS clearance log")
+    stem = title.removesuffix("… GTFS clearance log")
+    assert long_name.startswith(stem) and long_name[len(stem)] == " "
+
+
+# --- every real directory record fits -------------------------------------
+
+
+def _clearance_title(meta: Any) -> str:
+    return _head(_render_fixlog_page(_artifact(), _RECEIPTS, seo_metadata=meta))[0]
+
+
+def _naive_clearance_title(meta: Any) -> str:
+    """The pre-fix composition, kept as the negative control's oracle."""
+    return f"{meta.identity} GTFS clearance log"
+
+
+def _overlong_titles(planned: dict[str, Any], title_of: Any) -> list[str]:
+    return sorted(agency_id for agency_id, m in planned.items() if len(title_of(m)) > 60)
+
+
+def _planned_directory() -> dict[str, Any]:
+    from scorecard_pipeline.config import AGENCIES
+
+    records = json.loads(_DIRECTORY.read_text())["agencies"]
+    artifacts = {
+        str(r["id"]): {
+            "overall": {"grade": r.get("grade"), "score": r.get("score")},
+            "snapshot_date": r.get("snapshot_date"),
+            "categories": {"realtime": {"status": "not_yet_measured"}},
+        }
+        for r in records
+    }
+    return _plan_agency_seo_metadata(records, artifacts, AGENCIES)
+
+
+@pytest.mark.skipif(not _DIRECTORY.exists(), reason="published directory not in this checkout")
+def test_every_published_record_renders_every_indexed_title_within_budget() -> None:
+    # Every indexed page type whose title is built from an agency's identity:
+    # the agency page and its clearance log. A record that overflows would
+    # have stopped the whole render before this fix.
+    planned = _planned_directory()
+    assert _overlong_titles(planned, lambda m: m.title) == []
+    assert _overlong_titles(planned, _clearance_title) == []
+    for meta in planned.values():
+        title = _clearance_title(meta)
+        assert title.endswith(" GTFS clearance log")
+        assert len(title) > len(" GTFS clearance log")
+    titles = [_clearance_title(m).casefold() for m in planned.values()]
+    assert len(set(titles)) == len(titles)
+
+
+@pytest.mark.skipif(not _DIRECTORY.exists(), reason="published directory not in this checkout")
+def test_negative_control_the_sweep_catches_the_pre_fix_composition() -> None:
+    # The sweep above would be a gate that cannot fail if no real record ever
+    # reached the overflow case. The pre-fix title composition must trip it.
+    overlong = _overlong_titles(_planned_directory(), _naive_clearance_title)
+    assert len(overlong) > 0
 
 
 # --- every real directory record fits -------------------------------------

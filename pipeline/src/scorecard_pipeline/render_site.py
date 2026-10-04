@@ -30,7 +30,7 @@ import shutil
 import sys
 from collections import Counter
 from collections.abc import Callable, Iterator
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
@@ -2550,6 +2550,16 @@ class AgencySeoMetadata:
     description: str
     dataset_name: str
     identity: str = ""
+    #: The inputs the title was fitted from, kept so a derived page can refit
+    #: its own title with the same rules when its suffix does not fit beside
+    #: ``identity``.
+    agency_name: str = ""
+    location_label: str = ""
+    disambiguator: str = ""
+    #: The clearance log's (title, identity), planned corpus-wide so that it is
+    #: as unique as ``title``. Empty when the metadata was not planned.
+    clearance_title: str = ""
+    clearance_identity: str = ""
 
 
 def _ellipsize(value: str, limit: int) -> str:
@@ -2660,7 +2670,12 @@ def _seo_grade_facts(artifact: dict[str, Any] | None) -> tuple[str, str, str] | 
     return grade, str(score), checked
 
 
-def _agency_title(agency_name: str, location_label: str, disambiguator: str) -> tuple[str, str]:
+def _agency_title(
+    agency_name: str,
+    location_label: str,
+    disambiguator: str,
+    suffixes: tuple[str, ...] = _TITLE_SUFFIXES,
+) -> tuple[str, str]:
     """Return (title, identity) for an agency page within the title budget.
 
     First fit wins, in this order of what matters most to a searcher: the
@@ -2669,6 +2684,10 @@ def _agency_title(agency_name: str, location_label: str, disambiguator: str) -> 
     cut; next it tries the shorter forms the name itself carries; only then
     is it cut, on a word boundary. A feed disambiguator, when the planner
     needed one, is identity and is never dropped.
+
+    ``suffixes`` lets a derived page (the clearance log) fit its own suffix
+    with exactly these rules. The result always fits: the last resort cuts
+    the name to whatever the qualifier and the shortest suffix leave.
     """
     if disambiguator:
         qualifiers = [f" [{_ellipsize(disambiguator, 20)}]"]
@@ -2681,12 +2700,12 @@ def _agency_title(agency_name: str, location_label: str, disambiguator: str) -> 
             names.append(form)
     for name in names:
         for qualifier in qualifiers:
-            for suffix in _TITLE_SUFFIXES:
+            for suffix in suffixes:
                 identity = f"{name}{qualifier}"
                 if len(identity) + len(suffix) <= _TITLE_MAX:
                     return f"{identity}{suffix}", identity
     qualifier = qualifiers[-1]
-    suffix = _TITLE_SUFFIXES[-1]
+    suffix = suffixes[-1]
     budget = max(1, _TITLE_MAX - len(qualifier) - len(suffix))
     identity = f"{_ellipsize_words(agency_name, budget)}{qualifier}"
     return f"{identity}{suffix}", identity
@@ -2740,7 +2759,34 @@ def _agency_seo_metadata(
     )
     if len(title) > _TITLE_MAX or len(description) > _DESC_MAX:
         raise ValueError(f"agency SEO metadata exceeds its length budget for {agency_name!r}")
-    return AgencySeoMetadata(title, description, dataset_name, identity)
+    return AgencySeoMetadata(
+        title,
+        description,
+        dataset_name,
+        identity,
+        agency_name=agency_name,
+        location_label=location_label,
+        disambiguator=disambiguator,
+    )
+
+
+def _derived_page_title(metadata: AgencySeoMetadata, suffix: str) -> tuple[str, str]:
+    """Return (title, identity) for a page derived from an agency page.
+
+    The planned identity is reused verbatim when the derived suffix fits
+    beside it, so the derived title stays as corpus-unique as the agency
+    page's. When it does not fit (the agency title chose a shorter report
+    suffix to keep a long name whole), the title is refitted from the same
+    inputs with the same rules as the agency page: the full name first, then
+    its location, then its own shorter form, then a word-boundary cut. A
+    feed disambiguator survives every step. This never raises: one long
+    agency name must not stop the rest of the site from rendering.
+    """
+    identity = metadata.identity
+    if identity and len(identity) + len(suffix) <= _TITLE_MAX:
+        return f"{identity}{suffix}", identity
+    name = metadata.agency_name or identity
+    return _agency_title(name, metadata.location_label, metadata.disambiguator, (suffix,))
 
 
 def _metadata_collision_components(
@@ -2845,7 +2891,58 @@ def _plan_agency_seo_metadata(
     if remaining:
         collisions = ", ".join(",".join(sorted(group)) for group in remaining)
         raise ValueError(f"agency SEO metadata is not unique: {collisions}")
-    return planned
+    return _plan_clearance_titles(planned)
+
+
+_CLEARANCE_SUFFIX = " GTFS clearance log"
+
+
+def _plan_clearance_titles(
+    planned: dict[str, AgencySeoMetadata],
+) -> dict[str, AgencySeoMetadata]:
+    """Give every record a clearance-log title that fits and is corpus-unique.
+
+    The first choice is ``_derived_page_title``. Refitting a long identity to
+    a shorter form can make two records share a title (four BC Transit
+    systems all shorten to "BC Transit"), so a colliding record falls back to
+    its own planned identity cut on a word boundary, and then to a record
+    qualifier, the same last resort the agency titles use. Nothing here
+    raises: a duplicate that survives every step is rendered as is rather
+    than stopping the site.
+    """
+
+    def by_title(fitted: dict[str, tuple[str, str]]) -> list[set[str]]:
+        groups: dict[str, set[str]] = {}
+        for agency_id, (title, _identity) in fitted.items():
+            groups.setdefault(title.casefold(), set()).add(agency_id)
+        return [group for group in groups.values() if len(group) > 1]
+
+    fitted = {
+        agency_id: _derived_page_title(meta, _CLEARANCE_SUFFIX)
+        for agency_id, meta in planned.items()
+    }
+    budget = _TITLE_MAX - len(_CLEARANCE_SUFFIX)
+    for group in by_title(fitted):
+        for agency_id in group:
+            identity = _ellipsize_words(planned[agency_id].identity, budget)
+            fitted[agency_id] = (f"{identity}{_CLEARANCE_SUFFIX}", identity)
+    for group in by_title(fitted):
+        for agency_id in group:
+            meta = planned[agency_id]
+            fitted[agency_id] = _agency_title(
+                meta.agency_name or meta.identity,
+                meta.location_label,
+                f"record {hashlib.sha256(agency_id.encode()).hexdigest()[:8]}",
+                (_CLEARANCE_SUFFIX,),
+            )
+    return {
+        agency_id: replace(
+            meta,
+            clearance_title=fitted[agency_id][0],
+            clearance_identity=fitted[agency_id][1],
+        )
+        for agency_id, meta in planned.items()
+    }
 
 
 def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
@@ -3808,20 +3905,22 @@ def _render_fixlog_page(
         agency_name,
         location_label=_location_label(dir_record),
     )
-    identity = metadata.identity
-    if not identity or not metadata.title.startswith(identity):
+    if not metadata.identity or not metadata.title.startswith(metadata.identity):
         raise ValueError(f"agency SEO title has an unexpected shape for {agency_name!r}")
-    # The planned title is corpus-unique and its identity stem leaves at least
-    # the short report suffix's 25 characters. Reusing that stem preserves
-    # location or feed disambiguation, while the clearance suffix stays bounded.
-    title = f"{identity} GTFS clearance log"
+    # The planned identity can take up to 42 of the 60 characters (the agency
+    # title keeps a long name whole by dropping to the 18-character " GTFS feed
+    # quality" suffix), which leaves too little for this page's 19-character
+    # suffix. _derived_page_title reuses the identity when the suffix fits and
+    # otherwise refits it with the agency title's own rules, and the planner
+    # keeps the result corpus-unique, so the title is always within budget and
+    # an over-long name never aborts the render.
+    if metadata.clearance_title:
+        title, identity = metadata.clearance_title, metadata.clearance_identity
+    else:
+        title, identity = _derived_page_title(metadata, _CLEARANCE_SUFFIX)
     clearance_label = "clearance" if len(receipts) == 1 else "clearances"
-    desc = (
-        f"Dated, linkable record of {len(receipts)} finding {clearance_label} "
-        f"observed for {identity}."
-    )
-    if len(title) > 60 or len(desc) > 155:
-        raise ValueError(f"fix-log SEO metadata exceeds its length budget for {agency_name!r}")
+    lead = f"Dated, linkable record of {len(receipts)} finding {clearance_label} observed for "
+    desc = f"{lead}{_ellipsize_words(identity, max(1, _DESC_MAX - len(lead) - 1))}."
     country = str(
         (dir_record or {}).get("country") or artifact.get("agency", {}).get("country") or "US"
     )
