@@ -314,13 +314,28 @@ def _finding_handoff(
     artifact: dict[str, Any],
     agency_id: str,
     surface_path: str,
+    *,
+    cards_on_page: bool = False,
 ) -> str:
     """Render one operational handoff whose selection survives across surfaces.
 
     The artifact remains the source of every statement. The handoff does not
     claim who owns the change and does not create a ticket or workflow state.
+
+    ``cards_on_page`` is set where the page already prints each finding as a
+    card with ``id="finding-<code>"`` (the full scorecard). There the panel
+    points at the card instead of printing the evidence and the requested
+    change a second time; the copy-ready text keeps both, since it is what the
+    copy button sends.
     """
     agency_name = str(artifact.get("agency", {}).get("name") or agency_id)
+    # Each kept fix with its card number on the full scorecard ("Fix 01" is
+    # the first entry of top_fixes, whether or not every entry has a code).
+    card_numbers = [
+        number
+        for number, fix in enumerate(artifact.get("top_fixes", [])[:3], start=1)
+        if _safe_finding_code(fix.get("code"))
+    ]
     fixes = [
         fix for fix in artifact.get("top_fixes", [])[:3] if _safe_finding_code(fix.get("code"))
     ]
@@ -359,6 +374,17 @@ def _finding_handoff(
             if code in FIX_CODES_WITH_PAGES
             else ""
         )
+        if cards_on_page:
+            finding_rows = (
+                f'<div><dt>Finding</dt><dd><a href="#finding-{esc(code)}">'
+                f"Fix {card_numbers[index - 1]:02d} in Top things to fix</a>: "
+                "its feed evidence and the requested change.</dd></div>"
+            )
+        else:
+            finding_rows = (
+                f"<div><dt>Feed evidence</dt><dd>{esc(fix.get('what', ''))}</dd></div>"
+                f"<div><dt>Next action</dt><dd>{esc(fix.get('fix', ''))}</dd></div>"
+            )
         surface_links = [
             guide_link,
             f'<a href="{esc(_finding_url(f"/agency/{agency_id}/brief/", code))}">Call brief</a>',
@@ -369,8 +395,7 @@ def _finding_handoff(
             f'<div class="handoff-panel" data-finding-panel="{esc(code)}"'
             f"{' hidden' if index > 1 else ''}>"
             '<dl class="handoff-grid">'
-            f"<div><dt>Feed evidence</dt><dd>{esc(fix.get('what', ''))}</dd></div>"
-            f"<div><dt>Next action</dt><dd>{esc(fix.get('fix', ''))}</dd></div>"
+            f"{finding_rows}"
             f"<div><dt>Recheck</dt><dd>{esc(recheck)}</dd></div>"
             "</dl>"
             f'<nav class="handoff-links" aria-label="Finding {esc(code)} links">'
@@ -814,6 +839,136 @@ def _movement_balance(changes: list[dict[str, Any]]) -> str:
         f'<span class="movement-down" style="--share:{declined}"></span></div>'
         '<p class="movement-note">This summarizes significant movers, not every quiet feed.</p>'
         "</figure>"
+    )
+
+
+_HISTORY_SHA = re.compile(r"[0-9a-f]{64}")
+_HISTORY_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+#: Periods shown in the feed history table, newest first.
+FEED_HISTORY_MAX_PERIODS = 12
+
+
+def _service_through(row: dict[str, Any]) -> str:
+    """The service end date the published file carried at that check, or ''."""
+    days = row.get("days_until_expiry")
+    if isinstance(days, bool) or not isinstance(days, int):
+        return ""
+    try:
+        return (dt.date.fromisoformat(str(row["date"])) + dt.timedelta(days=days)).isoformat()
+    except (ValueError, OverflowError):
+        return ""
+
+
+def _feed_history_section(history: list[dict[str, Any]]) -> str:
+    """Every recorded check of this feed, grouped by published file and rubric.
+
+    The trend above ("Over time") uses only checks under the current producer
+    contract, so a feed scored under earlier rubrics shows a short trend even
+    when we have months of records. This table shows the rest without mixing
+    it in: each period names its file, its service end date and, for checks
+    under an earlier rubric, the grade of the time labeled with its rubric and
+    marked as not comparable. Checks under the current contract show no score
+    here; they are the trend above. Anything not recorded says so. Empty when
+    there is nothing beyond the trend to show.
+    """
+    rows = sorted(
+        (
+            row
+            for row in history
+            if isinstance(row, dict)
+            and isinstance(row.get("date"), str)
+            and _HISTORY_DATE.fullmatch(row["date"])
+        ),
+        key=lambda row: row["date"],
+    )
+    if not rows:
+        return ""
+    current_from = len(rows) - len(current_producer_contract_suffix(rows))
+
+    def sha(row: dict[str, Any]) -> str:
+        value = row.get("feed_sha256")
+        return value if isinstance(value, str) and _HISTORY_SHA.fullmatch(value) else ""
+
+    periods: list[list[tuple[int, dict[str, Any]]]] = []
+    for position, row in enumerate(rows):
+        key = (sha(row), str(row.get("rubric_version") or ""), position >= current_from)
+        if periods:
+            last_position, last_row = periods[-1][-1]
+            last_key = (
+                sha(last_row),
+                str(last_row.get("rubric_version") or ""),
+                last_position >= current_from,
+            )
+            # Consecutive checks of one file under one contract are one period.
+            # Checks with no recorded file merge the same way: an unknown file
+            # is not evidence of a new one.
+            if key == last_key:
+                periods[-1].append((position, row))
+                continue
+        periods.append([(position, row)])
+
+    if current_from == 0 and len(periods) < 2:
+        return ""
+
+    shown = periods[-FEED_HISTORY_MAX_PERIODS:][::-1]
+    body_rows = []
+    for period in shown:
+        first_position, first = period[0]
+        _, last = period[-1]
+        count = len(period)
+        checks = (
+            f"{esc(first['date'])}"
+            if count == 1
+            else f"{esc(first['date'])} to {esc(last['date'])} ({count} checks)"
+        )
+        file_sha = sha(first)
+        file_cell = (
+            f'<code title="sha256 {esc(file_sha)}">{esc(file_sha[:12])}</code>'
+            if file_sha
+            else "not recorded"
+        )
+        through = _service_through(first)
+        through_cell = esc(through) if through else "not recorded"
+        if first_position >= current_from:
+            score_cell = "Current rubric: see the trend above"
+        else:
+            rubric = str(last.get("rubric_version") or "")
+            grade = last.get("grade")
+            score = last.get("score")
+            rubric_label = f"rubric {esc(rubric)}" if rubric else "an unrecorded rubric"
+            if (
+                isinstance(grade, str)
+                and grade in {"A", "B", "C", "D", "F"}
+                and isinstance(score, (int, float))
+                and not isinstance(score, bool)
+            ):
+                score_cell = (
+                    f"{esc(grade)}, {score:g} under {rubric_label}, an earlier scoring "
+                    "contract; not comparable with today&rsquo;s grade"
+                )
+            else:
+                score_cell = f"Not graded under {rubric_label}, an earlier scoring contract"
+        body_rows.append(
+            f"<tr><td>{checks}</td><td>{file_cell}</td><td>{through_cell}</td>"
+            f"<td>{score_cell}</td></tr>"
+        )
+    more = (
+        f'<p class="fineprint">Showing the {len(shown)} most recent of {len(periods)} periods.</p>'
+        if len(periods) > len(shown)
+        else ""
+    )
+    return (
+        '<section aria-labelledby="feed-history-h">'
+        '<h2 class="section-title" id="feed-history-h">Feed history</h2>'
+        '<p class="page-lede">Every check on record for this feed, grouped by the published '
+        "file, newest first. A new file means the published zip changed. Grades from "
+        "earlier rubric versions are shown with their rubric and are not comparable with "
+        "today&rsquo;s grade or the trend above.</p>"
+        '<div class="table-wrap"><table class="route-table">'
+        '<caption class="visually-hidden">Feed history by published file</caption>'
+        '<thead><tr><th scope="col">Checked</th><th scope="col">Published file</th>'
+        '<th scope="col">Service dates through</th><th scope="col">Grade at the time</th>'
+        f"</tr></thead><tbody>{''.join(body_rows)}</tbody></table></div>{more}</section>"
     )
 
 
@@ -2188,14 +2343,23 @@ def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool)
             ' <a class="fix-guide" href="/check/">Self-check a feed before you publish</a>.'
         )
     items = []
-    for f in fixes:
+    for index, f in enumerate(fixes, start=1):
         code = str(f.get("code", ""))
         guide = _fix_guide_link(code)
         change = tool_path or (
             "Make this change in whatever tool produces your feed, then re-export."
         )
+        # The card above already states the requested change; name it by its
+        # card instead of printing the sentence again. A fix without a safe
+        # code has no card anchor, so its own text stays.
+        safe_code = _safe_finding_code(code)
+        name = (
+            f'<a href="#finding-{esc(safe_code)}">Fix {index:02d}</a>'
+            if safe_code
+            else esc(f.get("fix", ""))
+        )
         items.append(
-            f'<li class="fixloop-item"><p class="fixloop-name">{esc(f.get("fix", ""))}{guide}</p>'
+            f'<li class="fixloop-item"><p class="fixloop-name">{name}{guide}</p>'
             f'<p class="fixloop-step"><strong>Make the change.</strong> {change}</p>'
             f'<p class="fixloop-step"><strong>Check the result.</strong> The next scorecard '
             "run checks this finding again. If a comparable check no longer reports it, "
@@ -3288,7 +3452,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     <section aria-labelledby="fixes-h">
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
       {fixes_html}
-      {_finding_handoff(artifact, agency_id, f"/agency/{agency_id}/")}
+      {_finding_handoff(artifact, agency_id, f"/agency/{agency_id}/", cards_on_page=True)}
       {_guided_fix_flow(artifact, agency_id, has_fixlog)}
     </section>
     {_rider_impact_section(artifact)}{ferry_profile_block}
@@ -3301,6 +3465,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     </section>
     {_route_rule()}{map_block}
     {_trend_section(history or [])}
+    {_feed_history_section(history or [])}
     {_feeddiff_section(prev_artifact, artifact, agency_id)}
     {_history_section(history, artifacts)}
     {_route_rule()}
