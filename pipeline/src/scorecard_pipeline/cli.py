@@ -3000,6 +3000,38 @@ def _cmd_query(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
     return 0
 
 
+def _cmd_history_export(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Build the scorecard history tables (ADR 0063): checks and findings as
+    Parquet, with the data dictionary, provenance, and license, from the dated
+    artifacts under data/artifacts. Reads the public data and writes nothing
+    into it."""
+    from .history_export import HistoryExportError, export_history, read_exclusions
+
+    try:
+        exclusions = read_exclusions(Path(args.exclusions)) if args.exclusions else None
+        counters = export_history(
+            Path(args.out),
+            root=Path(args.artifacts) if args.artifacts else None,
+            exclusions=exclusions,
+            generated_on=args.generated_on,
+            zip_path=Path(args.zip) if args.zip else None,
+        )
+    except HistoryExportError as exc:
+        parser.error(str(exc))
+    log.info(
+        "History tables: %d checks and %d findings over %d feed records (%s to %s); "
+        "%d artifacts unreadable; %d feed records excluded by request.",
+        counters.checks,
+        counters.findings,
+        counters.feed_records,
+        counters.first_snapshot,
+        counters.last_snapshot,
+        counters.artifacts_unreadable,
+        counters.excluded_records,
+    )
+    return 0
+
+
 def _cmd_equity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     import json as _json
 
@@ -4393,6 +4425,24 @@ def main(argv: list[str] | None = None) -> int:
     query.add_argument("sql", nargs="?", help="SQL against the 'agencies' table")
     query.add_argument("--export", help="write the dataset to this Parquet path and exit")
 
+    history_export = sub.add_parser(
+        "history-export",
+        help="build the scorecard history tables (checks + findings Parquet, ADR 0063)",
+    )
+    history_export.add_argument("--out", required=True, help="a new or empty directory")
+    history_export.add_argument("--zip", help="also pack the export into this zip")
+    history_export.add_argument(
+        "--artifacts", help="artifact root to read (default: data/artifacts)"
+    )
+    history_export.add_argument(
+        "--exclusions",
+        help="the opt-out ledger to apply (default: history-export-exclusions.yaml)",
+    )
+    history_export.add_argument(
+        "--generated-on",
+        help="ISO date for the provenance file (default: the newest snapshot date)",
+    )
+
     otp = sub.add_parser(
         "otp", help="routing QA: ask an OpenTripPlanner instance to plan sample trips"
     )
@@ -5317,6 +5367,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "equity": _cmd_equity,
         "canada-equity": _cmd_canada_equity,
         "query": _cmd_query,
+        "history-export": _cmd_history_export,
         "otp": _cmd_otp,
         "otp-batch": _cmd_otp_batch,
         "otp-build-check": _cmd_otp_build_check,

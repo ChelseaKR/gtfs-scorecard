@@ -1,0 +1,153 @@
+# The history tables
+
+**Not yet on sale.** This page is the contract for the scorecard history
+tables, the paid data tier decided in [ADR 0063](decisions/0063-history-tables-paid-tier.md).
+The export exists and can be run from this repository; the price, the
+checkout, and the delivery arrive in later phases. Until then nothing here is
+offered to anyone, and nothing on the public site changes.
+
+## What the tables are
+
+Two Parquet tables built by `scorecard history-export` from the dated
+artifacts under `data/artifacts`, joined on `agency_id` and `snapshot_date`:
+
+- `checks.parquet`: one row per feed record per dated check, with the grade,
+  the overall and category scores, the expiry fields, the methodology and
+  feed-byte identity, the fetch provenance, and the registry's license record
+  for the feed.
+- `findings.parquet`: one row per finding per check, with the notice code,
+  severity, instance count, points, its rank among the top fixes, and the
+  reach numbers from the consequence block where the artifact has one.
+
+Beside them: `DATA-DICTIONARY.md` (every column, its type, and what a null
+means), `PROVENANCE.json` (what was read, the snapshot date range, the
+artifact schema versions seen, the row counts, the SHA-256 of each table, and
+how many feed records were left out by request), and `LICENSE.md` (the text
+below). The five files pack into one zip with fixed timestamps.
+
+Run it from `pipeline/` with the `query` extra installed:
+
+    uv run scorecard history-export --out ../history --zip ../history.zip
+
+`--out` must be a new or empty directory. `--artifacts` reads a different
+artifact root, `--exclusions` a different ledger, and `--generated-on` dates
+the provenance file; by default it carries the newest snapshot date in the
+corpus, so the output is a function of the input alone.
+
+## What stays free
+
+Everything that is free today. Every dated artifact
+(`/data/artifacts/<id>/<date>.json`), `index.json` and its compact history,
+`catalog.*`, `dataset.*`, every `api/v1/` file including `agencies.parquet`,
+the monthly `dataset-YYYY-MM` release, `/query/`, and the `history-export`
+command itself, which is Apache-2.0 like the rest of the pipeline. A buyer who
+would rather build the tables from the free files can. What is sold is the
+built artifact and its refresh, not the facts and not the code.
+
+Grades, methodology, weights, and which agencies are listed are not for sale,
+and the tables' numbers are the ones on the public site.
+
+## How the tables treat absence
+
+- A category the check did not measure is null, never zero. An agency with no
+  realtime feed has a null `realtime`.
+- A row with `recompute_kind = freshness` is an intraday sweep: only the
+  calendar dates were re-read that day, and the other category scores are the
+  previous full score's, carried forward. `feed_fetched_date` says when the
+  scored bytes were actually downloaded.
+- Grades are comparable only within one `scoring_profile_id`,
+  `validator_version`, `rubric_version`, `reader_archive_profile`, and set of
+  measured categories. [docs/comparison-policy.md](comparison-policy.md)
+  applies unchanged.
+- License fields are null when the registry has no structured block for the
+  record. Null never means permissive. An empty `license_notice` means no
+  share-alike license is recorded, not that the license is known.
+
+## Publisher terms, credit lines, and opting out
+
+Each `checks` row carries what the registry records about the feed's terms:
+`license_id`, `license_status`, `attribution_required`,
+`redistribution_allowed`, and `share_alike` from the structured block (each
+term as recorded: `true`, `false`, or `unknown`), `license_terms_url`,
+`publisher_credit` (the credit line the publisher asks for), the prose
+`license_note`, and `license_notice`, the same share-alike reuse notice the
+scorecard page and the flat exports carry ([feeds.md](feeds.md#share-alike-admitted-with-a-notice)).
+
+A publisher who does not want its feed's measurements in the tables that are
+sold is listed in `history-export-exclusions.yaml` at the repository root. The
+export drops every row for that id from both tables and records only the
+count in `PROVENANCE.json`, so a sold file never names the publishers who
+asked not to be in it. The ledger is honored the way the
+[listing policy](listing-policy.md) honors a removal request: quickly, without
+argument, and without touching the free site. A missing or malformed ledger
+stops the export rather than shipping rows nobody checked.
+
+## Columns
+
+Every column name below is held to the export's own column list by
+`pipeline/tests/test_history_export.py`, in both directions.
+
+### checks
+
+`agency_id`, `agency_name`, `country`, `subdivision_code`, `subdivision_name`,
+`mdb_id`, `ntd_id`, `snapshot_date`, `generated_at`, `recompute_kind`,
+`feed_fetched_date`, `artifact_schema_version`, `rubric_version`,
+`scoring_profile_id`, `scoring_profile_rubric_version`, `validator_version`,
+`reader_archive_profile`, `grade`, `score`, `correctness`, `freshness`,
+`completeness`, `realtime`, `categories_measured`, `confidence_level`,
+`days_until_expiry`, `effective_expiry_date`, `expiry_status`,
+`service_horizon_status`, `feed_sha256`, `feed_size_bytes`, `feed_static_url`,
+`fetch_source`, `fetch_final_url`, `source_provenance`, `stop_count`,
+`primary_mode`, `finding_count`, `top_fix_code`, `license_id`,
+`license_status`, `attribution_required`, `redistribution_allowed`,
+`share_alike`, `license_terms_url`, `publisher_credit`, `license_note`,
+`license_notice`.
+
+### findings
+
+`agency_id`, `snapshot_date`, `category`, `finding_index`, `code`, `severity`,
+`count`, `points`, `owner`, `top_fix_rank`, `reach_basis`, `reach_affected`,
+`reach_total`, `reach_share`, `reach_reason`.
+
+Types and meanings are in the generated `DATA-DICTIONARY.md`, which
+`render_dictionary()` writes from the same column list.
+
+## The license the tables are sold under
+
+The text between the two markers is `LICENSE_TEXT` in
+`pipeline/src/scorecard_pipeline/history_export.py`, held equal by a test. It
+ships in the zip as `LICENSE.md`.
+
+<!-- history-license:begin -->
+# License for the GTFS Scorecard history tables
+
+These tables are a packaged work prepared by GTFS Scorecard (gtfsscorecard.org).
+They are licensed to the purchasing organization, not to the public.
+
+1. One organization. The purchaser may use the tables inside its own
+   organization, for any internal purpose, including work it is paid for.
+2. No redistribution of the package. The purchaser may not publish, sell,
+   sublicense, or share the tables, in whole or in substantial part, outside
+   its organization. Figures, charts, and findings derived from the tables may
+   be published freely.
+3. The facts stay free. Every number in these tables is derived from a dated
+   scorecard artifact that gtfsscorecard.org publishes free of charge under
+   CC BY 4.0, and the export command that built them is open source. Nothing in
+   this license restricts the use of those free sources.
+4. Share-alike rows. A row whose license_notice names a share-alike license is
+   licensed to the purchaser under that license, not under clauses 1 and 2, and
+   may be redistributed on that license's terms.
+5. Publisher terms travel with the rows. Each feed's own publisher terms,
+   recorded in license_id, license_terms_url, publisher_credit, and
+   license_note, continue to apply to what the row says about that feed.
+6. Attribution. A published figure drawn from the tables credits "GTFS Scorecard
+   (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator" and
+   any publisher_credit the row carries.
+7. No warranty. The grade is a data-quality signal, not a compliance
+   determination, and the tables are provided as they are.
+<!-- history-license:end -->
+
+Why a different license from the free data's: the tables are a new work. The
+CC BY 4.0 grant on every free file is not revoked, and clause 3 says so. The
+free data page's sentence that CC BY covers "this scorecard's reports and
+derived dataset" describes the free dataset; the packaged tables are separate.

@@ -29,6 +29,17 @@ the declared public surface).
 
 ### Added
 
+- **The scorecard history tables, the paid data tier's build step (ADR 0063).**
+  `scorecard history-export` writes `checks.parquet` (one row per feed record per
+  dated check) and `findings.parquet` (one row per finding per check) from the
+  dated artifacts, with a data dictionary, a provenance file, and the license the
+  tables are sold under, packed into one zip with fixed timestamps. Output is
+  byte-stable for a fixed artifact tree and the build streams one artifact at a
+  time. Each row carries the registry's license block, the publisher's credit
+  line, and the share-alike reuse notice; `history-export-exclusions.yaml` lists
+  publishers who asked to be left out, and the export drops their rows and keeps
+  only the count. Nothing on the site, in the Lambda, or in Stripe changes; the
+  tier is not yet on sale. `docs/history-tables.md` is the contract.
 - **A reviewed PyPI publish path for `scorecard-pipeline`, and a registry
   manifest that names it.** `.github/workflows/pypi-publish.yml` runs on a
   signed release tag and uploads through PyPI Trusted Publishing, from a job in
