@@ -41,6 +41,11 @@ documents carry `license` and `attribution` fields so the grant travels with the
 data. The grade is a derived data-quality signal, not a compliance
 determination.
 
+A packaged export of the corpus's check-level and finding-level history, built
+by `scorecard history-export` and licensed separately to the organization that
+buys it, is described in [history-tables.md](history-tables.md). It is not yet
+on sale, and nothing listed on this page changes because of it.
+
 ## Coverage and sampling frame
 
 The scorecard scores feeds discovered through the Mobility Database plus a

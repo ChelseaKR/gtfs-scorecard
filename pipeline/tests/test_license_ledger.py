@@ -571,9 +571,14 @@ def test_only_the_ledger_the_loader_and_the_notice_read_a_block() -> None:
     for a decision, this fails and the change has to say so.
     """
     readers = _modules_matching(r"license_block")
+    # history_export.py (ADR 0063) copies the block's recorded terms into the
+    # history tables as columns and decides nothing from them: a row states the
+    # terms, and which rows exist is the registry's and the opt-out ledger's
+    # call, never the block's. That is carrying, not reading for a decision.
     assert readers == [
         "agencies.py",
         "config.py",
+        "history_export.py",
         "license_ledger.py",
         "license_migrate.py",
         "license_notice.py",
@@ -586,8 +591,11 @@ def test_only_the_ledger_the_loader_and_the_notice_read_a_block() -> None:
         "license_migrate.py",
         "license_notice.py",
     ]
+    # The history tables carry the same notice text as the flat export and
+    # the page, so a buyer reads the words the public reads.
     assert _modules_matching(r"^\s*from \.license_notice import") == [
         "dataset.py",
+        "history_export.py",
         "render_site.py",
     ]
 

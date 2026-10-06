@@ -1,0 +1,18 @@
+# Feed records left out of the paid history tables at the publisher's request
+# (ADR 0063, docs/history-tables.md).
+#
+# The free site is unchanged by this file. A publisher who does not want its
+# feed's measurements in the tables that are sold is listed here, and
+# `scorecard history-export` drops every row for that id from both tables and
+# records only the count in PROVENANCE.json, so a sold file never names the
+# publishers who asked not to be in it. Requests are honored the way the
+# listing policy honors a removal request: quickly and without argument.
+#
+# Each entry records:
+#   agency_id     the feed record, as in gtfsscorecard.org/agency/<id>/
+#   requested_on  the day the request arrived (YYYY-MM-DD)
+#   reason        who asked and through which channel, in one line
+#
+# The export refuses to run when this file is missing or malformed: rows nobody
+# checked against the requests must not ship.
+excluded: []
