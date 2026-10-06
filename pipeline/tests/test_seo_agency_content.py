@@ -23,8 +23,8 @@ B = "b" * 64
 
 def _visible_text(html: str) -> str:
     """Page text a reader sees, without the copy-ready textareas' payload."""
-    html = re.sub(r"<script.*?</script>|<style.*?</style>", "", html, flags=re.S)
-    html = re.sub(r"<textarea.*?</textarea>", "", html, flags=re.S)
+    html = re.sub(r"<script.*?</script>|<style.*?</style>", "", html, flags=re.S | re.I)
+    html = re.sub(r"<textarea.*?</textarea>", "", html, flags=re.S | re.I)
     return unescape(re.sub(r"<[^>]+>", " ", html))
 
 
@@ -40,12 +40,12 @@ def test_scorecard_handoff_points_at_the_card_instead_of_repeating_it() -> None:
     art = _artifact()
     first = art["top_fixes"][0]
     html = _finding_handoff(art, "yolobus", "/agency/yolobus/", cards_on_page=True)
-    panels = re.sub(r"<textarea.*?</textarea>", "", html, flags=re.S)
+    panels = re.sub(r"<textarea.*?</textarea>", "", html, flags=re.S | re.I)
     assert first["what"] not in unescape(panels)
     assert first["fix"] not in unescape(panels)
     assert f'href="#finding-{first["code"]}">Fix 01 in Top things to fix</a>' in html
     # The copy payload still carries everything the copy button sends.
-    textarea = re.search(r"<textarea.*?>(.*?)</textarea>", html, flags=re.S)
+    textarea = re.search(r"<textarea.*?>(.*?)</textarea>", html, flags=re.S | re.I)
     assert textarea is not None
     assert first["what"] in unescape(textarea.group(1))
     assert first["fix"] in unescape(textarea.group(1))
@@ -54,7 +54,7 @@ def test_scorecard_handoff_points_at_the_card_instead_of_repeating_it() -> None:
 def test_brief_and_board_handoffs_keep_the_full_text() -> None:
     art = _artifact()
     html = _finding_handoff(art, "yolobus", "/agency/yolobus/brief/")
-    panels = re.sub(r"<textarea.*?</textarea>", "", html, flags=re.S)
+    panels = re.sub(r"<textarea.*?</textarea>", "", html, flags=re.S | re.I)
     assert art["top_fixes"][0]["what"] in unescape(panels)
     assert "Top things to fix</a>" not in html
 
@@ -92,7 +92,7 @@ def test_negative_control_the_old_handoff_repeats_the_finding() -> None:
     what = art["top_fixes"][0]["what"]
 
     def strip(html: str) -> str:
-        return unescape(re.sub(r"<textarea.*?</textarea>", "", html, flags=re.S))
+        return unescape(re.sub(r"<textarea.*?</textarea>", "", html, flags=re.S | re.I))
 
     assert what in strip(old)
     assert what not in strip(new)
