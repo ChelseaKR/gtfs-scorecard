@@ -460,7 +460,7 @@ jobs:
           git config --local user.email "3114598+ChelseaKR@users.noreply.github.com"
           git config --local gpg.format ssh
           git config --local gpg.ssh.allowedSignersFile \
-            "$GITHUB_WORKSPACE/.github/release-signers"
+            "$GITHUB_WORKSPACE/.github/dataset-signers"
           git config --local user.signingkey "$signing_key"
           git tag -s "$RELEASE_TAG" "$SOURCE_HEAD_SHA" \
             -m "$RELEASE_TAG" \
@@ -479,7 +479,7 @@ jobs:
             "$SOURCE_HEAD_SHA"
           git config --local gpg.format ssh
           git config --local gpg.ssh.allowedSignersFile \
-            "$GITHUB_WORKSPACE/.github/release-signers"
+            "$GITHUB_WORKSPACE/.github/dataset-signers"
           git verify-tag -- "$RELEASE_TAG"
 
           local_tag_object=$(git rev-parse "refs/tags/${RELEASE_TAG}")

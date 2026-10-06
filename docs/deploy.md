@@ -261,8 +261,15 @@ Actions; this is the inventory an operator should know exists:
 | `ci.yml`, `a11y.yml`, `e2e.yml`, `security.yml`, `pages.yml` | push/PR | The merge and deploy gates. |
 
 The monthly dataset release has two hosting prerequisites: repository-level
-immutable releases must remain enabled, and `SCHEDULED_WRITER_SSH_KEY` must
-match the trusted public key in `.github/release-signers`. The signing secret is
+immutable releases must remain enabled, and `SCHEDULED_WRITER_SSH_KEY` must be
+the private half of the one entry in `.github/dataset-signers` (its public half
+is the repository deploy key "gtfs-scorecard scheduled writer"). The workflow
+and `promote_dataset_release.sh` verify dataset tags against that file and
+nothing else. `vX.Y.Z` tags are verified by `release-sign.yml` against
+`.github/release-signers`, which holds the owner's key only; the two lists are
+separate so a tag the machine key signs can never read as maintainer-signed.
+`test_workflow_safety.py` pins both fingerprints, so a key rotation updates the
+secret, the file and the test in one change. The signing secret is
 available only to the tag-creation step and is removed from the runner before
 bundle assembly. The workflow creates an SSH-signed annotated `dataset-YYYY-MM`
 tag, verifies the local signature and hosted tag object, and then consumes the

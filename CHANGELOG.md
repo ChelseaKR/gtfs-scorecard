@@ -297,6 +297,21 @@ the declared public surface).
 
 ### Fixed
 
+- **The monthly dataset cut can verify the tag it signs.** `dataset-release.yml`
+  signs `dataset-YYYY-MM` with `SCHEDULED_WRITER_SSH_KEY` and then runs
+  `git verify-tag` against an allowed-signers file. #258 pointed it, and the
+  owner promotion script, at `.github/release-signers`, which holds only the
+  owner's release key, and nothing compared the two. The first cuts to reach
+  the step, 2026-10-02 and 2026-10-03, stopped at "No principal matched"
+  before the push, so no `dataset-2026-09` or `dataset-2026-10` exists.
+  Dataset tags now verify against a new `.github/dataset-signers` that lists
+  the writer's public key (the repository deploy key of the same name) and
+  nothing else; `release-signers` is unchanged, so `release-sign.yml` still
+  accepts the owner's key alone for `vX.Y.Z` tags. A test pins both
+  fingerprints, checks which file each workflow reads, and exercises the new
+  file with `ssh-keygen -Y find-principals`. September cannot be recovered
+  (its source artifact is gone); October can be cut by a manual dispatch
+  before November 1 UTC.
 - **SacRT's F 51.1 from 2026-10-02 is withdrawn.** It was graded from
   Mobility Database mdb-1296's hosted copy, SacRT's September 2024 export,
   after the download from iportal.sacrt.com failed on its expired certificate.

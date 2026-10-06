@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import base64
 import copy
+import hashlib
 import json
 import os
 import re
@@ -491,6 +493,106 @@ def test_dataset_release_leaves_the_latest_json_set_to_the_validator() -> None:
     assert "-name latest.json" not in run_lines
     assert "actual-latest-ids" not in run_lines
     assert "python -m scorecard_pipeline.dataset_release \\" in workflow
+
+
+def test_dataset_release_signer_is_a_principal_in_dataset_signers(tmp_path: Path) -> None:
+    """The key that signs a dataset tag must be listed where the tag is verified.
+
+    `dataset-release.yml` signs `dataset-YYYY-MM` with SCHEDULED_WRITER_SSH_KEY
+    and then runs `git verify-tag` against an allowed-signers file; the owner
+    promotion script verifies against the same file. #258 pointed both at
+    `.github/release-signers`, which holds the owner's release key only, and
+    nothing compared the two. Measured 2026-10-02 and 2026-10-03 (runs
+    37043268813 and 37144472523), the first cuts to reach the step: `Good
+    "git" signature with ED25519 key SHA256:G8DF... / No principal matched`,
+    exit 1 before the tag push, so neither dataset-2026-09 nor
+    dataset-2026-10 exists.
+
+    Dataset tags now verify against `.github/dataset-signers`, which lists the
+    writer's public half (the repository deploy key "gtfs-scorecard scheduled
+    writer", id 157198788) and nothing else, while `release-signers` keeps the
+    owner's key only, so a tag the machine key signs can never pass
+    `release-sign.yml` as maintainer-signed. Both fingerprints are pinned;
+    rotating either key means updating the secret, its file and this test
+    together.
+    """
+    writer_fingerprint = "SHA256:G8DFh2ZmGhPoD6HRYd9m/Zav2dYgoaIRTZjtJt2iiIQ"
+    owner_fingerprint = "SHA256:Kz1JPRtDNVmRa1tD/buR0/iOGDSwEa4P4iu3DN+bElk"
+    owner_principal = "3114598+ChelseaKR@users.noreply.github.com"
+    dataset_signers = ROOT / ".github" / "dataset-signers"
+    release_signers = ROOT / ".github" / "release-signers"
+
+    def principals_of(path: Path) -> dict[str, str]:
+        found: dict[str, str] = {}
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if not line or line.startswith("#"):
+                continue
+            principal, options, key_type, key_blob = line.split(" ")
+            assert options == 'namespaces="git"', line
+            assert key_type == "ssh-ed25519", line
+            raw = base64.b64decode(key_blob, validate=True)
+            assert raw.startswith(b"\x00\x00\x00\x0bssh-ed25519"), line
+            digest = base64.b64encode(hashlib.sha256(raw).digest()).decode("ascii")
+            assert principal not in found, line
+            found[principal] = "SHA256:" + digest.rstrip("=")
+        return found
+
+    assert principals_of(dataset_signers) == {"gtfs-scorecard-scheduled-writer": writer_fingerprint}
+    assert principals_of(release_signers) == {owner_principal: owner_fingerprint}
+
+    workflow = _workflow("dataset-release.yml")
+    release_sign = _workflow("release-sign.yml")
+    promote = (ROOT / "pipeline" / "scripts" / "promote_dataset_release.sh").read_text(
+        encoding="utf-8"
+    )
+    assert workflow.count('"$GITHUB_WORKSPACE/.github/dataset-signers"') == 2
+    assert "release-signers" not in workflow
+    assert 'allowedSignersFile "$repo_root/.github/dataset-signers"' in promote
+    assert "release-signers" not in promote
+    assert 'allowedSignersFile "$GITHUB_WORKSPACE/.github/release-signers"' in release_sign
+    assert "dataset-signers" not in release_sign
+
+    # The file as committed, comment lines included, must be what ssh-keygen
+    # (and so git) reads as an allowed-signers list: a signature by a key that
+    # is not listed resolves to no principal, exactly the runner's failure, and
+    # one by a listed key resolves to its principal. The writer's private half
+    # is a secret, so an ephemeral key stands in for it on both sides.
+    ssh_keygen = shutil.which("ssh-keygen")
+    if ssh_keygen is None:
+        pytest.skip("ssh-keygen is not installed")
+    key = tmp_path / "ephemeral"
+    subprocess.run(  # noqa: S603 - resolved ssh-keygen over test-owned paths
+        [ssh_keygen, "-q", "-t", "ed25519", "-N", "", "-C", "ephemeral", "-f", str(key)],
+        check=True,
+    )
+    public = (tmp_path / "ephemeral.pub").read_text(encoding="utf-8").split(" ")
+    payload = tmp_path / "payload"
+    payload.write_bytes(b"object 0\ntype commit\ntag dataset-0000-00\n")
+    subprocess.run(  # noqa: S603 - resolved ssh-keygen over test-owned paths
+        [ssh_keygen, "-Y", "sign", "-f", str(key), "-n", "git", str(payload)], check=True
+    )
+    signature = str(payload) + ".sig"
+    missing = subprocess.run(  # noqa: S603 - resolved ssh-keygen over test-owned paths
+        [ssh_keygen, "-Y", "find-principals", "-f", str(dataset_signers), "-s", signature],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert missing.returncode != 0
+    assert "No principal matched" in missing.stderr
+    allowed = tmp_path / "allowed"
+    allowed.write_text(
+        dataset_signers.read_text(encoding="utf-8")
+        + f'ephemeral namespaces="git" {public[0]} {public[1]}\n',
+        encoding="utf-8",
+    )
+    found = subprocess.run(  # noqa: S603 - resolved ssh-keygen over test-owned paths
+        [ssh_keygen, "-Y", "find-principals", "-f", str(allowed), "-s", signature],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert found.stdout.strip() == "ephemeral"
 
 
 def test_dataset_release_mutates_tags_only_after_trusted_main_validation() -> None:

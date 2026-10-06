@@ -1,0 +1,9 @@
+# Allowed signers for dataset-YYYY-MM tags only. dataset-release.yml signs
+# each dataset tag with SCHEDULED_WRITER_SSH_KEY, the private half of the
+# repository deploy key "gtfs-scorecard scheduled writer", and verifies the
+# tag against this file; promote_dataset_release.sh verifies against it too.
+# Release tags (vX.Y.Z) are verified against .github/release-signers, which
+# holds the owner's key only; keeping the machine key here means a tag it
+# signs can never read as maintainer-signed. Rotate the secret and this line
+# together.
+gtfs-scorecard-scheduled-writer namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKCU7vTdg7JBHiMdZgvmkN6Kh760gRfaacZryrGw2yEZ
