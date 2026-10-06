@@ -95,11 +95,28 @@ jobs:
             pushed=false
             for attempt in 1 2 3 4 5; do
               if git push origin HEAD:main; then pushed=true; break; fi
+              # RELIABILITY: a push that was rejected because main moved and a
+              # push that never reached GitHub both land here, and they need
+              # opposite responses. Run 37376079735 (2026-10-05) lost a full
+              # cycle of observations when the SSH authentication failed
+              # ("Permission denied (publickey)") on the same deploy key that
+              # had fetched this checkout 2.5 hours earlier, pushed the previous
+              # run's observations at 21:08Z, and checked out the next run at
+              # 01:05Z: the loop assumed main had moved, `git fetch` failed the
+              # same way, and `set -e` ended the step on the first attempt with
+              # "push rejected (main moved)" as the only explanation. So the
+              # fetch is the test. If it cannot reach the remote either, nothing
+              # about main is known, and the right move is to wait and push
+              # again rather than merge against nothing.
+              if ! git fetch origin main; then
+                echo "push and fetch both failed: the remote is unreachable or refused the key, not a moved main; retrying after a pause ($attempt)"
+                sleep $((attempt * 15))
+                continue
+              fi
               echo "push rejected (main moved); merging both histories and retrying ($attempt)"
               ours="$RUNNER_TEMP/rt-health-ours-$attempt"
               rm -rf "$ours"
               cp -R data/rt-health "$ours"
-              git fetch origin main
               git reset --hard FETCH_HEAD
               (cd pipeline && uv run python scripts/merge_rt_health.py \
                 --ours "$ours" --into ../data/rt-health)
