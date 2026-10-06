@@ -208,6 +208,50 @@ def test_every_gate_that_opens_a_purchase_surface_knows_the_new_pages() -> None:
     assert "/data/history/setup/" in scanned
 
 
+def test_the_pointers_reach_the_history_page_and_name_no_price() -> None:
+    """Phase 3: the open-data page, the support page, llms.txt and the README all
+    reach /data/history/ in their own content, describe what is sold and what
+    stays free, and type no amount (ADR 0054's rule for the two text files)."""
+    data_page = (_WEB / "data" / "index.html").read_text()
+    head, separator, _footer = data_page.partition(_FOOTER_TAG)
+    assert separator
+    assert 'href="/data/history/"' in head and 'id="history-h"' in head
+    assert "stays free" in head.split('id="history-h"', 1)[1]
+    support = (_WEB / "support" / "index.html").read_text()
+    head, separator, _footer = support.partition(_FOOTER_TAG)
+    assert separator
+    assert 'href="/data/history/"' in head and 'id="path-history-h"' in head
+    llms = (_WEB / "llms.txt").read_text()
+    assert "https://gtfsscorecard.org/data/history/" in llms
+    assert "Paid: two things." in llms and "Paid: one thing" not in llms
+    readme = (_REPO / "README.md").read_text()
+    assert "https://gtfsscorecard.org/data/history/" in readme
+    assert "Two things cost money." in readme and "One thing costs money" not in readme
+    plan = _plan()
+    amount = f"${plan['products']['history_once']['price']}"
+    for name, text in (("llms.txt", llms), ("README.md", readme), ("support", support)):
+        assert amount not in text, f"{name} types the history price"
+
+
+def test_the_history_page_faq_node_says_what_the_page_says() -> None:
+    """The buyer's questions in the head and in the body are one set of words,
+    as on /bundle/: a crawler and a reader get the same answers."""
+    page = _PAGE.read_text()
+    nodes = re.findall(r'<script type="application/ld\+json">(\{.*?\})</script>', page)
+    faq = next(json.loads(node) for node in nodes if '"FAQPage"' in node)
+    assert faq["@id"] == "https://gtfsscorecard.org/data/history/#faq"
+    questions = faq["mainEntity"]
+    assert len(questions) >= 6
+    body = page.partition('<ul class="buy-terms">')[2].partition("</ul>")[0]
+    assert body, "the page carries no buy-terms list"
+    stripped = re.sub(r"<[^>]+>", "", body).replace("&amp;", "&")
+    for item in questions:
+        assert item["name"] in stripped, item["name"]
+        answer = item["acceptedAnswer"]["text"]
+        assert answer.split(",")[0] in stripped, answer
+    assert "$" not in stripped
+
+
 # --- the workflow -----------------------------------------------------------------------
 
 

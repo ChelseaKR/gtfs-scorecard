@@ -16,6 +16,14 @@ price and Payment Link, sets `history_price_id`, `history_sales_enabled`,
 export once, and turns `paymentsAvailable` on in the plan file; the steps are
 in `docs/history-tables.md`.
 
+**Status log, phase 3 (2026-10-06).** The pointers and the pricing copy:
+`/data/` points a reader who needs the corpus over time at `/data/history/`,
+`/support/` carries a second paid card, `llms.txt` and the README describe
+two paid things and name no price, the history page carries the buyer's
+questions and a matching FAQ node, and the price knob and the day-90 rule
+are recorded in `docs/history-tables.md`. Everything is built; the owner's
+runbook is the only thing between the tier and a sale.
+
 ## Context
 
 The free read API is static files with no key and no limit (ADR 0013), the

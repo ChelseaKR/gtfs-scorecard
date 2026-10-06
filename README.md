@@ -297,7 +297,7 @@ Any agency with a public GTFS feed can be added with one YAML block in
 deployed `infra/submit` endpoint; every submission still opens a pull request
 for human review before publication.
 
-## What is free, and the one paid thing
+## What is free, and what is paid
 
 Everything an agency needs for its own feed is free and stays free: its
 scorecard, the prioritized fixes, the history, the printable board one-pager,
@@ -305,16 +305,24 @@ the self-contained board report it can hand to a board or attach to a grant
 application, the badge, the open data, and the read API. No account and no
 payment is involved anywhere in that path.
 
-One thing costs money. A program that prepares packets for many agencies at
+Two things cost money. A program that prepares packets for many agencies at
 once (a state DOT, a technical-assistance center, a feed vendor, a consultancy)
 can buy the **program report bundle**: a single archive holding a board report
 for every agency id it names, carrying the program's own name, logo, and accent
-color on each cover, refreshed monthly if it wants. Plan sizes, prices,
+color on each cover, refreshed monthly if it wants. A vendor, a consultancy, a
+program, or a researcher who needs the whole corpus over time can buy the
+**scorecard history tables**: every dated check and every finding as two
+Parquet tables with a data dictionary, provenance, and license, rebuilt
+monthly and licensed to one organization
+([ADR 0063](docs/decisions/0063-history-tables-paid-tier.md),
+[docs/history-tables.md](docs/history-tables.md)). Plan sizes, prices,
 delivery terms, and the refund commitment live on the
-[bundle page](https://gtfsscorecard.org/bundle/), which reads them from the
-live plan data; they are not copied into this file, where they would go stale.
-A purchase buys no influence over grades, methodology, or which agencies are
-listed, and nothing was subtracted from the free tier to create the bundle.
+[bundle page](https://gtfsscorecard.org/bundle/) and the
+[history tables page](https://gtfsscorecard.org/data/history/), which read
+them from the live plan data; they are not copied into this file, where they
+would go stale. A purchase buys no influence over grades, methodology, or
+which agencies are listed, and nothing was subtracted from the free tier to
+create either.
 
 ## Support and sponsorship
 
