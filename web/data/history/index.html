@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scorecard history tables | GTFS Scorecard</title>
+  <meta name="description"
+        content="Every dated GTFS quality check and every finding as two Parquet tables, rebuilt monthly, licensed to one organization. The dated scorecards they are built from stay free.">
+  <link rel="canonical" href="https://gtfsscorecard.org/data/history/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Scorecard history tables | GTFS Scorecard">
+  <meta property="og:description" content="Every dated GTFS quality check and every finding as two Parquet tables, rebuilt monthly, for one organization. The dated scorecards stay free.">
+  <meta property="og:url" content="https://gtfsscorecard.org/data/history/">
+  <meta property="og:image" content="https://gtfsscorecard.org/og.png">
+  <meta property="og:image:alt" content="GTFS Scorecard: transit data quality for small agencies.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
+  <meta name="twitter:image:alt" content="GTFS Scorecard: transit data quality for small agencies.">
+  <!-- The service and its place in the site. No amount in this block: the price
+       lives in /data/history/plan.json and reaches the page through the generated
+       offers block below, so turning the tier on or off stays a data change.
+       provider repeats the three identifying fields of the home page's
+       Organization node, as /bundle/ does, so a reader of this page alone gets a
+       named provider. -->
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","@id":"https://gtfsscorecard.org/data/history/#service","name":"Scorecard history tables","url":"https://gtfsscorecard.org/data/history/","serviceType":"GTFS data quality history as Parquet tables","description":"The corpus's check-level and finding-level GTFS data quality history as two Parquet tables with a data dictionary, provenance, and license, rebuilt monthly from the dated scorecards gtfsscorecard.org publishes free.","provider":{"@id":"https://gtfsscorecard.org/#organization","@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org/"},"audience":{"@type":"Audience","audienceType":"Transit software vendors, consultancies, state programs, and researchers who need the whole corpus's history as a table"},"isRelatedTo":{"@id":"https://gtfsscorecard.org/#free-scorecard","@type":"Service","name":"GTFS feed scorecard for one agency","url":"https://gtfsscorecard.org/agencies/"}}</script>
+  <!-- The price, generated from /data/history/plan.json by `make sync-bundle-offers`.
+       Never edited by hand. Emitted only while the plan says payments are available;
+       web/src/history.js rewrites this one element from its own read of the same
+       file, so the page carries exactly one offers block with or without scripting. -->
+  <!-- offers:begin -->
+  <!-- Nothing is for sale: plan.json either switches payments off or lists no product with both a numeric price and an https checkout link. The page states no price because there is none to state. -->
+  <!-- offers:end -->
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://gtfsscorecard.org/"},{"@type":"ListItem","position":2,"name":"Open data","item":"https://gtfsscorecard.org/data/"},{"@type":"ListItem","position":3,"name":"History tables"}]}</script>
+  <link rel="stylesheet" href="/src/styles.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <script>
+    /* Apply the saved theme before first paint to avoid a flash (1.4.8). */
+    try {
+      var t = localStorage.getItem("scorecard-theme");
+      if (t && ["light", "contrast", "dark"].indexOf(t) >= 0)
+        document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
+  <script src="/src/theme.js" defer></script>
+  <script src="/src/measure.js" defer></script>
+  <script src="/src/nav.js" defer></script>
+  <script src="/src/history.js" defer></script>
+  <noscript><style>
+    /* Without JS the menu button cannot expand the collapsed nav, so show the
+       stacked nav permanently and hide the button (content stays operable
+       without scripting). nav.js never runs here, so nothing double-toggles. */
+    @media (max-width: 1400px) {
+      .nav-menu-btn { display: none !important; }
+      .nav-cluster { display: flex !important; position: static; }
+    }
+    /* The generated plan list is wrapped in its own <noscript> so it can only
+       reach a reader who has no scripting; display: contents hands its cards to
+       #plan-grid directly. */
+    #plan-grid > noscript { display: contents; }
+    #plan-grid > noscript > .fineprint { grid-column: 1 / -1; margin-top: 0; }
+  </style></noscript>
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/app/#/?view=features"><span class="pip" aria-hidden="true"></span>Feed features</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+
+  <main id="main" class="wrap wrap-wide" tabindex="-1">
+    <a class="backlink" href="/data/">&larr; Open data</a>
+    <h1 class="page-title">The scorecard history, as tables</h1>
+    <p class="page-lede">Every dated check of every feed record this site covers, and every
+    finding in each of them, as two Parquet tables with a data dictionary, a provenance file,
+    and a license, rebuilt monthly. Licensed to one organization. The dated scorecards it is
+    built from stay free, at their own addresses, for everyone.</p>
+
+    <!-- The path to a purchase, above the fold on a phone: the price and one checkout
+         button. Both come from /data/history/plan.json through web/src/history.js, so
+         nothing here names an amount. Without scripting, or while the plan cannot be
+         read, the button stays a link to the plan list below. -->
+    <div class="action-panel buy-box">
+      <p id="buy-box-price" class="plan-price">The plan and its price are listed below.</p>
+      <p><a id="buy-box-cta" class="submit-button" href="#plans-h">See the plan and price</a></p>
+      <p class="fineprint">One-time purchase. The download link arrives on the page you land on
+      after paying, and by email, and stays valid for 30 days. <a href="#free-h">What stays
+      free</a> and <a href="#license">the license</a> are below.</p>
+    </div>
+
+    <p>GTFS Scorecard grades a transit agency's published GTFS feed for data quality and
+    rider-information gaps, free, for any agency, at gtfsscorecard.org, and keeps every dated
+    check it has ever published at its own address. What it did not publish, until now, is the
+    whole corpus as one table over time: more than a hundred dated files per feed record, and
+    no file anywhere that lists findings as rows. These tables are that: the build step is the
+    open-source <code>scorecard history-export</code> command, and what is sold is the built
+    artifact and its monthly refresh, never the facts and never the code.</p>
+
+    <section aria-labelledby="what-h">
+      <h2 class="section-title" id="what-h">What arrives</h2>
+      <ul class="buy-terms">
+        <li><strong><code>checks.parquet</code></strong>: one row per feed record per dated check.
+        The grade, the overall and category scores, how many categories were measured, the
+        expiry fields, the methodology and feed-byte identity (rubric, scoring profile,
+        validator, reader profile, feed hash), the fetch provenance, and the registry's license
+        record for the feed.</li>
+        <li><strong><code>findings.parquet</code></strong>: one row per finding per check. The
+        notice code, severity, instance count, points, its rank among the top fixes, and the
+        reach numbers from the consequence block where the artifact has one.</li>
+        <li><strong><code>DATA-DICTIONARY.md</code></strong>: every column, its type, and what a
+        null means. A null is never zero and never a permissive license.</li>
+        <li><strong><code>PROVENANCE.json</code></strong>: what was read, the snapshot date range,
+        the artifact schema versions seen, the row counts, each table's SHA-256, and how many
+        feed records were left out at their publisher's request.</li>
+        <li><strong><code>LICENSE.md</code></strong>: the terms the tables are sold under, the
+        same words as <a href="#license">the license section</a> on this page.</li>
+      </ul>
+      <p>The five files come as one zip. A sweep row, where only the calendar dates were re-read
+      that day, says so in <code>recompute_kind</code>, so a carried-forward score cannot be
+      mistaken for a fresh one. Grades are comparable only within one scoring profile, validator
+      version, rubric version, reader profile, and set of measured categories, the same rule the
+      <a href="/how-to-read/#methodology-h">public site applies</a>.</p>
+    </section>
+
+    <h2 class="section-title" id="plans-h">The plan and its price</h2>
+    <p id="plan-notice" class="form-status" role="status" aria-live="polite" hidden></p>
+    <!-- The plan list for a reader with no scripting, generated from
+         /data/history/plan.json by `make sync-bundle-offers` alongside the offers
+         JSON-LD above. Never edited by hand. -->
+    <div id="plan-grid" class="support-paths" role="group" aria-labelledby="plans-h">
+      <!-- noscript-plans:begin -->
+      <noscript>
+        <p>The history tables are not for sale from this page right now. Every dated scorecard they are built from is free at its own address, and the export command is open source.</p>
+      </noscript>
+      <!-- noscript-plans:end -->
+    </div>
+
+    <section aria-labelledby="free-h">
+      <h2 class="section-title" id="free-h">What stays free</h2>
+      <p>Everything that is free today. Every dated scorecard
+      (<code>/data/artifacts/&lt;id&gt;/&lt;date&gt;.json</code>), <code>index.json</code> and its
+      compact history, the catalog and the flat dataset, every <code>api/v1/</code> file including
+      <code>agencies.parquet</code>, the monthly dataset release, <a href="/query/">the query
+      page</a>, and the <code>history-export</code> command itself, which is Apache-2.0 like the
+      rest of the pipeline. Anyone who would rather build the tables from the free files can.
+      Nothing is subtracted from the free site to make this; it is an addition for the people
+      who need the whole corpus as a table, and it is never the way an agency sees its own
+      grade.</p>
+      <p><a class="report-action" href="/data/">See the free open data</a></p>
+    </section>
+
+    <section aria-labelledby="how-h">
+      <h2 class="section-title" id="how-h">How it works</h2>
+      <ol>
+        <li>Pay through Stripe. GTFS Scorecard never sees your card.</li>
+        <li>Stripe sends you to a short page that confirms the payment and shows your download
+        link. The same link is emailed to the address you paid with.</li>
+        <li>The link opens the newest monthly build and stays valid for 30 days; each click
+        opens a fresh short-lived download, so the link itself can be kept.</li>
+        <li>If the link does not work, or anything about the order is not right, reply to the
+        receipt Stripe emailed you, or open an issue on
+        <a href="https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=History%20tables%20order%20problem">GitHub</a>,
+        and it will be reissued or refunded.</li>
+      </ol>
+      <p>The build runs once a month in the open-source repository's own automation and is
+      stored privately behind a link only your purchase receives. If no build exists yet when
+      you pay, nothing is delivered and your checkout is not used; you will be told so on the
+      page, and the tables will be sent by hand as soon as the build exists.</p>
+    </section>
+
+    <section aria-labelledby="independence-h">
+      <h2 class="section-title" id="independence-h">What a purchase does not buy</h2>
+      <p>No influence over the scores. Grades, methodology, weights, and which agencies are
+      listed are never for sale, and the tables carry the same numbers as the public site.
+      A publisher who does not want its feed's measurements in the tables that are sold can ask
+      to be left out, and is, the way the <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">listing
+      policy</a> honors a removal request; the free site is unchanged by that request.</p>
+      <p id="plan-fineprint" class="fineprint" hidden>Prices are in US dollars and are set on the
+      server, not on this page.</p>
+    </section>
+
+    <section aria-labelledby="license-h" id="license">
+      <h2 class="section-title" id="license-h">The license, in short</h2>
+      <p>The tables are a packaged work licensed to the purchasing organization, not to the
+      public. The full text ships in the zip as <code>LICENSE.md</code> and is kept in
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/history-tables.md">docs/history-tables.md</a>.
+      What it says:</p>
+      <ol>
+        <li><strong>One organization.</strong> Use the tables inside your own organization for
+        any internal purpose, including work you are paid for.</li>
+        <li><strong>No redistribution of the package.</strong> Do not publish, sell, sublicense,
+        or share the tables outside your organization. Figures, charts, and findings drawn from
+        them may be published freely.</li>
+        <li><strong>The facts stay free.</strong> Every number is derived from a dated scorecard
+        published free under CC BY 4.0, and the export command is open source. Nothing in the
+        license restricts those free sources.</li>
+        <li><strong>Share-alike rows.</strong> A row whose <code>license_notice</code> names a
+        share-alike license is licensed to you under that license, not under the clauses above,
+        and may be redistributed on its terms.</li>
+        <li><strong>Publisher terms travel with the rows.</strong> Each feed's own terms, recorded
+        in the license columns, continue to apply to what the row says about that feed.</li>
+        <li><strong>Attribution.</strong> A published figure credits GTFS Scorecard
+        (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator, and any publisher
+        credit the row carries.</li>
+        <li><strong>No warranty.</strong> The grade is a data-quality signal, not a compliance
+        determination, and the tables are provided as they are.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="who-h">
+      <h2 class="section-title" id="who-h">Who built this</h2>
+      <p>Chelsea Kelly-Reif, the same person who built and maintains the free scorecard, starting
+      from the transit systems in Davis, California. Questions before you buy: open an issue on
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=History%20tables%20question">GitHub</a>.
+      <a href="/about/">More about the project.</a></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find a scorecard</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-improve-h">
+          <h2 id="footer-improve-h">Improve a feed</h2>
+          <ul>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/subscribe.html">Feed-health alerts</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-explore-h">
+          <h2 id="footer-explore-h">Explore the data</h2>
+          <ul>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/data/">Open data</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-programs-h">
+          <h2 id="footer-programs-h">For programs</h2>
+          <ul>
+            <li><a href="/program/all/">Program rollups</a></li>
+            <li><a href="/bundle/">Board report bundle (paid)</a></li>
+          </ul>
+          <p class="footer-aside">Scoring an agency is free. A purchase buys no influence over grades, methodology, or which agencies are listed.</p>
+        </section>
+        <section aria-labelledby="footer-project-h">
+          <h2 id="footer-project-h">Project</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="/about/#privacy">Privacy</a></li>
+            <li><a href="/about/#privacy-opt-out" data-analytics-toggle data-label-on="Opt out of analytics" data-label-off="Opt back in to analytics" data-status-off="Analytics is off on this device." data-status-on="Analytics comes back on from the next page you open.">Opt out of analytics</a><span class="visually-hidden" role="status" data-analytics-status></span></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

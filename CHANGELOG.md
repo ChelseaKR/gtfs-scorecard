@@ -29,6 +29,18 @@ the declared public surface).
 
 ### Added
 
+- **Delivery for the scorecard history tables, built and closed (ADR 0063,
+  phase 2).** `history-export.yml` writes one zip a month to the private
+  `history/<YYYY-MM>/` prefix under its own least-privilege OIDC role; the
+  program-bundle setup route recognizes the `history_once` plan and answers a
+  paid checkout with a 30-day capability link to the newest monthly object,
+  emailed from `SES_FROM`, with the checkout left unused while the tier is
+  closed, the store unreadable, or no build exists yet; the download route
+  presigns only the one key a row names. `/data/history/` and
+  `/data/history/setup/` are published with their plan file saying payments
+  are off, so nothing is for sale until the owner follows the runbook in
+  `docs/history-tables.md`. No free output changes.
+
 - **The scorecard history tables, the paid data tier's build step (ADR 0063).**
   `scorecard history-export` writes `checks.parquet` (one row per feed record per
   dated check) and `findings.parquet` (one row per finding per check) from the

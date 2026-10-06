@@ -155,6 +155,45 @@ variable "stripe_price_ids" {
   }
 }
 
+variable "history_price_id" {
+  description = "Stripe price id of the history tables' one-time purchase (ADR 0063, plan key history_once). Blank sells nothing: price_plans() in the Lambdas drops a blank id, so a checkout for it is refused as not this product's. Set together with history_sales_enabled once the Payment Link exists."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.history_price_id == "" || startswith(var.history_price_id, "price_")
+    error_message = "history_price_id must be blank or a Stripe price id (price_...)."
+  }
+}
+
+variable "history_sales_enabled" {
+  description = "\"1\" opens the history tables' setup branch (HISTORY_ENABLED); \"0\" (default) refuses every history checkout with the checkout left unused. A second gate inside payments_enabled, so the bundle's state is untouched by this one. Cannot be \"1\" while history_price_id, ses_from or ses_identity_arn is blank."
+  type        = string
+  default     = "0"
+
+  validation {
+    condition     = contains(["0", "1"], var.history_sales_enabled)
+    error_message = "history_sales_enabled must be exactly \"0\" or \"1\"."
+  }
+}
+
+variable "ses_from" {
+  description = "The verified SES sender the setup Lambda mails a history download link from (SES_FROM). The same address the Actions variable SES_FROM holds for the bundle workflow. Blank keeps the Lambda from sending anything."
+  type        = string
+  default     = ""
+}
+
+variable "ses_identity_arn" {
+  description = "ARN of the one verified SES identity ses_from belongs to (arn:aws:ses:<region>:<account>:identity/<domain or address>). The Lambda role may send from this identity and no other; a wildcard here is refused."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.ses_identity_arn == "" || can(regex("^arn:aws:ses:[a-z0-9-]+:[0-9]{12}:identity/[^*]+$", var.ses_identity_arn))
+    error_message = "ses_identity_arn must be blank or one SES identity ARN with no wildcard."
+  }
+}
+
 variable "reconciler_reporting_ready" {
   description = <<-EOT
     Turns the daily reconciler's schedule on. False keeps it DISABLED, because a job that
@@ -273,6 +312,14 @@ resource "terraform_data" "commercial_gate_guard" {
     precondition {
       condition     = var.payments_enabled == "0" || local.stripe_key_is_live == var.stripe_price_ids_are_live
       error_message = local.stripe_key_is_live ? "A live Stripe key is paired with price ids not confirmed live (stripe_price_ids_are_live = false)." : "stripe_price_ids_are_live is true but the Stripe key is not a live key."
+    }
+    # The history tables open only inside an open purchase surface, with a
+    # price to recognize and a sender to mail the link from. Each half is a
+    # thing Terraform can read; the Payment Link and the object in the store
+    # are owner steps the runbook names (docs/history-tables.md).
+    precondition {
+      condition     = var.history_sales_enabled == "0" || (var.payments_enabled == "1" && var.history_price_id != "" && var.ses_from != "" && var.ses_identity_arn != "")
+      error_message = "history_sales_enabled is \"1\" but payments_enabled is not \"1\", or history_price_id, ses_from or ses_identity_arn is blank."
     }
   }
 }
@@ -453,6 +500,25 @@ resource "aws_iam_role_policy" "lambda" {
         Resource = "${data.aws_s3_bucket.artifacts.arn}/program-bundles/*"
       },
       {
+        # The history tables (ADR 0063): the setup route lists the prefix to
+        # find the newest monthly export and the download route presigns the
+        # one key a history capability row names. Read only, this prefix only;
+        # the list is bounded to the prefix by the s3:prefix condition below.
+        Sid      = "HistoryObjects"
+        Effect   = "Allow"
+        Action   = ["s3:GetObject"]
+        Resource = "${data.aws_s3_bucket.artifacts.arn}/history/*"
+      },
+      {
+        Sid      = "HistoryList"
+        Effect   = "Allow"
+        Action   = ["s3:ListBucket"]
+        Resource = data.aws_s3_bucket.artifacts.arn
+        Condition = {
+          StringLike = { "s3:prefix" = ["history/*"] }
+        }
+      },
+      {
         # Write only, and only the order prefix: the setup and refresh
         # handlers store a validated order for report-bundle.yml to collect.
         # The workflow reads these objects with its own OIDC role
@@ -469,20 +535,46 @@ resource "aws_iam_role_policy" "lambda" {
   })
 }
 
+# The delivery email for a history purchase is sent by the setup Lambda itself
+# (there is no workflow run to send it from), so the role may send from the one
+# verified identity ses_from belongs to and from nothing else. Created only
+# when an identity is named, so a module applied without the history tier
+# grants no SES permission at all.
+resource "aws_iam_role_policy" "lambda_ses" {
+  count = var.ses_identity_arn == "" ? 0 : 1
+  name  = "${var.project}-program-bundle-ses"
+  role  = aws_iam_role.lambda.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "SendHistoryDelivery"
+        Effect   = "Allow"
+        Action   = ["ses:SendEmail"]
+        Resource = var.ses_identity_arn
+      }
+    ]
+  })
+}
+
 locals {
   common_env = {
-    GITHUB_REPO                  = var.github_repo
-    GITHUB_TOKEN                 = var.github_token
-    WORKFLOW_FILE                = "report-bundle.yml"
-    WORKFLOW_REF                 = "main"
-    SUBSCRIPTIONS_TABLE          = aws_dynamodb_table.subscriptions.name
-    BUNDLES_TABLE                = aws_dynamodb_table.bundles.name
-    ARTIFACTS_BUCKET             = var.artifacts_bucket
-    ALLOW_ORIGIN                 = var.allow_origin
-    PAYMENTS_ENABLED             = var.payments_enabled
-    STRIPE_SECRET_KEY            = var.stripe_secret_key
-    STRIPE_WEBHOOK_SECRET        = var.stripe_webhook_secret
-    STRIPE_PRICE_IDS             = jsonencode(var.stripe_price_ids)
+    GITHUB_REPO           = var.github_repo
+    GITHUB_TOKEN          = var.github_token
+    WORKFLOW_FILE         = "report-bundle.yml"
+    WORKFLOW_REF          = "main"
+    SUBSCRIPTIONS_TABLE   = aws_dynamodb_table.subscriptions.name
+    BUNDLES_TABLE         = aws_dynamodb_table.bundles.name
+    ARTIFACTS_BUCKET      = var.artifacts_bucket
+    ALLOW_ORIGIN          = var.allow_origin
+    PAYMENTS_ENABLED      = var.payments_enabled
+    HISTORY_ENABLED       = var.history_sales_enabled
+    SES_FROM              = var.ses_from
+    STRIPE_SECRET_KEY     = var.stripe_secret_key
+    STRIPE_WEBHOOK_SECRET = var.stripe_webhook_secret
+    # The four bundle prices plus the history tables' one (blank until the
+    # owner sets it; price_plans() ignores a blank id).
+    STRIPE_PRICE_IDS             = jsonencode(merge(var.stripe_price_ids, { history_once = var.history_price_id }))
     GOOGLE_ADS_CONVERSION_ACTION = var.google_ads_conversion_action
     # Read by ads_conversion_upload_handler.py only, wired through this
     # shared env block like every other variable here (the same convention

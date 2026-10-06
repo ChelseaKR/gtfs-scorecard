@@ -63,6 +63,9 @@ from typing import Any, NamedTuple
 
 from common import (
     CHECKOUT_PREFIX,
+    DOWNLOAD_DAYS,
+    HISTORY_OBJECT_RE,
+    HISTORY_PLANS,
     ONE_TIME_PLANS,
     ORDER_REF_RE,
     PLAN_AGENCY_CAPS,
@@ -72,12 +75,16 @@ from common import (
     bundle_row,
     checkout_plan,
     dispatch_bundle_workflow,
+    history_enabled,
+    history_row,
     html_response,
     json_response,
     new_order_ref,
+    newest_history_object,
     now_iso,
     payments_enabled,
     scan_all,
+    send_email,
     store_request,
     stripe_get,
     table,
@@ -85,6 +92,7 @@ from common import (
 
 from scorecard_pipeline import deadline
 from scorecard_pipeline.bundle import (
+    BUNDLE_ID_RE,
     BundleError,
     archive_key,
     new_bundle_id,
@@ -386,6 +394,11 @@ def _inherited_cap(bundles: Any, session: dict[str, Any], session_id: str) -> _I
         if str(row.get("email") or "").strip().casefold() != email:
             continue
         plan = str(row.get("plan") or "")
+        if plan in HISTORY_PLANS:
+            # A history purchase is neither a bundle a refresh could renew nor
+            # a checkout whose plan is unknown. Counting it as unsettled would
+            # cost a Stripe read per history buyer on every refresh checkout.
+            continue
         if plan in ONE_TIME_PLANS:
             bought.append((plan, prior))
         elif plan not in SUBSCRIPTION_PLANS:
@@ -544,6 +557,11 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
     bundles = table("BUNDLES_TABLE")
     try:
         session, price, plan = _paid_purchase(session_id)
+        if plan in HISTORY_PLANS:
+            # The history tables (ADR 0063): no form, no cap, no build. The
+            # newest monthly object is already in the bucket, so the whole
+            # delivery is a capability row and an email, answered here.
+            return _history_setup(event, bundles, session, session_id, plan)
         # Before the agency list is even read, and long before the checkout is
         # claimed: a refresh with no bundle to renew is refused here, so the
         # buyer still holds an unused checkout and can cancel it rather than
@@ -676,6 +694,163 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
     )
 
 
+HISTORY_EMAIL_SUBJECT = "Your GTFS Scorecard history tables"
+_HISTORY_CLOSED = (
+    "The history tables are not on sale right now, so nothing was delivered. Your checkout "
+    "has not been used; reply to the receipt Stripe emailed you and it will be sorted out "
+    "by hand."
+)
+_HISTORY_NO_BUILD = (
+    "No monthly history build is in the store yet, so nothing was delivered and your "
+    "checkout has not been used. Reply to the receipt Stripe emailed you and the tables "
+    "will be sent by hand as soon as the build exists."
+)
+_HISTORY_STORE_UNREADABLE = (
+    "Could not read the history store just now, so nothing was delivered and your checkout "
+    "has not been used. Open this page again in a few minutes. Do not pay again."
+)
+_HISTORY_ISSUED_LOST = (
+    "This checkout already produced a download link, but it could not be found again. "
+    "Reply to the receipt Stripe emailed you and quote the order; the link will be reissued."
+)
+
+
+def history_email_body(url: str, month: str) -> str:
+    """The delivery email for one history purchase, plain text.
+
+    Names the build month, the link's lifetime, what the zip holds, where the
+    license is, and how to reach a person, and repeats the independence
+    sentence every paid surface carries. No price: the receipt is Stripe's.
+    """
+    return (
+        "Thank you for buying the GTFS Scorecard history tables.\n\n"
+        f"Build: {month}. Download: {url}\n\n"
+        f"The link works for {DOWNLOAD_DAYS} days; each click opens a fresh short-lived "
+        "download, so the link itself can be kept. The zip holds checks.parquet, "
+        "findings.parquet, DATA-DICTIONARY.md, LICENSE.md and PROVENANCE.json. The license "
+        "is the one shown at https://gtfsscorecard.org/data/history/#license and travels "
+        "inside the zip.\n\n"
+        "If the link does not work, or anything about the order is not right, reply to the "
+        "receipt Stripe emailed you and it will be reissued or refunded.\n\n"
+        "Grades, methodology, and which agencies are listed are never for sale, and these "
+        "tables carry the same numbers as the public site."
+    )
+
+
+def _download_link(event: dict[str, Any], bundle_id: str) -> str:
+    """The capability link, on the API's own host: the request that arrived
+    here names the domain the download route answers on, so no configured base
+    is needed and a test-stage deploy links to itself."""
+    host = str((event.get("requestContext") or {}).get("domainName") or "").strip()
+    base = f"https://{host}" if host else os.environ.get("BUNDLE_API_BASE", "")
+    return f"{base.rstrip('/')}/download/{bundle_id}"
+
+
+def _history_setup(
+    event: dict[str, Any], bundles: Any, session: dict[str, Any], session_id: str, plan: str
+) -> dict[str, Any]:
+    """Deliver the newest monthly history export to a paid checkout.
+
+    Order of the checks matters, and every refusal before the claim leaves the
+    checkout unused: the tier closed, the store unreadable, or no build yet
+    each answer without consuming anything. A reload of the setup page after a
+    delivery is not a second purchase: the claim is found and the same link is
+    answered again. The email is sent after the row and the link exist, and a
+    mail failure is reported as exactly that, never as an undelivered order.
+    """
+    if not history_enabled():
+        raise _Refused(json_response(503, {"ok": False, "error": _HISTORY_CLOSED}))
+    import boto3
+
+    bucket = os.environ["ARTIFACTS_BUCKET"]
+    s3 = boto3.client("s3", region_name=os.environ.get("AWS_REGION", "us-west-2"))
+    try:
+        newest = newest_history_object(s3, bucket)
+    except Exception as err:  # botocore ClientError, a missing bucket
+        print(json.dumps({"event": "history_store_unreadable", "error": type(err).__name__}))
+        raise _Refused(
+            json_response(502, {"ok": False, "error": _HISTORY_STORE_UNREADABLE})
+        ) from err
+    if newest is None:
+        print(json.dumps({"event": "history_no_object", "session_id": session_id}))
+        raise _Refused(json_response(503, {"ok": False, "error": _HISTORY_NO_BUILD}))
+    key, month = newest
+    email = _checkout_email(session)
+    bundle_id = new_bundle_id()
+    if not _claim_session(bundles, session_id, bundle_id, plan, email):
+        claim = bundles.get_item(Key={"bundle_id": _session_key(session_id)}).get("Item") or {}
+        issued = str(claim.get("consumed_by") or "")
+        if not BUNDLE_ID_RE.fullmatch(issued):
+            return json_response(409, {"ok": False, "error": _HISTORY_ISSUED_LOST})
+        row = bundles.get_item(Key={"bundle_id": issued}).get("Item") or {}
+        return json_response(
+            200,
+            {
+                "ok": True,
+                "bundle_id": issued,
+                "download_url": _download_link(event, issued),
+                "month": str(row.get("month") or month),
+                "expires_in_days": DOWNLOAD_DAYS,
+                "already_issued": True,
+            },
+        )
+    bundles.put_item(
+        Item=history_row(
+            bundle_id=bundle_id,
+            archive_key=key,
+            month=month,
+            deliver_to=email,
+            session_id=session_id,
+            plan=plan,
+        )
+    )
+    # Nothing is dispatched for a history purchase, but the claim's flag is
+    # read by the reconciler as "a build never started". The row above is the
+    # delivery, so the flag is set the moment it exists.
+    _mark_dispatched(bundles, session_id)
+    url = _download_link(event, bundle_id)
+    emailed = False
+    if email:
+        try:
+            send_email(email, HISTORY_EMAIL_SUBJECT, history_email_body(url, month))
+            emailed = True
+        except UpstreamError as err:
+            # The link is issued and shown on the page; only the copy by mail
+            # failed. Say so rather than fail a delivery that happened.
+            print(
+                json.dumps(
+                    {"event": "history_email_failed", "session_id": session_id, "error": str(err)}
+                )
+            )
+    return json_response(
+        200,
+        {
+            "ok": True,
+            "bundle_id": bundle_id,
+            "download_url": url,
+            "month": month,
+            "expires_in_days": DOWNLOAD_DAYS,
+            "emailed": emailed,
+        },
+    )
+
+
+def _object_key_for(row: dict[str, Any], bundle_id: str) -> str | None:
+    """The one object a capability row may presign.
+
+    A bundle row names no key and gets the derived one. A history row names
+    the shared monthly object, and only a key of exactly that shape is
+    honored: a row pointing anywhere else in the bucket is refused, so the
+    download route can never be turned into a presigner for arbitrary keys.
+    """
+    named = str(row.get("archive_key") or "")
+    if not named:
+        return archive_key(bundle_id)
+    if named == archive_key(bundle_id) or HISTORY_OBJECT_RE.fullmatch(named):
+        return named
+    return None
+
+
 def download(bundle_id: str) -> dict[str, Any]:
     if not bundle_id or len(bundle_id) != 32 or not all(c in "0123456789abcdef" for c in bundle_id):
         return html_response(404, "Not found", "That download link is not valid.")
@@ -700,7 +875,10 @@ def download(bundle_id: str) -> dict[str, Any]:
     import boto3
 
     bucket = os.environ["ARTIFACTS_BUCKET"]
-    key = archive_key(bundle_id)
+    key = _object_key_for(row, bundle_id)
+    if key is None:
+        print(json.dumps({"event": "download_key_refused", "bundle_id": bundle_id[:8]}))
+        return html_response(404, "Not found", "That download link is not valid.")
     s3 = boto3.client("s3", region_name=os.environ.get("AWS_REGION", "us-west-2"))
     try:
         s3.head_object(Bucket=bucket, Key=key)
@@ -713,14 +891,18 @@ def download(bundle_id: str) -> dict[str, Any]:
             "finish: reply to the receipt Stripe emailed you and quote "
             f"{bundle_id[:8]}, and it will be rebuilt or refunded.",
         )
+    history = HISTORY_OBJECT_RE.fullmatch(key)
+    filename = (
+        f"gtfs-scorecard-history-{history.group(1)}.zip"
+        if history
+        else f"board-reports-{bundle_id[:8]}.zip"
+    )
     url = s3.generate_presigned_url(
         "get_object",
         Params={
             "Bucket": bucket,
             "Key": key,
-            "ResponseContentDisposition": (
-                f'attachment; filename="board-reports-{bundle_id[:8]}.zip"'
-            ),
+            "ResponseContentDisposition": f'attachment; filename="{filename}"',
         },
         ExpiresIn=PRESIGN_SECONDS,
     )

@@ -116,15 +116,17 @@ def _is_stale(stamp: str, *, now: dt.datetime, stale_hours: float) -> bool:
     return age is None or age >= stale_hours
 
 
-def artifact_state(s3: Any, bucket: str, bundle_id: str) -> str:
-    """Whether this bundle's archive is in the bucket.
+def artifact_state(s3: Any, bucket: str, bundle_id: str, *, key: str | None = None) -> str:
+    """Whether this order's archive is in the bucket.
 
     Distinguishes "S3 says no such key" from "S3 did not answer". The second
     is not evidence of an undelivered order and is not evidence of a
     delivered one either, so it gets its own value and the caller refuses.
+    ``key`` names the object when the row names one (a history purchase
+    points at the shared monthly export); a bundle's key is derived.
     """
     try:
-        s3.head_object(Bucket=bucket, Key=archive_key(bundle_id))
+        s3.head_object(Bucket=bucket, Key=key or archive_key(bundle_id))
     except Exception as err:  # botocore's ClientError, read by code not by type
         response = getattr(err, "response", None)
         code = ""
@@ -233,7 +235,10 @@ def _capability_finding(
     created = str(row.get("created_at") or "")
     if not _is_stale(created, now=now, stale_hours=stale_hours):
         return None
-    state = artifact_state(s3, bucket, key)
+    # A history row (ADR 0063) names the shared monthly object it was sold
+    # against; a bundle row names nothing and its key is derived from the id.
+    object_key = str(row.get("archive_key") or "") or archive_key(key)
+    state = artifact_state(s3, bucket, key, key=object_key)
     if state == _ARTIFACT_PRESENT:
         return None
     age = _age_hours(created, now=now)
@@ -242,9 +247,16 @@ def _capability_finding(
     # is a different commitment), so it can be late but cannot breach.
     promised = row.get("deliver_by_epoch")
     breached = deadline.is_breached(promised, now=now, archive_present=state != _ARTIFACT_MISSING)
-    if state == _ARTIFACT_MISSING:
+    if state == _ARTIFACT_MISSING and row.get("archive_key"):
         action = (
-            f"No archive at {archive_key(key)}. Re-dispatch "
+            f"No object at {object_key}: the monthly history export this link "
+            "was sold against is gone or was never written. Run "
+            "history-export.yml by hand for that month; the buyer's link "
+            "already points at that key."
+        )
+    elif state == _ARTIFACT_MISSING:
+        action = (
+            f"No archive at {object_key}. Re-dispatch "
             "report-bundle.yml with this row's order_ref; the download link "
             "the buyer holds already points at that key. If the stored order "
             "object is gone too, the buyer resubmitting the setup form is the "

@@ -90,6 +90,14 @@ HARDCODED_STRING_BASELINE = {
     # A deliberate increase, to move into the catalog with the rest of the
     # tier copy when the tier joins it.
     "bundle.js": 12,
+    # The history tables' two pages (ADR 0063): the landing page's price,
+    # cadence and status copy, built from web/data/history/plan.json so no
+    # amount is typed, and the post-checkout page's confirmation, link and
+    # cannot-run messages. New modules, so these are first recorded baselines
+    # rather than increases, to move into the catalog with the rest of the
+    # paid-tier copy when the tier joins it.
+    "history-setup.js": 11,
+    "history.js": 11,
     "config.js": 1,
     # Worded consequence for the scorecard page (issue #367). New module, so a
     # first baseline rather than an increase, and zero on purpose: every

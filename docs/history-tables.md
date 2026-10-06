@@ -34,6 +34,72 @@ artifact root, `--exclusions` a different ledger, and `--generated-on` dates
 the provenance file; by default it carries the newest snapshot date in the
 corpus, so the output is a function of the input alone.
 
+## How the tables are delivered
+
+Phase 2 of ADR 0063. No per-order build, no new always-on resource, and no
+buyer data in any workflow run.
+
+1. **One shared object a month.** `.github/workflows/history-export.yml` runs
+   on day 4 UTC (after the free dataset release's own window), hydrates every
+   dated artifact from the private bucket, runs `scorecard history-export`,
+   checks the zip holds exactly the five files above, and writes
+   `history/<YYYY-MM>/history.zip` (and the month's `PROVENANCE.json` beside
+   it) to the private artifacts bucket. It can be dispatched by hand, with an
+   optional `month` input for a make-good; a re-run overwrites the same key.
+   The prefix is outside the CloudFront allow-list and listed in the bucket
+   policy's explicit deny, and a lifecycle rule retires an object after 400
+   days. The workflow assumes its own role (`infra/artifacts/github_oidc.tf`,
+   `history_export`): list and read `data/artifacts/`, list and write
+   `history/`, nothing else, and only from runs on `main`.
+2. **The checkout.** The Stripe Payment Link for the `history_once` price
+   sends the buyer to `/data/history/setup/?session_id={CHECKOUT_SESSION_ID}`.
+   That page has no form: `web/src/history-setup.js` posts the session id to
+   the program-bundle API's existing `POST /setup`.
+3. **The setup branch.** `infra/program-bundle/setup_handler.py` recognizes
+   the `history_once` plan from the session's one line item, the same way it
+   recognizes the four bundle plans, and takes the history branch: refuse with
+   the checkout unused while `HISTORY_ENABLED` is not `"1"`, while the store
+   cannot be read, or while no monthly object exists yet; otherwise claim the
+   session, write a capability row that names the newest
+   `history/<YYYY-MM>/history.zip`, email the link from `SES_FROM`, and answer
+   with the link. A reload of the setup page answers the same link again. A
+   mail failure is reported on the page as exactly that; the link still works.
+4. **The download.** The existing `GET /download/{id}` route presigns the one
+   key the row names, for fifteen minutes per click, for 30 days. A row that
+   names any key other than its own derived bundle key or a
+   `history/<YYYY-MM>/history.zip` is refused, so the route can never presign
+   an arbitrary object. The daily reconciler heads the named key, so a history
+   link sold against an object that disappears is reported like an undelivered
+   bundle, with its own repair sentence.
+
+What the Lambda may do, and no more: read `history/*`, list the bucket under
+the `history/` prefix, and send mail from the one SES identity named in
+`ses_identity_arn`. The SES permission exists only when that identity is set.
+
+### Turning the tier on (owner runbook)
+
+Every step is an owner action; none is taken by automation or by an agent.
+
+1. In Stripe (live mode), create one product, "GTFS Scorecard history tables",
+   with one one-time price of $99 USD, nickname `history_once`, and one Payment
+   Link for it: quantity 1, payment methods card and Link, after completion
+   redirect to `https://gtfsscorecard.org/data/history/setup/?session_id={CHECKOUT_SESSION_ID}`,
+   terms-of-service consent required, and the submit message
+   "License and delivery terms: https://gtfsscorecard.org/data/history/#license".
+2. Apply `infra/artifacts` for the lifecycle rule, the deny statement and the
+   `history_export` role, and set the repository secret `HISTORY_AWS_ROLE_ARN`
+   to the `history_export_role_arn` output.
+3. Run `history-export.yml` once by hand and confirm
+   `history/<this month>/history.zip` exists in the bucket.
+4. In `infra/program-bundle`'s `terraform.tfvars`, set `history_price_id` to
+   the price id, `ses_from` to the verified sender, `ses_identity_arn` to its
+   identity ARN, and `history_sales_enabled = "1"`; rebuild the Lambda package
+   and apply.
+5. Rehearse once in test mode (a test price, a test Payment Link, a test
+   checkout) and confirm the link, the email, and the download; then set
+   `paymentsAvailable: true` and the live `checkout_url` in
+   `web/data/history/plan.json`, run `make sync-bundle-offers`, and merge.
+
 ## What stays free
 
 Everything that is free today. Every dated artifact

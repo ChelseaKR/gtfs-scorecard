@@ -43,6 +43,8 @@ from scorecard_pipeline.site_shell import (
     FOOTER_HTML_WITHOUT_US_TOOLS,
     bundle_noscript_region,
     bundle_offers_region,
+    history_noscript_region,
+    history_offers_region,
 )
 
 # pipeline/tests/test_paid_tier_visibility.py -> parents[2] is the repo root.
@@ -665,7 +667,16 @@ def test_no_template_carries_a_price_that_plan_json_owns() -> None:
     plan = _plan()
     products = plan["products"]
     assert isinstance(products, dict)
-    amounts = [f"${product['price']}" for product in products.values()]
+    # The history tables (ADR 0063) own their price in a second plan file,
+    # swept the same way: an amount from either file typed anywhere fails.
+    history_plan = json.loads((_WEB / "data" / "history" / "plan.json").read_text())
+    history_products = history_plan["products"]
+    assert isinstance(history_products, dict)
+    amounts = [
+        f"${product['price']}"
+        for product in (*products.values(), *history_products.values())
+        if isinstance(product.get("price"), (int, float))
+    ]
     assert amounts, "plan.json lists no products; this test would pass vacuously"
 
     searched = [
@@ -696,13 +707,18 @@ def test_no_template_carries_a_price_that_plan_json_owns() -> None:
     # the generator produces from the plan as it stands right now. Without this
     # the subtraction above would be blanket permission to type anything between
     # two comment markers.
-    assert list(exempted) == ["web/bundle/index.html"], (
-        f"generated price regions appeared in {sorted(exempted)}; only /bundle/ may carry them"
+    assert sorted(exempted) == ["web/bundle/index.html", "web/data/history/index.html"], (
+        f"generated price regions appeared in {sorted(exempted)}; only /bundle/ and "
+        "/data/history/ may carry them"
     )
     assert exempted["web/bundle/index.html"] == [
         bundle_offers_region(plan),
         bundle_noscript_region(plan),
     ], "the exempted regions are not what `make sync-bundle-offers` writes from plan.json"
+    assert exempted["web/data/history/index.html"] == [
+        history_offers_region(history_plan),
+        history_noscript_region(history_plan),
+    ], "the history page's regions are not what `make sync-bundle-offers` writes from its plan"
 
 
 # --- and the accessibility gate sees what was added -----------------------

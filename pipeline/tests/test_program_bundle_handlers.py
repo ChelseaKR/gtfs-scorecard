@@ -2493,9 +2493,19 @@ def test_the_reconcile_schedule_cannot_be_enabled_with_no_way_to_report() -> Non
     )
 
     # And the dead email configuration is gone rather than left wired to
-    # nothing, so nobody sets it and expects an alert.
-    assert "ses_from" not in terraform
-    assert "ses:SendEmail" not in terraform
+    # nothing, so nobody sets it and expects an alert. The module does carry
+    # one SES grant since ADR 0063 phase 2, and it is not an alert: the setup
+    # route mails a history buyer their download link, from the one identity
+    # ses_identity_arn names, and nothing in the reconciler reads it.
+    assert "ses" not in rule and "ses" not in declaration
+    assert terraform.count("ses:SendEmail") == 1
+    grant = terraform[terraform.index('resource "aws_iam_role_policy" "lambda_ses"') :]
+    grant = grant[: grant.index("\n}")]
+    assert "SendHistoryDelivery" in grant and "Resource = var.ses_identity_arn" in grant
+    assert 'count = var.ses_identity_arn == "" ? 0 : 1' in grant, "no identity, no grant"
+    reconciler = terraform[terraform.index('resource "aws_lambda_function" "reconcile"') :]
+    reconciler = reconciler[: reconciler.index("\n}")]
+    assert "ses" not in reconciler.lower()
 
 
 # ---------------------------------------------------------------------------

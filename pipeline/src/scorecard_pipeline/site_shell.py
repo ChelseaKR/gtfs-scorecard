@@ -210,6 +210,12 @@ STATIC_NAV_PAGES: dict[str, str | None] = {
     # doc-stats sweep reads them.
     "bundle/index.html": "/about/",
     "bundle/setup/index.html": "/about/",
+    # The scorecard history tables (ADR 0063, docs/history-tables.md): the
+    # landing page is indexable and sits under /data/, the free open-data page;
+    # /data/history/setup/ is the post-checkout page and stays noindex and out
+    # of the sitemap for the same reason /bundle/setup/ does.
+    "data/history/index.html": None,
+    "data/history/setup/index.html": None,
 }
 
 # The one shared footer, single-sourced here so the generated pages and the
@@ -794,6 +800,11 @@ def bundle_noscript_html(plan: dict[str, Any]) -> str:
     sentence saying so, which is the same rule the rest of the page follows:
     never describe what the page cannot do.
     """
+    return _noscript_html(plan, empty=_BUNDLE_NOSCRIPT_EMPTY, closing=_BUNDLE_NOSCRIPT_CLOSING)
+
+
+def _noscript_html(plan: dict[str, Any], *, empty: str, closing: str) -> str:
+    """One page's no-scripting plan list; the two sentences are the page's own."""
     currency = str(plan.get("currency") or "USD")
     products = plan.get("products")
     sellable: list[tuple[str, dict[str, Any]]] = []
@@ -810,7 +821,7 @@ def bundle_noscript_html(plan: dict[str, Any]) -> str:
             sellable.append((str(key), product))
 
     if not sellable:
-        return f"<noscript>\n        <p>{esc(_BUNDLE_NOSCRIPT_EMPTY)}</p>\n      </noscript>"
+        return f"<noscript>\n        <p>{esc(empty)}</p>\n      </noscript>"
 
     cards = []
     for key, product in sellable:
@@ -833,9 +844,9 @@ def bundle_noscript_html(plan: dict[str, Any]) -> str:
             f'          <p class="plan-price">{esc(price_line)}</p>{renewal}\n'
             f"        </section>"
         )
-    closing = _BUNDLE_NOSCRIPT_CLOSING.format(currency=currency)
+    closing_text = closing.format(currency=currency)
     body = "\n".join(cards)
-    return f'<noscript>\n{body}\n        <p class="fineprint">{esc(closing)}</p>\n      </noscript>'
+    return f'<noscript>\n{body}\n        <p class="fineprint">{esc(closing_text)}</p>\n      </noscript>'
 
 
 def bundle_noscript_region(plan: dict[str, Any]) -> str:
@@ -843,6 +854,119 @@ def bundle_noscript_region(plan: dict[str, Any]) -> str:
     return (
         "<!-- noscript-plans:begin -->\n      "
         f"{bundle_noscript_html(plan)}\n      <!-- noscript-plans:end -->"
+    )
+
+
+# The scorecard history tables' page (ADR 0063): the same two generated
+# regions as /bundle/, read from its own plan file, so the price lives in one
+# document and reaches the served bytes the same way.
+HISTORY_SERVICE_ID = f"{BASE_URL}/data/history/#service"
+HISTORY_PLAN_PATH = "data/history/plan.json"
+HISTORY_PAGE_PATH = "data/history/index.html"
+HISTORY_SERVICE_NAME = "Scorecard history tables"
+_HISTORY_NOSCRIPT_CLOSING = (
+    "Prices are in {currency} and are set on the server, not on this page. Paying and "
+    "collecting the download link both need scripting enabled, so this list carries no "
+    "checkout. Every dated scorecard the tables are built from stays free at its own address."
+)
+_HISTORY_NOSCRIPT_EMPTY = (
+    "The history tables are not for sale from this page right now. Every dated scorecard they "
+    "are built from is free at its own address, and the export command is open source."
+)
+
+
+def history_offers_jsonld(plan: dict[str, Any]) -> dict[str, Any] | None:
+    """The history page's Service node carrying its offer, or None when none.
+
+    Built by the same refusals as the bundle's (``bundle_offer_nodes``), on the
+    history plan file, attached to the page's static Service node by ``@id``.
+    """
+    nodes = bundle_offer_nodes(plan)
+    if not nodes:
+        return None
+    by_price = sorted(nodes, key=lambda offer: float(offer["price"]))
+    offers: dict[str, Any] | list[dict[str, Any]] = (
+        nodes[0]
+        if len(nodes) == 1
+        else {
+            "@type": "AggregateOffer",
+            "priceCurrency": str(plan.get("currency") or "USD"),
+            "lowPrice": by_price[0]["price"],
+            "highPrice": by_price[-1]["price"],
+            "offerCount": len(nodes),
+            "offers": nodes,
+        }
+    )
+    return {
+        "@context": "https://schema.org",
+        "@type": ["Service", "Product"],
+        "@id": HISTORY_SERVICE_ID,
+        "name": HISTORY_SERVICE_NAME,
+        "url": f"{BASE_URL}/data/history/",
+        "offers": offers,
+    }
+
+
+def history_offers_region(plan: dict[str, Any]) -> str:
+    """The history page's generated offers block, markers included."""
+    node = history_offers_jsonld(plan)
+    inner = (
+        _BUNDLE_OFFERS_EMPTY_NOTE
+        if node is None
+        else (
+            f'<script id="{BUNDLE_OFFERS_SCRIPT_ID}" type="application/ld+json">'
+            f"{json.dumps(node, separators=(',', ':'))}</script>"
+        )
+    )
+    return f"<!-- offers:begin -->\n  {inner}\n  <!-- offers:end -->"
+
+
+def history_noscript_html(plan: dict[str, Any]) -> str:
+    """The history page's no-scripting plan list, from its plan file alone."""
+    return _noscript_html(plan, empty=_HISTORY_NOSCRIPT_EMPTY, closing=_HISTORY_NOSCRIPT_CLOSING)
+
+
+def history_noscript_region(plan: dict[str, Any]) -> str:
+    """The history page's generated no-scripting block, markers included."""
+    return (
+        "<!-- noscript-plans:begin -->\n      "
+        f"{history_noscript_html(plan)}\n      <!-- noscript-plans:end -->"
+    )
+
+
+def _sync_offers(
+    web: Path, page_path: str, plan_path: str, offers_region: Any, noscript_region: Any
+) -> list[Path]:
+    """Rewrite one page's two generated regions from its plan file."""
+    path = web / page_path
+    plan = json.loads((web / plan_path).read_text())
+    old = path.read_text()
+    new = old
+    for marker, pattern, generated in (
+        ("offers", _BUNDLE_OFFERS_RE, offers_region(plan)),
+        ("noscript-plans", _BUNDLE_NOSCRIPT_RE, noscript_region(plan)),
+    ):
+        match = pattern.search(new)
+        if match is None:
+            raise ValueError(f"{path}: expected one {marker}:begin/{marker}:end region, found none")
+        new = new[: match.start()] + generated + new[match.end() :]
+    if new == old:
+        return []
+    path.write_text(new)
+    return [path]
+
+
+def sync_history_offers(root: Path | None = None) -> list[Path]:
+    """Rewrite /data/history/'s generated regions from web/data/history/plan.json.
+
+    The same mechanism as :func:`sync_bundle_offers`, on the history tables'
+    own plan file; ``make sync-bundle-offers`` runs both and
+    tests/test_history_plan_contract.py fails CI when the page and the plan
+    disagree.
+    """
+    web = (root or _repo_root()) / "web"
+    return _sync_offers(
+        web, HISTORY_PAGE_PATH, HISTORY_PLAN_PATH, history_offers_region, history_noscript_region
     )
 
 
@@ -872,22 +996,9 @@ def sync_bundle_offers(root: Path | None = None) -> list[Path]:
     was closed for machines only. Nothing else in the page is touched.
     """
     web = (root or _repo_root()) / "web"
-    path = web / BUNDLE_PAGE_PATH
-    plan = json.loads((web / BUNDLE_PLAN_PATH).read_text())
-    old = path.read_text()
-    new = old
-    for marker, pattern, generated in (
-        ("offers", _BUNDLE_OFFERS_RE, bundle_offers_region(plan)),
-        ("noscript-plans", _BUNDLE_NOSCRIPT_RE, bundle_noscript_region(plan)),
-    ):
-        match = pattern.search(new)
-        if match is None:
-            raise ValueError(f"{path}: expected one {marker}:begin/{marker}:end region, found none")
-        new = new[: match.start()] + generated + new[match.end() :]
-    if new == old:
-        return []
-    path.write_text(new)
-    return [path]
+    return _sync_offers(
+        web, BUNDLE_PAGE_PATH, BUNDLE_PLAN_PATH, bundle_offers_region, bundle_noscript_region
+    )
 
 
 def fit_seo_title(title: str) -> str:
