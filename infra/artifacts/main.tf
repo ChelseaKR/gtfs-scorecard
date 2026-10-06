@@ -151,6 +151,24 @@ resource "aws_s3_bucket_lifecycle_configuration" "artifacts" {
       days = 30
     }
   }
+  # The history tables (ADR 0063, docs/history-tables.md): history-export.yml
+  # writes one zip a month under history/<YYYY-MM>/, and a buyer's 30-day
+  # capability link points at the newest. Thirteen months keeps a year of
+  # monthly builds for a make-good or a re-issued link; the prefix is outside
+  # the CloudFront allow-list, so the only way to an object is the download
+  # route's presign.
+  rule {
+    id     = "expire-history-exports"
+    status = "Enabled"
+
+    filter {
+      prefix = "history/"
+    }
+
+    expiration {
+      days = 400
+    }
+  }
   rule {
     id     = "expire-structure-staging"
     status = "Enabled"
@@ -336,6 +354,9 @@ data "aws_iam_policy_document" "artifacts" {
       "${aws_s3_bucket.artifacts.arn}/data/artifacts/rollups/digest.md",
       "${aws_s3_bucket.artifacts.arn}/feeds/*",
       "${aws_s3_bucket.artifacts.arn}/cache/*",
+      "${aws_s3_bucket.artifacts.arn}/history/*",
+      "${aws_s3_bucket.artifacts.arn}/program-bundles/*",
+      "${aws_s3_bucket.artifacts.arn}/program-requests/*",
     ]
     principals {
       type        = "Service"

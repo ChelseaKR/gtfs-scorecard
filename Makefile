@@ -89,7 +89,7 @@ sync-measure:
 # existed; tests/test_bundle_offers_markup.py fails CI when the block and the
 # plan disagree, so a price cannot change without the page changing with it.
 sync-bundle-offers:
-	cd pipeline && uv run python -c "from scorecard_pipeline.site_shell import sync_bundle_offers; print('synced:', [str(p) for p in sync_bundle_offers()])"
+	cd pipeline && uv run python -c "from scorecard_pipeline.site_shell import sync_bundle_offers, sync_history_offers; print('synced:', [str(p) for p in sync_bundle_offers() + sync_history_offers()])"
 
 # Rebuild the national all-routes vector tiles + PMTiles archive (web/tiles/).
 # Requires tippecanoe on PATH (brew install tippecanoe). NOT part of `verify` or

@@ -10,8 +10,9 @@
   "noindex_path_patterns": [
     "/agency/*/board/",
     "/agency/*/brief/",
+    "/bundle/sample/",
     "/bundle/setup/",
-    "/bundle/sample/"
+    "/data/history/setup/"
   ],
   "conditional_noindex_path_patterns": [
     "/agency/*/fixes/"
@@ -32,6 +33,9 @@
     "/bundle/": [
       "Service",
       "Product"
+    ],
+    "/data/history/": [
+      "Service"
     ],
     "/program/": [
       "CollectionPage"

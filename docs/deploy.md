@@ -44,6 +44,7 @@ set them, and forks keep working with nothing set:
 | --- | --- | --- |
 | Mirror artifacts to the CDN bucket | `ARTIFACTS_BUCKET` | `AWS_ROLE_ARN` secret, `infra/artifacts` applied |
 | Send the feed-health email digest | `SES_FROM` | a verified SES sender, `infra/alerts` applied |
+| Build the monthly history tables export (ADR 0063) | `ARTIFACTS_BUCKET` | `HISTORY_AWS_ROLE_ARN` secret, the `history_export` role from `infra/artifacts` |
 | AWS region (optional) | `AWS_REGION` | defaults to `us-west-2` |
 | Count page views and bundle checkout clicks ([ADR 0055](decisions/0055-cookieless-site-measurement.md)) | `POSTHOG_KEY` (a **secret**, not a variable) | a PostHog Cloud US project with "Discard client IP data" on; unset keeps the site silent |
 | Google Analytics 4 ([ADR 0056](decisions/0056-google-analytics-4.md)) | nothing: the measurement id is committed as `measurement_ga4_id` in `site-seo.json` | a GA4 web data stream with Google signals off and enhanced measurement's history, site search and form interaction options off; `""` turns GA4 off |

@@ -5,6 +5,17 @@ sale. Delivery, the Terraform, the Lambda branch, the page, and the Stripe
 prices follow in later phases, each behind the same mechanical gate the bundle
 uses.
 
+**Status log, phase 2 (2026-10-06).** Delivery is built and closed:
+`history-export.yml` writes one zip a month to `history/<YYYY-MM>/` under its
+own least-privilege role; the setup route answers a paid `history_once`
+checkout with a 30-day capability for the newest object and emails the link;
+`/data/history/` and `/data/history/setup/` are published with the plan file
+saying payments are off. Nothing sells until the owner creates the Stripe
+price and Payment Link, sets `history_price_id`, `history_sales_enabled`,
+`ses_from` and `ses_identity_arn`, re-applies `infra/program-bundle`, runs the
+export once, and turns `paymentsAvailable` on in the plan file; the steps are
+in `docs/history-tables.md`.
+
 ## Context
 
 The free read API is static files with no key and no limit (ADR 0013), the

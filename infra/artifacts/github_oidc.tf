@@ -196,3 +196,53 @@ output "pages_read_role_arn" {
   description = "Set as the PAGES_AWS_ROLE_ARN GitHub Actions secret for the Pages deploy job's read-only S3 sync."
   value       = aws_iam_role.pages_read.arn
 }
+
+# The history tables' monthly export (ADR 0063, .github/workflows/history-export.yml).
+#
+# Its own role rather than the deploy role above: the deploy role may write
+# anywhere in the bucket, and a monthly job that needs to read the dated
+# artifacts and write one zip should be able to do exactly that. Trusts runs
+# on the default branch only, like the deploy role. Output
+# `history_export_role_arn` becomes the HISTORY_AWS_ROLE_ARN GitHub secret.
+resource "aws_iam_role" "history_export" {
+  name               = "${var.project}-history-export"
+  assume_role_policy = data.aws_iam_policy_document.deploy_assume.json
+}
+
+data "aws_iam_policy_document" "history_export_s3" {
+  # List only the two prefixes the job touches: the dated artifacts it reads
+  # and the history prefix it writes into (to see what is already there).
+  statement {
+    actions   = ["s3:ListBucket"]
+    resources = [aws_s3_bucket.artifacts.arn]
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values   = ["data/artifacts/*", "history/*"]
+    }
+  }
+  # Read the published artifact tree (the dated files and the index), nothing
+  # private: not the validator cache, not the raw feeds, not stored orders.
+  statement {
+    actions   = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.artifacts.arn}/data/artifacts/*"]
+  }
+  # Write one month's export and its provenance under history/<YYYY-MM>/ and
+  # nowhere else. No delete: a month, once written, stays until the lifecycle
+  # rule retires it, and a re-run overwrites the same key.
+  statement {
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.artifacts.arn}/history/*"]
+  }
+}
+
+resource "aws_iam_role_policy" "history_export_s3" {
+  name   = "history-export"
+  role   = aws_iam_role.history_export.id
+  policy = data.aws_iam_policy_document.history_export_s3.json
+}
+
+output "history_export_role_arn" {
+  description = "Set as the HISTORY_AWS_ROLE_ARN GitHub Actions secret for history-export.yml."
+  value       = aws_iam_role.history_export.arn
+}

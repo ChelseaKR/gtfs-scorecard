@@ -89,6 +89,20 @@ PLAN_AGENCY_CAPS: dict[str, int] = {
 # entitlement check would then have to guess at.
 ONE_TIME_PLANS = ("bundle_25", "bundle_100")
 SUBSCRIPTION_PLANS = ("refresh_mo", "refresh_yr")
+# The history tables (ADR 0063, docs/history-tables.md): a one-time purchase
+# of the newest monthly export that history-export.yml wrote. Not a bundle:
+# there is no agency list, no cap, no workflow dispatch, and a history
+# purchase never counts as a bundle a refresh could renew. The key matches
+# terraform's history_price_id and web/data/history/plan.json.
+HISTORY_PLANS = ("history_once",)
+# Every plan a configured price may sell. price_plans() recognizes nothing
+# outside this tuple, so a price id typed against an unknown key sells nothing.
+KNOWN_PLANS = (*PLAN_AGENCY_CAPS, *HISTORY_PLANS)
+# Where history-export.yml writes each month's zip: one shared object per
+# month, outside the CloudFront allow-list, reachable only through the
+# download route, which presigns the one key a capability row names.
+HISTORY_PREFIX = "history/"
+HISTORY_OBJECT_RE = re.compile(r"^history/(\d{4}-\d{2})/history\.zip$")
 # Key prefixes in the bundles table. A bare bundle id is a capability row; a
 # `session#` row is the setup route's claim on a Checkout Session, and a
 # `checkout#` row is the webhook's note of a completed checkout. Neither
@@ -119,6 +133,16 @@ def payments_enabled() -> bool:
     same gate read again inside the Lambda, so a stale route or a direct
     invoke cannot build anything either."""
     return os.environ.get("PAYMENTS_ENABLED", "0") == "1"
+
+
+def history_enabled() -> bool:
+    """True only while Terraform has opened the history tier as well.
+
+    A second gate inside :func:`payments_enabled`, read from HISTORY_ENABLED,
+    so the bundle can be on sale while the history tables are not yet, and a
+    history checkout that arrives early is refused with its checkout unused
+    rather than delivered from a store with nothing in it."""
+    return payments_enabled() and os.environ.get("HISTORY_ENABLED", "0") == "1"
 
 
 # ---------------------------------------------------------------------------
@@ -295,7 +319,7 @@ def price_plans() -> dict[str, str]:
     plans: dict[str, str] = {}
     ambiguous: set[str] = set()
     for plan, price in configured.items():
-        if plan not in PLAN_AGENCY_CAPS or not isinstance(price, str) or not price.strip():
+        if plan not in KNOWN_PLANS or not isinstance(price, str) or not price.strip():
             continue
         price = price.strip()
         if price in plans:
@@ -411,6 +435,88 @@ def scan_all(source: Any, **kwargs: Any) -> list[dict[str, Any]]:
         if not start:
             return rows
         kwargs = {**kwargs, "ExclusiveStartKey": start}
+
+
+def newest_history_object(s3: Any, bucket: str) -> tuple[str, str] | None:
+    """The newest ``history/<YYYY-MM>/history.zip`` in the bucket, as
+    ``(key, month)``, or None when no monthly build exists yet.
+
+    Lists the prefix page by page and keeps only keys of the exact shape the
+    workflow writes, so a stray object under the prefix can never be sold.
+    Newest is by the month in the key, not by the object's timestamp: a
+    make-good re-run of an older month must not displace the current one.
+    """
+    newest: tuple[str, str] | None = None
+    kwargs: dict[str, Any] = {"Bucket": bucket, "Prefix": HISTORY_PREFIX}
+    while True:
+        page = s3.list_objects_v2(**kwargs)
+        for obj in page.get("Contents") or []:
+            key = str(obj.get("Key") or "")
+            match = HISTORY_OBJECT_RE.fullmatch(key)
+            if match is None:
+                continue
+            month = match.group(1)
+            if newest is None or month > newest[1]:
+                newest = (key, month)
+        token = page.get("NextContinuationToken") if page.get("IsTruncated") else None
+        if not token:
+            return newest
+        kwargs = {**kwargs, "ContinuationToken": token}
+
+
+def history_row(
+    *,
+    bundle_id: str,
+    archive_key: str,
+    month: str,
+    deliver_to: str,
+    session_id: str,
+    plan: str,
+) -> dict[str, Any]:
+    """The capability row for one history purchase.
+
+    The same table and TTL as a bundle's row, so the download route, the
+    reconciler, and the TTL sweep treat it the same way. ``archive_key`` names
+    the shared monthly object the link opens; a bundle row has none because its
+    key is derived from the bundle id. ``program_name`` and ``order_ref`` are
+    present and empty so the reconciler's readers find the fields they expect.
+    """
+    return {
+        "bundle_id": bundle_id,
+        "product": "history",
+        "plan": plan,
+        "archive_key": archive_key,
+        "month": month,
+        "deliver_to": deliver_to,
+        "program_name": "",
+        "source": "history",
+        "session_id": session_id,
+        "created_at": now_iso(),
+        "expires_at": epoch_in(DOWNLOAD_DAYS),
+        "order_ref": "",
+    }
+
+
+def send_email(to: str, subject: str, body: str) -> None:
+    """One plain-text email through SES from SES_FROM.
+
+    Raises UpstreamError on any failure so the caller can say the link was
+    issued but not mailed, which is a different sentence from "delivered".
+    """
+    source = os.environ.get("SES_FROM", "")
+    if not source or "@" not in source:
+        raise UpstreamError("SES_FROM is not configured")
+    try:
+        import boto3
+
+        ses = boto3.client("ses", region_name=os.environ.get("AWS_REGION", "us-west-2"))
+        ses.send_email(
+            Source=source,
+            Destination={"ToAddresses": [to]},
+            Message={"Subject": {"Data": subject}, "Body": {"Text": {"Data": body}}},
+        )
+    except Exception as err:  # botocore ClientError, an unverified identity, a sandbox
+        raise UpstreamError(f"sending the delivery email failed: {type(err).__name__}") from err
 
 
 def bundle_row(
