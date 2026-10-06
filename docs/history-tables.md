@@ -98,7 +98,10 @@ Every step is an owner action; none is taken by automation or by an agent.
 5. Rehearse once in test mode (a test price, a test Payment Link, a test
    checkout) and confirm the link, the email, and the download; then set
    `paymentsAvailable: true` and the live `checkout_url` in
-   `web/data/history/plan.json`, run `make sync-bundle-offers`, and merge.
+   `web/data/history/plan.json`, run `make sync-bundle-offers`, add
+   `"Product"` to the `/data/history/` entry of `required_json_ld_types` in
+   `site-seo.json` (the offers block is the page's Product node, and the
+   deploy gate requires it only once the plan is on), and merge.
 
 ## What stays free
 

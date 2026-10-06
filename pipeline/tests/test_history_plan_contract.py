@@ -121,7 +121,16 @@ def test_the_landing_page_is_indexable_and_the_setup_page_is_not() -> None:
     assert '<link rel="canonical" href="https://gtfsscorecard.org/data/history/setup/">' in setup
     seo = json.loads((_REPO / "site-seo.json").read_text())
     assert "/data/history/setup/" in seo["noindex_path_patterns"]
-    assert seo["required_json_ld_types"]["/data/history/"] == ["Service", "Product"]
+    # The Product node is the offers block, which exists only while the plan
+    # says payments are available, so the SEO contract may require it only
+    # then. The PR that turns the plan on must add "Product" here too, or the
+    # deploy gate's structural SEO check fails the page.
+    plan = json.loads(_PLAN.read_text())
+    expected_types = ["Service", "Product"] if plan["paymentsAvailable"] else ["Service"]
+    assert seo["required_json_ld_types"]["/data/history/"] == expected_types, (
+        "site-seo.json requires a Product node on /data/history/ only while plan.json "
+        "says payments are available"
+    )
     render_site = (_REPO / "pipeline" / "src" / "scorecard_pipeline" / "render_site.py").read_text()
     assert 'f"{BASE_URL}/data/history/",' in render_site, "the landing page is in the sitemap list"
     assert "/data/history/setup/" not in render_site, "the setup page stays out of the sitemap"
