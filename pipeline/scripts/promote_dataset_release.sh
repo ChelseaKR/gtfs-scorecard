@@ -78,7 +78,7 @@ git fetch origin "refs/tags/${tag}:refs/tags/${tag}"
 test "$(git cat-file -t "refs/tags/${tag}")" = tag
 test "$(git rev-parse "refs/tags/${tag}^{commit}")" = "$target"
 git config --local gpg.format ssh
-git config --local gpg.ssh.allowedSignersFile "$repo_root/.github/release-signers"
+git config --local gpg.ssh.allowedSignersFile "$repo_root/.github/dataset-signers"
 git verify-tag -- "$tag"
 
 local_tag_object=$(git rev-parse "refs/tags/${tag}")
