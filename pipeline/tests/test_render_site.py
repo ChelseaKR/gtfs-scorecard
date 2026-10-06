@@ -5734,8 +5734,10 @@ def test_guided_fix_flow_stitches_three_steps_and_links(monkeypatch: pytest.Monk
     finally:
         render_site.FIX_CODES_WITH_PAGES.discard("expired_calendar")
 
-    # (1) the plain-language finding with its /fix/<code>/ guide.
-    assert "Re-export with a longer calendar." in html
+    # (1) the finding, named by its card above (the card states the change, so
+    # the flow does not print it again), with its /fix/<code>/ guide.
+    assert '<a href="#finding-expired_calendar">Fix 01</a>' in html
+    assert "Re-export with a longer calendar." not in html
     assert 'href="/fix/expired_calendar/"' in html
     # (2) "Make the change": the tool-specific fix path (Trillium, hosted). A
     # legacy artifact URL is deliberately ignored; the service does not publish
