@@ -29,6 +29,7 @@ _CONFIG_KEYS = {
     "retained_redirects_path",
     "fragment_exempt_prefixes",
     "noindex_path_patterns",
+    "conditional_noindex_path_patterns",
     "canonical_aliases",
     "hreflang_groups",
     "required_json_ld_types",
@@ -118,6 +119,7 @@ class Config:
     retained_redirects_path: str
     fragment_exempt_prefixes: tuple[str, ...]
     noindex_path_patterns: tuple[str, ...]
+    conditional_noindex_path_patterns: tuple[str, ...]
     canonical_aliases: dict[str, str]
     hreflang_groups: tuple[dict[str, str], ...]
     required_json_ld_types: dict[str, tuple[str, ...]]
@@ -506,8 +508,12 @@ def _read_config_object(path: Path) -> dict[str, Any]:
     return raw
 
 
+# Keys a site may leave out. Every other key in _CONFIG_KEYS is required.
+_OPTIONAL_CONFIG_KEYS = {"conditional_noindex_path_patterns"}
+
+
 def _validate_config_keys(raw: dict[str, Any]) -> None:
-    missing = sorted(_CONFIG_KEYS - raw.keys())
+    missing = sorted(_CONFIG_KEYS - _OPTIONAL_CONFIG_KEYS - raw.keys())
     unknown = sorted(raw.keys() - _CONFIG_KEYS)
     if missing or unknown:
         details = []
@@ -574,9 +580,18 @@ def _valid_hostname(hostname: str) -> bool:
 
 def _config_path_lists(
     raw: dict[str, Any],
-) -> tuple[tuple[str, ...], tuple[str, ...]]:
+) -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
     fragment_prefixes = _string_list(raw, "fragment_exempt_prefixes")
     noindex_patterns = _string_list(raw, "noindex_path_patterns")
+    # Optional: paths whose pages decide for themselves whether they are
+    # indexable (a thin clearance log is noindex; a full one is not). The
+    # page's own robots meta is the signal, and the sitemap must agree with it.
+    # Unlike noindex_path_patterns, an unmatched pattern here is not a finding:
+    # these pages exist only where their data does (clearance logs need
+    # receipts), so a render without that data would fail for no reason.
+    conditional_patterns: tuple[str, ...] = ()
+    if "conditional_noindex_path_patterns" in raw:
+        conditional_patterns = _string_list(raw, "conditional_noindex_path_patterns")
     for value in fragment_prefixes:
         _public_path(value, "fragment_exempt_prefixes", allow_fragment=False)
         if not value.endswith("/") or "*" in value:
@@ -585,7 +600,15 @@ def _config_path_lists(
             )
     for pattern in noindex_patterns:
         _validate_path_pattern(pattern, "noindex_path_patterns")
-    return fragment_prefixes, noindex_patterns
+    for pattern in conditional_patterns:
+        _validate_path_pattern(pattern, "conditional_noindex_path_patterns")
+    overlap = sorted(set(noindex_patterns) & set(conditional_patterns))
+    if overlap:
+        raise ConfigError(
+            "a path pattern cannot be in both 'noindex_path_patterns' and "
+            f"'conditional_noindex_path_patterns': {', '.join(overlap)}"
+        )
+    return fragment_prefixes, noindex_patterns, conditional_patterns
 
 
 def _validate_path_pattern(pattern: str, key: str) -> None:
@@ -741,7 +764,7 @@ def load_config(path: Path) -> Config:
     raw = _read_config_object(path)
     _validate_config_keys(raw)
     origin = _site_origin(raw)
-    fragment_prefixes, noindex_patterns = _config_path_lists(raw)
+    fragment_prefixes, noindex_patterns, conditional_patterns = _config_path_lists(raw)
     measurement_script, measurement_host = _measurement_settings(raw)
     measurement_ga4_host, measurement_ga4_id = _ga4_settings(raw)
 
@@ -760,6 +783,7 @@ def load_config(path: Path) -> Config:
         ),
         fragment_exempt_prefixes=fragment_prefixes,
         noindex_path_patterns=noindex_patterns,
+        conditional_noindex_path_patterns=conditional_patterns,
         canonical_aliases=canonical_aliases,
         hreflang_groups=_hreflang_groups(raw),
         required_json_ld_types=_required_json_ld_types(raw),
@@ -801,6 +825,26 @@ def _is_noindex_path(public_path: str, config: Config) -> bool:
     return any(
         _matches_path_pattern(public_path, pattern) for pattern in config.noindex_path_patterns
     )
+
+
+def _is_conditional_noindex_path(public_path: str, config: Config) -> bool:
+    return any(
+        _matches_path_pattern(public_path, pattern)
+        for pattern in config.conditional_noindex_path_patterns
+    )
+
+
+def _page_is_noindex(page: Page, config: Config) -> bool:
+    """Whether this rendered page is out of the index.
+
+    A configured noindex path is out whatever it rendered (the noindex check
+    reports a page that forgot its robots meta). A conditional path is out
+    only when the page itself carries a robots meta: the renderer decides
+    which pages do, and the sitemap has to follow that decision.
+    """
+    if _is_noindex_path(page.public_path, config):
+        return True
+    return _is_conditional_noindex_path(page.public_path, config) and bool(page.robots)
 
 
 def _intended_canonical_path(page: Page, config: Config) -> str:
@@ -1374,6 +1418,7 @@ def _validate_redirect(
 
 def _validate_noindex(page: Page, config: Config, findings: list[Finding]) -> None:
     expected = _is_noindex_path(page.public_path, config)
+    conditional = _is_conditional_noindex_path(page.public_path, config)
     if len(page.robots) > 1:
         findings.append(
             Finding(
@@ -1388,12 +1433,12 @@ def _validate_noindex(page: Page, config: Config, findings: list[Finding]) -> No
             Finding("noindex.missing", page.relative_path, "configured noindex page is indexable")
         )
         return
-    if not expected and page.robots:
+    if not expected and not conditional and page.robots:
         findings.append(
             Finding("noindex.unexpected", page.relative_path, "unconfigured robots meta is present")
         )
         return
-    if expected:
+    if page.robots:
         directives = {item for item in re.split(r"[\s,]+", page.robots[0].casefold()) if item}
         if directives != {"follow", "noindex"}:
             findings.append(
@@ -1637,7 +1682,7 @@ def _validate_duplicate_metadata(
             if (
                 page.public_path in redirect_aliases
                 or page.public_path in config.canonical_aliases
-                or _is_noindex_path(page.public_path, config)
+                or _page_is_noindex(page, config)
             ):
                 continue
             values = getter(page)
@@ -1898,8 +1943,7 @@ def _expected_sitemap_urls(
     return {
         _absolute(config, _intended_canonical_path(page, config))
         for page in pages.values()
-        if page.public_path not in redirect_aliases
-        and not _is_noindex_path(page.public_path, config)
+        if page.public_path not in redirect_aliases and not _page_is_noindex(page, config)
     }
 
 
@@ -2155,7 +2199,7 @@ def _validate_presentation(page: Page, config: Config, findings: list[Finding]) 
     noindex page is measured; only the h1 expectation follows the alias
     exemption, because the app shell writes its h1 at runtime."""
     is_alias = page.public_path in config.canonical_aliases
-    if not is_alias and not _is_noindex_path(page.public_path, config):
+    if not is_alias and not _page_is_noindex(page, config):
         _validate_metadata_lengths(page, config, findings)
     _validate_heading_levels(page, findings, expect_h1=not is_alias)
 
@@ -2214,7 +2258,7 @@ def audit(site_root: Path, config: Config) -> tuple[list[Finding], dict[str, int
     _validate_robots(site_root, config, findings)
 
     sorted_findings = sorted(set(findings))
-    noindex_pages = sum(_is_noindex_path(page.public_path, config) for page in pages.values())
+    noindex_pages = sum(_page_is_noindex(page, config) for page in pages.values())
     canonical_aliases = sum(page.public_path in config.canonical_aliases for page in pages.values())
     redirect_alias_count = sum(page.public_path in redirect_aliases for page in pages.values())
     stats = {

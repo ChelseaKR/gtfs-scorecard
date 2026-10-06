@@ -1673,3 +1673,111 @@ def test_repository_config_publishes_the_length_bounds_the_renderer_targets() ->
     assert config["title_length"] == [15, 60]
     assert config["description_length"] == [50, 155]
     assert config["title_length"][1] == SEO_TITLE_MAX_LENGTH
+
+
+def _write_clearance_logs(site: Path, config: Path) -> None:
+    """Two clearance logs under a conditional noindex path: one full (indexable,
+    in the sitemap) and one thin (noindex,follow, out of the sitemap)."""
+    _write_text(
+        site,
+        "agency/demo/fixes/index.html",
+        _page(
+            "/agency/demo/fixes/",
+            "Demo clearance log",
+            "Demo clearance log description",
+            body='<a href="/agency/demo/">Scorecard</a>',
+        ),
+    )
+    _write_text(
+        site,
+        "agency/other/fixes/index.html",
+        _page(
+            "/agency/other/fixes/",
+            "Other clearance log",
+            "Other clearance log description",
+            noindex=True,
+            body='<a href="/agency/demo/">Scorecard</a>',
+        ),
+    )
+    _replace(
+        site / "sitemap.xml",
+        f"<url><loc>{ORIGIN}/target/</loc>",
+        f"<url><loc>{ORIGIN}/agency/demo/fixes/</loc><lastmod>2026-07-29</lastmod></url>"
+        f"<url><loc>{ORIGIN}/target/</loc>",
+    )
+    raw = json.loads(config.read_text(encoding="utf-8"))
+    raw["conditional_noindex_path_patterns"] = ["/agency/*/fixes/"]
+    config.write_text(json.dumps(raw), encoding="utf-8")
+
+
+def test_conditional_noindex_pages_follow_their_own_robots_meta(tmp_path: Path) -> None:
+    """A thin clearance log is noindex and out of the sitemap; a full one is
+    indexable and in it. Neither is an unconfigured robots meta."""
+    site, config = _write_fixture(tmp_path)
+    _write_clearance_logs(site, config)
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 0, report.read_text(encoding="utf-8")
+    assert _codes(report) == set()
+    assert json.loads(report.read_text(encoding="utf-8"))["summary"]["noindex_pages"] == 3
+
+
+def test_conditional_noindex_pages_must_still_agree_with_the_sitemap(tmp_path: Path) -> None:
+    """The conditional pattern is not a free pass: the sitemap has to match
+    what each page says, and the robots meta has to be exactly noindex,follow."""
+    site, config = _write_fixture(tmp_path)
+    _write_clearance_logs(site, config)
+    # Swap the two logs in the sitemap: the thin one listed, the full one missing.
+    _replace(
+        site / "sitemap.xml",
+        f"<loc>{ORIGIN}/agency/demo/fixes/</loc>",
+        f"<loc>{ORIGIN}/agency/other/fixes/</loc>",
+    )
+    _replace(
+        site / "agency/other/fixes/index.html",
+        '<meta name="robots" content="noindex,follow">',
+        '<meta name="robots" content="noindex">',
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert {
+        "noindex.directives",
+        "sitemap.missing_url",
+        "sitemap.unexpected_url",
+    } <= _codes(report)
+    assert "noindex.unexpected" not in _codes(report)
+
+
+def test_robots_meta_outside_any_pattern_is_still_unexpected(tmp_path: Path) -> None:
+    """The conditional pattern covers only its own paths."""
+    site, config = _write_fixture(tmp_path)
+    _write_clearance_logs(site, config)
+    _replace(
+        site / "target/index.html",
+        "</head>",
+        '<meta name="robots" content="noindex,follow"></head>',
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "noindex.unexpected" in _codes(report)
+
+
+def test_conditional_noindex_pattern_cannot_also_be_a_noindex_pattern(tmp_path: Path) -> None:
+    site, config = _write_fixture(tmp_path)
+    raw = json.loads(config.read_text(encoding="utf-8"))
+    raw["conditional_noindex_path_patterns"] = ["/agency/*/board/"]
+    config.write_text(json.dumps(raw), encoding="utf-8")
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode != 0
+    assert "conditional_noindex_path_patterns" in (result.stderr + result.stdout)
