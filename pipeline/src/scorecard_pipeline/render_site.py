@@ -3154,6 +3154,234 @@ def _plan_clearance_titles(
     }
 
 
+_RT_KIND_LABELS = {
+    "trip_updates": "trip updates",
+    "vehicle_positions": "vehicle positions",
+    "service_alerts": "service alerts",
+}
+
+
+def _count(value: object) -> int | None:
+    return value if isinstance(value, int) and not isinstance(value, bool) and value >= 0 else None
+
+
+def _count_phrase(n: int, one: str, many: str) -> str:
+    return f"{n:,} {one if n == 1 else many}"
+
+
+def _join_words(items: list[str]) -> str:
+    if len(items) <= 1:
+        return "".join(items)
+    return ", ".join(items[:-1]) + f" and {items[-1]}"
+
+
+def _about_size_sentence(artifact: dict[str, Any]) -> str:
+    """Routes, trips and stops, each only when measured."""
+    agency_name = str(artifact.get("agency", {}).get("name") or "This agency")
+    profile = artifact.get("mode_profile")
+    profile = profile if isinstance(profile, dict) and profile.get("measured") else {}
+    geo = artifact.get("geo")
+    geo = geo if isinstance(geo, dict) else {}
+    routes = _count(profile.get("route_count"))
+    trips = _count(profile.get("trip_count"))
+    stops = _count(geo.get("stop_count"))
+    # An unclassified route type names no mode, so it is left out of the
+    # wording rather than printed as "other / unclassified routes".
+    modes = [
+        str(m.get("label")).lower()
+        for m in profile.get("modes") or []
+        if isinstance(m, dict) and m.get("label") and m.get("key") != "other"
+    ]
+    parts = []
+    if routes:
+        noun = f"{modes[0]} route" if len(modes) == 1 else "route"
+        mode_words = f" ({_join_words(modes)})" if len(modes) > 1 else ""
+        parts.append(f"{_count_phrase(routes, noun, noun + 's')}{mode_words}")
+    if trips:
+        parts.append(_count_phrase(trips, "scheduled trip", "scheduled trips"))
+    if stops:
+        parts.append(_count_phrase(stops, "stop", "stops"))
+    if not parts:
+        return ""
+    return f"{esc(agency_name)}&rsquo;s published feed lists {esc(_join_words(parts))}."
+
+
+def _about_service_sentence(artifact: dict[str, Any]) -> str:
+    """The service window, only when freshness was measured with both dates."""
+    fresh = (artifact.get("categories") or {}).get("freshness")
+    if not isinstance(fresh, dict) or fresh.get("status") != "measured":
+        return ""
+    details = fresh.get("details")
+    if not isinstance(details, dict):
+        return ""
+    start, end = details.get("feed_start_date"), details.get("effective_expiry_date")
+    if not (isinstance(start, str) and isinstance(end, str)):
+        return ""
+    if not (_ISO_DATE.fullmatch(start) and _ISO_DATE.fullmatch(end)):
+        return ""
+    return f"Its service dates run from {esc(start)} through {esc(end)}."
+
+
+def _about_realtime_sentence(artifact: dict[str, Any]) -> str:
+    """Which realtime feeds are configured and answered, only when measured."""
+    realtime = (artifact.get("categories") or {}).get("realtime")
+    if not isinstance(realtime, dict) or realtime.get("status") != "measured":
+        return ""
+    rt = realtime.get("details")
+    if not isinstance(rt, dict):
+        return ""
+    configured = [k for k in rt.get("configured_kinds") or [] if k in _RT_KIND_LABELS]
+    if not configured:
+        return ""
+    reachable = {k for k in rt.get("reachable_kinds") or [] if k in _RT_KIND_LABELS}
+    answered = sum(1 for k in configured if k in reachable)
+    if answered == len(configured):
+        tail = "all of them answered" if len(configured) > 1 else "it answered"
+    else:
+        tail = f"{answered} of {len(configured)} answered"
+    names = _join_words([_RT_KIND_LABELS[k] for k in configured])
+    return f"It publishes realtime {esc(names)}; when we checked, {tail}."
+
+
+def _about_change_sentence(history: list[dict[str, Any]] | None) -> str:
+    """When the published file last changed, or that it has not, when observed."""
+    rows = sorted(
+        (
+            r
+            for r in history or []
+            if isinstance(r, dict)
+            and isinstance(r.get("date"), str)
+            and _ISO_DATE.fullmatch(r["date"])
+        ),
+        key=lambda r: r["date"],
+    )
+    changed = feed_change_date(rows)
+    if changed:
+        return f"The published file last changed on {esc(changed)}."
+    hashes = {str(r.get("feed_sha256") or "") for r in rows}
+    only = next(iter(hashes)) if len(hashes) == 1 else ""
+    if len(rows) > 1 and _SHA256_HEX.fullmatch(only):
+        return (
+            f"The published file has not changed since our first check on {esc(rows[0]['date'])}."
+        )
+    return ""
+
+
+def _about_feed_section(artifact: dict[str, Any], history: list[dict[str, Any]] | None) -> str:
+    """A short lead built only from what the checks measured about the feed.
+
+    Every sentence needs its own measured fields and is dropped when any is
+    missing or malformed, so the lead never states a zero or a "none" it did
+    not observe. Realtime is described only when the realtime category was
+    measured. The change sentence uses the same observed-change rule as the
+    sitemap (``feed_change_date``) and says "has not changed since" only when
+    every recorded check carries the same known file hash. Empty when nothing
+    is measured.
+    """
+    sentences = [
+        sentence
+        for sentence in (
+            _about_size_sentence(artifact),
+            _about_service_sentence(artifact),
+            _about_realtime_sentence(artifact),
+            _about_change_sentence(history),
+        )
+        if sentence
+    ]
+    if not sentences:
+        return ""
+    return (
+        '<section aria-labelledby="about-feed-h" class="about-feed">'
+        '<h2 class="section-title" id="about-feed-h">About this feed</h2>'
+        f'<p class="page-lede">{" ".join(sentences)}</p></section>'
+    )
+
+
+def place_key(record: dict[str, Any]) -> tuple[str, str]:
+    """(country, state or region) for grouping directory records by place."""
+    return (
+        str(record.get("country") or ""),
+        str(record.get("subdivision_name") or "").strip(),
+    )
+
+
+def records_grouped_by_place(
+    records: list[dict[str, Any]],
+) -> dict[tuple[str, str], list[dict[str, Any]]]:
+    """Directory records by ``place_key``, built once per render."""
+    grouped: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for record in records:
+        grouped.setdefault(place_key(record), []).append(record)
+    return grouped
+
+
+#: How many other scorecards "Similar feeds" links.
+SIMILAR_FEEDS_LIMIT = 6
+
+
+def similar_feeds(
+    record: dict[str, Any] | None,
+    directory_records: list[dict[str, Any]],
+    limit: int = SIMILAR_FEEDS_LIMIT,
+) -> list[dict[str, Any]]:
+    """Other published scorecards in the same state or region, most alike first.
+
+    Alike means, in order: the same primary mode and size tier, then the same
+    primary mode, then anything else in the same place. Ties are alphabetical.
+    Nothing is ranked by score, and a record without a location gets none.
+    """
+    if not record:
+        return []
+    country = str(record.get("country") or "")
+    place = str(record.get("subdivision_name") or "").strip()
+    if not country or not place:
+        return []
+    mode = str(record.get("primary_mode") or "")
+    tier = str(record.get("size_tier") or "")
+
+    def closeness(other: dict[str, Any]) -> int:
+        same_mode = bool(mode) and str(other.get("primary_mode") or "") == mode
+        same_tier = bool(tier) and str(other.get("size_tier") or "") == tier
+        return 0 if same_mode and same_tier else 1 if same_mode else 2
+
+    peers = [
+        other
+        for other in directory_records
+        if other.get("id") != record.get("id")
+        and str(other.get("country") or "") == country
+        and str(other.get("subdivision_name") or "").strip() == place
+    ]
+    peers.sort(key=lambda o: (closeness(o), str(o.get("name") or "").casefold(), str(o.get("id"))))
+    # Feed variants of one agency share a name; a list of identical link texts
+    # helps no one, so each name appears once (its closest record).
+    seen = {str(record.get("name") or "").casefold()}
+    distinct = []
+    for other in peers:
+        name = str(other.get("name") or "").casefold()
+        if name in seen:
+            continue
+        seen.add(name)
+        distinct.append(other)
+    return distinct[:limit]
+
+
+def _similar_feeds_section(record: dict[str, Any] | None, peers: list[dict[str, Any]]) -> str:
+    if not record or not peers:
+        return ""
+    place = str(record.get("subdivision_name") or "").strip()
+    items = "".join(
+        f'<li><a href="/agency/{esc(str(p["id"]))}/">{esc(str(p.get("name") or p["id"]))}</a></li>'
+        for p in peers
+    )
+    return (
+        '<section aria-labelledby="similar-h">'
+        f'<h2 class="section-title" id="similar-h">Similar feeds in {esc(place)}</h2>'
+        f'<p class="fineprint">Other scorecards in {esc(place)}, starting with the same kind '
+        "of service at a similar size. Listed for comparison, not ranked.</p>"
+        f'<ul class="program-list">{items}</ul></section>'
+    )
+
+
 def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     artifact: dict[str, Any],
     history: list[dict[str, Any]] | None = None,
@@ -3170,6 +3398,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     feed_context: FeedContext | None = None,
     program_offer: ProgramOffer | None = None,
     license_notice: LicenseNotice | None = None,
+    similar: list[dict[str, Any]] | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -3448,6 +3677,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     {report_route}
     <div class="report-content">
     {_liveness_note(liveness, now)}{confidence_block}{license_notice_block}
+    {_about_feed_section(artifact, history)}
     {_route_rule()}
     <section aria-labelledby="fixes-h">
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
@@ -3488,6 +3718,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     {_route_rule()}
     {_standards_section(artifact, (dir_record or {}).get("state", ""), (dir_record or {}).get("subdivision_code", ""))}
     {portfolio_line}{program_offer_line}
+    {_similar_feeds_section(dir_record, similar or [])}
     {_route_rule()}
     {_embed_block}
     {_citation_block}
@@ -12199,6 +12430,8 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     )
     (art / "directory.json").write_text(json.dumps(directory, indent=2, sort_keys=True) + "\n")
     by_id = {r["id"]: r for r in directory["agencies"]}
+    # Directory records grouped by place, for each page's "Similar feeds".
+    records_by_place = records_grouped_by_place(directory["agencies"])
     agency_seo_metadata = _plan_agency_seo_metadata(
         directory["agencies"],
         artifacts_by_id,
@@ -12492,6 +12725,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                         else None
                     ),
                     license_notice=notice_for_agency(agency_cfg),
+                    similar=similar_feeds(
+                        by_id[agency_id],
+                        records_by_place.get(place_key(by_id[agency_id]), []),
+                    ),
                 ),
                 f"{BASE_URL}/agency/{agency_id}/",
                 # The sitemap's <lastmod> is the date the published feed file
