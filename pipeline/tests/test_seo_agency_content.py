@@ -23,7 +23,9 @@ B = "b" * 64
 
 def _visible_text(html: str) -> str:
     """Page text a reader sees, without the copy-ready textareas' payload."""
-    html = re.sub(r"<script\b.*?</script\b[^>]*>|<style\b.*?</style\b[^>]*>", "", html, flags=re.S | re.I)
+    html = re.sub(
+        r"<script\b.*?</script\b[^>]*>|<style\b.*?</style\b[^>]*>", "", html, flags=re.S | re.I
+    )
     html = re.sub(r"<textarea.*?</textarea>", "", html, flags=re.S | re.I)
     return unescape(re.sub(r"<[^>]+>", " ", html))
 
