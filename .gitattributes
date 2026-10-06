@@ -13,6 +13,9 @@
 /pipeline/* export-ignore
 /pipeline/.python-version -export-ignore
 /pipeline/pyproject.toml -export-ignore
+# pyproject.toml names README.md as the package readme, so the Action cannot
+# build the project without it.
+/pipeline/README.md -export-ignore
 /pipeline/src -export-ignore
 /pipeline/uv.lock -export-ignore
 

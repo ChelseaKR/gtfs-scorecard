@@ -48,11 +48,30 @@ def _server_json_version() -> str:
     return version
 
 
+def _server_json_package_versions() -> dict[str, str]:
+    """Each server.json packages[] entry's version, keyed by a readable label.
+
+    The MCP registry tells clients to install exactly this version, so a
+    packages[] entry left behind on a version bump would point every client at
+    the previous upload (or at one that never existed).
+    """
+    data = json.loads((REPO_ROOT / "server.json").read_text())
+    versions: dict[str, str] = {}
+    for index, package in enumerate(data.get("packages", [])):
+        version = package.get("version")
+        if not isinstance(version, str):
+            raise TypeError(f"server.json packages[{index}].version must be a string")
+        label = f"server.json packages[{index}] ({package.get('identifier')}) version"
+        versions[label] = version
+    return versions
+
+
 def main() -> int:
     sources = {
         "pipeline/pyproject.toml [project].version": _pyproject_version(),
         "CITATION.cff version": _citation_version(),
         "server.json version": _server_json_version(),
+        **_server_json_package_versions(),
     }
     versions = set(sources.values())
     if len(versions) == 1:

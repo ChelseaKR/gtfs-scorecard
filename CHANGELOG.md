@@ -29,6 +29,27 @@ the declared public surface).
 
 ### Added
 
+- **A reviewed PyPI publish path for `scorecard-pipeline`, and a registry
+  manifest that names it.** `.github/workflows/pypi-publish.yml` runs on a
+  signed release tag and uploads through PyPI Trusted Publishing, from a job in
+  the `pypi` environment that waits for a required reviewer; the build job
+  refuses to continue if that environment has no reviewer, and a last job
+  compares what PyPI serves with what was built. Nothing has been uploaded:
+  PyPI needs a pending publisher registered first, and the README and
+  `docs/mcp.md` say "once scorecard-pipeline is on PyPI" until
+  `server.json` records the first upload (`tests/test_distribution_claims.py`
+  holds the wording to that field in both states). `server.json` declares the
+  `registryType: pypi` package again, now that there is a path to make it true,
+  and is submitted to the MCP Registry only after the upload. Fixed on the way:
+  the server name's namespace is now `io.github.ChelseaKR`, because the
+  registry's namespace check is case-sensitive and would have refused
+  `chelseakr`; the description was cut to the registry's 100-character limit,
+  which the old one failed; the package now builds from its own sdist (a
+  schema force-included from `../web` made `uv build` fail, so the package
+  carries a byte copy, held identical by a test); `uvx scorecard-pipeline` now
+  starts the MCP server, which is the command registry clients run; and the
+  package has a README and project links for its PyPI page.
+
 - **The rubric states how far one style notice can move a grade (ADR 0062).**
   Correctness deducts per notice code, so `mixed_case_recommended_field` costs
   at most 8 correctness points however many names it flags. A review read
