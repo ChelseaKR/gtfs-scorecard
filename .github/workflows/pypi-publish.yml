@@ -1,0 +1,255 @@
+name: Publish to PyPI
+
+# Uploads the scorecard-pipeline package (pipeline/) to PyPI through Trusted
+# Publishing for a maintainer-signed release tag. There is no stored PyPI token
+# anywhere: PyPI accepts the upload only from this workflow file, in this
+# repository, running in the `pypi` environment, as registered on pypi.org.
+#
+# A PyPI upload can never be undone, and pushing a tag is one git command with
+# no second pair of eyes. So the tag starts this workflow and stops there:
+#
+#   build    verifies the signed tag, checks that the tag, pyproject.toml and
+#            server.json name one version, refuses to continue unless the
+#            `pypi` environment carries a required-reviewers rule, builds the
+#            sdist and wheel, and smoke-tests the wheel. No upload credential.
+#   publish  runs in the `pypi` environment, so GitHub holds it until a
+#            required reviewer approves the deployment. Only this job can mint
+#            the OIDC token PyPI trusts.
+#   verify   reads the release back from PyPI and compares its file digests
+#            with the ones built here.
+#
+# A `pypi` environment that exists with no protection rule is not a gate:
+# GitHub creates environments implicitly on first use with none. The build
+# job's environment check is there so a missing rule fails before any upload is
+# possible, instead of the upload proceeding unattended. The steps to set the
+# environment and the pending publisher up are in docs/mcp.md.
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing signed release tag to publish (for example v1.6.0)"
+        required: true
+
+permissions: {}
+
+concurrency:
+  # Never canceled. A tag push is keyed by the tagged commit's sha (the
+  # concurrency guard in tests/test_workflow_concurrency.py), a dispatch by the
+  # tag it names. PyPI refuses a duplicate file in any case.
+  group: pypi-publish-${{ inputs.tag || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.release_tag.outputs.version }}
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+          persist-credentials: false
+
+      - name: Verify the signed release tag
+        id: release_tag
+        env:
+          RESOLVED_TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$RESOLVED_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Refusing unexpected release tag: $RESOLVED_TAG"
+            exit 1
+          fi
+          if ! git show-ref --verify --quiet "refs/tags/$RESOLVED_TAG"; then
+            echo "::error::Refusing a ref that is not a tag: $RESOLVED_TAG"
+            exit 1
+          fi
+          tag_commit="$(git rev-parse "refs/tags/${RESOLVED_TAG}^{commit}")"
+          head_commit="$(git rev-parse HEAD)"
+          if [[ "$tag_commit" != "$head_commit" ]]; then
+            echo "::error::Checked-out commit does not match tag $RESOLVED_TAG."
+            exit 1
+          fi
+          git config gpg.ssh.allowedSignersFile "$GITHUB_WORKSPACE/.github/release-signers"
+          git tag -v "$RESOLVED_TAG"
+          printf 'tag=%s\nversion=%s\n' "$RESOLVED_TAG" "${RESOLVED_TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Refuse to continue without a reviewed pypi environment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Fails closed: a missing environment (404), an unreadable answer, or
+          # an environment with no reviewer all stop the run here.
+          if ! rules="$(gh api "repos/${GITHUB_REPOSITORY}/environments/pypi" --jq '.protection_rules')"; then
+            echo "::error::Could not read the pypi environment. Create it with a required reviewer before publishing."
+            exit 1
+          fi
+          reviewers="$(jq '[.[]? | select(.type == "required_reviewers") | .reviewers[]?] | length' <<<"$rules")"
+          if [[ -z "$reviewers" || "$reviewers" -lt 1 ]]; then
+            echo "::error::The pypi environment has no required reviewer, so an upload would not wait for approval. Add one in Settings > Environments > pypi."
+            exit 1
+          fi
+          echo "pypi environment requires approval from ${reviewers} reviewer(s)."
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+        with:
+          version: "0.11.29"
+          enable-cache: false
+
+      - name: Check that the tag, pyproject.toml and server.json agree
+        env:
+          VERSION: ${{ steps.release_tag.outputs.version }}
+        run: |
+          set -euo pipefail
+          python3 pipeline/scripts/check_versions.py
+          declared="$(python3 -c 'import tomllib; print(tomllib.load(open("pipeline/pyproject.toml", "rb"))["project"]["version"])')"
+          if [[ "$declared" != "$VERSION" ]]; then
+            echo "::error::Tag says ${VERSION}, pipeline/pyproject.toml says ${declared}."
+            exit 1
+          fi
+          jq -e --arg v "$VERSION" '
+            [.packages[] | select(.registryType == "pypi" and .identifier == "scorecard-pipeline")]
+            | length == 1 and .[0].version == $v
+          ' server.json >/dev/null || {
+            echo "::error::server.json does not declare scorecard-pipeline ${VERSION} on PyPI."
+            exit 1
+          }
+
+      - name: Run the distribution tests at the tagged commit
+        working-directory: pipeline
+        run: |
+          set -euo pipefail
+          uv sync --locked
+          uv run pytest -q tests/test_distribution_claims.py tests/test_mcp_server.py
+
+      - name: Build the sdist and the wheel from it
+        working-directory: pipeline
+        run: |
+          set -euo pipefail
+          # `uv build` builds the sdist, then the wheel from the unpacked sdist,
+          # which is the path a downstream rebuild of the upload takes.
+          uv build --out-dir "${GITHUB_WORKSPACE}/dist"
+          ls -l "${GITHUB_WORKSPACE}/dist"
+
+      - name: Check the built files
+        env:
+          VERSION: ${{ steps.release_tag.outputs.version }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          wheels=(dist/scorecard_pipeline-"${VERSION}"-py3-none-any.whl)
+          sdists=(dist/scorecard_pipeline-"${VERSION}".tar.gz)
+          if [[ ${#wheels[@]} -ne 1 || ${#sdists[@]} -ne 1 ]]; then
+            echo "::error::Expected exactly one wheel and one sdist for ${VERSION}."
+            exit 1
+          fi
+          # The MCP registry proves package ownership by finding this exact
+          # marker in the PyPI description, so it must be in the upload itself.
+          name="$(jq -r .name server.json)"
+          if ! unzip -p "${wheels[0]}" "scorecard_pipeline-${VERSION}.dist-info/METADATA" \
+              | grep -qF "mcp-name: ${name} "; then
+            echo "::error::The wheel's description lacks the mcp-name marker for ${name}."
+            exit 1
+          fi
+          # The same twine the upload action bundles (v1.14.2: twine 7.0.0).
+          uvx --from "twine==7.0.0" twine check --strict dist/*.whl dist/*.tar.gz
+
+      - name: Smoke-test the wheel in a clean environment
+        env:
+          VERSION: ${{ steps.release_tag.outputs.version }}
+        run: |
+          set -euo pipefail
+          uv venv "${RUNNER_TEMP}/smoke" --python 3.12
+          VIRTUAL_ENV="${RUNNER_TEMP}/smoke" uv pip install "dist/scorecard_pipeline-${VERSION}-py3-none-any.whl"
+          cd "${RUNNER_TEMP}"
+          reply="$(printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
+            | "${RUNNER_TEMP}/smoke/bin/scorecard-pipeline")"
+          jq -e '.result.tools | map(.name) | index("get_scorecard") != null' <<<"$reply" >/dev/null || {
+            echo "::error::The installed scorecard-pipeline entry point did not list its MCP tools."
+            exit 1
+          }
+          "${RUNNER_TEMP}/smoke/bin/scorecard" --help >/dev/null
+
+      - name: Record the digests
+        run: |
+          set -euo pipefail
+          (cd dist && sha256sum -- *.whl *.tar.gz) | tee "${RUNNER_TEMP}/SHA256SUMS"
+          mv "${RUNNER_TEMP}/SHA256SUMS" dist/SHA256SUMS
+
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: python-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: pypi
+      url: https://pypi.org/project/scorecard-pipeline/${{ needs.build.outputs.version }}/
+    permissions:
+      id-token: write # Trusted Publishing; the only job that can mint this token
+    steps:
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: python-dist
+          path: dist/
+
+      - name: Keep the digest list out of the upload
+        run: mv dist/SHA256SUMS "${RUNNER_TEMP}/SHA256SUMS"
+
+      - name: Upload to PyPI
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          packages-dir: dist/
+
+  verify:
+    needs: [build, publish]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions: {}
+    steps:
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: python-dist
+          path: dist/
+
+      - name: Read the release back from PyPI
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          set -euo pipefail
+          url="https://pypi.org/pypi/scorecard-pipeline/${VERSION}/json"
+          body=""
+          for attempt in $(seq 1 30); do
+            if body="$(curl -fsS "$url")"; then
+              break
+            fi
+            if [[ "$attempt" -eq 30 ]]; then
+              echo "::error::${url} did not answer within 5 minutes of the upload."
+              exit 1
+            fi
+            sleep 10
+          done
+          # Compare what PyPI serves with what this run built, file by file.
+          expected="$(sort dist/SHA256SUMS)"
+          served="$(jq -r '.urls[] | "\(.digests.sha256)  \(.filename)"' <<<"$body" | sort)"
+          if [[ "$expected" != "$served" ]]; then
+            echo "::error::PyPI serves different files than this run built."
+            printf 'built:\n%s\nserved:\n%s\n' "$expected" "$served"
+            exit 1
+          fi
+          echo "PyPI serves the files this run built:"
+          echo "$served"

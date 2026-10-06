@@ -11,13 +11,19 @@ MCP's stdio framing and the public data contract in [`api.md`](api.md).
 
 ## Install and connect
 
-From a checkout:
+The server runs today from the source tree, with nothing to clone:
+
+```sh
+uvx --from "git+https://github.com/ChelseaKR/gtfs-scorecard#subdirectory=pipeline" scorecard-mcp
+```
+
+Or from a checkout:
 
 ```sh
 cd pipeline && uv sync
 ```
 
-Claude Desktop / Claude Code config:
+Claude Desktop / Claude Code config for a checkout:
 
 ```json
 {
@@ -29,6 +35,14 @@ Claude Desktop / Claude Code config:
   }
 }
 ```
+
+Once scorecard-pipeline is on PyPI, `uvx scorecard-pipeline` starts the same
+server, and the config shrinks to `"command": "uvx", "args":
+["scorecard-pipeline"]`. Nothing has been uploaded yet;
+[pypi.org/project/scorecard-pipeline](https://pypi.org/project/scorecard-pipeline/)
+lists the versions that exist. The `scorecard-pipeline` executable is an alias
+for `scorecard-mcp`, because MCP clients reading the registry entry launch
+`uvx <package name>`.
 
 Point a fork or a local preview at itself with `SCORECARD_BASE_URL`.
 
@@ -84,34 +98,49 @@ Every response is bounded: history is capped at 120 dated points and rollup
 members at 100, each with `returned`, `available`, and a `truncated` flag, so a
 caller can see that it is holding a page rather than the whole thing.
 
-## Registry listing
+## Publishing: PyPI, then the MCP Registry
 
 The repository carries a `server.json` manifest for the
 [official MCP Registry](https://registry.modelcontextprotocol.io/), naming the
-server `io.github.chelseakr/gtfs-scorecard`. Publishing requires an interactive
-GitHub login, so it is a one-time operator step:
+server `io.github.ChelseaKR/gtfs-scorecard`, with one `packages[]` entry:
+`registryType: pypi`, identifier `scorecard-pipeline`, at the version
+`pipeline/pyproject.toml` declares. Neither half has run yet. The order matters,
+because the registry only lists metadata and checks the package on PyPI when
+the manifest is submitted:
 
-```sh
-brew install mcp-publisher   # or download from modelcontextprotocol/registry releases
-mcp-publisher login github   # device-code flow, authorizes the io.github.chelseakr namespace
-mcp-publisher publish        # reads server.json at the repo root
-```
+1. **PyPI.** `.github/workflows/pypi-publish.yml` runs on a signed release
+   tag (`vX.Y.Z`). Its build job verifies the tag signature, checks that the
+   tag, `pyproject.toml` and `server.json` agree, refuses to go on unless the
+   `pypi` environment has a required reviewer, builds and smoke-tests the
+   sdist and wheel, and uploads nothing. The publish job runs in the `pypi`
+   environment, so it waits for that reviewer, then uploads with
+   [Trusted Publishing](https://docs.pypi.org/trusted-publishers/) (no stored
+   token). A last job reads the release back from PyPI and compares digests.
+   PyPI needs a matching pending publisher registered first: PyPI project
+   `scorecard-pipeline`, owner `ChelseaKR`, repository `gtfs-scorecard`,
+   workflow `pypi-publish.yml`, environment `pypi`.
+2. **MCP Registry.** After the upload exists, submit the manifest with the
+   registry's `mcp-publisher` CLI from a checkout of the released commit:
+   `mcp-publisher login github` (a device-code login), then
+   `mcp-publisher publish`. The registry proves the package is ours by finding
+   `mcp-name: io.github.ChelseaKR/gtfs-scorecard` in the PyPI description,
+   which is why `pipeline/README.md` carries it.
+3. **Record it.** Set `pypi_first_upload` in `server.json`'s
+   `_meta["dev.chelseakr/distribution"]` to the uploaded version and drop the
+   "once it is on PyPI" wording. `tests/test_distribution_claims.py` holds the
+   wording to that field in both states.
 
-**As of 2026-07-05, `server.json` carries no `packages[]` entry** (see its
-`_meta["dev.chelseakr/gap"]` note). An earlier revision declared
-`registryType: pypi`, which was false: `scorecard-pipeline` has never been
-published to PyPI, and the MCP registry schema's `registryType` enum (`npm`,
-`pypi`, `oci`, `nuget`, `mcpb`) has no value for "installed from a git
-subdirectory via `uvx --from`," which is what actually happens. Rather than
-leave that false claim in a public registry listing, the packages entry was
-removed; the registry listing is metadata-only until either `scorecard-pipeline`
-is genuinely published to PyPI (tracked with the release-pipeline work) or the
-schema adds a git-source registry type. Until then, use the "Install and
-connect" recipe above (a local checkout), or the direct `uvx` invocation:
+Two details the registry enforces that are easy to get wrong. The server
+name's casing must match the GitHub login exactly (`ChelseaKR`, not
+`chelseakr`), because the namespace check is case-sensitive
+([modelcontextprotocol/registry#689](https://github.com/modelcontextprotocol/registry/issues/689)).
+And `description` is capped at 100 characters. Both were checked against the
+registry's validate endpoint on 2026-10-05 with `mcp-publisher` 1.8.1.
 
-```sh
-uvx --from git+https://github.com/ChelseaKR/gtfs-scorecard#subdirectory=pipeline scorecard-mcp
-```
+History: a revision before 2026-07-05 declared `registryType: pypi` when
+nothing was on PyPI and there was no way to put it there, so the entry was
+removed rather than left standing as a false registry claim (REL-05). It is
+back now that the upload path exists, held to the order above.
 
 The Claude Connectors Directory is a separate, heavier bar (a remote server, a
 privacy policy, and a Team/Enterprise submission); per the cost guardrail it
