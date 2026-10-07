@@ -340,14 +340,18 @@ def test_the_doc_names_every_column_and_no_other() -> None:
         assert documented == {column.name for column in columns}
 
 
-def test_the_doc_carries_the_license_text_verbatim_and_says_not_on_sale() -> None:
+def test_the_doc_carries_the_license_text_verbatim_and_says_on_sale() -> None:
     text = DOC.read_text()
     begin = "<!-- history-license:begin -->\n"
     end = "<!-- history-license:end -->"
     assert text.count(begin) == 1 and text.count(end) == 1
     body = text.split(begin, 1)[1].split(end, 1)[0]
     assert body == LICENSE_TEXT
-    assert "Not yet on sale" in text
+    # The tier opened in October 2026; the contract says so and no longer
+    # describes itself as waiting. "not for sale" stays: it is the sentence
+    # about grades and methodology, which are never for sale.
+    assert "On sale since October 2026" in text
+    assert "Not yet on sale" not in text
     assert "not for sale" in text
 
 
