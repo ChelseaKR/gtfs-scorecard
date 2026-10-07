@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
   "serialNumber": "urn:uuid:78832d4f-c352-48f0-b872-671567120801",
-  "version": 2,
+  "version": 3,
   "metadata": {
-    "timestamp": "2026-08-16T00:00:00Z",
+    "timestamp": "2026-10-06T00:00:00Z",
     "component": {
       "type": "application",
       "bom-ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli",
@@ -149,6 +149,19 @@
         "detail": "The advisory is against the Apache HttpComponents Core HTTP/2 HPACK decoder, which needs an HTTP/2 connection to a remote peer. Same measured basis as CVE-2026-54399: the validator only opens connections when given -u/--url, and this pipeline only ever gives it -i with a local path, so no org.apache.hc.* class is loaded on the scoring path. Reassess when MobilityData publishes a release newer than 8.0.1 built on httpcore5-h2 5.4.3 or later.",
         "firstIssued": "2026-08-16T00:00:00Z",
         "lastUpdated": "2026-08-16T00:00:00Z"
+      }
+    },
+    {
+      "id": "CVE-2026-75140",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-75140"},
+      "affects": [{"ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "code_not_reachable",
+        "response": ["will_not_fix"],
+        "detail": "The advisory is against jsoup's XML tree builder (org.jsoup.parser.XmlTreeBuilder), which a caller enters only by parsing a document with Parser.xmlParser(). jsoup 1.15.4 is in this jar because the validator declares com.vladsch.flexmark:flexmark-all 0.64.8 (main/build.gradle, libs.flexmark), and two of its modules, flexmark-html2md-converter and flexmark-pdf-converter, declare jsoup in their bundled poms; the validator's own source never names jsoup. The validator's only use of flexmark is reportsummary.model.NoticeView, which renders each notice's own documentation Markdown to HTML with flexmark's Parser and HtmlRenderer (FeedMetadata imports a flexmark Pair type and nothing else). That Markdown is the validator's notice documentation, not feed content, and the path does not involve jsoup. Measured rather than asserted on 2026-10-06 against the sha256-pinned jar. A constant-pool scan of every class in the jar finds org.jsoup referenced only from 14 com.vladsch.flexmark.html2md classes and 1 com.vladsch.flexmark.pdf class, no class outside org.jsoup references XmlTreeBuilder, and no class outside those two flexmark packages references them, so no class in the jar outside flexmark's own converter packages holds a reference into jsoup. `java -verbose:class -jar gtfs-validator-8.0.1-cli.jar -i <local zip> -o <dir> -c us` (OpenJDK 17.0.20.1, same jar bytes as the images) on the pipeline's fixture feed produces report.html and loads 5965 classes: 413 com.vladsch.flexmark.*, 420 org.thymeleaf.*, 52 com.univocity.* (the CSV reader), and 0 org.jsoup.*. The validator reads GTFS as CSV, and this pipeline only ever hands it a local zip (test_validator_is_never_handed_a_url), so no feed-controlled XML reaches any parser. Reassess when MobilityData publishes a release newer than 8.0.1 built on jsoup 1.23.2 or later.",
+        "firstIssued": "2026-10-06T00:00:00Z",
+        "lastUpdated": "2026-10-06T00:00:00Z"
       }
     }
   ]
