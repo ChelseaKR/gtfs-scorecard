@@ -92,3 +92,20 @@ def test_httpcore5_exceptions_name_the_measurement_that_backs_them() -> None:
     # The claim points at the test that keeps it true, so deleting the test
     # leaves a dangling reference someone has to resolve.
     assert "test_validator_is_never_handed_a_url" in by_id["CVE-2026-54399"]["analysis"]["detail"]
+
+
+def test_jsoup_exception_names_the_measurement_that_backs_it() -> None:
+    """CVE-2026-75140 is also a code_not_reachable claim, so it cites its measurement.
+
+    The advisory is against jsoup's XML tree builder, which reaches the shaded
+    jar only through flexmark's HTML-to-Markdown and PDF converters. The VEX
+    detail has to name the class the advisory is about and the class-load
+    measurement that found none of org.jsoup loaded on the scoring path.
+    """
+    vex = json.loads((REPOSITORY_ROOT / "vex.json").read_text())
+    by_id = {item["id"]: item for item in vex["vulnerabilities"]}
+    analysis = by_id["CVE-2026-75140"]["analysis"]
+    assert analysis["justification"] == "code_not_reachable"
+    assert "org.jsoup.parser.XmlTreeBuilder" in analysis["detail"]
+    assert "-verbose:class" in analysis["detail"]
+    assert "0 org.jsoup" in analysis["detail"]

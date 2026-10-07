@@ -1,39 +1,45 @@
 vulnerabilities:
   # MobilityData 8.0.1 is still the latest official gtfs-validator release as
-  # of 2026-08-16 (checked against the GitHub releases API). Its shaded CLI jar
+  # of 2026-10-06 (checked against the GitHub releases API). Its shaded CLI jar
   # carries these fixed transitive-library CVEs, but no patched upstream
   # artifact exists, and repackaging the jar ourselves would break the sha256
   # pin to the published release that both Dockerfiles verify. Every entry here
   # is about that one jar; vex.json records the code-path or archive-preflight
   # justification for each time-bounded exception. CI tests keep this list, the
-  # VEX, and the validator pin synchronized.
+  # VEX, and the validator pin synchronized. Expiries were renewed on 2026-10-06
+  # to 2027-01-04, the 90-day ceiling test_security_vex.py enforces, after
+  # re-checking the upstream release list and confirming that the sha256-pinned
+  # jar and the test-pinned invariants behind each justification are unchanged.
   - id: CVE-2022-25647
     statement: "Gson deserialization path is not used for untrusted GTFS input; see vex.json."
-    expired_at: 2026-10-08
+    expired_at: 2027-01-04
   - id: CVE-2014-0114
     statement: "BeanUtils property binding is not invoked by the validator CLI; see vex.json."
-    expired_at: 2026-10-08
+    expired_at: 2027-01-04
   - id: CVE-2019-10086
     statement: "BeanUtils property binding is not invoked by the validator CLI; see vex.json."
-    expired_at: 2026-10-08
+    expired_at: 2027-01-04
   - id: CVE-2025-48734
     statement: "BeanUtils property binding is not invoked by the validator CLI; see vex.json."
-    expired_at: 2026-10-08
+    expired_at: 2027-01-04
   - id: CVE-2021-35515
     statement: "GTFS archive size, entry, and compression limits run before Java; see vex.json."
-    expired_at: 2026-10-08
+    expired_at: 2027-01-04
   - id: CVE-2021-35516
     statement: "GTFS archive size, entry, and compression limits run before Java; see vex.json."
-    expired_at: 2026-10-08
+    expired_at: 2027-01-04
   - id: CVE-2021-35517
     statement: "GTFS archive size, entry, and compression limits run before Java; see vex.json."
-    expired_at: 2026-10-08
+    expired_at: 2027-01-04
   - id: CVE-2021-36090
     statement: "GTFS archive size, entry, and compression limits run before Java; see vex.json."
-    expired_at: 2026-10-08
+    expired_at: 2027-01-04
   - id: CVE-2026-54399
     statement: "Validator is only ever given a local zip, so its Apache HTTP parser never loads; measured, see vex.json."
-    expired_at: 2026-10-08
+    expired_at: 2027-01-04
   - id: CVE-2026-54428
     statement: "Validator is only ever given a local zip, so its HTTP/2 HPACK decoder never loads; measured, see vex.json."
-    expired_at: 2026-10-08
+    expired_at: 2027-01-04
+  - id: CVE-2026-75140
+    statement: "jsoup is only referenced by flexmark's HTML-to-Markdown and PDF converters, which nothing in the validator calls; measured, see vex.json."
+    expired_at: 2027-01-04
