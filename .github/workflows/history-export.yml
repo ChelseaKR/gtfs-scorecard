@@ -50,6 +50,10 @@ jobs:
       # to write to, and a green run with no object would read as a month
       # that was built. Refuse instead.
       - name: Refuse to start without the store configuration
+        # The job's default working directory is pipeline/, which does not
+        # exist before checkout; this step runs first, so it names the
+        # workspace itself (the first two runs failed here, 2026-10-06).
+        working-directory: ${{ github.workspace }}
         shell: bash
         env:
           ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
