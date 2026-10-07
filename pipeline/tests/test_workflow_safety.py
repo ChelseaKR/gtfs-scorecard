@@ -545,7 +545,10 @@ def test_dataset_release_signer_is_a_principal_in_dataset_signers(tmp_path: Path
     promote = (ROOT / "pipeline" / "scripts" / "promote_dataset_release.sh").read_text(
         encoding="utf-8"
     )
-    assert workflow.count('"$GITHUB_WORKSPACE/.github/dataset-signers"') == 2
+    # Three verifications read the same file: adopting an existing tag in
+    # "Resolve the release source", signing a new one, and verifying the
+    # hosted tag before the draft is staged.
+    assert workflow.count('"$GITHUB_WORKSPACE/.github/dataset-signers"') == 3
     assert "release-signers" not in workflow
     assert 'allowedSignersFile "$repo_root/.github/dataset-signers"' in promote
     assert "release-signers" not in promote

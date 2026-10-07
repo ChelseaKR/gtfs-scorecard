@@ -368,3 +368,22 @@ def test_stage_requires_existing_trusted_tag(tmp_path: Path) -> None:
 
     with pytest.raises(DatasetReleasePromotionError, match="trusted annotated release tag"):
         promotion.stage_release(client, desired)
+
+
+def test_get_release_reads_by_id_and_treats_404_as_absent() -> None:
+    found = {"id": 7, "tag_name": "dataset-2026-08", "draft": True}
+    client = QueueClient(_response(found), _response(status=404))
+
+    assert client.get_release(7) == found
+    assert client.get_release(7) is None
+
+    assert [call[1] for call in client.calls] == [f"{client.api}/releases/7"] * 2
+    assert all(call[2]["allow_missing"] for call in client.calls)
+
+
+def test_locate_release_rejects_an_id_that_carries_another_tag(tmp_path: Path) -> None:
+    desired = _desired(tmp_path)
+    client = QueueClient(_response({"id": 7, "tag_name": "v1.4.0"}))
+
+    with pytest.raises(DatasetReleasePromotionError, match="no longer carries"):
+        promotion._locate_release(client, desired, release_id=7)

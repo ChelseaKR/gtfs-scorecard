@@ -277,6 +277,20 @@ tag, verifies the local signature and hosted tag object, and then consumes the
 selected successful Daily run's exact `github-pages` artifact. An intraday
 deployment cannot replace that run-bound source.
 
+A tag that already exists for the month is adopted rather than refused
+(2026-10-07). The tag is written two thirds of the way through the job, so a
+run that tagged and then failed to stage its draft left `dataset-2026-10`
+behind, main moved on within hours, and every retry failed the tag check while
+the `release-tags-immutable` ruleset kept anyone from deleting the tag. The
+source step now verifies an existing tag the way the later step does: an
+annotated tag, signed by the dataset signer, whose commit is on `origin/main`
+and whose message names the same source mode. Its commit becomes the source.
+A manual retry then hydrates the bundle from the retained `github-pages`
+artifact of that commit's deployment, since the live site has usually been
+redeployed past it. Pages artifacts are kept for one day; after that the tag
+cannot be fulfilled, and an owner has to remove it and the empty draft before
+cutting the month again.
+
 Actions deliberately stops at a byte-verified draft because its repository
 token cannot read the administration-only immutable-release setting. After a
 successful run, an owner with an administration-capable `gh` credential checks

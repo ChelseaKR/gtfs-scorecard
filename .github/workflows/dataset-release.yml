@@ -151,6 +151,98 @@ jobs:
             "+refs/heads/main:refs/remotes/origin/main"
           origin_main=$(git rev-parse refs/remotes/origin/main)
           if [ "$EVENT_NAME" = schedule ]; then
+            expected_mode=scheduled-daily
+          else
+            expected_mode=manual-latest
+          fi
+
+          # RETRY (2026-10-07): the signed tag is written two thirds of the way
+          # through this job. Runs 37547342002 and 37559300763 both tagged
+          # dataset-2026-10 and then died one step later, staging the draft,
+          # which left the tag pointing at 9ef07b53 while main kept receiving
+          # `chore(rt)` commits. Every retry then failed "Verify the trusted
+          # hosted dataset tag", whose commit must equal the source, and the
+          # release-tags-immutable ruleset stops anyone deleting the stale tag,
+          # so the owner had to lift the ruleset by hand. A tag that already
+          # exists for this month is now adopted as the source instead of
+          # refused, once it passes the same checks the later step applies: an
+          # annotated tag, signed by the one key in .github/dataset-signers
+          # (read from this checkout of main), pointing at a commit reachable
+          # from origin/main, whose message names the kind of run that is now
+          # trying to fulfil it. Its commit becomes SOURCE_HEAD_SHA for the
+          # rest of the job, so the tag check, PROVENANCE.json and the
+          # promotion package all agree.
+          #
+          # What an attacker-controlled tag cannot do here. Creating
+          # refs/tags/dataset-* needs push access, and without the signing key
+          # (SCHEDULED_WRITER_SSH_KEY, exposed to this workflow's tag step
+          # only) `git verify-tag` refuses it. A tag the trusted key did sign
+          # was made by this workflow at some point, cannot be moved or deleted
+          # under the ruleset, and is still accepted only when its commit is on
+          # main and its mode matches this run. Even then, adopting it decides
+          # nothing but which commit's deployment the bundle is built from: the
+          # bytes must come from a deployment whose deployment.json binds that
+          # commit, pass the manifest checksums and the canonical validator,
+          # and end up in a draft that promote_dataset_release.sh re-verifies
+          # (tag signature, target, exact bytes) before anything is published.
+          # The worst case is the one that exists today: a tag that cannot be
+          # fulfilled holds the month until an owner removes it.
+          release_tag="dataset-$(date -u +%Y-%m)"
+          set +e
+          git ls-remote --exit-code --tags origin "refs/tags/${release_tag}" \
+            > "$RUNNER_TEMP/dataset-tag.existing"
+          status=$?
+          set -e
+          case "$status" in
+            0) tag_exists=true ;;
+            2) tag_exists=false ;;
+            *)
+              echo "::error::Could not determine whether ${release_tag} already exists."
+              exit "$status"
+              ;;
+          esac
+          tag_commit=""
+          tag_run_id=""
+          tag_run_attempt=""
+          if [ "$tag_exists" = true ]; then
+            git fetch origin "refs/tags/${release_tag}:refs/tags/${release_tag}"
+            if [ "$(git cat-file -t "refs/tags/${release_tag}")" != tag ]; then
+              echo "::error::${release_tag} exists but is not an annotated tag, so it cannot be adopted."
+              exit 1
+            fi
+            git config --local gpg.format ssh
+            git config --local gpg.ssh.allowedSignersFile \
+              "$GITHUB_WORKSPACE/.github/dataset-signers"
+            if ! git verify-tag -- "$release_tag"; then
+              echo "::error::${release_tag} exists but is not signed by the trusted dataset signer."
+              exit 1
+            fi
+            tag_commit=$(git rev-parse "refs/tags/${release_tag}^{commit}")
+            if ! git merge-base --is-ancestor "$tag_commit" "$origin_main"; then
+              echo "::error::${release_tag} points at ${tag_commit}, which is not reachable from origin/main."
+              exit 1
+            fi
+            # The tag message's second paragraph is written by the tag step
+            # below as "Source <mode>; run <id>, attempt <n>." and nothing else.
+            tag_source=$(git tag -l --format='%(contents:body)' "$release_tag" \
+              | grep -E '^Source ' || true)
+            source_pattern='^Source (scheduled-daily|manual-latest); run ([0-9]+), attempt ([0-9]+)\.$'
+            if [[ ! "$tag_source" =~ $source_pattern ]]; then
+              echo "::error::${release_tag} does not carry one 'Source <mode>; run <id>, attempt <n>.' line."
+              exit 1
+            fi
+            tag_mode="${BASH_REMATCH[1]}"
+            tag_run_id="${BASH_REMATCH[2]}"
+            tag_run_attempt="${BASH_REMATCH[3]}"
+            if [ "$tag_mode" != "$expected_mode" ]; then
+              echo "::error::${release_tag} was cut as ${tag_mode}; this ${expected_mode} run cannot adopt it."
+              exit 1
+            fi
+            echo "Adopting the existing ${release_tag} (${tag_mode}; run ${tag_run_id}, attempt ${tag_run_attempt}) at ${tag_commit}."
+            echo "Adopted the existing ${release_tag} at ${tag_commit}." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [ "$EVENT_NAME" = schedule ]; then
             cut_date=$(date -u +%Y-%m-%d)
             # Days 1-3: day 1 is the cut, days 2 and 3 are retries the `decide`
             # job only lets through when day 1 (and 2) produced no successful
@@ -161,24 +253,46 @@ jobs:
               echo "::error::The scheduled dataset cut must run on day 1, 2 or 3 UTC."
               exit 1
             fi
-            runs_json=$(gh api --paginate \
-              "repos/${GITHUB_REPOSITORY}/actions/workflows/scorecard.yml/runs?event=schedule&status=success&branch=main&per_page=100" \
-              --jq '.workflow_runs')
-            source_json=$(jq -s --arg cut_date "$cut_date" '
-              add
-              | map(select(
-                  .event == "schedule"
-                  and .status == "completed"
-                  and .conclusion == "success"
-                  and .head_branch == "main"
-                  and (.run_started_at | startswith($cut_date + "T"))
-                ))
-              | sort_by(.run_started_at, .run_attempt)
-              | last // empty
-            ' <<<"$runs_json")
-            if [ -z "$source_json" ]; then
-              echo "::error::No successful same-day scheduled Daily scorecard run exists."
-              exit 1
+            if [ "$tag_exists" = true ]; then
+              # The tag names the Daily run it was cut from. Resolve that run
+              # by id and require of it everything the same-day selection
+              # below requires, so an adopted tag can only hand this job a
+              # successful scheduled Daily run of this repository at the
+              # tagged commit.
+              source_json=$(gh api \
+                "repos/${GITHUB_REPOSITORY}/actions/runs/${tag_run_id}")
+              jq -e --arg repository "$GITHUB_REPOSITORY" \
+                --arg tag_commit "$tag_commit" \
+                --argjson tag_run_attempt "$tag_run_attempt" '
+                .path == ".github/workflows/scorecard.yml"
+                and .event == "schedule"
+                and .status == "completed"
+                and .conclusion == "success"
+                and .head_branch == "main"
+                and .head_sha == $tag_commit
+                and .head_repository.full_name == $repository
+                and .run_attempt == $tag_run_attempt
+              ' <<<"$source_json" >/dev/null
+            else
+              runs_json=$(gh api --paginate \
+                "repos/${GITHUB_REPOSITORY}/actions/workflows/scorecard.yml/runs?event=schedule&status=success&branch=main&per_page=100" \
+                --jq '.workflow_runs')
+              source_json=$(jq -s --arg cut_date "$cut_date" '
+                add
+                | map(select(
+                    .event == "schedule"
+                    and .status == "completed"
+                    and .conclusion == "success"
+                    and .head_branch == "main"
+                    and (.run_started_at | startswith($cut_date + "T"))
+                  ))
+                | sort_by(.run_started_at, .run_attempt)
+                | last // empty
+              ' <<<"$runs_json")
+              if [ -z "$source_json" ]; then
+                echo "::error::No successful same-day scheduled Daily scorecard run exists."
+                exit 1
+              fi
             fi
             source_mode=scheduled-daily
             source_run_id=$(jq -r '.id' <<<"$source_json")
@@ -203,19 +317,36 @@ jobs:
             source_run_id=0
             source_run_attempt=0
             source_started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-            head_sha="$GITHUB_SHA"
-            if [ "$head_sha" != "$origin_main" ]; then
-              echo "::error::Manual dataset releases require the current origin/main commit."
-              exit 1
+            if [ "$tag_exists" = true ]; then
+              # A manual tag names no run; the commit it pins is the source.
+              if [ "$tag_run_id" != 0 ] || [ "$tag_run_attempt" != 0 ]; then
+                echo "::error::${release_tag} names run ${tag_run_id}, attempt ${tag_run_attempt}; a manual-latest tag names run 0."
+                exit 1
+              fi
+              head_sha="$tag_commit"
+            else
+              # Only a tag that does not exist yet must pin current
+              # origin/main; an adopted one already pins the commit the
+              # month was cut at, which main has since moved past.
+              head_sha="$GITHUB_SHA"
+              if [ "$head_sha" != "$origin_main" ]; then
+                echo "::error::Manual dataset releases require the current origin/main commit."
+                exit 1
+              fi
             fi
           fi
           source_month="${source_started_at:0:7}"
+          if [ "dataset-${source_month}" != "$release_tag" ]; then
+            echo "::error::The source month ${source_month} does not name ${release_tag}."
+            exit 1
+          fi
           {
             echo "head_sha=$head_sha"
             echo "source_mode=$source_mode"
             echo "source_month=$source_month"
             echo "source_run_id=$source_run_id"
             echo "source_run_attempt=$source_run_attempt"
+            echo "tag_adopted=$tag_exists"
           } >> "$GITHUB_OUTPUT"
           {
             echo "SOURCE_HEAD_SHA=$head_sha"
@@ -223,6 +354,7 @@ jobs:
             echo "SOURCE_MONTH=$source_month"
             echo "SOURCE_RUN_ID=$source_run_id"
             echo "SOURCE_RUN_ATTEMPT=$source_run_attempt"
+            echo "SOURCE_TAG_ADOPTED=$tag_exists"
           } >> "$GITHUB_ENV"
 
       # zizmor(artipacked): this checkout's persisted credential is the one
@@ -253,6 +385,10 @@ jobs:
           site="$source/site"
           request_id="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           mkdir -p "$site/api/v1" "$site/data/artifacts"
+          # The run whose Pages artifact the bundle was hydrated from, when
+          # it was hydrated from one; deployment.json must then bind it.
+          bound_run_id=""
+          bound_run_attempt=""
           if [ "$SOURCE_MODE" = scheduled-daily ]; then
             # A successful Daily workflow includes this exact Pages artifact,
             # its deployment, and production smoke. Downloading it by immutable
@@ -269,6 +405,76 @@ jobs:
             tar -xf "${archives[0]}" -C "$site"
             cp "$site/deployment.json" "$source/deployment-after.json"
             cp "$site/release-manifest.json" "$source/release-manifest.json"
+            bound_run_id="$SOURCE_RUN_ID"
+            bound_run_attempt="$SOURCE_RUN_ATTEMPT"
+          elif [ "$SOURCE_TAG_ADOPTED" = true ]; then
+            # An adopted manual tag pins a commit the live site may no longer
+            # serve: the Intraday refresh redeployed main at 4d9e0d1e 81
+            # minutes after dataset-2026-10 was written at 9ef07b53, so the
+            # production URL cannot reproduce the tagged state and the
+            # before/after fetch below would fail its commit check. The bytes
+            # the tag pins are a deployment of its commit, and the only copy
+            # left is that deployment's run-bound github-pages artifact (kept
+            # for one day), consumed the way a scheduled cut consumes the
+            # Daily run's: by run id, with deployment.json required to bind
+            # this commit and that run. Deploys come from pages.yml directly
+            # (a push) or through its reusable deploy job in the Daily and
+            # Intraday workflows, so those three are the candidate runs.
+            runs_json=$(gh api --paginate \
+              "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${SOURCE_HEAD_SHA}&status=success&per_page=100" \
+              --jq '.workflow_runs')
+            deploy_list=$(jq -r -s --arg repository "$GITHUB_REPOSITORY" \
+              --arg commit "$SOURCE_HEAD_SHA" '
+              add // []
+              | map(select(
+                  .status == "completed"
+                  and .conclusion == "success"
+                  and .head_branch == "main"
+                  and .head_sha == $commit
+                  and .head_repository.full_name == $repository
+                  and (.path == ".github/workflows/pages.yml"
+                    or .path == ".github/workflows/scorecard.yml"
+                    or .path == ".github/workflows/refresh.yml")
+                ))
+              | sort_by(.run_started_at, .run_attempt)
+              | reverse
+              | .[]
+              | "\(.id) \(.run_attempt)"
+            ' <<<"$runs_json")
+            deploy_run_id=""
+            deploy_run_attempt=""
+            while IFS= read -r entry; do
+              [ -n "$entry" ] || continue
+              retained=$(gh api \
+                "repos/${GITHUB_REPOSITORY}/actions/runs/${entry%% *}/artifacts" \
+                --jq '[.artifacts[] | select(.name == "github-pages" and .expired == false)] | length' \
+                </dev/null)
+              if [ "$retained" -gt 0 ]; then
+                deploy_run_id="${entry%% *}"
+                deploy_run_attempt="${entry##* }"
+                break
+              fi
+            done <<<"$deploy_list"
+            if [ -z "$deploy_run_id" ]; then
+              echo "::error::No retained Pages artifact remains for ${SOURCE_HEAD_SHA}, the commit ${tag} pins (Pages artifacts are kept for one day). The tag cannot be fulfilled from a verified deployment; an owner must remove the tag and its draft and cut the month again."
+              exit 1
+            fi
+            echo "Hydrating from run ${deploy_run_id}, attempt ${deploy_run_attempt}: the retained deployment of ${SOURCE_HEAD_SHA}."
+            echo "Bundle hydrated from run ${deploy_run_id}, attempt ${deploy_run_attempt}, the retained deployment of ${SOURCE_HEAD_SHA}." >> "$GITHUB_STEP_SUMMARY"
+            artifact_dir="$source/pages-artifact"
+            mkdir -p "$artifact_dir"
+            gh run download "$deploy_run_id" \
+              --repo "$GITHUB_REPOSITORY" --name github-pages --dir "$artifact_dir"
+            mapfile -t archives < <(find "$artifact_dir" -type f -name artifact.tar)
+            if [ "${#archives[@]}" -ne 1 ]; then
+              echo "::error::The deploying run did not contain exactly one Pages artifact.tar."
+              exit 1
+            fi
+            tar -xf "${archives[0]}" -C "$site"
+            cp "$site/deployment.json" "$source/deployment-after.json"
+            cp "$site/release-manifest.json" "$source/release-manifest.json"
+            bound_run_id="$deploy_run_id"
+            bound_run_attempt="$deploy_run_attempt"
           else
             # Manual cuts retain latest-production semantics, with a before/after
             # deployment boundary and unique cache keys around every exact GET.
@@ -321,10 +527,12 @@ jobs:
           fi
 
           manifest_sha=$(sha256sum "$source/release-manifest.json" | cut -d ' ' -f 1)
-          if [ "$SOURCE_MODE" = scheduled-daily ]; then
+          if [ -n "$bound_run_id" ]; then
+            # Hydrated from a run's artifact: deployment.json must name that
+            # exact run and attempt as well as the source commit.
             jq -e --arg commit "$SOURCE_HEAD_SHA" \
-              --argjson source_run_id "$SOURCE_RUN_ID" \
-              --argjson source_run_attempt "$SOURCE_RUN_ATTEMPT" \
+              --argjson source_run_id "$bound_run_id" \
+              --argjson source_run_attempt "$bound_run_attempt" \
               --arg manifest_sha "$manifest_sha" \
               '.schema_version == 3 and .commit == $commit
                and .source_run_id == $source_run_id
