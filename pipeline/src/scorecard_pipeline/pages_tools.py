@@ -1048,6 +1048,12 @@ _TOOLS = [
         "Download the covered dataset, CC BY 4.0, with a versioned public API.",
         "No account",
     ),
+    (
+        "/data/history/",
+        "Scorecard history tables",
+        "Every dated check and every finding across the covered corpus as two Parquet tables, rebuilt monthly and licensed to one organization; the dated scorecards behind them stay free.",
+        "Paid",
+    ),
 ]
 
 
@@ -1067,7 +1073,7 @@ def _render_tools_page() -> str:
     <p class="page-lede">Everything on this site you can act with, not just read: check a
     feed, request a full score, compare agencies, query the data, and get alerts. Each entry
     says what it costs you. Most work without an account; the one-off request is marked because
-    it uses GitHub, and the one paid entry is marked because it is paid.</p>
+    it uses GitHub, and the two paid entries are marked because they are paid.</p>
     <ul class="findings">{items}</ul>
     <p class="fineprint">All of it is open source; the
     <a href="https://github.com/ChelseaKR/gtfs-scorecard">repository</a> has the CLI and

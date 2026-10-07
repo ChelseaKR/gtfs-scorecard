@@ -67,6 +67,18 @@ the declared public surface).
   `/data/history/` the way it does on `/bundle/`, so the deploy-time
   structural SEO check fails the page if the offers block ever goes
   missing while the tier is open.
+- **The history tables are findable (ADR 0063, the findability pass).**
+  Measured on the live site on 2026-10-06, only `/data/` and `/support/`
+  linked `/data/history/`: the home page linked `/bundle/` three times and
+  the history tables never, the two paid pages did not cross-link, `/tools/`
+  did not list the tier, and `/api/` returned 404. Now the home page's "Use
+  the public data" card carries one sentence pointing at it, `/tools/` lists
+  it as a paid entry beside the bundle's, `/bundle/` carries one line for
+  the reader who needs tables rather than board reports and `/data/history/`
+  one line back, and `/api/` is a redirect alias to the open-data page's
+  endpoint list through the same stub mechanism that serves `/access/`. No
+  surface types the amount, the shared nav and footer are unchanged, and no
+  agency page names the tier; the tests pin each of those.
 
 - **Delivery for the scorecard history tables, built and closed (ADR 0063,
   phase 2).** `history-export.yml` writes one zip a month to the private

@@ -160,8 +160,16 @@ def test_the_landing_page_states_what_the_contract_states() -> None:
         "scored on top of the MobilityData gtfs-validator",
     ):
         assert phrase in head, phrase
-    assert 'href="/bundle/"' not in head, (
-        "the history page sells one thing; the bundle is reached through the shared footer"
+    # The page sells one thing. It points at the bundle exactly once, outside
+    # both generated regions, for the reader who needs board reports rather
+    # than tables; /bundle/ carries the reverse line. The two paid pages
+    # cross-link and nothing else on this page names the bundle above the
+    # footer, so a second /bundle/ link here would be a second offer.
+    stripped = head
+    for pattern in BUNDLE_GENERATED_REGION_RES:
+        stripped = pattern.sub(" ", stripped)
+    assert stripped.count('href="/bundle/"') == 1, (
+        "the history page points at the bundle exactly once, outside the generated regions"
     )
     assert '@type":"Service"' in head and HISTORY_SERVICE_ID in head
     assert page.count('id="plan-offers-jsonld"') <= 1
@@ -209,9 +217,16 @@ def test_every_gate_that_opens_a_purchase_surface_knows_the_new_pages() -> None:
 
 
 def test_the_pointers_reach_the_history_page_and_name_no_price() -> None:
-    """Phase 3: the open-data page, the support page, llms.txt and the README all
-    reach /data/history/ in their own content, describe what is sold and what
-    stays free, and type no amount (ADR 0054's rule for the two text files)."""
+    """Phase 3 and the findability pass: the open-data page, the support page,
+    the home page, the tools index, the bundle page, llms.txt and the README
+    all reach /data/history/ in their own content, describe what is sold and
+    what stays free, and type no amount (ADR 0054's rule for the two text
+    files, and the plan file's for every page).
+
+    Measured on the live site on 2026-10-06, before the last four pointers
+    existed: only /data/ and /support/ linked the tier, the home page linked
+    /bundle/ three times and /data/history/ never, and the two paid pages did
+    not cross-link."""
     data_page = (_WEB / "data" / "index.html").read_text()
     head, separator, _footer = data_page.partition(_FOOTER_TAG)
     assert separator
@@ -221,6 +236,44 @@ def test_the_pointers_reach_the_history_page_and_name_no_price() -> None:
     head, separator, _footer = support.partition(_FOOTER_TAG)
     assert separator
     assert 'href="/data/history/"' in head and 'id="path-history-h"' in head
+    # The home page: one sentence on the card that already links /data/, which
+    # says it is paid before the click and what stays free, and nothing in the
+    # program-tier section, which sells the bundle.
+    # The landing page carries its own footer rather than the shared one, so it
+    # is split on that tag; its footer links the bundle and must not grow a
+    # history link, which the count below would notice.
+    home = (_WEB / "index.html").read_text()
+    head, separator, _footer = home.partition("<footer>")
+    assert separator, "the landing page has no footer; the split below proves nothing"
+    card = re.search(r'<nav aria-label="Reuse public evidence">', head)
+    assert card is not None
+    card_text = head[head.rfind("<li>", 0, card.start()) : head.index("</li>", card.start())]
+    assert 'href="/data/"' in card_text and 'href="/data/history/"' in card_text
+    assert "(paid)" in card_text and "stay free" in card_text
+    assert head.count('href="/data/history/"') == 1
+    programs = head[
+        head.index('id="programs"') : head.index("</section>", head.index('id="programs"'))
+    ]
+    assert "/data/history/" not in programs
+    # The bundle page: one line, outside both generated regions, for the
+    # reader who needs tables rather than board reports.
+    bundle = (_WEB / "bundle" / "index.html").read_text()
+    head, separator, _footer = bundle.partition(_FOOTER_TAG)
+    assert separator
+    for pattern in BUNDLE_GENERATED_REGION_RES:
+        head = pattern.sub(" ", head)
+    assert head.count('href="/data/history/"') == 1
+    assert "tables rather than" in head
+    # The tools index is generated; its shipped output lists the tier as paid.
+    tools = (_REPO / "pipeline" / "tests" / "goldens" / "tools" / "index.html").read_text()
+    head, separator, _footer = tools.partition(_FOOTER_TAG)
+    assert separator
+    entry = re.search(
+        r'<li class="finding">(?:(?!</li>).)*href="/data/history/"(?:(?!</li>).)*</li>', head, re.S
+    )
+    assert entry is not None, "/tools/ does not list the history tables"
+    assert '<span class="availability">Paid</span>' in entry.group(0)
+    assert "stay free" in entry.group(0)
     llms = (_WEB / "llms.txt").read_text()
     assert "https://gtfsscorecard.org/data/history/" in llms
     assert "Paid: two things." in llms and "Paid: one thing" not in llms
@@ -229,8 +282,18 @@ def test_the_pointers_reach_the_history_page_and_name_no_price() -> None:
     assert "Two things cost money." in readme and "One thing costs money" not in readme
     plan = _plan()
     amount = f"${plan['products']['history_once']['price']}"
-    for name, text in (("llms.txt", llms), ("README.md", readme), ("support", support)):
-        assert amount not in text, f"{name} types the history price"
+    for name, text in (
+        ("llms.txt", llms),
+        ("README.md", readme),
+        ("support", support),
+        ("home", home),
+        ("bundle", bundle),
+        ("tools", tools),
+    ):
+        swept = text
+        for pattern in BUNDLE_GENERATED_REGION_RES:
+            swept = pattern.sub(" ", swept)
+        assert amount not in swept, f"{name} types the history price"
 
 
 def test_the_history_page_faq_node_says_what_the_page_says() -> None:

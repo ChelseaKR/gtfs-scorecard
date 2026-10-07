@@ -398,3 +398,42 @@ def test_the_structural_seo_gate_requires_the_structured_data_these_pages_publis
         assert types <= set(required[pattern]), (
             f"{pattern} no longer requires {sorted(types - set(required[pattern]))}"
         )
+
+
+# --- and /api/ answers the reader who guesses at it ----------------------
+
+
+def test_the_api_path_is_answered_by_a_redirect_to_the_endpoint_list() -> None:
+    """``/api/`` is the directory a reader guesses at when they want the data as
+    files. Measured on the live site on 2026-10-06 it returned 404, while the
+    read API sat one level down at ``/api/v1/`` and the only page listing those
+    endpoints was the open-data page's "Get the data" section; ``docs/api.md``
+    has no page on the site and is linked only as a GitHub URL, from /query/.
+
+    So the answer is the site's existing retired-URL mechanism rather than a
+    new page type: a meta-refresh stub to that section, declared in
+    ``site-seo.json``'s ``redirect_aliases`` so the deploy-time check holds the
+    target to an indexable, terminal page whose fragment exists, and kept out
+    of the sitemap like every other alias. The config entry, the rendered
+    stub, the anchor it lands on, and the sitemap are each read here, because
+    any one of them can go missing with no code change.
+    """
+    config = json.loads((_REPO / "site-seo.json").read_text())
+    target = config["redirect_aliases"].get("/api/")
+    assert target == "/data/#get-h", "/api/ is no longer a configured redirect to the endpoint list"
+
+    stub = (_GOLDENS / "api" / "index.html").read_text()
+    assert f'<meta http-equiv="refresh" content="0; url={target}">' in stub
+    assert f'href="{target}"' in stub, (
+        "the stub carries no fallback link for a reader without refresh"
+    )
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/data/">' in stub
+    assert 'name="robots"' not in stub, "a redirect alias carries no robots meta"
+
+    data_page = (_REPO / "web" / "data" / "index.html").read_text()
+    assert 'id="get-h"' in data_page, "the fragment /api/ lands on is gone from /data/"
+    assert 'href="/api/v1/index.json"' in data_page, "/data/ no longer lists the endpoint index"
+
+    sitemap = (_GOLDENS / "sitemap.xml").read_text()
+    assert f"<loc>{_ORIGIN}/api/</loc>" not in sitemap
+    assert f"<loc>{_ORIGIN}/data/</loc>" in sitemap
