@@ -29,6 +29,33 @@ the declared public surface).
 
 ### Added
 
+- **The scorecard history tables (ADR 0063), the release notes for the tag
+  that ships them.** A second paid tier beside the program report bundle:
+  every dated check of every covered feed record and every finding in each,
+  as two Parquet tables (`checks`, `findings`) with a data dictionary, a
+  provenance file, and a license, built by the open-source
+  `scorecard history-export` command and rebuilt monthly. Licensed to one
+  organization; the dated scorecards it is built from, the flat exports, the
+  read API, and the monthly dataset release stay free and unchanged. A
+  publisher can ask to be left out of the sold tables through
+  `history-export-exclusions.yaml`, and the free site is untouched by that
+  request. Delivery rides the bundle's checkout path: a Stripe Payment Link,
+  a 30-day capability link to the newest monthly object, and an email, with
+  no build per order and no new always-on resource. The tier is described at
+  `/data/history/`, pointed to from the open-data page, the support page,
+  `llms.txt`, and this README, and is on sale only once its plan file says
+  so. Grades, methodology, and which agencies are listed are never for sale.
+- **Phase 3 of ADR 0063: the pointers and the pricing copy.** `/data/` gains
+  a section pointing a reader who needs the corpus over time to
+  `/data/history/`; `/support/` gains a second paid card; `llms.txt` and the
+  README describe two paid things instead of one; the history page gains the
+  buyer's questions in the bundle's shape (what arrives, when, how long the
+  link lives, what if it is wrong, what if no build exists, what a purchase
+  does not change, what stays free) and a matching FAQ node; and the price is
+  still only ever read from `web/data/history/plan.json` through the
+  generated regions. `docs/history-tables.md` records the price knob and the
+  day-90 rule.
+
 - **Delivery for the scorecard history tables, built and closed (ADR 0063,
   phase 2).** `history-export.yml` writes one zip a month to the private
   `history/<YYYY-MM>/` prefix under its own least-privilege OIDC role; the

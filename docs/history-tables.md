@@ -2,9 +2,42 @@
 
 **Not yet on sale.** This page is the contract for the scorecard history
 tables, the paid data tier decided in [ADR 0063](decisions/0063-history-tables-paid-tier.md).
-The export exists and can be run from this repository; the price, the
-checkout, and the delivery arrive in later phases. Until then nothing here is
-offered to anyone, and nothing on the public site changes.
+The export, the delivery, the pages, and the pointers to them are built; the
+tier opens only when the owner creates the Stripe price and Payment Link,
+applies the Terraform, runs the first export, and turns `paymentsAvailable`
+on in `web/data/history/plan.json` (the runbook below). Until then the page
+says the tables are not yet on sale, nothing is offered to anyone, and the
+free site is unchanged apart from the pages that describe this tier.
+
+## Price
+
+The same posture as the bundle (`docs/program-plan.md`): the amount is a
+hypothesis and the checkout is the experiment. It lives in
+`web/data/history/plan.json` and nowhere else; the page and its structured
+data are generated from that file, and `test_paid_tier_visibility.py` fails
+the build on the amount typed anywhere else.
+
+| Knob | Price | What it covers |
+| --- | --- | --- |
+| `history_once` | $99 once | The newest monthly build of both tables, the dictionary, the provenance file, and the license, as one zip, licensed to one organization, with a 30-day download link |
+
+Why this number: no priced product sells a national feed-quality history, so
+there is no direct comparable. Transitland's $200 a month is the nearest
+priced transit-data subscription and bundles much more; $99 sits under the
+card-without-procurement line for a consultant or a researcher, above a token
+amount so a sale is a signal, and below the bundle's entry plan so the two do
+not compete for the same buyer. A monthly refresh plan waits for the first
+sale. The day-90 rule applies on this tier's own clock: no sale after 90 days
+with the page over about 50 unique visitors halves the one-time price once,
+and nothing else changes.
+
+## Where the tier is pointed to from
+
+`/data/` (the open-data page, in its own section), `/support/` (a second paid
+card beside the bundle's), the shared footer only through `/support/`,
+`web/llms.txt` and `README.md` (which describe two paid things and name no
+price, per ADR 0054), and the sitemap. Agency pages, call briefs, and board
+one-pagers name nothing about it, as ADR 0058 requires of every paid surface.
 
 ## What the tables are
 

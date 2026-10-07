@@ -57,23 +57,32 @@ application, the badge, the open data, and the read API. No account and no
 payment is involved anywhere in that path, and nothing was removed from it to
 create the paid tier.
 
-Paid: one thing, the program report bundle. A state program, a
+Paid: two things. The program report bundle: a state program, a
 technical-assistance center, a feed vendor, or a consultancy that prepares
 packets for many agencies at once can buy a single archive holding a board
 report for every agency id it names, carrying its own name, logo, and accent
-color on each cover, refreshed monthly if it wants. Plan sizes, prices,
-delivery terms, and the refund commitment are on the bundle page, which reads
-them from the live plan data. They are not restated here, because a price
-copied into a file like this one keeps selling after the plan changes.
+color on each cover, refreshed monthly if it wants. And the scorecard history
+tables: the whole corpus's check-level and finding-level history as two
+Parquet tables with a data dictionary, provenance, and license, rebuilt
+monthly and licensed to one organization, for a vendor, a consultancy, a
+program, or a researcher who needs the corpus over time. Plan sizes, prices,
+delivery terms, and the refund commitment are on each page, which reads them
+from the live plan data; the history page also says whether the tier is open
+yet. They are not restated here, because a price copied into a file like this
+one keeps selling after the plan changes.
 
 A purchase buys no influence over grades, methodology, or which agencies are
 listed.
 
 Routing: a question about one agency's own feed is answered by the free
 scorecard. A question about getting board-ready reports for every agency in a
-state, a region, or a client list is answered by the bundle page.
+state, a region, or a client list is answered by the bundle page. A question
+about every check and every finding across the corpus over time, as a table,
+is answered by the history tables page; the free dated scorecards behind it
+are at /data/artifacts/<id>/<date>.json.
 
 - Program report bundle (paid): https://gtfsscorecard.org/bundle/
+- Scorecard history tables (paid): https://gtfsscorecard.org/data/history/
 - Support, sponsorship, and what money does not buy: https://gtfsscorecard.org/support/
 
 ## Source

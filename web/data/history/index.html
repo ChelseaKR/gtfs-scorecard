@@ -30,6 +30,7 @@
   <!-- offers:begin -->
   <!-- Nothing is for sale: plan.json either switches payments off or lists no product with both a numeric price and an https checkout link. The page states no price because there is none to state. -->
   <!-- offers:end -->
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","@id":"https://gtfsscorecard.org/data/history/#faq","mainEntity":[{"@type":"Question","name":"What arrives?","acceptedAnswer":{"@type":"Answer","text":"One zip holding checks.parquet, findings.parquet, DATA-DICTIONARY.md, PROVENANCE.json, and LICENSE.md: the newest monthly build at the time you pay."}},{"@type":"Question","name":"When does it arrive?","acceptedAnswer":{"@type":"Answer","text":"On the page Stripe sends you to after paying, as soon as the payment is confirmed, and by email to the address you paid with. There is nothing to build per order."}},{"@type":"Question","name":"How long does the link live?","acceptedAnswer":{"@type":"Answer","text":"30 days. Each click opens a fresh short-lived download, so the link itself can be kept and shared inside your organization."}},{"@type":"Question","name":"What if the download is wrong, or something about the order is not right?","acceptedAnswer":{"@type":"Answer","text":"Reply to the receipt Stripe emailed you, or open an issue on GitHub, and the link will be reissued or the purchase refunded."}},{"@type":"Question","name":"What if no monthly build exists when I pay?","acceptedAnswer":{"@type":"Answer","text":"Nothing is delivered and your checkout is not used; the page says so, and the tables are sent by hand as soon as the build exists."}},{"@type":"Question","name":"What does a purchase change about a grade?","acceptedAnswer":{"@type":"Answer","text":"Nothing. Grades, methodology, and which agencies are listed are not for sale, and the tables carry the same numbers as the public site."}},{"@type":"Question","name":"What stays free?","acceptedAnswer":{"@type":"Answer","text":"Everything that is free today: every dated scorecard, the flat exports, the read API, the monthly dataset release, and the history-export command itself. Anyone who would rather build the tables from the free files can."}}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://gtfsscorecard.org/"},{"@type":"ListItem","position":2,"name":"Open data","item":"https://gtfsscorecard.org/data/"},{"@type":"ListItem","position":3,"name":"History tables"}]}</script>
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -96,6 +97,20 @@
     open-source <code>scorecard history-export</code> command, and what is sold is the built
     artifact and its monthly refresh, never the facts and never the code.</p>
 
+    <!-- The buyer's questions, in the order a first-time buyer asks them, in the
+         same words as the FAQPage node in the head; a test holds the two together.
+         No amount here: the price is in /data/history/plan.json and reaches the
+         page only through the generated regions. -->
+    <ul class="buy-terms">
+      <li><strong>What arrives?</strong> One zip holding checks.parquet, findings.parquet, DATA-DICTIONARY.md, PROVENANCE.json, and LICENSE.md: the newest monthly build at the time you pay.</li>
+      <li><strong>When does it arrive?</strong> On the page Stripe sends you to after paying, as soon as the payment is confirmed, and by email to the address you paid with. There is nothing to build per order.</li>
+      <li><strong>How long does the link live?</strong> 30 days. Each click opens a fresh short-lived download, so the link itself can be kept and shared inside your organization.</li>
+      <li><strong>What if the download is wrong, or something about the order is not right?</strong> Reply to the receipt Stripe emailed you, or open an issue on <a href="https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=History%20tables%20order%20problem">GitHub</a>, and the link will be reissued or the purchase refunded.</li>
+      <li><strong>What if no monthly build exists when I pay?</strong> Nothing is delivered and your checkout is not used; the page says so, and the tables are sent by hand as soon as the build exists.</li>
+      <li><strong>What does a purchase change about a grade?</strong> Nothing. Grades, methodology, and which agencies are listed are not for sale, and the tables carry the same numbers as the public site.</li>
+      <li><strong>What stays free?</strong> Everything that is free today: every dated scorecard, the flat exports, the read API, the monthly dataset release, and the history-export command itself. Anyone who would rather build the tables from the free files can.</li>
+    </ul>
+
     <section aria-labelledby="what-h">
       <h2 class="section-title" id="what-h">What arrives</h2>
       <ul class="buy-terms">
@@ -123,6 +138,10 @@
     </section>
 
     <h2 class="section-title" id="plans-h">The plan and its price</h2>
+    <p>One plan, paid once, for one organization. The amount is set in the plan data and
+    shown here while the tier is open; it is never typed into this page, so turning the tier
+    on or off is a data change. The same rules as the board report bundle apply: the number
+    on the page is the number charged, in US dollars, through Stripe.</p>
     <p id="plan-notice" class="form-status" role="status" aria-live="polite" hidden></p>
     <!-- The plan list for a reader with no scripting, generated from
          /data/history/plan.json by `make sync-bundle-offers` alongside the offers
