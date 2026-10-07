@@ -1520,18 +1520,17 @@ def test_repository_config_keeps_aliases_and_exemptions_narrow() -> None:
     # each of those could stop being published with no code change and no
     # other test noticing. The full reasoning, and the check that each entry
     # is still required, is in tests/test_program_discoverability.py.
-    # /data/history/ (ADR 0063) sells one thing the same way /bundle/ does, but
-    # its Product node is the offers block `make sync-bundle-offers` writes
-    # from its plan file, and that block is emitted only while the plan says
-    # payments are available. Until the owner turns the plan on, the page
-    # carries a Service and no Product, so requiring Product here would fail
-    # the deploy gate on a page that is correct. The PR that flips the plan
-    # adds "Product" to this entry; tests/test_history_plan_contract.py ties
-    # the two together.
+    # /data/history/ (ADR 0063) sells one thing the same way /bundle/ does. Its
+    # Product node is the offers block `make sync-bundle-offers` writes from
+    # its plan file, emitted only while the plan says payments are available.
+    # The plan is on, so the page carries a Service and a Product and the
+    # deploy gate requires both, as it does for /bundle/.
+    # tests/test_history_plan_contract.py derives this entry from the plan
+    # file, so turning the plan off again means dropping "Product" here too.
     assert config["required_json_ld_types"] == {
         "/agency/*/": ["Dataset"],
         "/bundle/": ["Service", "Product"],
-        "/data/history/": ["Service"],
+        "/data/history/": ["Service", "Product"],
         "/program/": ["CollectionPage"],
         "/program/*/": ["CollectionPage", "Dataset"],
     }

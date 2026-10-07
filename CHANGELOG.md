@@ -55,6 +55,18 @@ the declared public surface).
   still only ever read from `web/data/history/plan.json` through the
   generated regions. `docs/history-tables.md` records the price knob and the
   day-90 rule.
+- **The scorecard history tables are open for purchase at $99 (ADR 0063,
+  the plan flip).** `web/data/history/plan.json` now says payments are
+  available and names the live Stripe Payment Link for `history_once`, so
+  `/data/history/` states the price in its two generated regions: the
+  offers block in the head, which is the page's Product node with one
+  Offer at 99 USD, one time, and the no-scripting plan list. The amount
+  lives only in that plan file; `make sync-bundle-offers` writes both
+  regions from it, and the page's own copy and scripts type no amount.
+  With the plan on, `site-seo.json` requires the Product node on
+  `/data/history/` the way it does on `/bundle/`, so the deploy-time
+  structural SEO check fails the page if the offers block ever goes
+  missing while the tier is open.
 
 - **Delivery for the scorecard history tables, built and closed (ADR 0063,
   phase 2).** `history-export.yml` writes one zip a month to the private

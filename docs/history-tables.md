@@ -1,13 +1,14 @@
 # The history tables
 
-**Not yet on sale.** This page is the contract for the scorecard history
-tables, the paid data tier decided in [ADR 0063](decisions/0063-history-tables-paid-tier.md).
-The export, the delivery, the pages, and the pointers to them are built; the
-tier opens only when the owner creates the Stripe price and Payment Link,
-applies the Terraform, runs the first export, and turns `paymentsAvailable`
-on in `web/data/history/plan.json` (the runbook below). Until then the page
-says the tables are not yet on sale, nothing is offered to anyone, and the
-free site is unchanged apart from the pages that describe this tier.
+**On sale since October 2026.** This page is the contract for the scorecard
+history tables, the paid data tier decided in [ADR 0063](decisions/0063-history-tables-paid-tier.md).
+The export, the delivery, the pages, and the pointers to them are built, the
+Stripe price and Payment Link exist, the Terraform is applied, the first
+export has run, and `paymentsAvailable` is on in `web/data/history/plan.json`
+(the runbook below records the order). Turning the tier off again is the
+reverse of the runbook's last step: plan off, re-sync, and drop `Product`
+from `site-seo.json`. The free site is unchanged apart from the pages that
+describe this tier.
 
 ## Price
 
