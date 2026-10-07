@@ -273,8 +273,12 @@ jobs:
             # Manual cuts retain latest-production semantics, with a before/after
             # deployment boundary and unique cache keys around every exact GET.
             base="https://gtfsscorecard.org"
+            # GitHub Pages answers a few of these thousands of GETs with a
+            # transient 503 (two of three manual cuts on 2026-10-06 died on
+            # one). Retry each GET a few times before giving up on the month.
             fetch() {
               curl --connect-timeout 10 --max-time 120 -fsSL \
+                --retry 5 --retry-delay 3 --retry-all-errors \
                 -H 'Cache-Control: no-cache, no-store' -H 'Pragma: no-cache' "$@"
             }
             fetch "$base/deployment.json?release=${request_id}-before" \
