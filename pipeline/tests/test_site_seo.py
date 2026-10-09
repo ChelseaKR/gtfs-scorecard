@@ -1534,8 +1534,14 @@ def test_repository_config_keeps_aliases_and_exemptions_narrow() -> None:
         "/program/": ["CollectionPage"],
         "/program/*/": ["CollectionPage", "Dataset"],
     }
+    # /api/ is not a retired URL but a guessed one: the read API lives under
+    # /api/v1/ and the open-data page's "Get the data" section is the only
+    # page listing its endpoints, so the directory answers with the same
+    # meta-refresh stub the retired URLs use. tests/test_program_discoverability.py
+    # holds the stub, its target's fragment, and its absence from the sitemap.
     assert config["redirect_aliases"] == {
         "/access/": "/adoption/#access",
+        "/api/": "/data/#get-h",
         "/changes/": "/pulse/#changes",
         "/concept/": "/how-to-read/",
         "/leaderboard/": "/pulse/#changes",

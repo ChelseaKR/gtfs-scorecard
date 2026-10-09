@@ -225,6 +225,40 @@ def test_landing_names_both_counts_and_the_shipped_service_scope() -> None:
         assert f'href="{href}"' in html, href
 
 
+def test_landing_points_at_the_history_tables_from_the_open_data_card_only() -> None:
+    """One sentence on the "Use the public data" card, beside the /data/ link
+    it already carried, and nowhere else on the page: not in the primary nav,
+    which sync_static_navs writes from _NAV_ITEMS, and not in the program-tier
+    section, which sells the bundle. The anchor says "paid" before the click,
+    as the bundle's own card link does, and no amount is typed anywhere on the
+    page: the bundle's home-page copy carries none either, its plan summary
+    being fetched at view time."""
+    html = (_REPO / "web" / "index.html").read_text()
+    # The landing page carries its own header and footer, not the shared ones.
+    head, separator, _footer = html.partition("<footer>")
+    assert separator, "the landing page has no footer; the split below proves nothing"
+    assert head.count('href="/data/history/"') == 1
+
+    header = re.search(r'<header class="home-header">.*?</header>', html, re.S)
+    assert header is not None, "the landing header was renamed; this check now reads nothing"
+    assert "/data/history/" not in header.group(0)
+    assert _NAV_STOPS_RE.search(html) is None, "the landing page grew the shared nav; split on it"
+    assert all("/data/history/" not in href for _label, href in _NAV_ITEMS)
+
+    programs = head[
+        head.index('id="programs"') : head.index("</section>", head.index('id="programs"'))
+    ]
+    assert "/data/history/" not in programs
+
+    card_nav = head.index('<nav aria-label="Reuse public evidence">')
+    card = head[head.rfind("<li>", 0, card_nav) : head.index("</li>", card_nav)]
+    assert 'href="/data/"' in card
+    assert '<a href="/data/history/">scorecard history tables (paid)</a>' in card
+
+    plan = json.loads((_REPO / "web" / "data" / "history" / "plan.json").read_text())
+    assert f"${plan['products']['history_once']['price']}" not in html
+
+
 def test_landing_leads_with_the_quality_workflow_and_keeps_the_pilot_bounded() -> None:
     html = (_REPO / "web" / "index.html").read_text()
     script = (_REPO / "web" / "src" / "landing-scorecard.js").read_text()

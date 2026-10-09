@@ -37,6 +37,7 @@ from typing import Any, cast
 import yaml
 
 from scorecard_pipeline.site_shell import (
+    _NAV_ITEMS,
     BUNDLE_GENERATED_REGION_RES,
     FOOTER_HTML,
     FOOTER_HTML_ES,
@@ -53,6 +54,8 @@ _WEB = _REPO / "web"
 _GOLDENS = _REPO / "pipeline" / "tests" / "goldens"
 
 _BUNDLE_HREF = 'href="/bundle/"'
+# The second paid tier, the scorecard history tables (ADR 0063).
+_HISTORY_HREF = 'href="/data/history/"'
 # The sentence /support/, /bundle/, and ADR 0049 all use, verbatim.
 _INDEPENDENCE = "buys no influence over grades, methodology, or which agencies are listed"
 _FOOTER_TAG = '<footer class="site-footer">'
@@ -186,6 +189,81 @@ def test_each_landing_surface_reaches_the_paid_tier() -> None:
     # /tools/ and the program rollups are generated; assert the shipped output.
     assert _BUNDLE_HREF in (_GOLDENS / "tools" / "index.html").read_text()
     assert _BUNDLE_HREF in (_GOLDENS / "program" / "california" / "index.html").read_text()
+
+
+def test_each_landing_surface_reaches_the_history_tables_too() -> None:
+    """The second paid tier (ADR 0063) is reached the way the first is: from
+    the pages a reader arrives on, in each page's own content above the shared
+    footer, so a footer-only route cannot satisfy this.
+
+    Measured on the live site on 2026-10-06, before these pointers landed:
+    only /data/ and /support/ linked /data/history/; the home page linked
+    /bundle/ three times and the history tables never; /tools/ did not list
+    it; and the two paid pages did not cross-link. The owner's decision was
+    passive pointers on exactly these surfaces, and nothing in the shared nav
+    or footer and nothing on an agency page (the test two below).
+    """
+    # The landing page carries its own footer, not the shared one; split on it.
+    for rel, footer_tag in (
+        ("index.html", "<footer>"),
+        ("data/index.html", _FOOTER_TAG),
+        ("support/index.html", _FOOTER_TAG),
+        ("bundle/index.html", _FOOTER_TAG),
+    ):
+        head, separator, _footer = (_WEB / rel).read_text().partition(footer_tag)
+        assert separator, f"{rel}: no footer found; the split below proves nothing"
+        assert _HISTORY_HREF in head, f"{rel}: reaches the history tables only through the footer"
+    tools = (_GOLDENS / "tools" / "index.html").read_text().partition(_FOOTER_TAG)[0]
+    assert _HISTORY_HREF in tools, "/tools/ does not list the history tables"
+    # And the reverse: the history page reaches the bundle, for the reader who
+    # needs board reports rather than tables.
+    history = (_WEB / "data" / "history" / "index.html").read_text().partition(_FOOTER_TAG)[0]
+    assert _BUNDLE_HREF in history, "/data/history/ does not point back at the bundle"
+
+
+def test_the_tools_page_marks_every_paid_entry_and_no_free_one() -> None:
+    """/tools/ states what each entry costs beside its link. Both paid tiers
+    carry "Paid" there and no free entry does, so the list cannot describe a
+    purchase as free by default, which is how the bundle was once listed."""
+    tools = (_GOLDENS / "tools" / "index.html").read_text().partition(_FOOTER_TAG)[0]
+    entries = re.findall(r'<li class="finding">.*?</li>', tools, re.S)
+    assert len(entries) > 10, "the tools list collapsed; this test would prove nothing"
+    paid = set()
+    for entry in entries:
+        href = re.search(r'href="([^"]+)"', entry)
+        assert href is not None, entry
+        if '<span class="availability">Paid</span>' in entry:
+            paid.add(href.group(1))
+    assert paid == {"/bundle/", "/data/history/"}
+
+
+def test_the_history_tables_stay_out_of_the_shared_chrome_and_off_agency_pages() -> None:
+    """The decision, recorded: the pointers above are the whole set.
+
+    The shared nav and footer reach every page at once and stay as they were.
+    An agency's scorecard, call brief, board one-pager, and clearance log name
+    nothing about this tier, the way they name nothing about the bundle
+    outside the scorecard's program panel (ADR 0058). Swept over every agency
+    golden rather than a list, so a new agency page family is covered the day
+    it renders.
+    """
+    for footer in (FOOTER_HTML, FOOTER_HTML_WITHOUT_US_TOOLS, FOOTER_HTML_ES):
+        assert "/data/history/" not in footer
+    assert all("/data/history/" not in href for _label, href in _NAV_ITEMS)
+
+    swept = 0
+    for path in sorted((_GOLDENS / "agency").rglob("*.html")):
+        relative = path.relative_to(_GOLDENS)
+        html = path.read_text()
+        head, separator, _footer = html.partition(_FOOTER_TAG)
+        if not separator:
+            assert 'http-equiv="refresh"' in html, (
+                f"{relative}: no shared footer and not a redirect stub; the split proves nothing"
+            )
+            continue
+        assert "/data/history/" not in head, f"{relative}: names the history tables"
+        swept += 1
+    assert swept >= 9, f"only {swept} agency pages were swept; this gate would prove little"
 
 
 def test_the_program_audience_pages_reach_the_tier_above_the_footer() -> None:

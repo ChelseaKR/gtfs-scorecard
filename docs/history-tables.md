@@ -34,11 +34,20 @@ and nothing else changes.
 
 ## Where the tier is pointed to from
 
-`/data/` (the open-data page, in its own section), `/support/` (a second paid
-card beside the bundle's), the shared footer only through `/support/`,
+The home page (one sentence on the "Use the public data" card, beside the
+`/data/` link it already carried), `/tools/` (an entry marked "Paid", as the
+bundle's is), `/data/` (the open-data page, in its own section), `/support/`
+(a second paid card beside the bundle's), `/bundle/` (one line for the reader
+who needs tables rather than board reports; the history page carries one line
+back to the bundle the same way), the shared footer only through `/support/`,
 `web/llms.txt` and `README.md` (which describe two paid things and name no
-price, per ADR 0054), and the sitemap. Agency pages, call briefs, and board
-one-pagers name nothing about it, as ADR 0058 requires of every paid surface.
+price, per ADR 0054), and the sitemap. `/api/`, the directory a reader guesses
+at when they want the data as files, is a redirect alias to the open-data
+page's endpoint list rather than a 404. None of these surfaces types the
+amount; it lives only in the plan file, and `test_history_plan_contract.py`
+sweeps each of them for it. The shared nav and footer are unchanged, and
+agency pages, call briefs, and board one-pagers name nothing about it, as ADR
+0058 requires of every paid surface.
 
 ## What the tables are
 

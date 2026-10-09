@@ -12908,6 +12908,17 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     )
     # Accessibility coverage lives on the What-feeds-publish page now.
     write("access/index.html", _redirect_page("/adoption/#access", "Accessibility data coverage"))
+    # /api/ has never been a page: the read API is the set of files under
+    # /api/v1/, and the page that lists them is the open-data page's "Get the
+    # data" section. A reader who types the directory, or who wants the data
+    # as files and guesses at an API, lands on that list instead of a 404.
+    # Declared in site-seo.json's redirect_aliases like the other stubs.
+    write(
+        "api/index.html",
+        _redirect_page(
+            "/data/#get-h", "The read API", "the open data page, which lists every endpoint"
+        ),
+    )
 
     # National adoption of the newer GTFS capabilities (flexible service, fare
     # data and Fares v2, station pathways), read from the same per-agency detail

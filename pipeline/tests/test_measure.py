@@ -257,6 +257,26 @@ def test_the_shim_reports_only_controls_that_opt_in_by_name() -> None:
     assert (pipeline_src / "render_site.py").read_text().count("data-measure=") == 1
 
 
+def test_the_history_pointers_are_plain_links_that_opt_nothing_in() -> None:
+    """The findability pass pointed the home page, /tools/, and /bundle/ at
+    /data/history/, and the history page back at /bundle/. Each is a plain
+    link: a counted control is a disclosure change in /about/#privacy, and the
+    two tests above pin the only two that exist. Read off the markup, so a
+    data-measure attribute added to any of these links fails here by name."""
+    pages = (
+        _WEB / "index.html",
+        _WEB / "bundle" / "index.html",
+        _WEB / "data" / "history" / "index.html",
+        _REPO / "pipeline" / "tests" / "goldens" / "tools" / "index.html",
+    )
+    seen = 0
+    for path in pages:
+        for tag in re.findall(r'<a [^>]*href="/(?:data/history|bundle)/"[^>]*>', path.read_text()):
+            assert "data-measure" not in tag, f"{path.name}: {tag}"
+            seen += 1
+    assert seen >= 6, f"only {seen} pointer links found across four pages; this proves little"
+
+
 def test_the_agency_program_panel_link_is_counted_and_disclosed() -> None:
     page = _AGENCY_GOLDEN.read_text()
     links = re.findall(r'<a [^>]*data-measure="([^"]*)"[^>]*>', page)
