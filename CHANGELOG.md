@@ -27,6 +27,8 @@ the declared public surface).
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-09
+
 ### Added
 
 - **The scorecard history tables (ADR 0063), the release notes for the tag
@@ -1710,12 +1712,6 @@ the declared public surface).
   this closes the "RR:R3 alert-tier wiring remains open" note EXP-04 left behind.
 
   No score, grade, category, weight, threshold, or public page moved.
-
-## [1.5.0] - 2026-08-18
-
-> **Not yet tagged.** These changes are on `main`, but no `v1.5.0` tag or
-> GitHub release exists; the newest tag is `v1.4.0`. Do not pin
-> `ChelseaKR/gtfs-scorecard@v1.5.0` — it will not resolve.
 
 ### Added
 
