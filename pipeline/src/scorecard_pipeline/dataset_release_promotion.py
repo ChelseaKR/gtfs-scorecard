@@ -30,6 +30,14 @@ EXPECTED_PAYLOAD_ASSETS = (
 EXPECTED_ASSETS = (*EXPECTED_PAYLOAD_ASSETS, "SHA256SUMS")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _GIT_SHA = re.compile(r"^[0-9a-f]{40}$")
+# GitHub's release listing (GET /releases) can trail a successful create by a
+# few seconds. Runs 37547342002 and 37559300763 (2026-10-06/07) each created
+# the dataset-2026-10 draft and, about two seconds later, listed releases,
+# did not find it, and died with "draft disappeared during reconciliation";
+# the draft existed afterward. Six listing reads with 5 s between them give
+# the listing 25 s to catch up before the draft is treated as absent.
+LISTING_LAG_ATTEMPTS = 6
+LISTING_LAG_DELAY_SECONDS = 5.0
 
 
 class DatasetReleasePromotionError(RuntimeError):
@@ -55,6 +63,8 @@ class ReleaseClient(Protocol):
     """GitHub operations used by the fail-closed promotion state machine."""
 
     def find_release(self, tag: str) -> dict[str, Any] | None: ...
+
+    def get_release(self, release_id: int) -> dict[str, Any] | None: ...
 
     def tag_ref(self, tag: str) -> dict[str, Any] | None: ...
 
@@ -141,6 +151,13 @@ class GitHubReleaseClient:
         if len(matches) > 1:
             raise DatasetReleasePromotionError(f"multiple releases use tag {tag}")
         return matches[0] if matches else None
+
+    def get_release(self, release_id: int) -> dict[str, Any] | None:
+        """Read one release by the id the create call returned; None when GitHub has no such id."""
+        response = self._request("GET", f"{self.api}/releases/{release_id}", allow_missing=True)
+        if response.status_code == 404:
+            return None
+        return self._object(response, "release by id")
 
     def tag_ref(self, tag: str) -> dict[str, Any] | None:
         response = self._request("GET", f"{self.api}/git/ref/tags/{tag}", allow_missing=True)
@@ -280,9 +297,12 @@ def _require_metadata(release: Mapping[str, Any], desired: DesiredRelease, *, dr
     }
     if not draft:
         expected["immutable"] = True
-    if any(release.get(key) != value for key, value in expected.items()):
+    conflicts = [key for key, value in expected.items() if release.get(key) != value]
+    if conflicts:
         state = "draft" if draft else "public"
-        raise DatasetReleasePromotionError(f"existing {state} release metadata conflicts")
+        raise DatasetReleasePromotionError(
+            f"existing {state} release metadata conflicts on {', '.join(conflicts)}"
+        )
 
 
 def _require_tag_target(client: ReleaseClient, desired: DesiredRelease) -> None:
@@ -356,21 +376,57 @@ def _refresh_until_exact(
 ) -> dict[str, Any]:
     last_error: DatasetReleasePromotionError | None = None
     for attempt in range(1, attempts + 1):
+        # The listing is the final, independent view of the release and the
+        # only read that can see a duplicate tag, so it stays the source here.
+        # A release missing from it is retried inside the same bound as any
+        # other not-yet-exact read rather than treated as gone on first miss.
         release = client.find_release(desired.tag)
         if release is None:
-            raise DatasetReleasePromotionError("release disappeared during promotion")
-        try:
-            _require_metadata(release, desired, draft=draft)
-            _require_tag_target(client, desired)
-            _verify_assets(client, release, local)
-            return release
-        except DatasetReleasePromotionError as exc:
-            last_error = exc
+            last_error = DatasetReleasePromotionError("release is not listed yet")
+        else:
+            try:
+                _require_metadata(release, desired, draft=draft)
+                _require_tag_target(client, desired)
+                _verify_assets(client, release, local)
+                return release
+            except DatasetReleasePromotionError as exc:
+                last_error = exc
         if attempt < attempts:
             time.sleep(attempt * 2)
     raise DatasetReleasePromotionError(
         f"release did not reach an exact {'draft' if draft else 'public'} state: {last_error}"
     )
+
+
+def _locate_release(
+    client: ReleaseClient,
+    desired: DesiredRelease,
+    *,
+    release_id: int,
+    attempts: int = LISTING_LAG_ATTEMPTS,
+    delay: float = LISTING_LAG_DELAY_SECONDS,
+) -> dict[str, Any] | None:
+    """Re-read a release GitHub already handed back, tolerating listing lag.
+
+    The create call returns the release with its id, and a read by id does not
+    go through the listing, so it is asked first. Only when the id read says
+    there is no such release does the listing get a bounded number of reads
+    before the caller may treat the draft as absent. The listing's "multiple
+    releases use tag" guard still applies on that path and in the final
+    listing-based verification.
+    """
+    by_id = client.get_release(release_id)
+    if by_id is not None:
+        if by_id.get("tag_name") != desired.tag:
+            raise DatasetReleasePromotionError("release id no longer carries the dataset tag")
+        return by_id
+    for attempt in range(1, attempts + 1):
+        listed = client.find_release(desired.tag)
+        if listed is not None:
+            return listed
+        if attempt < attempts:
+            time.sleep(delay)
+    return None
 
 
 def _reconcile_draft(
@@ -379,13 +435,18 @@ def _reconcile_draft(
     local: Mapping[str, bytes],
     release: dict[str, Any],
 ) -> None:
-    """Replace only known mismatched draft assets, then fill exact missing assets."""
+    """Replace only known mismatched draft assets, then fill exact missing assets.
+
+    The draft may be one this call just created, or an empty one a failed
+    earlier run left behind: both carry the tag and target, and both are
+    filled rather than refused, provided their metadata matches exactly.
+    """
     _require_metadata(release, desired, draft=True)
     _require_tag_target(client, desired)
     # At most one deletion per expected filename is needed. Bound the loop so
     # stale API reads cannot turn a safe retry into an unbounded workflow run.
     for _attempt in range(len(EXPECTED_ASSETS) + 1):
-        current = client.find_release(desired.tag)
+        current = _locate_release(client, desired, release_id=_release_id(release))
         if current is None:
             raise DatasetReleasePromotionError("draft disappeared during reconciliation")
         release = current
