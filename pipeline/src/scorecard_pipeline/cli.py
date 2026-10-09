@@ -1160,12 +1160,17 @@ def _sync_tool_identity() -> dict[str, object]:
         digest.update(path.read_bytes())
         digest.update(b"\0")
     try:
-        version = importlib.metadata.version("scorecard-pipeline")
+        version = importlib.metadata.version("gtfs-scorecard")
     except importlib.metadata.PackageNotFoundError:
         version = "unknown"
     jurisdiction_registry = package_root / "data" / "iso3166.json"
     source_metadata_schema = _sync_source_metadata_schema_bytes()
     return {
+        # The 1.2 receipt schema fixes this value as a constant, and that schema
+        # is frozen under an immutable public id (tests/test_schemas.py). It is
+        # the tool's name under the 1.2 contract, not the PyPI distribution,
+        # which has been `gtfs-scorecard` since 1.5.1. A later schema version is
+        # where this label would change.
         "package": "scorecard-pipeline",
         "version": version,
         "proposal_contract_version": _SYNC_PROPOSAL_CONTRACT_VERSION,

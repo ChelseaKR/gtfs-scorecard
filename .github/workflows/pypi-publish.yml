@@ -1,7 +1,9 @@
 name: Publish to PyPI
 
-# Uploads the scorecard-pipeline package (pipeline/) to PyPI through Trusted
-# Publishing for a maintainer-signed release tag. There is no stored PyPI token
+# Uploads the gtfs-scorecard package (pipeline/) to PyPI through Trusted
+# Publishing for a maintainer-signed release tag. The distribution was named
+# scorecard-pipeline until 1.5.1; PyPI refused that name at the v1.5.0 upload
+# as too similar to an existing project, and nothing was uploaded under it. There is no stored PyPI token
 # anywhere: PyPI accepts the upload only from this workflow file, in this
 # repository, running in the `pypi` environment, as registered on pypi.org.
 #
@@ -31,7 +33,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Existing signed release tag to publish (for example v1.6.0)"
+        description: "Existing signed release tag to publish (for example v1.5.1)"
         required: true
 
 permissions: {}
@@ -117,10 +119,10 @@ jobs:
             exit 1
           fi
           jq -e --arg v "$VERSION" '
-            [.packages[] | select(.registryType == "pypi" and .identifier == "scorecard-pipeline")]
+            [.packages[] | select(.registryType == "pypi" and .identifier == "gtfs-scorecard")]
             | length == 1 and .[0].version == $v
           ' server.json >/dev/null || {
-            echo "::error::server.json does not declare scorecard-pipeline ${VERSION} on PyPI."
+            echo "::error::server.json does not declare gtfs-scorecard ${VERSION} on PyPI."
             exit 1
           }
 
@@ -146,8 +148,8 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
-          wheels=(dist/scorecard_pipeline-"${VERSION}"-py3-none-any.whl)
-          sdists=(dist/scorecard_pipeline-"${VERSION}".tar.gz)
+          wheels=(dist/gtfs_scorecard-"${VERSION}"-py3-none-any.whl)
+          sdists=(dist/gtfs_scorecard-"${VERSION}".tar.gz)
           if [[ ${#wheels[@]} -ne 1 || ${#sdists[@]} -ne 1 ]]; then
             echo "::error::Expected exactly one wheel and one sdist for ${VERSION}."
             exit 1
@@ -155,7 +157,7 @@ jobs:
           # The MCP registry proves package ownership by finding this exact
           # marker in the PyPI description, so it must be in the upload itself.
           name="$(jq -r .name server.json)"
-          if ! unzip -p "${wheels[0]}" "scorecard_pipeline-${VERSION}.dist-info/METADATA" \
+          if ! unzip -p "${wheels[0]}" "gtfs_scorecard-${VERSION}.dist-info/METADATA" \
               | grep -qF "mcp-name: ${name} "; then
             echo "::error::The wheel's description lacks the mcp-name marker for ${name}."
             exit 1
@@ -169,12 +171,12 @@ jobs:
         run: |
           set -euo pipefail
           uv venv "${RUNNER_TEMP}/smoke" --python 3.12
-          VIRTUAL_ENV="${RUNNER_TEMP}/smoke" uv pip install "dist/scorecard_pipeline-${VERSION}-py3-none-any.whl"
+          VIRTUAL_ENV="${RUNNER_TEMP}/smoke" uv pip install "dist/gtfs_scorecard-${VERSION}-py3-none-any.whl"
           cd "${RUNNER_TEMP}"
           reply="$(printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
-            | "${RUNNER_TEMP}/smoke/bin/scorecard-pipeline")"
+            | "${RUNNER_TEMP}/smoke/bin/gtfs-scorecard")"
           jq -e '.result.tools | map(.name) | index("get_scorecard") != null' <<<"$reply" >/dev/null || {
-            echo "::error::The installed scorecard-pipeline entry point did not list its MCP tools."
+            echo "::error::The installed gtfs-scorecard entry point did not list its MCP tools."
             exit 1
           }
           "${RUNNER_TEMP}/smoke/bin/scorecard" --help >/dev/null
@@ -198,7 +200,7 @@ jobs:
     timeout-minutes: 15
     environment:
       name: pypi
-      url: https://pypi.org/project/scorecard-pipeline/${{ needs.build.outputs.version }}/
+      url: https://pypi.org/project/gtfs-scorecard/${{ needs.build.outputs.version }}/
     permissions:
       id-token: write # Trusted Publishing; the only job that can mint this token
     steps:
@@ -231,7 +233,7 @@ jobs:
           VERSION: ${{ needs.build.outputs.version }}
         run: |
           set -euo pipefail
-          url="https://pypi.org/pypi/scorecard-pipeline/${VERSION}/json"
+          url="https://pypi.org/pypi/gtfs-scorecard/${VERSION}/json"
           body=""
           for attempt in $(seq 1 30); do
             if body="$(curl -fsS "$url")"; then

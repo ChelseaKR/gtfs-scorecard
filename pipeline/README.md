@@ -1,4 +1,4 @@
-# scorecard-pipeline
+# gtfs-scorecard
 
 The scoring pipeline, command-line tool, and read-only MCP server behind
 [GTFS Scorecard](https://gtfsscorecard.org/), which grades public GTFS Schedule
@@ -15,17 +15,24 @@ feeds and turns validator notices into plain-language fixes.
   tools read the published scorecards on gtfsscorecard.org: search tracked
   agencies, get a scorecard and its fixes, read a feed's grade history, and
   explain a validator finding. It needs no key and has no write surface.
-- `scorecard-pipeline` is the same MCP server under the distribution's name, so
-  `uvx scorecard-pipeline` starts it.
+- `gtfs-scorecard` is the same MCP server under the distribution's name, so
+  `uvx gtfs-scorecard` starts it.
+
+The Python import package is `scorecard_pipeline`. The distribution was named
+`scorecard-pipeline` until 1.5.1; PyPI refused that name as too similar to an
+existing project, and nothing was uploaded under it.
 
 ## Install
 
-Once scorecard-pipeline is on PyPI, these work:
+Once gtfs-scorecard is on PyPI, these work:
 
-    uvx scorecard-pipeline
-    pip install scorecard-pipeline
+    uvx gtfs-scorecard
+    uvx --from gtfs-scorecard scorecard try https://example.org/gtfs.zip
+    pip install gtfs-scorecard
 
-Check https://pypi.org/project/scorecard-pipeline/ for the versions that exist.
+The first starts the MCP server. The second runs the command-line tool, which
+has its own name, so `uvx` needs `--from` to find the package that provides it.
+Check https://pypi.org/project/gtfs-scorecard/ for the versions that exist.
 Before then, or to run code that is not released yet, install from the
 repository:
 
@@ -40,7 +47,7 @@ the repository form above until then):
       "mcpServers": {
         "gtfs-scorecard": {
           "command": "uvx",
-          "args": ["scorecard-pipeline"]
+          "args": ["gtfs-scorecard"]
         }
       }
     }

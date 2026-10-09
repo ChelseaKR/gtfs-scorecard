@@ -688,7 +688,7 @@ GROUP BY grade ORDER BY grade;
 The pipeline ships the same engine: `scorecard query "<sql>"` runs DuckDB over
 the dataset locally (the table is named `agencies`), and `scorecard query
 --export agencies.parquet` writes the file. Install the query extra first:
-`pip install 'scorecard-pipeline[query]'`.
+`pip install 'gtfs-scorecard[query]'`.
 
 ### Scaling
 
@@ -871,6 +871,10 @@ site uses (no on-demand public endpoint; it runs in your own CI):
 uvx --from gtfs-scorecard scorecard try "$FEED_URL" --country CA \
   --min-grade B --min-days-to-expiry 30
 ```
+
+Once gtfs-scorecard is on PyPI, that is the whole install. Until then, point
+`--from` at the repository instead:
+`uvx --from "git+https://github.com/ChelseaKR/gtfs-scorecard#subdirectory=pipeline" scorecard try ...`.
 
 Add `--sarif out.sarif` to also write the validator's notices as SARIF 2.1.0,
 one result per notice code, with the file and row for as many instances as the

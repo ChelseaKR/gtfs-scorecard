@@ -9,13 +9,13 @@
     "source": "github",
     "subfolder": "pipeline"
   },
-  "version": "1.5.0",
+  "version": "1.5.1",
   "packages": [
     {
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
-      "identifier": "scorecard-pipeline",
-      "version": "1.5.0",
+      "identifier": "gtfs-scorecard",
+      "version": "1.5.1",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"
@@ -25,8 +25,8 @@
   "_meta": {
     "dev.chelseakr/distribution": {
       "pypi_first_upload": null,
-      "note": "packages[] names the PyPI upload that .github/workflows/pypi-publish.yml makes for the release tag v<version>. It is a statement about that upload, so this file is submitted to the MCP registry only after the upload exists (docs/mcp.md); the registry checks the package and its mcp-name marker on PyPI at publish time and refuses otherwise. pypi_first_upload stays null until the first upload is confirmed on pypi.org, and the install wording in README.md, docs/mcp.md and pipeline/README.md is held to it by pipeline/tests/test_distribution_claims.py. The registry drops this _meta key on publish. Name casing matches the GitHub owner exactly because the registry's namespace check is case-sensitive (modelcontextprotocol/registry#689). History: a 2026-07-05 revision removed an earlier registryType pypi entry that was false at the time, because nothing had been uploaded and there was no upload path.",
-      "dated": "2026-10-05"
+      "note": "packages[] names the PyPI upload that .github/workflows/pypi-publish.yml makes for the release tag v<version>. It is a statement about that upload, so this file is submitted to the MCP registry only after the upload exists (docs/mcp.md); the registry checks the package and its mcp-name marker on PyPI at publish time and refuses otherwise. pypi_first_upload stays null until the first upload is confirmed on pypi.org, and the install wording in README.md, docs/mcp.md and pipeline/README.md is held to it by pipeline/tests/test_distribution_claims.py. The registry drops this _meta key on publish. Name casing matches the GitHub owner exactly because the registry's namespace check is case-sensitive (modelcontextprotocol/registry#689). History: a 2026-07-05 revision removed an earlier registryType pypi entry that was false at the time, because nothing had been uploaded and there was no upload path. The identifier was scorecard-pipeline until 1.5.1: PyPI refused that name at the v1.5.0 upload on 2026-10-09 as too similar to the unrelated project scorecardpipeline, nothing was uploaded under it, and the distribution is gtfs-scorecard from 1.5.1 on.",
+      "dated": "2026-10-09"
     }
   }
 }

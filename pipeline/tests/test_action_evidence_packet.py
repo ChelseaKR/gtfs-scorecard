@@ -337,18 +337,30 @@ def test_the_input_is_opt_in_and_retests_the_scored_result() -> None:
     assert '${retest_args[@]+"${retest_args[@]}"}' in run
 
 
-def test_the_docs_never_present_evidence_packet_as_released() -> None:
+def _release_the_docs_say_added(row: str) -> str:
+    """The `vX.Y.Z` in an inputs-table row's "Added in `vX.Y.Z`" note."""
+    marker = "Added in `v"
+    start = row.index(marker) + len(marker)
+    return row[start : row.index("`", start)]
+
+
+def test_the_docs_name_the_release_that_added_evidence_packet() -> None:
+    """Until v1.5.0 was published on 2026-10-09 this input was on `main` only, and
+    the docs had to say so. Now they name the release that added it, and that
+    release has to be one `CHANGELOG.md` records as released, so the docs cannot
+    advertise an input against a version that has not shipped (the way `@v1.5.0`
+    was once documented before any such tag existed)."""
     docs = (ROOT / "docs" / "ci-action.md").read_text()
-    gap = docs[docs.index("**What `v1.4.0` does not yet include.**") :]
+    gap = docs[docs.index("**What `v1.5.0` includes, and `v1.4.0` does not.**") :]
     gap = gap[: gap.index("\n## ")]
     assert "`evidence-packet`" in gap
     row = next(line for line in docs.splitlines() if line.startswith("| `evidence-packet` |"))
-    assert "Not in `v1.4.0`" in row
+    added = _release_the_docs_say_added(row)
+    assert added == "1.5.0"
+    assert f"\n## [{added}] - 20" in (ROOT / "CHANGELOG.md").read_text()
     section = docs[docs.index("## Retesting against an evidence packet") :]
     section = section[: section.index("\n## ")]
-    assert "**Not in `v1.4.0`.**" in section
-    # No recipe that a reader could paste as a released `uses:` step.
-    assert "uses:" not in section
+    assert f"**Added in `v{added}`.**" in section
 
 
 # --- unset, the step is byte-identical to before the input existed -----------------------

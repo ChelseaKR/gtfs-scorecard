@@ -526,10 +526,17 @@ def test_the_action_passes_history_path_only_when_set() -> None:
     assert run.index(line) < run.index("gate_rc=$?")
 
 
-def test_the_docs_never_present_history_path_as_released() -> None:
+def test_the_docs_name_the_release_that_added_history_path() -> None:
+    """Until v1.5.0 was published on 2026-10-09 this input was on `main` only, and
+    the docs had to say so. Now they name the release that added it, and that
+    release has to be one `CHANGELOG.md` records as released."""
     docs = (ROOT / "docs" / "ci-action.md").read_text()
-    gap = docs[docs.index("**What `v1.4.0` does not yet include.**") :]
+    gap = docs[docs.index("**What `v1.5.0` includes, and `v1.4.0` does not.**") :]
     gap = gap[: gap.index("\n## ")]
     assert "`history-path`" in gap
     row = next(line for line in docs.splitlines() if line.startswith("| `history-path` |"))
-    assert "Not in `v1.4.0`" in row
+    marker = "Added in `v"
+    start = row.index(marker) + len(marker)
+    added = row[start : row.index("`", start)]
+    assert added == "1.5.0"
+    assert f"\n## [{added}] - 20" in (ROOT / "CHANGELOG.md").read_text()
