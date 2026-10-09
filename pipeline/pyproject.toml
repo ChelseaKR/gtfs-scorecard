@@ -1,10 +1,14 @@
 [project]
-name = "scorecard-pipeline"
+# The PyPI distribution name. The import package stays `scorecard_pipeline`.
+# The distribution was `scorecard-pipeline` until 1.5.1; PyPI refused that name
+# at the v1.5.0 upload (2026-10-09) as too similar to the unrelated project
+# `scorecardpipeline`, so nothing was ever uploaded under it.
+name = "gtfs-scorecard"
 # Single source of truth for the repo's version (REL-02/REL-03/REL-05). Mirrored
 # in CITATION.cff and server.json; a `make verify` check (scripts/check_versions.py)
 # fails CI if they drift. A protected release tag is cut only after these
 # declarations and CI agree; this file never treats an uncut tag as published.
-version = "1.5.0"
+version = "1.5.1"
 description = "Score GTFS Schedule feeds with plain-language fixes: the gtfsscorecard.org pipeline, CLI, and read-only MCP server"
 readme = "README.md"
 license = "Apache-2.0"
@@ -65,8 +69,10 @@ scorecard-mcp = "scorecard_pipeline.mcp_server:main"
 # The same MCP server under the distribution's own name. MCP clients that read
 # a registryType "pypi" entry from the MCP registry launch it as
 # `uvx <identifier>`, and uvx runs the executable named after the package, so
-# without this alias the registry's own install line would fail.
-scorecard-pipeline = "scorecard_pipeline.mcp_server:main"
+# without this alias the registry's own install line would fail. The CLI is
+# `uvx --from gtfs-scorecard scorecard`, since its name differs from the
+# distribution's.
+gtfs-scorecard = "scorecard_pipeline.mcp_server:main"
 
 [dependency-groups]
 dev = [

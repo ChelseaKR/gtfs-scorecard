@@ -27,6 +27,32 @@ the declared public surface).
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-10-09
+
+### Changed
+
+- **The Python distribution is named `gtfs-scorecard` on PyPI.** It was
+  `scorecard-pipeline` through v1.5.0, and that tag's run of the publish
+  workflow was the first to reach the upload: PyPI refused the name as too
+  similar to the existing, unrelated project `scorecardpipeline`, so no
+  pending publisher could be registered for it and nothing was uploaded.
+  `pipeline/pyproject.toml`, `server.json`, the publish workflow's name checks
+  and read-back, the CI wheel smoke test, and the install lines in the README,
+  `docs/api.md`, `docs/mcp.md` and `pipeline/README.md` now say
+  `gtfs-scorecard`: `uvx gtfs-scorecard` starts the MCP server (the executable
+  alias that was `scorecard-pipeline` is now `gtfs-scorecard`, which is what
+  registry clients run), `uvx --from gtfs-scorecard scorecard` runs the
+  command-line tool, and `pip install 'gtfs-scorecard[query]'` adds DuckDB.
+  The import package `scorecard_pipeline`, the `scorecard` and `scorecard-mcp`
+  commands, the MCP server name `io.github.ChelseaKR/gtfs-scorecard` and the
+  Action are unchanged. The sync receipt's `tool.package` keeps the constant
+  `scorecard-pipeline` that the frozen 1.2 receipt schema requires; a later
+  schema version is where that label would change. Nothing else differs from
+  v1.5.0.
+- The Action examples in `README.md` and `docs/ci-action.md` pin `@v1.5.0`,
+  and `docs/ci-action.md` says what that release includes that `v1.4.0` did
+  not.
+
 ## [1.5.0] - 2026-10-09
 
 ### Added
@@ -2645,7 +2671,8 @@ from `git log` against current history. As of this tag, the repo shipped:
 - Realtime drift/plausibility checks, embeddable grade badges, and rollup
   views across agency cohorts.
 
-[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.5.1...HEAD
+[1.5.1]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.3.0

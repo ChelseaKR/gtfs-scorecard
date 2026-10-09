@@ -206,7 +206,7 @@ feed, prints the grade and the top fixes in the job log, and fails the build if
 the feed drops below `min-grade` or expires within `min-days-to-expiry`:
 
 ```yaml
-- uses: ChelseaKR/gtfs-scorecard@v1.4.0
+- uses: ChelseaKR/gtfs-scorecard@v1.5.0
   with:
     feed-url: https://your-agency.example/google_transit.zip
     country: CA
@@ -218,9 +218,9 @@ Pin a full release tag or a commit SHA, as above. The floating major `@v1`
 still exists for consumers who already use it, but it is not recommended here
 and these examples no longer use it: it is one mutable pointer that moves to
 the newest `v1.x.y` on release day, so it changes what your workflow runs
-without a commit or a diff on your side. `v1.4.0` is the newest published
+without a commit or a diff on your side. `v1.5.0` is the newest published
 Action release, and [docs/ci-action.md](docs/ci-action.md#which-ref-to-pin)
-says what it does and does not yet do.
+says what it includes.
 
 `country` is the feed's assigned ISO 3166-1 alpha-2 code; it defaults to `US`
 for existing workflows. Both thresholds are optional; leave one blank to skip that check. Full input
@@ -354,7 +354,7 @@ declared here; none is silently skipped.
 | AI Development Measurement | Applies — delivery and quality-debt outcomes are measured at repository level; local AI-tool telemetry is never a merge gate | [`AI-DEVELOPMENT-MEASUREMENT-STANDARD.md`](docs/standards/AI-DEVELOPMENT-MEASUREMENT-STANDARD.md) |
 | Quality & Metrics | Applies (data-quality/lineage named for this repo explicitly) | [`QUALITY-AND-METRICS-STANDARD.md`](docs/standards/QUALITY-AND-METRICS-STANDARD.md) |
 | Documentation | Applies | [`DOCUMENTATION-STANDARD.md`](docs/standards/DOCUMENTATION-STANDARD.md) |
-| Release & Versioning | Applies — reusable Action tags (`v1`; the newest version tag is `v1.4.0`), monthly dataset releases; the PyPI publish workflow and the MCP server manifest are written but have not run (see Versioning) | [`RELEASE-AND-VERSIONING-STANDARD.md`](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) |
+| Release & Versioning | Applies — reusable Action tags (`v1`; the newest version tag is `v1.5.0`), monthly dataset releases; the PyPI publish workflow has run once, for v1.5.0, and uploaded nothing, and the MCP server manifest has not been submitted (see Versioning) | [`RELEASE-AND-VERSIONING-STANDARD.md`](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) |
 | Responsible-Tech Framework | Applies (audits A-F; AI-governance rows N/A — no AI system) | [`RESPONSIBLE-TECH-FRAMEWORK.md`](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) |
 | Incident Response | Applies — deployed static site and scheduled pipeline; incidents use the shared severity, label, postmortem, and secret-leak conventions | [`INCIDENT-RESPONSE-STANDARD.md`](docs/standards/INCIDENT-RESPONSE-STANDARD.md) |
 | Data Governance | Applies — public civic datasets, feed provenance, licenses, retention, and publication lineage are core product concerns | [`DATA-GOVERNANCE-STANDARD.md`](docs/standards/DATA-GOVERNANCE-STANDARD.md) |
@@ -408,12 +408,15 @@ civic tool, not a library with multiple consumers pinned to old majors.
 
 This repo also **produces releases**: the marketplace GitHub Action (tagged
 `v1`) and monthly citable dataset releases (`dataset-release.yml`). It carries
-a publish workflow for the `scorecard-pipeline` Python package
-(`pypi-publish.yml`) and an MCP server manifest (`server.json`), and neither
-has run: nothing is on PyPI yet, and `io.github.ChelseaKR/gtfs-scorecard` does
-not resolve in the MCP Registry. A release tag starts the PyPI workflow, which
-then waits for a reviewer to approve the upload; the manifest goes to the
-registry only after that upload exists.
+a publish workflow for the `gtfs-scorecard` Python package
+(`pypi-publish.yml`) and an MCP server manifest (`server.json`). Nothing is on
+PyPI yet, and `io.github.ChelseaKR/gtfs-scorecard` does not resolve in the MCP
+Registry: the workflow's one run, for v1.5.0, reached the upload under the
+package's former name `scorecard-pipeline`, which PyPI refused as too similar
+to an existing project, so the distribution is `gtfs-scorecard` from 1.5.1 on.
+A release tag starts the PyPI workflow, which then waits for a reviewer to
+approve the upload; the manifest goes to the registry only after that upload
+exists.
 
 The MCP server runs today from the source tree:
 
@@ -421,9 +424,10 @@ The MCP server runs today from the source tree:
 uvx --from "git+https://github.com/ChelseaKR/gtfs-scorecard#subdirectory=pipeline" scorecard-mcp
 ```
 
-Once scorecard-pipeline is on PyPI, `uvx scorecard-pipeline` starts the same
-server. [docs/mcp.md](docs/mcp.md) has the client config and the publishing
-steps.
+Once gtfs-scorecard is on PyPI, `uvx gtfs-scorecard` starts the same server
+and `uvx --from gtfs-scorecard scorecard` runs the command-line tool; the
+import package stays `scorecard_pipeline`. [docs/mcp.md](docs/mcp.md) has the
+client config and the publishing steps.
 
 ## Run your own instance
 

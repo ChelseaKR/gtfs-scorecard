@@ -1,18 +1,21 @@
 """What the repository says about PyPI and the MCP registry must match what exists.
 
-`scorecard-pipeline` has never been uploaded to PyPI, and `server.json` has never
+`gtfs-scorecard` has never been uploaded to PyPI, and `server.json` has never
 been submitted to the MCP registry. A 2026-07-05 revision of `server.json`
 declared `registryType: pypi` while nothing was on PyPI, and was rolled back for
-that reason. This file holds the second attempt to the same bar.
+that reason. This file holds the second attempt to the same bar. The
+distribution was named `scorecard-pipeline` until 1.5.1: the v1.5.0 run of the
+publish workflow reached the upload and PyPI refused that name as too similar
+to the unrelated project `scorecardpipeline`, so nothing was uploaded under it.
 
 Two states, one committed field: `server.json`
 `_meta["dev.chelseakr/distribution"].pypi_first_upload` is `null` until the first
 upload is confirmed on pypi.org, then the version that was uploaded.
 
 * While it is `null`, any document that shows a PyPI install line
-  (`uvx scorecard-pipeline`, `pip install scorecard-pipeline`) must also carry
-  the hedge "Once scorecard-pipeline is on PyPI", and the source-tree install
-  that works today must still be there.
+  (`uvx gtfs-scorecard`, `uvx --from gtfs-scorecard scorecard`,
+  `pip install gtfs-scorecard`) must also carry the hedge "Once gtfs-scorecard
+  is on PyPI", and the source-tree install that works today must still be there.
 * Once it is set, the hedge must be gone and the PyPI install line present.
 
 Both directions are checked against synthetic documents as well as the real
@@ -41,12 +44,14 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 PIPELINE = ROOT / "pipeline"
 
-CLAIM_FILES = ("README.md", "docs/mcp.md", "pipeline/README.md")
-HEDGE = "once scorecard-pipeline is on pypi"
+CLAIM_FILES = ("README.md", "docs/api.md", "docs/mcp.md", "pipeline/README.md")
+DISTRIBUTION = "gtfs-scorecard"
+HEDGE = f"once {DISTRIBUTION} is on pypi"
 PYPI_INSTALL = re.compile(
-    r"uvx scorecard-pipeline\b"
-    r"|pip install scorecard-pipeline\b"
-    r"|\"args\": \[\"scorecard-pipeline\"\]"
+    rf"uvx {DISTRIBUTION}\b"
+    rf"|uvx --from {DISTRIBUTION}\b"
+    rf"|pip install {DISTRIBUTION}\b"
+    rf"|\"args\": \[\"{DISTRIBUTION}\"\]"
 )
 SOURCE_INSTALL = "git+https://github.com/ChelseaKR/gtfs-scorecard#subdirectory=pipeline"
 PUBLISH_WORKFLOW = ROOT / ".github" / "workflows" / "pypi-publish.yml"
@@ -106,10 +111,11 @@ def test_install_wording_matches_the_recorded_pypi_state() -> None:
 
 
 HEDGED = (
-    "Once scorecard-pipeline is on PyPI, `uvx scorecard-pipeline` works.\n"
+    f"Once {DISTRIBUTION} is on PyPI, `uvx {DISTRIBUTION}` works.\n"
     f"Until then: uvx --from {SOURCE_INSTALL} scorecard-mcp\n"
 )
-PLAIN = "Install with `uvx scorecard-pipeline`.\n"
+PLAIN = f"Install with `uvx {DISTRIBUTION}`.\n"
+PLAIN_CLI = f"Install with `uvx --from {DISTRIBUTION} scorecard`.\n"
 
 
 @pytest.mark.parametrize(
@@ -117,10 +123,12 @@ PLAIN = "Install with `uvx scorecard-pipeline`.\n"
     [
         (None, HEDGED, 0),
         (None, PLAIN + SOURCE_INSTALL, 1),  # an unhedged claim before the upload
-        (None, "Once scorecard-pipeline is on PyPI, `uvx scorecard-pipeline`.", 1),
-        ("1.6.0", PLAIN, 0),
-        ("1.6.0", HEDGED, 1),  # a hedge left behind after the upload
-        ("1.6.0", "Install from a checkout.", 1),  # the PyPI line never added
+        (None, PLAIN_CLI + SOURCE_INSTALL, 1),  # the CLI form is a PyPI claim too
+        (None, f"Once {DISTRIBUTION} is on PyPI, `uvx {DISTRIBUTION}`.", 1),
+        ("1.5.1", PLAIN, 0),
+        ("1.5.1", PLAIN_CLI, 0),
+        ("1.5.1", HEDGED, 1),  # a hedge left behind after the upload
+        ("1.5.1", "Install from a checkout.", 1),  # the PyPI line never added
     ],
 )
 def test_claim_rule_holds_in_both_states(
@@ -149,7 +157,7 @@ def test_server_json_names_the_package_the_publish_workflow_uploads() -> None:
     package = packages[0]
     assert package["registryType"] == "pypi"
     assert package["registryBaseUrl"] == "https://pypi.org"
-    assert package["identifier"] == project["name"] == "scorecard-pipeline"
+    assert package["identifier"] == project["name"] == DISTRIBUTION
     assert package["version"] == project["version"] == server["version"]
     assert package["transport"] == {"type": "stdio"}
     assert package.get("runtimeHint") == "uvx"
@@ -185,9 +193,15 @@ def test_package_readme_carries_the_registry_ownership_marker() -> None:
 
 
 def test_uvx_with_the_package_name_starts_the_mcp_server() -> None:
-    scripts = _pyproject()["project"]["scripts"]
-    assert scripts["scorecard-pipeline"] == "scorecard_pipeline.mcp_server:main"
+    """`uvx <distribution>` runs the executable named after the distribution, so
+    the MCP registry's install line only works while a script carries exactly
+    the project name. The CLI keeps its own name and needs `--from`."""
+    project = _pyproject()["project"]
+    scripts = project["scripts"]
+    assert scripts[project["name"]] == "scorecard_pipeline.mcp_server:main"
     assert scripts["scorecard-mcp"] == "scorecard_pipeline.mcp_server:main"
+    assert scripts["scorecard"] == "scorecard_pipeline.cli:main"
+    assert "scorecard-pipeline" not in scripts, "the old distribution name is not an alias"
 
 
 def test_packaged_schema_is_a_byte_copy_of_the_published_one() -> None:
@@ -236,6 +250,23 @@ def test_only_the_reviewed_environment_can_upload() -> None:
 
 def test_docs_give_the_pending_publisher_values_the_workflow_uses() -> None:
     mcp = (ROOT / "docs" / "mcp.md").read_text(encoding="utf-8")
-    for value in ("scorecard-pipeline", "ChelseaKR", "gtfs-scorecard", PUBLISH_WORKFLOW.name):
+    for value in (DISTRIBUTION, "ChelseaKR", "gtfs-scorecard", PUBLISH_WORKFLOW.name):
         assert value in mcp
     assert "`pypi`" in mcp
+
+
+def test_the_workflow_and_the_ci_build_name_the_distribution() -> None:
+    """The wheel and sdist are named after the distribution (`gtfs_scorecard-...`),
+    and both workflows glob for them by that name. A rename that missed either
+    would fail only at the tag."""
+    publish = PUBLISH_WORKFLOW.read_text(encoding="utf-8")
+    ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    normalized = DISTRIBUTION.replace("-", "_")
+    assert f"dist/{normalized}-" in publish
+    assert f"dist/{normalized}-" in ci
+    assert f'.identifier == "{DISTRIBUTION}"' in publish
+    assert f"https://pypi.org/project/{DISTRIBUTION}/" in publish
+    assert f"https://pypi.org/pypi/{DISTRIBUTION}/" in publish
+    for old in ("scorecard_pipeline-", "pypi.org/project/scorecard-pipeline"):
+        assert old not in publish, old
+        assert old not in ci, old

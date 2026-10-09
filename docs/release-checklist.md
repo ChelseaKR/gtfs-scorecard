@@ -24,9 +24,9 @@ citation, and it is immutable for that reason rather than the Marketplace's.
 A version can exist without a tag. `pipeline/pyproject.toml` is the one version
 declaration everything else agrees with (`scripts/check_versions.py`), and it
 is bumped when the `CHANGELOG.md` section is written, which is before the tag
-is cut — sometimes long before. Version 1.5.0 is declared and changelogged and
-has no tag or release. Documentation that tells a consumer which ref to use
-must therefore name a tag that exists, not the declared version;
+is cut — sometimes long before. Version 1.5.0 was declared and changelogged on
+2026-08-18 and tagged on 2026-10-09. Documentation that tells a consumer which
+ref to use must therefore name a tag that exists, not the declared version;
 `tests/test_documented_action_ref.py` holds that.
 
 ### Why the floating major is kept but not recommended

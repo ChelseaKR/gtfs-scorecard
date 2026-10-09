@@ -28,7 +28,7 @@ jobs:
   gtfs-quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: ChelseaKR/gtfs-scorecard@v1.4.0
+      - uses: ChelseaKR/gtfs-scorecard@v1.5.0
         with:
           feed-url: https://example.org/gtfs/feed.zip
           name: Example Transit
@@ -39,7 +39,7 @@ jobs:
 
 ### Which ref to pin
 
-Name a full release tag, as the example does, or a commit SHA. `v1.4.0` is the
+Name a full release tag, as the example does, or a commit SHA. `v1.5.0` is the
 newest published Action release, so a workflow that pins it runs a build whose
 behavior is written down on this page and cannot change underneath it.
 
@@ -47,21 +47,20 @@ behavior is written down on this page and cannot change underneath it.
 offers it, and this repository keeps it for the consumers who already use it,
 but it is a single mutable pointer: it moves to the newest `v1.x.y` on release
 day, so a workflow naming it changes what it runs with no commit, no review and
-no diff on your side. It has not moved since 2026-07-25, while `main` has taken
-on hundreds of commits since, so its next move will be a large jump made
-silently in every workflow that names it. Pin a release and upgrade on purpose.
+no diff on your side. On 2026-10-09 it moved from `v1.4.0` to `v1.5.0`, a jump
+of 821 commits made silently in every workflow that names it, and it moves
+again with each release. Pin a release and upgrade on purpose.
 
-**What `v1.4.0` does not yet include.** The refusal of an unreadable archive
-described under [Inputs](#inputs) is on `main` and is in no published release.
-`@v1.4.0` — and `@v1`, which points at the same commit today — still grade an
-archive that carries no schedule data rather than refusing it. The `history-path`
-input below is on `main` only as well, so a workflow pinned to `@v1.4.0` gets a
-warning about an unexpected input and no history. So is the `evidence-packet`
-input, and that gap matters more: a workflow pinned to `@v1.4.0` that sets it
-gets the same warning and nothing else. No packet is retested, and the build
-does not fail on a finding that is still present. Version 1.5.0
-has a `CHANGELOG.md` entry but no tag and no release, so there is nothing newer
-to pin to yet. Tag namespaces and what each one promises are in
+**What `v1.5.0` includes, and `v1.4.0` does not.** Everything on this page.
+The refusal of an unreadable archive described under [Inputs](#inputs), and the
+`baseline`, `fail-on-regression`, `sarif`, `sarif-base`, `history-path` and
+`evidence-packet` inputs with their outputs, were on `main` only until
+`v1.5.0` was published on 2026-10-09. A workflow still pinned to `@v1.4.0`
+grades an archive that carries no schedule data rather than refusing it, and
+when it sets `history-path` or `evidence-packet` it gets a warning about an
+unexpected input and nothing else: no history is kept, no packet is retested,
+and the build does not fail on a finding that is still present. Tag namespaces
+and what each one promises are in
 [docs/release-checklist.md](release-checklist.md#tag-namespaces).
 
 ## Inputs
@@ -80,8 +79,8 @@ to pin to yet. Tag namespaces and what each one promises are in
 | `fail-on-regression` | no | `false` | Fail the build when the comparison shows a regression, or cannot be made because the two runs are different measurements. |
 | `sarif` | no | _(skip)_ | Path to also write validator notices as SARIF 2.1.0, relative to the workspace. |
 | `sarif-base` | no | _(root)_ | Directory the feed's files sit in inside the repository being annotated, for example `gtfs/`. |
-| `history-path` | no | _(skip)_ | Directory for a private run history: each run appends one record for the feed, read back with `scorecard trend`. Not in `v1.4.0`; see [Keeping a private history](workspace-history.md). |
-| `evidence-packet` | no | _(skip)_ | An evidence packet JSON from `scorecard evidence-packet --format json`. The feed this run scored is retested against it, and the build fails unless every finding in the packet is cleared. Not in `v1.4.0`; see [Retesting against an evidence packet](#retesting-against-an-evidence-packet). |
+| `history-path` | no | _(skip)_ | Directory for a private run history: each run appends one record for the feed, read back with `scorecard trend`. Added in `v1.5.0`; see [Keeping a private history](workspace-history.md). |
+| `evidence-packet` | no | _(skip)_ | An evidence packet JSON from `scorecard evidence-packet --format json`. The feed this run scored is retested against it, and the build fails unless every finding in the packet is cleared. Added in `v1.5.0`; see [Retesting against an evidence packet](#retesting-against-an-evidence-packet). |
 | `ref` | no | _(ignored)_ | Deprecated compatibility input. The scorer is bundled with the Action release and always matches the selected Action ref. |
 
 Leave a threshold blank to skip it. With neither `min-grade` nor
@@ -95,8 +94,8 @@ a zip is. The step fails with `could not score <url>: ...` and `passed` is
 `false`. Before that change such a feed was graded and the default
 configuration reported `passed=true` for it.
 
-**This behavior is on `main` only.** It is in no published release, so it is
-not what `@v1.4.0` or `@v1` do today. See [Which ref to pin](#which-ref-to-pin).
+**Added in `v1.5.0`.** A workflow pinned to `@v1.4.0` grades such a feed
+instead. See [Which ref to pin](#which-ref-to-pin).
 
 ## Outputs and job summary
 
@@ -110,7 +109,7 @@ later steps can upload or inspect it even when the gate fails. `comparable` and
 
 ```yaml
       - id: gtfs
-        uses: ChelseaKR/gtfs-scorecard@v1.4.0
+        uses: ChelseaKR/gtfs-scorecard@v1.5.0
         with:
           feed-url: https://example.org/gtfs/feed.zip
           min-grade: B
@@ -133,7 +132,7 @@ Set `baseline` to compare this run with a previous scorecard, so a pull request
 cannot quietly regress a published feed:
 
 ```yaml
-      - uses: ChelseaKR/gtfs-scorecard@v1.4.0
+      - uses: ChelseaKR/gtfs-scorecard@v1.5.0
         with:
           feed-url: https://example.org/gtfs/feed.zip
           baseline: example-transit@latest
@@ -169,8 +168,8 @@ Nobody looked at them, which is not the same as their being fixed.
 
 ## Retesting against an evidence packet
 
-**Not in `v1.4.0`.** The `evidence-packet` input is on `main` only. See
-[Which ref to pin](#which-ref-to-pin).
+**Added in `v1.5.0`.** A workflow pinned to `@v1.4.0` warns about the
+unexpected input and retests nothing. See [Which ref to pin](#which-ref-to-pin).
 
 An [evidence packet](vendor-evidence-packets.md) is the work order an agency
 sends to whoever produces its feed. Set `evidence-packet` to check each new
@@ -229,7 +228,7 @@ files are committed:
       security-events: write     # upload-sarif only
     steps:
       - uses: actions/checkout@v5
-      - uses: ChelseaKR/gtfs-scorecard@v1.4.0
+      - uses: ChelseaKR/gtfs-scorecard@v1.5.0
         with:
           feed-url: https://example.org/gtfs/feed.zip
           sarif: gtfs.sarif
@@ -265,7 +264,7 @@ Three things about the file are worth knowing:
 Set `html` to keep the rendered scorecard as a build artifact:
 
 ```yaml
-      - uses: ChelseaKR/gtfs-scorecard@v1.4.0
+      - uses: ChelseaKR/gtfs-scorecard@v1.5.0
         with:
           feed-url: https://example.org/gtfs/feed.zip
           min-grade: C

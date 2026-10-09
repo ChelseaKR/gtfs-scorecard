@@ -263,8 +263,8 @@ hand and later versions from CI.
 
 - **`server.json` is not unblocked by these packages.** `packages[]` in
   `server.json` describes how to run the MCP server, which is the
-  `scorecard-mcp` command inside `scorecard-pipeline`. A typed client does not
-  contain it. Filling that field needs `scorecard-pipeline` itself published to
+  `scorecard-mcp` command inside `gtfs-scorecard`. A typed client does not
+  contain it. Filling that field needs `gtfs-scorecard` itself published to
   PyPI, which is a larger decision with its own surface (see
   [mcp.md](mcp.md#registry-listing)) and is not made here. Issue #370 lists this
   as an acceptance item, and it cannot be met by publishing the clients.

@@ -631,6 +631,76 @@ wheels = [
 ]
 
 [[package]]
+name = "gtfs-scorecard"
+version = "1.5.1"
+source = { editable = "." }
+dependencies = [
+    { name = "gtfs-realtime-bindings" },
+    { name = "jsonschema" },
+    { name = "markdown-it-py" },
+    { name = "pyyaml" },
+    { name = "requests" },
+]
+
+[package.optional-dependencies]
+ads = [
+    { name = "google-ads" },
+]
+query = [
+    { name = "duckdb" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "babel" },
+    { name = "defusedxml" },
+    { name = "duckdb" },
+    { name = "hypothesis" },
+    { name = "mutmut" },
+    { name = "mypy" },
+    { name = "pycountry" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "ruff" },
+    { name = "types-jsonschema" },
+    { name = "types-pyyaml" },
+    { name = "types-requests" },
+]
+e2e = [
+    { name = "pytest-playwright" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "duckdb", marker = "extra == 'query'", specifier = ">=1.0" },
+    { name = "google-ads", marker = "extra == 'ads'", specifier = ">=32.0" },
+    { name = "gtfs-realtime-bindings", specifier = ">=1.0" },
+    { name = "jsonschema", specifier = ">=4.21" },
+    { name = "markdown-it-py", specifier = ">=4.0" },
+    { name = "pyyaml", specifier = ">=6.0" },
+    { name = "requests", specifier = ">=2.32" },
+]
+provides-extras = ["query", "ads"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "babel", specifier = "==2.18.0" },
+    { name = "defusedxml", specifier = ">=0.7.1" },
+    { name = "duckdb", specifier = ">=1.0" },
+    { name = "hypothesis", specifier = ">=6" },
+    { name = "mutmut", specifier = ">=3.0" },
+    { name = "mypy", specifier = ">=1.10" },
+    { name = "pycountry", specifier = "==26.2.16" },
+    { name = "pytest", specifier = ">=8.0" },
+    { name = "pytest-cov", specifier = ">=5.0" },
+    { name = "ruff", specifier = ">=0.15" },
+    { name = "types-jsonschema", specifier = ">=4.26.0.20260518" },
+    { name = "types-pyyaml" },
+    { name = "types-requests" },
+]
+e2e = [{ name = "pytest-playwright", specifier = ">=0.7" }]
+
+[[package]]
 name = "hypothesis"
 version = "6.156.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1426,76 +1496,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/fa/f0/fe47c501f9dea92a26d788ff98bb5d92ed4cb4c88792c5c88af6b697dc8e/ruff-0.15.20-py3-none-win_amd64.whl", hash = "sha256:a525c81c70fb0380344dd1d8745d8cc1c890b7fc94a58d5a07bd8eb9557b8415", size = 11993274, upload-time = "2026-06-25T17:20:31.871Z" },
     { url = "https://files.pythonhosted.org/packages/d7/2b/9555445e1201d92b3195f45cdb153a0b68f24e0a4273f6e3d5ab46e212bb/ruff-0.15.20-py3-none-win_arm64.whl", hash = "sha256:2f5b2a6d614e8700388806a14996c40fab2c47b819ef57d790a34878858ed9ca", size = 11343498, upload-time = "2026-06-25T17:20:35.03Z" },
 ]
-
-[[package]]
-name = "scorecard-pipeline"
-version = "1.5.0"
-source = { editable = "." }
-dependencies = [
-    { name = "gtfs-realtime-bindings" },
-    { name = "jsonschema" },
-    { name = "markdown-it-py" },
-    { name = "pyyaml" },
-    { name = "requests" },
-]
-
-[package.optional-dependencies]
-ads = [
-    { name = "google-ads" },
-]
-query = [
-    { name = "duckdb" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "babel" },
-    { name = "defusedxml" },
-    { name = "duckdb" },
-    { name = "hypothesis" },
-    { name = "mutmut" },
-    { name = "mypy" },
-    { name = "pycountry" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "ruff" },
-    { name = "types-jsonschema" },
-    { name = "types-pyyaml" },
-    { name = "types-requests" },
-]
-e2e = [
-    { name = "pytest-playwright" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "duckdb", marker = "extra == 'query'", specifier = ">=1.0" },
-    { name = "google-ads", marker = "extra == 'ads'", specifier = ">=32.0" },
-    { name = "gtfs-realtime-bindings", specifier = ">=1.0" },
-    { name = "jsonschema", specifier = ">=4.21" },
-    { name = "markdown-it-py", specifier = ">=4.0" },
-    { name = "pyyaml", specifier = ">=6.0" },
-    { name = "requests", specifier = ">=2.32" },
-]
-provides-extras = ["query", "ads"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "babel", specifier = "==2.18.0" },
-    { name = "defusedxml", specifier = ">=0.7.1" },
-    { name = "duckdb", specifier = ">=1.0" },
-    { name = "hypothesis", specifier = ">=6" },
-    { name = "mutmut", specifier = ">=3.0" },
-    { name = "mypy", specifier = ">=1.10" },
-    { name = "pycountry", specifier = "==26.2.16" },
-    { name = "pytest", specifier = ">=8.0" },
-    { name = "pytest-cov", specifier = ">=5.0" },
-    { name = "ruff", specifier = ">=0.15" },
-    { name = "types-jsonschema", specifier = ">=4.26.0.20260518" },
-    { name = "types-pyyaml" },
-    { name = "types-requests" },
-]
-e2e = [{ name = "pytest-playwright", specifier = ">=0.7" }]
 
 [[package]]
 name = "setproctitle"

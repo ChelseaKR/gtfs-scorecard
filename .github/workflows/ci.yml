@@ -63,10 +63,10 @@ jobs:
       - run: uv build --wheel
       # Import and dispatch from the built artifact, not the editable checkout.
       # This catches package-data omissions in Marketplace/uvx installations.
-      - run: uvx --from dist/scorecard_pipeline-*.whl scorecard --help
+      - run: uvx --from dist/gtfs_scorecard-*.whl scorecard --help
       - name: Verify packaged data and sync receipt contract
         run: |
-          wheel="$(pwd)/$(find dist -name 'scorecard_pipeline-*.whl' -print -quit)"
+          wheel="$(pwd)/$(find dist -name 'gtfs_scorecard-*.whl' -print -quit)"
           isolated="$(mktemp -d)"
           uv venv "$isolated/venv"
           uv pip install --python "$isolated/venv/bin/python" "$wheel"

@@ -36,13 +36,15 @@ Claude Desktop / Claude Code config for a checkout:
 }
 ```
 
-Once scorecard-pipeline is on PyPI, `uvx scorecard-pipeline` starts the same
+Once gtfs-scorecard is on PyPI, `uvx gtfs-scorecard` starts the same
 server, and the config shrinks to `"command": "uvx", "args":
-["scorecard-pipeline"]`. Nothing has been uploaded yet;
-[pypi.org/project/scorecard-pipeline](https://pypi.org/project/scorecard-pipeline/)
-lists the versions that exist. The `scorecard-pipeline` executable is an alias
+["gtfs-scorecard"]`. Nothing has been uploaded yet;
+[pypi.org/project/gtfs-scorecard](https://pypi.org/project/gtfs-scorecard/)
+lists the versions that exist. The `gtfs-scorecard` executable is an alias
 for `scorecard-mcp`, because MCP clients reading the registry entry launch
-`uvx <package name>`.
+`uvx <package name>`. The command-line tool keeps its own name, so it runs as
+`uvx --from gtfs-scorecard scorecard`. The Python import package is
+`scorecard_pipeline` either way.
 
 Point a fork or a local preview at itself with `SCORECARD_BASE_URL`.
 
@@ -103,10 +105,10 @@ caller can see that it is holding a page rather than the whole thing.
 The repository carries a `server.json` manifest for the
 [official MCP Registry](https://registry.modelcontextprotocol.io/), naming the
 server `io.github.ChelseaKR/gtfs-scorecard`, with one `packages[]` entry:
-`registryType: pypi`, identifier `scorecard-pipeline`, at the version
-`pipeline/pyproject.toml` declares. Neither half has run yet. The order matters,
-because the registry only lists metadata and checks the package on PyPI when
-the manifest is submitted:
+`registryType: pypi`, identifier `gtfs-scorecard`, at the version
+`pipeline/pyproject.toml` declares. Nothing is on PyPI and nothing is in the
+registry. The order matters, because the registry only lists metadata and
+checks the package on PyPI when the manifest is submitted:
 
 1. **PyPI.** `.github/workflows/pypi-publish.yml` runs on a signed release
    tag (`vX.Y.Z`). Its build job verifies the tag signature, checks that the
@@ -117,7 +119,7 @@ the manifest is submitted:
    [Trusted Publishing](https://docs.pypi.org/trusted-publishers/) (no stored
    token). A last job reads the release back from PyPI and compares digests.
    PyPI needs a matching pending publisher registered first: PyPI project
-   `scorecard-pipeline`, owner `ChelseaKR`, repository `gtfs-scorecard`,
+   `gtfs-scorecard`, owner `ChelseaKR`, repository `gtfs-scorecard`,
    workflow `pypi-publish.yml`, environment `pypi`.
 2. **MCP Registry.** After the upload exists, submit the manifest with the
    registry's `mcp-publisher` CLI from a checkout of the released commit:
@@ -140,7 +142,14 @@ registry's validate endpoint on 2026-10-05 with `mcp-publisher` 1.8.1.
 History: a revision before 2026-07-05 declared `registryType: pypi` when
 nothing was on PyPI and there was no way to put it there, so the entry was
 removed rather than left standing as a false registry claim (REL-05). It is
-back now that the upload path exists, held to the order above.
+back now that the upload path exists, held to the order above. The
+distribution was named `scorecard-pipeline` through v1.5.0. That tag's run of
+the publish workflow built and reached the upload step on 2026-10-09, and PyPI
+refused the name as too similar to the existing, unrelated project
+`scorecardpipeline`, so a pending publisher for it could not be registered and
+nothing was uploaded. The distribution is `gtfs-scorecard` from 1.5.1 on; the
+import package `scorecard_pipeline`, the `scorecard` command and the server
+name above did not change.
 
 The Claude Connectors Directory is a separate, heavier bar (a remote server, a
 privacy policy, and a Team/Enterprise submission); per the cost guardrail it

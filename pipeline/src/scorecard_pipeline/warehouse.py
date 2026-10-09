@@ -35,7 +35,7 @@ def _require_duckdb() -> Any:
         import duckdb
     except ModuleNotFoundError as exc:  # pragma: no cover - exercised via the CLI
         raise RuntimeError(
-            "The query layer needs DuckDB. Install it with: pip install 'scorecard-pipeline[query]'"
+            "The query layer needs DuckDB. Install it with: pip install 'gtfs-scorecard[query]'"
         ) from exc
     return duckdb
 
