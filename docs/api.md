@@ -872,8 +872,10 @@ uvx --from gtfs-scorecard scorecard try "$FEED_URL" --country CA \
   --min-grade B --min-days-to-expiry 30
 ```
 
-Once gtfs-scorecard is on PyPI, that is the whole install. Until then, point
-`--from` at the repository instead:
+That is the whole install: `uvx` fetches
+[`gtfs-scorecard`](https://pypi.org/project/gtfs-scorecard/) from PyPI. To run
+code on `main` that is not released yet, point `--from` at the repository
+instead:
 `uvx --from "git+https://github.com/ChelseaKR/gtfs-scorecard#subdirectory=pipeline" scorecard try ...`.
 
 Add `--sarif out.sarif` to also write the validator's notices as SARIF 2.1.0,

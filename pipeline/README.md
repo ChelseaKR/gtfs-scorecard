@@ -24,8 +24,6 @@ existing project, and nothing was uploaded under it.
 
 ## Install
 
-Once gtfs-scorecard is on PyPI, these work:
-
     uvx gtfs-scorecard
     uvx --from gtfs-scorecard scorecard try https://example.org/gtfs.zip
     pip install gtfs-scorecard
@@ -33,15 +31,13 @@ Once gtfs-scorecard is on PyPI, these work:
 The first starts the MCP server. The second runs the command-line tool, which
 has its own name, so `uvx` needs `--from` to find the package that provides it.
 Check https://pypi.org/project/gtfs-scorecard/ for the versions that exist.
-Before then, or to run code that is not released yet, install from the
-repository:
+To run code that is not released yet, install from the repository:
 
     uvx --from "git+https://github.com/ChelseaKR/gtfs-scorecard#subdirectory=pipeline" scorecard-mcp
 
 ## Connect an assistant
 
-An MCP client config that starts the server from PyPI (once it is there; use
-the repository form above until then):
+An MCP client config that starts the server from PyPI:
 
     {
       "mcpServers": {

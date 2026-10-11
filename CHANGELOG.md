@@ -27,6 +27,24 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Changed
+
+- **The install wording leads with PyPI, because 1.5.1 is there.** The v1.5.1
+  run of `pypi-publish.yml` uploaded `gtfs-scorecard` 1.5.1 and read it back,
+  and the MCP Registry lists `io.github.ChelseaKR/gtfs-scorecard` 1.5.1 with
+  the package `pypi:gtfs-scorecard@1.5.1`. `server.json` records
+  `pypi_first_upload: "1.5.1"`; `README.md`, `docs/api.md`, `docs/mcp.md` and
+  `pipeline/README.md` drop the "Once gtfs-scorecard is on PyPI" hedge and lead
+  with `uvx gtfs-scorecard`, keeping the source-tree install for code on
+  `main` that is not released yet. `docs/mcp.md`'s publishing steps say that
+  1.5.1 went to PyPI and then to the registry, in that order.
+  `pipeline/tests/test_distribution_claims.py` now also fails if the recorded
+  first upload goes back to `null` or names another version.
+- The Action examples in `README.md` and `docs/ci-action.md` pin `@v1.5.1`,
+  the newest published Action release. `docs/ci-action.md` says that
+  `v1.5.1` changes nothing the Action does and that the floating `v1` moved to
+  it on 2026-10-11.
+
 ## [1.5.1] - 2026-10-09
 
 ### Changed
