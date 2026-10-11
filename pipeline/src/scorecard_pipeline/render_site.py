@@ -128,6 +128,7 @@ from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
 from .timemachine import Event, grade_story, history_events
 from .timemachine import finding_codes as _finding_codes
 from .tool_profiles import detect_tool
+from .url_redaction import redact_artifact
 
 log = logging.getLogger(__name__)
 
@@ -12326,6 +12327,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         except (json.JSONDecodeError, OSError) as exc:
             print(f"::warning title=unreadable artifact::skipping {latest}: {exc}", file=sys.stderr)
             continue
+        # An artifact written before publish-time redaction can still carry a
+        # presigned redirect or a publisher's key in a URL. Everything below is
+        # built from this in-memory record, so one call covers the catalog,
+        # directory, API rows, pages and JSON-LD (url_redaction.py, ADR 0066).
+        redact_artifact(artifact)
         overall = artifact["overall"]
         categories = artifact.get("categories", {})
         fresh = artifact.get("categories", {}).get("freshness", {}).get("details", {})
@@ -12656,6 +12662,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             artifact = json.loads(latest.read_text())
         except (json.JSONDecodeError, OSError):
             continue  # already warned in pass 1
+        redact_artifact(artifact)  # the same rule as pass 1 (ADR 0066)
         with _rendering_feed(agency_id):
             agency_cfg = registry_by_id.get(agency_id)
             artifact_agency = artifact.setdefault("agency", {})

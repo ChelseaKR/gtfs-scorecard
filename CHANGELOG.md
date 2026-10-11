@@ -27,6 +27,24 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Security
+
+- **Published feed URLs no longer carry credentials.** An artifact's
+  `fetch.final_url` and `feed.static_url` were published exactly as fetched.
+  When a feed redirects to a presigned object in someone else's bucket, the
+  recorded URL carried that object's temporary credential and signature
+  (`AWSAccessKeyId`, `Signature`, `x-amz-security-token`, `X-Amz-*`, `sig`,
+  `jwt`), and a few publishers put an API key in the download URL. One rule,
+  `pipeline/src/scorecard_pipeline/url_redaction.py`, now replaces those
+  query values with `REDACTED` and drops a `user:password@` part, from an
+  explicit, case-insensitive list. It runs where artifacts are written
+  (`publish.py`), where the site renderer reads them (so the catalog,
+  directory, API files, scorecard pages and JSON-LD `isBasedOn` inherit it),
+  in the dataset and global-coverage exports, and on every JSON file
+  `assemble_public_artifacts.sh` copies into the deployed site, which covers
+  artifacts written before this change. What the pipeline fetches is
+  unchanged. ADR 0066 records why committed history is not rewritten.
+
 ### Changed
 
 - **The install wording leads with PyPI, because 1.5.1 is there.** The v1.5.1
