@@ -11,7 +11,35 @@ MCP's stdio framing and the public data contract in [`api.md`](api.md).
 
 ## Install and connect
 
-The server runs today from the source tree, with nothing to clone:
+The server is on PyPI as
+[`gtfs-scorecard`](https://pypi.org/project/gtfs-scorecard/), so nothing needs
+to be cloned:
+
+```sh
+uvx gtfs-scorecard
+```
+
+Claude Desktop / Claude Code config:
+
+```json
+{
+  "mcpServers": {
+    "gtfs-scorecard": {
+      "command": "uvx",
+      "args": ["gtfs-scorecard"]
+    }
+  }
+}
+```
+
+The `gtfs-scorecard` executable is an alias for `scorecard-mcp`, because MCP
+clients reading the registry entry launch `uvx <package name>`. The
+command-line tool keeps its own name, so it runs as
+`uvx --from gtfs-scorecard scorecard`. The Python import package is
+`scorecard_pipeline` either way.
+
+To run code on `main` that is not released yet, start the server from the
+source tree:
 
 ```sh
 uvx --from "git+https://github.com/ChelseaKR/gtfs-scorecard#subdirectory=pipeline" scorecard-mcp
@@ -35,16 +63,6 @@ Claude Desktop / Claude Code config for a checkout:
   }
 }
 ```
-
-Once gtfs-scorecard is on PyPI, `uvx gtfs-scorecard` starts the same
-server, and the config shrinks to `"command": "uvx", "args":
-["gtfs-scorecard"]`. Nothing has been uploaded yet;
-[pypi.org/project/gtfs-scorecard](https://pypi.org/project/gtfs-scorecard/)
-lists the versions that exist. The `gtfs-scorecard` executable is an alias
-for `scorecard-mcp`, because MCP clients reading the registry entry launch
-`uvx <package name>`. The command-line tool keeps its own name, so it runs as
-`uvx --from gtfs-scorecard scorecard`. The Python import package is
-`scorecard_pipeline` either way.
 
 Point a fork or a local preview at itself with `SCORECARD_BASE_URL`.
 
@@ -106,9 +124,11 @@ The repository carries a `server.json` manifest for the
 [official MCP Registry](https://registry.modelcontextprotocol.io/), naming the
 server `io.github.ChelseaKR/gtfs-scorecard`, with one `packages[]` entry:
 `registryType: pypi`, identifier `gtfs-scorecard`, at the version
-`pipeline/pyproject.toml` declares. Nothing is on PyPI and nothing is in the
-registry. The order matters, because the registry only lists metadata and
-checks the package on PyPI when the manifest is submitted:
+`pipeline/pyproject.toml` declares. Version 1.5.1 was the first upload: it is
+on [PyPI](https://pypi.org/project/gtfs-scorecard/), and the registry lists
+`io.github.ChelseaKR/gtfs-scorecard` 1.5.1 with the package
+`pypi:gtfs-scorecard@1.5.1`. The order matters, because the registry only lists
+metadata and checks the package on PyPI when the manifest is submitted:
 
 1. **PyPI.** `.github/workflows/pypi-publish.yml` runs on a signed release
    tag (`vX.Y.Z`). Its build job verifies the tag signature, checks that the
@@ -127,10 +147,12 @@ checks the package on PyPI when the manifest is submitted:
    `mcp-publisher publish`. The registry proves the package is ours by finding
    `mcp-name: io.github.ChelseaKR/gtfs-scorecard` in the PyPI description,
    which is why `pipeline/README.md` carries it.
-3. **Record it.** Set `pypi_first_upload` in `server.json`'s
-   `_meta["dev.chelseakr/distribution"]` to the uploaded version and drop the
-   "once it is on PyPI" wording. `tests/test_distribution_claims.py` holds the
-   wording to that field in both states.
+3. **Record it.** `server.json`'s `_meta["dev.chelseakr/distribution"]`
+   records the first upload in `pypi_first_upload` (`"1.5.1"`), and the install
+   wording leads with `uvx gtfs-scorecard`.
+   `pipeline/tests/test_distribution_claims.py` holds the wording to that
+   field and fails if the field goes back to `null`. Later releases repeat
+   steps 1 and 2 with the new version; the field does not change.
 
 Two details the registry enforces that are easy to get wrong. The server
 name's casing must match the GitHub login exactly (`ChelseaKR`, not
@@ -147,7 +169,8 @@ distribution was named `scorecard-pipeline` through v1.5.0. That tag's run of
 the publish workflow built and reached the upload step on 2026-10-09, and PyPI
 refused the name as too similar to the existing, unrelated project
 `scorecardpipeline`, so a pending publisher for it could not be registered and
-nothing was uploaded. The distribution is `gtfs-scorecard` from 1.5.1 on; the
+nothing was uploaded. The distribution is `gtfs-scorecard` from 1.5.1 on, and
+1.5.1 was uploaded to PyPI and then listed in the registry, in that order; the
 import package `scorecard_pipeline`, the `scorecard` command and the server
 name above did not change.
 

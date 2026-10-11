@@ -1,12 +1,13 @@
 """What the repository says about PyPI and the MCP registry must match what exists.
 
-`gtfs-scorecard` has never been uploaded to PyPI, and `server.json` has never
-been submitted to the MCP registry. A 2026-07-05 revision of `server.json`
-declared `registryType: pypi` while nothing was on PyPI, and was rolled back for
-that reason. This file holds the second attempt to the same bar. The
-distribution was named `scorecard-pipeline` until 1.5.1: the v1.5.0 run of the
-publish workflow reached the upload and PyPI refused that name as too similar
-to the unrelated project `scorecardpipeline`, so nothing was uploaded under it.
+A 2026-07-05 revision of `server.json` declared `registryType: pypi` while
+nothing was on PyPI, and was rolled back for that reason. This file holds the
+second attempt to the same bar. The distribution was named `scorecard-pipeline`
+until 1.5.1: the v1.5.0 run of the publish workflow reached the upload and PyPI
+refused that name as too similar to the unrelated project `scorecardpipeline`,
+so nothing was uploaded under it. `gtfs-scorecard` 1.5.1 was the first upload
+(the v1.5.1 run of `pypi-publish.yml`, confirmed on pypi.org 2026-10-11), and
+the MCP registry lists `io.github.ChelseaKR/gtfs-scorecard` 1.5.1 with it.
 
 Two states, one committed field: `server.json`
 `_meta["dev.chelseakr/distribution"].pypi_first_upload` is `null` until the first
@@ -19,10 +20,12 @@ upload is confirmed on pypi.org, then the version that was uploaded.
 * Once it is set, the hedge must be gone and the PyPI install line present.
 
 Both directions are checked against synthetic documents as well as the real
-ones, so the test passes before the upload and after the follow-up change that
-records it. Flipping the field is a documentation change made after the upload;
-no release tag has to move for it, which is what keeps this out of the
-first-release deadlock where the commit you tag was written for the other world.
+ones. The field now records 1.5.1, and a first upload cannot be undone, so
+`test_first_upload_is_recorded` fails if it goes back to `null` or names any
+other version; later releases leave it alone. Flipping the field was a
+documentation change made after the upload; no release tag had to move for it,
+which is what kept this out of the first-release deadlock where the commit you
+tag was written for the other world.
 
 The `packages[]` entry is present in both states. It describes the upload the
 publish workflow makes for the release tag, and the MCP registry itself refuses
@@ -135,6 +138,16 @@ def test_claim_rule_holds_in_both_states(
     first_upload: str | None, text: str, expected: int
 ) -> None:
     assert len(claim_problems(first_upload, {"doc": text})) == expected
+
+
+FIRST_UPLOAD = "1.5.1"
+
+
+def test_first_upload_is_recorded() -> None:
+    """1.5.1 is on pypi.org (the v1.5.1 run of pypi-publish.yml uploaded it and
+    read it back), so the hedged pre-upload state is no longer a true one. The
+    first upload is a historical fact and does not move with later releases."""
+    assert _first_upload() == FIRST_UPLOAD
 
 
 def test_recorded_first_upload_is_not_newer_than_the_declared_version() -> None:
