@@ -1795,3 +1795,91 @@ def test_conditional_noindex_pattern_cannot_also_be_a_noindex_pattern(tmp_path: 
 
     assert result.returncode != 0
     assert "conditional_noindex_path_patterns" in (result.stderr + result.stdout)
+
+
+def _write_moved_brief(site: Path, *, robots: str = "") -> None:
+    """A retired id's scorecard and call-prep brief, both redirected to the
+    successor's scorecard."""
+    _write_redirect_page(site, "agency/demo-retired/index.html", "/agency/demo/")
+    _write_text(
+        site,
+        "agency/demo-retired/brief/index.html",
+        f"""<!doctype html>
+<html lang="en"><head>
+<title>Demo call-prep brief moved</title>
+{robots}
+<meta http-equiv="refresh" content="0; url=/agency/demo/">
+<link rel="canonical" href="{ORIGIN}/agency/demo/">
+</head><body><h1>Moved</h1><a href="/agency/demo/">Continue</a></body></html>
+""",
+    )
+    _set_retained_redirects(
+        site,
+        {
+            "/agency/demo-retired/": "/agency/demo/",
+            "/agency/demo-retired/brief/": "/agency/demo/",
+        },
+    )
+
+
+def test_moved_scorecard_companion_page_redirect_passes_under_a_noindex_path(
+    tmp_path: Path,
+) -> None:
+    # The brief path is configured noindex, but a redirect stub there carries
+    # no robots meta: it is a redirect, not a page out of the index.
+    site, config = _write_fixture(tmp_path)
+    _write_moved_brief(site)
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    payload = json.loads(report.read_text(encoding="utf-8"))
+    assert payload["summary"]["findings"] == 0
+    # The fixture's own configured redirect, plus the two moved pages.
+    assert payload["summary"]["redirect_aliases"] == 3
+    # Counted once, as a redirect, not again as a noindex page.
+    assert payload["summary"]["noindex_pages"] == 2
+
+
+def test_moved_companion_page_redirect_with_robots_meta_fails(tmp_path: Path) -> None:
+    # Negative control: the same stub with a robots meta is still reported.
+    site, config = _write_fixture(tmp_path)
+    _write_moved_brief(site, robots='<meta name="robots" content="noindex,follow">')
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "redirect.unexpected_noindex" in _codes(report)
+
+
+def test_moved_companion_page_redirect_must_be_in_the_manifest(tmp_path: Path) -> None:
+    # A brief stub the manifest does not authorize is a noindex page that lost
+    # its robots meta, and is reported as one.
+    site, config = _write_fixture(tmp_path)
+    _write_moved_brief(site)
+    _set_retained_redirects(site, {"/agency/demo-retired/": "/agency/demo/"})
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "noindex.missing" in _codes(report)
+
+
+@pytest.mark.parametrize(
+    "source",
+    ["/agency/demo-retired/feed/", "/agency/demo-retired/brief/extra/", "/agency/demo-retired"],
+)
+def test_retained_redirect_manifest_accepts_only_scorecards_and_companion_pages(
+    tmp_path: Path, source: str
+) -> None:
+    site, config = _write_fixture(tmp_path)
+    _set_retained_redirects(site, {source: "/agency/demo/"})
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "redirect.manifest_invalid" in _codes(report)

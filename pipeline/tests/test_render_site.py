@@ -1212,13 +1212,20 @@ def test_render_retires_stale_f_scorecard_and_redirects_to_live_successor(
         in redirect
     )
     assert "Retired Unitrans export</a>" not in redirect
-    assert not (stale_page / "brief").exists()
+    # The stale brief is gone; its URL now redirects to the successor's
+    # scorecard, like the retired record's board and clearance log (ADR 0067).
+    brief = (stale_page / "brief" / "index.html").read_text()
+    assert "stale brief" not in brief
+    assert f"url=/agency/{successor_id}/" in brief
     retained_redirects = json.loads(
         (isolated_repo_root / "web" / "_meta" / "retained-agency-redirects.json").read_text()
     )
     assert retained_redirects == {
         "schema_version": 1,
-        "redirects": {f"/agency/{retired_id}/": f"/agency/{successor_id}/"},
+        "redirects": {
+            f"/agency/{retired_id}/{suffix}": f"/agency/{successor_id}/"
+            for suffix in ("", "board/", "brief/", "fixes/")
+        },
     }
     # Historical JSON remains available even though it is no longer a current
     # directory row or scorecard page.
