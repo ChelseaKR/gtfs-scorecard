@@ -36,6 +36,15 @@ the declared public surface).
   publishes each monthly build as a new revision once `ADX_DATA_SET_ID` is set.
   The listing's CSV data dictionary is generated from the export's column list.
 
+- **A visible "Source feed" line on each agency scorecard.** Under the hero,
+  the feed URL on file links the publisher's own download, and a second link
+  opens that feed's version history on the Mobility Database when the record
+  carries an id the site has verified the shape of. The scorecard links and
+  never hosts a copy. A local zip, a credentialed fetch, a publisher in
+  `history-export-exclusions.yaml`, or a license block that forbids
+  redistribution renders no line, and the JSON-LD `isBasedOn` follows the
+  same rule.
+
 ### Changed
 
 - **The install wording leads with PyPI, because 1.5.1 is there.** The v1.5.1
@@ -76,6 +85,13 @@ the declared public surface).
   `assemble_public_artifacts.sh` copies into the deployed site, which covers
   artifacts written before this change. What the pipeline fetches is
   unchanged. ADR 0066 records why committed history is not rewritten.
+
+- **The program offer moved from agency scorecards to the program rollup
+  pages (ADR 0064, amending ADR 0058).** In 23 days 0 of 2,945 sessions that
+  landed on an agency page reached `/bundle/`. Each `/program/<id>/` page,
+  `/program/all/` included, now carries the panel with the plan's price and
+  the counted `bundle_panel_click` link; agency scorecards name nothing paid
+  above the footer.
 
 ## [1.5.1] - 2026-10-09
 

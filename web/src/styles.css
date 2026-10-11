@@ -1574,6 +1574,10 @@ main:focus { outline: none; }
 .score-hero .overall strong { color: var(--ink); font-size: 1.05rem; }
 .snapshot-note { margin: 0.15rem 0 0; font-size: 0.8rem; color: var(--ink-soft); }
 .disclaimer { margin: 0.5rem 0 0; font-size: 0.8rem; color: var(--ink-soft); max-width: 34rem; font-style: italic; }
+/* The "Source feed" line under an agency hero: the feed URL on file and its
+   Mobility Database history.
+   A feed URL has no spaces to break at, so it wraps anywhere at 320px. */
+.feed-source { margin: 0 0 0.6rem; font-size: 0.9rem; overflow-wrap: anywhere; }
 .legend { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: 0.6rem; max-width: 40rem; }
 .legend-row { display: grid; grid-template-columns: 2.2rem 1fr; gap: 0.7rem; align-items: start; }
 
@@ -3560,12 +3564,6 @@ main {
 
 .agency-report .report-content > section + section {
   border-top: 1px solid var(--line);
-}
-
-/* The program panel (ADR 0058) keeps its own full border rather than the
-   hairline the sections above it share. Hidden in print with the footer. */
-.agency-report .report-content > .program-offer {
-  border-top: 1.5px solid var(--line);
 }
 
 .agency-report .report-content > section:target {

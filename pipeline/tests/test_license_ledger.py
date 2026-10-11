@@ -575,6 +575,10 @@ def test_only_the_ledger_the_loader_and_the_notice_read_a_block() -> None:
     # history tables as columns and decides nothing from them: a row states the
     # terms, and which rows exist is the registry's and the opt-out ledger's
     # call, never the block's. That is carrying, not reading for a decision.
+    # render_site.py (owner scope, 2026-10-11) reads one term for one display
+    # decision: a block that says redistribution_allowed: false withholds the
+    # scorecard's "Source feed" link and its isBasedOn. It fetches, scores,
+    # ranks, and admits nothing differently.
     assert readers == [
         "agencies.py",
         "config.py",
@@ -582,6 +586,7 @@ def test_only_the_ledger_the_loader_and_the_notice_read_a_block() -> None:
         "license_ledger.py",
         "license_migrate.py",
         "license_notice.py",
+        "render_site.py",
     ]
     # The ledger modules are reached only by the loader, the CLI verbs, and the
     # notice; the notice only by the two publishers that print it.

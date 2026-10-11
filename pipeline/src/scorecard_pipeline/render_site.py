@@ -32,8 +32,8 @@ from collections import Counter
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import Any
-from urllib.parse import urlencode
+from typing import Any, Final
+from urllib.parse import urlencode, urlsplit
 
 import yaml
 from markdown_it import MarkdownIt
@@ -3397,9 +3397,9 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     seo_metadata: AgencySeoMetadata | None = None,
     program_ids: set[str] | None = None,
     feed_context: FeedContext | None = None,
-    program_offer: ProgramOffer | None = None,
     license_notice: LicenseNotice | None = None,
     similar: list[dict[str, Any]] | None = None,
+    source_withheld: bool = False,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -3621,16 +3621,6 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             ("Standards", "#standards-h"),
         ]
     )
-    # The program panel (ADR 0058) renders only for a tracked agency with a
-    # measured grade and a sellable plan; the route lists it only when it does.
-    program_offer_block = _program_offer_section(
-        artifact, agency_id, agency_name, program_offer, history
-    )
-    report_stops.extend([("For programs", "#program-offer-h")] if program_offer_block else [])
-    # Its own line only when it renders, so a page without it (the CLI's
-    # standalone scorecard, a feed with no measured grade) is byte-for-byte
-    # what it was before the panel existed.
-    program_offer_line = f"\n    {program_offer_block}" if program_offer_block else ""
     report_route = (
         '<nav class="report-route" aria-label="On this scorecard">'
         '<p class="report-route-kicker">Report route</p>'
@@ -3649,10 +3639,10 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         else ""
     )
     # A pointer to the free group view this agency sits in, for the reader who
-    # supports several. It names a rollup, never the paid tier. The paid tier
-    # has exactly one place on this page, the program panel right after it
-    # (ADR 0058); test_paid_tier_visibility.py fails if /bundle/ appears
-    # anywhere else above the footer.
+    # supports several. It names a rollup, never the paid tier: the program
+    # panel lives on that rollup page (ADR 0064, which moved it off this page),
+    # and test_paid_tier_visibility.py fails if /bundle/ appears above this
+    # page's footer.
     portfolio_line = _portfolio_pointer(
         dir_record,
         artifact,
@@ -3666,6 +3656,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
     {actions}
     {_board_hero(agency_name, agency_id, artifact, history or [], dir_record)}
+    {_source_feed_line(_public_source_url(artifact, source_withheld), _mdb_feed_page((dir_record or {}).get("mdb_id")))}
     {op_html}
     {_anomaly_note(history)}
     <p class="disclaimer">A data-quality and completeness lens to help an agency improve its
@@ -3718,7 +3709,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     {_google_gate_line(artifact, now)}
     {_route_rule()}
     {_standards_section(artifact, (dir_record or {}).get("state", ""), (dir_record or {}).get("subdivision_code", ""))}
-    {portfolio_line}{program_offer_line}
+    {portfolio_line}
     {_similar_feeds_section(dir_record, similar or [])}
     {_route_rule()}
     {_embed_block}
@@ -3761,7 +3752,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         # score of a local zip records the feed by file name (#398), which
         # is honest as prose and wrong as a URL, so the key is omitted
         # rather than filled with something a consumer would try to GET.
-        **_based_on(artifact),
+        **_based_on(artifact, source_withheld),
         "includedInDataCatalog": {"@type": "DataCatalog", "url": BASE_URL},
         "creator": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
         "about": {"@type": "Organization", "name": agency_name},
@@ -3791,18 +3782,125 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     )
 
 
-def _based_on(artifact: dict[str, Any]) -> dict[str, str]:
-    """The schema.org ``isBasedOn`` pair, present only when the feed has a link.
+def _public_source_url(artifact: dict[str, Any], withheld: bool = False) -> str | None:
+    """The feed URL this page may link as its source, or ``None``.
 
-    ``feed.static_url`` is an https link for every tracked agency. For a feed
-    scored from a local zip it is the file's name and nothing more (#398): a
-    real fact about where the score came from, and not a URL, so it is left out
-    of the JSON-LD instead of being published as one.
+    ``feed.static_url`` is the URL on file that the pipeline fetches, which for
+    a tracked agency is a link to the publisher's own download. It is a public
+    source only when all of these hold, and ``None`` is returned otherwise:
+
+    - it is an http or https URL (#398: a feed scored from a local zip records
+      only the file's name, which is a fact and not a link);
+    - the fetch presented no credential (#371): a registration-walled URL is
+      not something a reader can follow, even though the credential itself
+      never reaches the artifact;
+    - it does not point at this site, so the link can never be a copy of the
+      feed hosted here;
+    - the caller has not withheld it (``withheld``): a publisher listed in
+      history-export-exclusions.yaml, or a record whose structured license
+      block says redistribution is not allowed.
+
+    The visible "Source feed" link and the JSON-LD ``isBasedOn`` both read this
+    one function, so they cannot disagree.
     """
-    static_url = artifact.get("feed", {}).get("static_url")
-    if isinstance(static_url, str) and static_url.startswith(("http://", "https://")):
-        return {"isBasedOn": static_url}
-    return {}
+    if withheld:
+        return None
+    feed = artifact.get("feed")
+    static_url = feed.get("static_url") if isinstance(feed, dict) else None
+    if not isinstance(static_url, str) or not static_url.startswith(("http://", "https://")):
+        return None
+    fetch = artifact.get("fetch")
+    if isinstance(fetch, dict) and (fetch.get("auth") or fetch.get("auth_kind")):
+        return None
+    try:
+        host = (urlsplit(static_url).hostname or "").lower()
+    except ValueError:
+        return None
+    if not host or host == _SITE_HOST or host.endswith("." + _SITE_HOST):
+        return None
+    return static_url
+
+
+#: This site's host. A source link to it would be a copy hosted here, which the
+#: scorecard never serves (docs/api.md: the raw archive is private).
+_SITE_HOST: Final = urlsplit(BASE_URL).hostname or "gtfsscorecard.org"
+
+#: The Mobility Database's stable feed ids: the legacy numeric ids (written
+#: ``mdb-N`` once normalized) and the V2 catalog's prefixed imports. Each prefix
+#: was opened on mobilitydatabase.org/feeds/gtfs/<id> on 2026-10-11 and named
+#: its feed (mdb-3 Barrie Transit, mdb-225 Anchorage People Mover, tld-764,
+#: ntd-44929, tdg-83582). Anything else is not linked: the site answers every
+#: path with a page, so a guessed id would look like a working link.
+_MDB_FEED_ID_RE: Final = re.compile(r"(?:mdb|tld|ntd|tdg)-[0-9]+")
+
+
+def _mdb_feed_page(mdb_id: object) -> str | None:
+    """The feed's page on the Mobility Database, which lists its dataset history."""
+    if isinstance(mdb_id, bool) or not isinstance(mdb_id, (str, int)):
+        return None
+    normalized = normalized_mdb_id(str(mdb_id).strip())
+    if not _MDB_FEED_ID_RE.fullmatch(normalized):
+        return None
+    return f"https://mobilitydatabase.org/feeds/gtfs/{normalized}"
+
+
+def _source_feed_line(source_url: str | None, mdb_page: str | None) -> str:
+    """The visible "Source feed" line under the hero, or nothing.
+
+    The line exists for the reader who searched for an agency's GTFS file: it
+    links the publisher's own download and, when the record carries a Mobility
+    Database id, that feed's version history there. It links; the scorecard
+    never hosts a copy. No public source URL renders nothing at all, including
+    the Mobility Database link, so a page never shows a label with no link.
+    """
+    if not source_url:
+        return ""
+    history = (
+        ' <span aria-hidden="true">&middot;</span> '
+        f'<a href="{esc(mdb_page)}">Version history on the Mobility Database</a>'
+        if mdb_page
+        else ""
+    )
+    return (
+        f'<p class="feed-source">Source feed: <a href="{esc(source_url)}">'
+        f"{esc(source_url)}</a>{history}</p>"
+    )
+
+
+def _withheld_source_ids(root: Path) -> frozenset[str] | None:
+    """Ids in history-export-exclusions.yaml, or ``None`` when it cannot be read.
+
+    ``None`` means "withhold every source link": the ledger is the record of
+    who asked, and an unreadable ledger is not an empty one.
+    """
+    from .history_export import HistoryExportError, exclusions_path, read_exclusions
+
+    try:
+        return read_exclusions(exclusions_path(root)).ids
+    except HistoryExportError as exc:
+        print(f"warning: source links withheld on every agency page: {exc}", file=sys.stderr)
+        return None
+
+
+def _license_forbids_redistribution(agency: Agency | None) -> bool:
+    """True only when a record's license block says redistribution is not allowed.
+
+    ``unknown`` and a missing block are not a prohibition; the link points at
+    the publisher's own URL and the scorecard never hosts a copy.
+    """
+    block = agency.license_block if agency is not None else None
+    return block is not None and block.redistribution_allowed is False
+
+
+def _based_on(artifact: dict[str, Any], withheld: bool = False) -> dict[str, str]:
+    """The schema.org ``isBasedOn`` pair, present only with a public source link.
+
+    The same rule as the visible "Source feed" line (``_public_source_url``),
+    so the JSON-LD never names a source the page does not link, and a local
+    zip's file name (#398) is never published as a URL.
+    """
+    source_url = _public_source_url(artifact, withheld)
+    return {"isBasedOn": source_url} if source_url else {}
 
 
 def _portfolio_route(
@@ -6061,6 +6159,7 @@ def _rollup_outside_section(others: tuple[str, list[dict[str, Any]]] | None) -> 
 def _render_rollup(
     rollup: dict[str, Any],
     others: tuple[str, list[dict[str, Any]]] | None = None,
+    offer: ProgramOffer | None = None,
 ) -> str:
     rid = rollup["rollup"]["id"]
     rname = rollup["rollup"]["name"]
@@ -6169,7 +6268,7 @@ def _render_rollup(
       <h2 class="section-title" id="members-h">Feed scorecards: attention first, then alphabetical</h2>
       <ul class="program-list">{rows}</ul>
     </section>{outside_section}
-    {_ROLLUP_BUNDLE_SECTION}"""
+    {_program_offer_section(offer)}"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
         title=f"{rname} — GTFS Scorecard",
@@ -6203,9 +6302,9 @@ def _bundle_pointer(lead: str, anchor: str) -> str:
 
     Placement rule, same as ``_ROLLUP_BUNDLE_SECTION`` below: this belongs on a
     page about a group of feeds, or about setting a standard for one, and never
-    beside a single agency's grade. (An agency's scorecard has its own, fuller
-    panel below its evidence and standards, ``_program_offer_section``; ADR
-    0058.) ``lead`` says why the reader of that page
+    beside a single agency's grade. (A program rollup page carries the fuller
+    panel, ``_program_offer_section``; ADR 0064.) ``lead`` says why the reader
+    of that page
     would want it and ``anchor`` is the link text, varied per page so the site
     does not repeat one sentence at every turn. Both are authored markup, not
     data, and the price stays on /bundle/ where plan.json owns it.
@@ -6223,8 +6322,9 @@ def _bundle_pointer(lead: str, anchor: str) -> str:
 # those people already use. An agency's call brief and its board report are the
 # free product and stay clean, and report.py's methodology footer is untouched,
 # so the document an agency hands its board carries no offer to sell anything.
-# The agency's scorecard page carries one program panel, after its evidence and
-# standards and never in the hero beside the grade (ADR 0058).
+# The agency's scorecard page carried a program panel from 2026-09-18 (ADR
+# 0058); in 23 days 0 of 2,945 sessions that landed on an agency page reached
+# /bundle/, so ADR 0064 moved the panel here, to ``_program_offer_section``.
 _ROLLUP_BUNDLE_SECTION = (
     '<section aria-labelledby="bundle-h">'
     '<h2 class="section-title" id="bundle-h">Board reports for this group</h2>'
@@ -6239,12 +6339,12 @@ _ROLLUP_BUNDLE_SECTION = (
 
 @dataclass(frozen=True)
 class ProgramOffer:
-    """The one plan an agency page's program panel quotes, read from plan.json.
+    """The one plan a rollup page's program panel quotes, read from plan.json.
 
     Nothing here is authored: every field comes out of ``bundle_offer_nodes``,
     which applies the same refusals the /bundle/ page's generated offers block
     does (payments switched on, a numeric price, an https checkout link). A
-    plan that sells nothing yields no ``ProgramOffer`` at all, so no agency
+    plan that sells nothing yields no ``ProgramOffer`` at all, so no rollup
     page can quote a price the checkout would not honor.
     """
 
@@ -6268,7 +6368,7 @@ def load_program_offer(web_root: Path | None = None) -> ProgramOffer | None:
     ``None`` whenever the plan is missing, unreadable, switched off, or lists
     no one-time product that passes ``bundle_offer_nodes``. Read once per
     render, from the same checkout the deploy copies ``plan.json`` out of, so
-    the amount on an agency page and the amount on /bundle/ always come from
+    the amount on a rollup page and the amount on /bundle/ always come from
     one commit.
     """
     path = (web_root or _repo_root() / "web") / BUNDLE_PLAN_PATH
@@ -6295,30 +6395,6 @@ def load_program_offer(web_root: Path | None = None) -> ProgramOffer | None:
     )
 
 
-def _measured_overall(artifact: dict[str, Any]) -> tuple[str, int | float, str] | None:
-    """(grade, score, check date) when the artifact carries all three, else None.
-
-    The program panel quotes these back to the reader, so each one has to be a
-    measured value: a letter on the published scale, a finite number, and the
-    date of the check. Anything else is an absence, and an absence is never
-    rendered as a grade (docs/decisions/0058). The score comes back exactly as
-    the artifact holds it, so the panel prints it the way the hero above does.
-    """
-    overall = artifact.get("overall")
-    if not isinstance(overall, dict):
-        return None
-    grade = overall.get("grade")
-    score = overall.get("score")
-    checked = artifact.get("snapshot_date")
-    if not isinstance(grade, str) or grade not in _GRADES:
-        return None
-    if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score):
-        return None
-    if not isinstance(checked, str) or not checked.strip():
-        return None
-    return grade, score, checked
-
-
 def _rubric_version_html(artifact: dict[str, Any]) -> str:
     """The scorecard's rubric stamp, linked to the methodology it names.
 
@@ -6333,50 +6409,19 @@ def _rubric_version_html(artifact: dict[str, Any]) -> str:
     return f'<a href="/how-to-read/#methodology-h">Rubric v{esc(version)}</a>'
 
 
-def _plain_list(items: list[str]) -> str:
-    """``a``, ``a and b``, or ``a, b, and c``."""
-    if len(items) <= 2:
-        return " and ".join(items)
-    return f"{', '.join(items[:-1])}, and {items[-1]}"
+def _program_offer_section(offer: ProgramOffer | None) -> str:
+    """The program panel on a program rollup page (ADR 0064, amending 0058).
 
-
-def _program_offer_section(
-    artifact: dict[str, Any],
-    agency_id: str,
-    agency_name: str,
-    offer: ProgramOffer | None,
-    history: list[dict[str, Any]] | None,
-) -> str:
-    """The one place an agency's scorecard names the paid tier (ADR 0058).
-
-    Addressed to the people the bundle is for, a program or consultancy that
-    supports several agencies, and placed after the standards section, below
-    the grade, the fixes, and the evidence. Everything it says about this
-    agency is read from the artifact this page already renders, and the price
-    comes from ``offer`` (plan.json). It renders nothing unless there is a
-    sellable plan and a measured grade, score, and check date: a page with
-    missing data offers nothing, rather than describing a report it cannot
-    show. The call brief, the board one-pager, and report.py's document stay
-    free of it.
+    A rollup page is a group view, read by the people the bundle is for, so
+    the panel lives here and not on any one agency's scorecard. Without a
+    sellable plan it is the plain pointer ``_ROLLUP_BUNDLE_SECTION``, word for
+    word what the app's rollup view says. With one, the same heading and
+    paragraph gain the plan's label, amount, and delivery promise (all from
+    ``offer``, read from plan.json), one counted link to /bundle/, and the
+    sample report. Nothing here is typed as a price.
     """
     if offer is None:
-        return ""
-    measured = _measured_overall(artifact)
-    if measured is None:
-        return ""
-    grade, score, checked = measured
-    name = esc(agency_name)
-    # What report.py actually puts in this agency's document: category scores
-    # always, the top-fixes list only when the artifact has fixes, and the
-    # "Over time" table only once there are two checks to list.
-    contents = [
-        f"grade {esc(grade)} ({esc(score)} out of 100) as of the check on {esc(checked)}",
-        "its category scores",
-    ]
-    if artifact.get("top_fixes"):
-        contents.append("its top fixes")
-    if len(history or []) >= 2:
-        contents.append("its score at each check")
+        return _ROLLUP_BUNDLE_SECTION
     delivery = (
         f", delivered within {offer.delivery_days} business days or refunded"
         if offer.delivery_days
@@ -6388,26 +6433,18 @@ def _program_offer_section(
         more = " Other plans are on the bundle page."
     else:
         more = ""
-    rubric = artifact.get("rubric_version")
-    validator = artifact.get("validator_version")
-    method = f", scored with rubric v{esc(rubric)}" if rubric else ""
-    if validator:
-        method += (
-            f"{' and' if rubric else ', scored with'} MobilityData gtfs-validator {esc(validator)}"
+    # The pointer's "Prices are on that page." gives way to the price itself.
+    pointer = (
+        _ROLLUP_BUNDLE_SECTION.removesuffix("</section>")
+        .replace(
+            '<section aria-labelledby="bundle-h">',
+            '<section class="action-panel program-offer" aria-labelledby="bundle-h">',
+            1,
         )
-    lede = feed_source_lede(_artifact_source_provenance(artifact), _artifact_fetch_source(artifact))
+        .replace(" Prices are on that page.", "", 1)
+    )
     return (
-        '<section class="action-panel program-offer" aria-labelledby="program-offer-h">'
-        '<h2 class="section-title" id="program-offer-h">For programs that support several agencies</h2>'
-        f'<p>This scorecard and the <a href="/agency/{esc(agency_id)}/board/">board one-pager for '
-        f"<bdi>{name}</bdi></a> are free, and they stay free. If you support several "
-        "agencies, as a state program, a technical-assistance center, a feed vendor, or a "
-        "consultancy, you can buy the program report bundle. It puts this agency's board report "
-        "in one archive with the reports for the other agencies you support, and each cover "
-        "carries your program's name, logo, and accent color.</p>"
-        f"<p>The report for <bdi>{name}</bdi> uses the same numbers as this page: "
-        f"{_plain_list(contents)}.</p>"
-        f"<p><strong>{esc(offer.label)}:</strong> {esc(offer.amount)}, paid once"
+        pointer + f"<p><strong>{esc(offer.label)}:</strong> {esc(offer.amount)}, paid once"
         f"{delivery}.{more}</p>"
         '<p class="report-actions">'
         # data-measure opts this one link into the click event web/src/measure.js
@@ -6418,9 +6455,6 @@ def _program_offer_section(
         "See the program report bundle</a></p>"
         '<p><a href="/bundle/sample/">See a sample bundle report</a>: a real agency\'s current '
         "grade, with placeholder branding.</p>"
-        f'<p class="fineprint">{_BUNDLE_INDEPENDENCE} The grade on this page comes from the '
-        f"check on {esc(checked)}{method}. {esc(lede)}. "
-        '<a href="/how-to-read/#methodology-h">Read how the grade is calculated</a>.</p>'
         "</section>"
     )
 
@@ -12008,6 +12042,7 @@ def _write_program_pages(
     art: Path,
     write: Callable[..., None],
     directory_records: list[dict[str, Any]] | None = None,
+    offer: ProgramOffer | None = None,
 ) -> None:
     """Every ``/program/<id>/`` rollup page, then ``/program/`` listing them.
 
@@ -12041,7 +12076,7 @@ def _write_program_pages(
         # restate "today" on 68 pages that did not change.
         write(
             f"program/{entry['id']}/index.html",
-            _render_rollup(payload, others),
+            _render_rollup(payload, others, offer),
             f"{BASE_URL}/program/{entry['id']}/",
             lastmod=_rollup_content_date(payload) or None,
         )
@@ -12089,10 +12124,15 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # Empty when the corpus has not yet written a calibration file, which keeps
     # the causally neutral band purely additive (EXP-03).
     effort_bands = _load_effort_bands()
-    # The plan an agency page's program panel quotes (ADR 0058), read once from
-    # the same web/bundle/plan.json the deploy serves. None switches every
-    # panel off, which is what a plan with payments off must do.
+    # The plan the program rollup pages' panel quotes (ADR 0064), read once
+    # from the same web/bundle/plan.json the deploy serves. None leaves each
+    # rollup with its plain pointer, which is what payments off must do.
     program_offer = load_program_offer(web)
+    # Publishers whose "Source feed" link the agency page withholds: the
+    # opt-out ledger, read once. A ledger that is missing or malformed
+    # withholds every link, because a render that cannot see the requests
+    # must not assume there are none.
+    withheld_sources = _withheld_source_ids(root)
     written: list[Path] = []
     # The hand-authored pages, which this render lists but does not write. They
     # carry no <lastmod>, and that is a decision rather than an omission: a
@@ -12725,17 +12765,15 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                     seo_metadata=agency_seo_metadata[agency_id],
                     program_ids=program_ids,
                     feed_context=feed_context,
-                    # Only a current canonical record can become a report in
-                    # a bundle (bundle.classify), so only its page offers one.
-                    program_offer=(
-                        program_offer
-                        if agency_cfg is not None and agency_cfg.is_canonical_feed
-                        else None
-                    ),
                     license_notice=notice_for_agency(agency_cfg),
                     similar=similar_feeds(
                         by_id[agency_id],
                         records_by_place.get(place_key(by_id[agency_id]), []),
+                    ),
+                    source_withheld=(
+                        withheld_sources is None
+                        or agency_id in withheld_sources
+                        or _license_forbids_redistribution(agency_cfg)
                     ),
                 ),
                 f"{BASE_URL}/agency/{agency_id}/",
@@ -13321,7 +13359,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/equity/",
     )
 
-    _write_program_pages(art, write, directory["agencies"])
+    _write_program_pages(art, write, directory["agencies"], program_offer)
 
     write("sitemap.xml", _sitemap(urls, sitemap_lastmods))
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n")

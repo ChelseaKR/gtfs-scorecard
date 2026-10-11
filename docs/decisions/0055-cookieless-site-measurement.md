@@ -9,7 +9,10 @@ honor the footer "Opt out of analytics" link that ADR 0056 adds. Amended
 2026-10-02: a third event, `bundle_panel_click`, counts the link to `/bundle/`
 in the program panel on agency scorecards (ADR 0058), and a page opened with
 `?measure=off`, as the weekly production Lighthouse audit opens every route,
-measures nothing.
+measures nothing. Amended 2026-10-11 by
+[ADR 0064](0064-program-offer-moves-to-program-pages.md): the program panel,
+and with it the `bundle_panel_click` link, moved from agency scorecards to the
+program rollup pages.
 
 ## Context
 
@@ -48,8 +51,9 @@ collects about a visit. It sends these events to PostHog Cloud US:
   with `data-measure` and `data-measure-plan`; the script reports nothing else a
   reader clicks.
 - `bundle_panel_click`, with no properties beyond the page view's, when the
-  link to `/bundle/` in the program panel at the end of an agency scorecard is
-  followed (added 2026-10-02). `render_site.py` marks that one link with
+  link to `/bundle/` in the program panel is followed (added 2026-10-02 on
+  agency scorecards; since ADR 0064 the panel is at the end of each program
+  rollup page). `render_site.py` marks that one link with
   `data-measure`.
 
 It is cookieless by construction. There is no SDK, so there is no autocapture
