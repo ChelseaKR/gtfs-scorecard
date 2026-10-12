@@ -78,7 +78,10 @@ _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _DATETIME_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$")
 _REFRESH_RE = re.compile(r"^\s*0(?:\.0+)?\s*;\s*url\s*=\s*(.+?)\s*$", re.IGNORECASE)
 # Mirrors scorecard_pipeline.agencies.ID_PATTERN at the public route boundary.
-_AGENCY_PATH_RE = re.compile(r"^/agency/[a-z0-9][a-z0-9_-]*/$")
+# A retained redirect names a scorecard, or one of the pages a scorecard links
+# beside itself (its call-prep brief, board one-pager or clearance log), so
+# a moved scorecard's companion URLs redirect instead of answering 404.
+_AGENCY_PATH_RE = re.compile(r"^/agency/[a-z0-9][a-z0-9_-]*/(?:(?:brief|board|fixes)/)?$")
 _SITEMAP_NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9"
 # The site-measurement contract (docs/decisions/0055-cookieless-site-measurement
 # .md): the one declared first-party script is the whole of what the site
@@ -2154,7 +2157,9 @@ def _validate_page(
             require_h1=page.public_path not in config.canonical_aliases,
         )
         _validate_presentation(page, config, findings)
-    _validate_noindex(page, config, findings)
+        # A redirect stub carries no robots meta even under a noindex path
+        # (a moved brief, say): _validate_redirect reports one if it does.
+        _validate_noindex(page, config, findings)
     json_ld_nodes, top_level_json_ld = _validate_json_ld(page, findings)
     _validate_json_ld_distributions(page, json_ld_nodes, config, files, findings)
     if not is_redirect:
@@ -2258,7 +2263,10 @@ def audit(site_root: Path, config: Config) -> tuple[list[Finding], dict[str, int
     _validate_robots(site_root, config, findings)
 
     sorted_findings = sorted(set(findings))
-    noindex_pages = sum(_page_is_noindex(page, config) for page in pages.values())
+    noindex_pages = sum(
+        _page_is_noindex(page, config) and page.public_path not in redirect_aliases
+        for page in pages.values()
+    )
     canonical_aliases = sum(page.public_path in config.canonical_aliases for page in pages.values())
     redirect_alias_count = sum(page.public_path in redirect_aliases for page in pages.values())
     stats = {
