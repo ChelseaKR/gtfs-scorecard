@@ -100,7 +100,7 @@ def _sample_index() -> dict[str, Any]:
 
 def test_rows_use_latest_history_point_only() -> None:
     dataset = build_quality_dataset(_sample_index())
-    assert dataset["schema_version"] == "1.3"
+    assert dataset["schema_version"] == "1.5"
     assert dataset["generated_fields"] == list(COLUMNS)
     rows = dataset["rows"]
     # Sorted by id: unitrans before yolobus.
@@ -126,6 +126,7 @@ def test_rows_use_latest_history_point_only() -> None:
         "realtime": 82.0,
         "days_until_expiry": 120,
         "service_horizon_status": "within_review_threshold",
+        "expiry_status": "current",
     }
     assert dataset["comparison"]["eligible_count"] == 1
     assert dataset["comparison"]["required_measured_categories"] == [
@@ -211,10 +212,15 @@ def test_csv_round_trips_header_and_values() -> None:
     assert yolo["realtime"] == "82.0"
     assert yolo["days_until_expiry"] == "120"
     assert yolo["service_horizon_status"] == "within_review_threshold"
+    assert yolo["expiry_status"] == "current"
 
     # Missing realtime renders as an empty cell, not "None".
     unitrans = next(p for p in parsed if p["id"] == "unitrans")
     assert unitrans["realtime"] == ""
+    # Expired five days ago: the horizon check still reads within threshold,
+    # so the expiry column is what says the feed has lapsed.
+    assert unitrans["service_horizon_status"] == "within_review_threshold"
+    assert unitrans["expiry_status"] == "lapsed"
 
 
 def test_csv_escapes_commas_in_names() -> None:
@@ -311,3 +317,47 @@ def test_legacy_history_without_date_or_expiry_stays_unknown() -> None:
     del latest["service_horizon_status"]
     row = build_quality_dataset(index)["rows"][0]
     assert row["service_horizon_status"] == "unknown"
+
+
+def test_expiry_status_matches_the_catalog_bucket_for_every_case() -> None:
+    # The same metrics.expiry_status the catalog uses, on the same day count.
+    from scorecard_pipeline.metrics import STALE_FEED_DAYS, expiry_status
+
+    cases = {
+        "a-current": 120,
+        "b-soon": 10,
+        "c-lapsed": -5,
+        "d-stale": -2381,
+        "e-boundary": -STALE_FEED_DAYS,
+        "f-unknown": None,
+    }
+    index = {
+        "agencies": {
+            agency_id: {
+                "name": agency_id,
+                "history": [
+                    _history_point(
+                        "2026-06-01",
+                        "B",
+                        80.0,
+                        correctness=80.0,
+                        freshness=80.0,
+                        completeness=80.0,
+                        days_until_expiry=days,
+                    )
+                ],
+            }
+            for agency_id, days in cases.items()
+        }
+    }
+    rows = {row["id"]: row for row in build_quality_dataset(index)["rows"]}
+    assert {agency_id: row["expiry_status"] for agency_id, row in rows.items()} == {
+        "a-current": "current",
+        "b-soon": "expiring_soon",
+        "c-lapsed": "lapsed",
+        "d-stale": "stale",
+        "e-boundary": "stale",
+        "f-unknown": "unknown",
+    }
+    for agency_id, days in cases.items():
+        assert rows[agency_id]["expiry_status"] == expiry_status(days)
