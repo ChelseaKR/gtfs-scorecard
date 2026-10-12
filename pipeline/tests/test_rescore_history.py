@@ -323,6 +323,7 @@ def test_render_reads_rescored_file_and_keeps_native_points_unchanged(tmp_path: 
     assert [p["date"] for p in trend["points"]] == ["2026-09-29", "2026-09-30", "2026-10-02"]
     assert [p["rescored_agency_count"] for p in trend["points"]] == [1, 1, 0]
     assert trend["native_points_since"] == "2026-10-02"
+    assert trend["panel_feed_count"] == 1
     assert trend["reproduces_native_exactly"] is True
     # The index rows themselves are not rewritten.
     assert index["agencies"][AGENCY.id]["history"][0]["rubric_version"] == "1.3"

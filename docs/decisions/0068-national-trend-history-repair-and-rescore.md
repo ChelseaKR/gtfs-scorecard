@@ -51,7 +51,10 @@ Two separate things were behind it.
 - The trend publishes the rescored series beside the native one
   (`trend.json` `rescored`, additive). It is merged into the chart only when
   rescoring every native 1.4 record reproduces it exactly. Otherwise it is
-  shown apart and labeled.
+  shown apart and labeled. It follows a fixed panel (the feeds with a
+  comparable score on the window's first date), because inside the window the
+  cohort grows by up to a fifth and new feeds would otherwise move the average
+  without any feed changing.
 - `trend-history-repair.yml` (dispatch-only, dry run by default, holds the
   `artifacts-publish` lock) runs both commands against the store and uploads
   the two derived files.

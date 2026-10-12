@@ -714,7 +714,39 @@ def _rescored_trend(
             if agency_id in comparable_ids
         }
     }
-    points = as_of_points(spliced)
+    # The coverage rule alone still lets the cohort grow by up to a fifth
+    # inside the window, and a feed entering moves the average without any
+    # feed changing. Over the long rescored window that is most of the visible
+    # movement, so the published series is a fixed panel: the feeds that have
+    # a comparable score on the window's first date, and only those, on every
+    # date. A feed whose suffix starts later is left out, not carried back.
+    window = as_of_points(spliced)
+    panel_ids: set[str] = set()
+    if window:
+        start = str(window[0]["date"])
+        panel_ids = {
+            agency_id
+            for agency_id, entry in spliced["agencies"].items()
+            if entry["history"] and str(entry["history"][0].get("date") or "") <= start
+        }
+    points = (
+        [
+            point
+            for point in as_of_points(
+                {
+                    "agencies": {
+                        agency_id: entry
+                        for agency_id, entry in spliced["agencies"].items()
+                        if agency_id in panel_ids
+                    }
+                },
+                min_coverage=0.0,
+            )
+            if point["date"] >= window[0]["date"]
+        ]
+        if window
+        else []
+    )
     reproduction = document.get("reproduction") or {}
     checked = reproduction.get("native_records_checked")
     exact = reproduction.get("native_records_exact")
@@ -732,6 +764,7 @@ def _rescored_trend(
         "reproduction": reproduction,
         "reproduces_native_exactly": reproduces,
         "native_points_since": native_points[0]["date"] if native_points else None,
+        "panel_feed_count": len(panel_ids),
         "points": points,
         "summary": trend_summary(points),
     }
@@ -11926,16 +11959,23 @@ def _rescored_note(rescored: dict[str, Any]) -> str:
     since = rescored.get("native_points_since")
     since_text = f" before {esc(str(since))}" if since else ""
     counts = (
-        f" {esc(done)} earlier records were rescored this way; {esc(left)} could not be, "
+        f" {done:,} earlier records were rescored this way; {left:,} could not be, "
         "because what they stored is not enough to apply the new rules, and they are left "
         "out rather than estimated."
         if isinstance(done, int) and isinstance(left, int)
         else ""
     )
+    panel = rescored.get("panel_feed_count")
+    panel_text = (
+        f" To compare like with like, this series follows the same {panel:,} feeds on every "
+        "date: those with a comparable score on its first date."
+        if isinstance(panel, int) and not isinstance(panel, bool) and panel > 0
+        else ""
+    )
     return (
         f"Points{since_text} use records from earlier rubric versions, rescored with the "
         f"rubric {version} rules from what each record stored. No feed was downloaded "
-        f"again.{counts}"
+        f"again.{counts}{panel_text}"
     )
 
 
