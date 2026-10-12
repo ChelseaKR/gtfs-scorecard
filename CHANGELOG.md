@@ -40,10 +40,11 @@ the declared public surface).
   the feed URL on file links the publisher's own download, and a second link
   opens that feed's version history on the Mobility Database when the record
   carries an id the site has verified the shape of. The scorecard links and
-  never hosts a copy. A local zip, a credentialed fetch, a publisher in
-  `history-export-exclusions.yaml`, or a license block that forbids
-  redistribution renders no line, and the JSON-LD `isBasedOn` follows the
-  same rule.
+  never hosts a copy. A local zip, a credentialed fetch, a URL with user-info
+  or a credential-like query parameter (redacted or not, ADR 0066), a
+  publisher in `history-export-exclusions.yaml`, or a license block that
+  forbids redistribution renders no line, and the JSON-LD `isBasedOn` follows
+  the same rule.
 
 ### Changed
 
@@ -67,6 +68,12 @@ the declared public surface).
   `feed_static_url` or `fetch_final_url` reads `REDACTED`, and a user-info part
   is dropped. The free site applies its own rule for the same values (ADR 0066,
   under Security below).
+- **The program offer moved from agency scorecards to the program rollup
+  pages (ADR 0064, amending ADR 0058).** In 23 days 0 of 2,945 sessions that
+  landed on an agency page reached `/bundle/`. Each `/program/<id>/` page,
+  `/program/all/` included, now carries the panel with the plan's price and
+  the counted `bundle_panel_click` link; agency scorecards name nothing paid
+  above the footer.
 
 ### Security
 
@@ -85,13 +92,6 @@ the declared public surface).
   `assemble_public_artifacts.sh` copies into the deployed site, which covers
   artifacts written before this change. What the pipeline fetches is
   unchanged. ADR 0066 records why committed history is not rewritten.
-
-- **The program offer moved from agency scorecards to the program rollup
-  pages (ADR 0064, amending ADR 0058).** In 23 days 0 of 2,945 sessions that
-  landed on an agency page reached `/bundle/`. Each `/program/<id>/` page,
-  `/program/all/` included, now carries the panel with the plan's price and
-  the counted `bundle_panel_click` link; agency scorecards name nothing paid
-  above the footer.
 
 ## [1.5.1] - 2026-10-09
 

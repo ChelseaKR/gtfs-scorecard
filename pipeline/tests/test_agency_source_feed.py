@@ -25,7 +25,7 @@ import re
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 import pytest
 
@@ -162,6 +162,22 @@ def _this_site(a: dict[str, Any]) -> None:
     a["feed"]["static_url"] = "https://gtfsscorecard.org/data/artifacts/barrie-transit/feed.zip"
 
 
+def _query(a: dict[str, Any]) -> dict[str, list[str]]:
+    return parse_qs(urlsplit(a["feed"]["static_url"]).query)
+
+
+def _redacted_key(a: dict[str, Any]) -> None:
+    a["feed"]["static_url"] = "https://ex.org/gtfs.zip?api_key=REDACTED"
+
+
+def _raw_signature(a: dict[str, Any]) -> None:
+    a["feed"]["static_url"] = "https://bucket.ex.org/gtfs.zip?X-Amz-Signature=abc123&v=2"
+
+
+def _user_info(a: dict[str, Any]) -> None:
+    a["feed"]["static_url"] = "https://user:pass@ex.org/gtfs.zip"
+
+
 def _this_site_subdomain(a: dict[str, Any]) -> None:
     a["feed"]["static_url"] = "https://files.gtfsscorecard.org/barrie.zip"
 
@@ -171,6 +187,12 @@ _SABOTAGE: dict[str, tuple[_Sabotage, _Landed]] = {
     "no-url": (_no_url, lambda a: "static_url" not in a["feed"]),
     "javascript-url": (_javascript, lambda a: a["feed"]["static_url"].startswith("javascript:")),
     "credentialed": (_credentialed, lambda a: a["fetch"]["auth_kind"] == "header"),
+    "redacted-key": (_redacted_key, lambda a: _query(a)["api_key"] == ["REDACTED"]),
+    "raw-signature": (
+        _raw_signature,
+        lambda a: _query(a)["X-Amz-Signature"] == ["abc123"],
+    ),
+    "user-info": (_user_info, lambda a: urlsplit(a["feed"]["static_url"]).password == "pass"),
     "this-site": (_this_site, lambda a: _host(a["feed"]["static_url"]) == _SITE_HOST),
     "this-site-subdomain": (
         _this_site_subdomain,
@@ -300,3 +322,11 @@ def test_the_site_host_check_compares_labels_not_substrings() -> None:
     assert _host("https://Files.GTFSScorecard.org/x.zip?u=https://ex.org/") == (
         "files.gtfsscorecard.org"
     )
+
+
+def test_a_harmless_query_keeps_the_link() -> None:
+    """The credential rule is by parameter name, so an ordinary query survives."""
+    artifact = _artifact()
+    artifact["feed"]["static_url"] = "https://ex.org/gtfs.zip?version=2&format=zip"
+    line = _line(_page(artifact))
+    assert 'href="https://ex.org/gtfs.zip?version=2&amp;format=zip"' in line

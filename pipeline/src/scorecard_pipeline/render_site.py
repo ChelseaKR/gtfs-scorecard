@@ -128,7 +128,7 @@ from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
 from .timemachine import Event, grade_story, history_events
 from .timemachine import finding_codes as _finding_codes
 from .tool_profiles import detect_tool
-from .url_redaction import redact_artifact
+from .url_redaction import is_credential_param, redact_artifact
 
 log = logging.getLogger(__name__)
 
@@ -3796,6 +3796,8 @@ def _public_source_url(artifact: dict[str, Any], withheld: bool = False) -> str 
       never reaches the artifact;
     - it does not point at this site, so the link can never be a copy of the
       feed hosted here;
+    - it has no user-info and no credential-like query parameter, redacted or
+      not (the names ``url_redaction.is_credential_param`` lists);
     - the caller has not withheld it (``withheld``): a publisher listed in
       history-export-exclusions.yaml, or a record whose structured license
       block says redistribution is not allowed.
@@ -3813,10 +3815,18 @@ def _public_source_url(artifact: dict[str, Any], withheld: bool = False) -> str 
     if isinstance(fetch, dict) and (fetch.get("auth") or fetch.get("auth_kind")):
         return None
     try:
-        host = (urlsplit(static_url).hostname or "").lower()
+        parts = urlsplit(static_url)
+        host = (parts.hostname or "").lower()
     except ValueError:
         return None
     if not host or host == _SITE_HOST or host.endswith("." + _SITE_HOST):
+        return None
+    # A URL that carries, or once carried, a credential (url_redaction.py, ADR
+    # 0066) is not a link a reader can follow: after redaction its key reads
+    # REDACTED, and before it the key must not be published at all.
+    if "@" in parts.netloc or any(
+        is_credential_param(pair.partition("=")[0]) for pair in parts.query.split("&") if pair
+    ):
         return None
     return static_url
 
