@@ -1,0 +1,64 @@
+table_name,column_name,data_type,description
+checks,agency_id,VARCHAR,"The feed record's id, the last part of its scorecard address."
+checks,agency_name,VARCHAR,The name the scorecard publishes for the record.
+checks,country,VARCHAR,ISO 3166-1 alpha-2 country; US for records that predate the field.
+checks,subdivision_code,VARCHAR,"ISO 3166-2 state, province, or territory; null when unknown."
+checks,subdivision_name,VARCHAR,The subdivision's display name; null when unknown.
+checks,mdb_id,VARCHAR,Mobility Database id from the registry; null when none is pinned.
+checks,ntd_id,VARCHAR,FTA National Transit Database reporter id from the registry; null when none.
+checks,snapshot_date,DATE,The date of this check (the dated artifact's name).
+checks,generated_at,VARCHAR,"When the artifact was written, ISO 8601 with offset."
+checks,recompute_kind,VARCHAR,freshness when this row is an intraday sweep that re-read only the calendar dates and carried the other categories forward; null for a full score.
+checks,feed_fetched_date,DATE,The date the scored bytes were downloaded; earlier than snapshot_date on a sweep row.
+checks,artifact_schema_version,VARCHAR,The per-agency artifact schema the row was read from.
+checks,rubric_version,VARCHAR,Rubric version the check was scored under.
+checks,scoring_profile_id,VARCHAR,Scoring profile id; compare grades only within one.
+checks,scoring_profile_rubric_version,VARCHAR,The profile's own rubric version.
+checks,validator_version,VARCHAR,MobilityData gtfs-validator release used.
+checks,reader_archive_profile,VARCHAR,How the archive was read: raw-v1 or flat-single-root-v1.
+checks,grade,VARCHAR,"Letter grade derived from score, as the public trend derives it."
+checks,score,DOUBLE,"Overall score, 0 to 100."
+checks,correctness,DOUBLE,Correctness category score; null when not measured.
+checks,freshness,DOUBLE,Freshness category score; null when not measured.
+checks,completeness,DOUBLE,Rider-experience completeness score; null when not measured.
+checks,realtime,DOUBLE,Realtime category score; null when the agency publishes no realtime feed.
+checks,categories_measured,INTEGER,How many of the four categories this check measured.
+checks,confidence_level,VARCHAR,"provisional, medium, or high; null before artifact schema 1.6."
+checks,days_until_expiry,INTEGER,Days of service left at the check; negative once expired; null when unknown.
+checks,effective_expiry_date,DATE,The earlier of feed_info end and the last service date; null when unknown.
+checks,expiry_status,VARCHAR,"current, expiring_soon, lapsed, stale, or unknown, from days_until_expiry."
+checks,service_horizon_status,VARCHAR,"within_review_threshold, unusually_distant, or unknown."
+checks,feed_sha256,VARCHAR,SHA-256 of the scored feed bytes.
+checks,feed_size_bytes,BIGINT,Size of the scored archive; null when not recorded.
+checks,feed_static_url,VARCHAR,"The configured feed URL at the time of the check; a credential-like query value (a key, token, or signature) reads REDACTED."
+checks,fetch_source,VARCHAR,"origin, mirror, or unknown: where the scored bytes came from."
+checks,fetch_final_url,VARCHAR,"The URL that actually served the bytes; null when not recorded. A credential-like query value (a key, token, or signature) reads REDACTED."
+checks,source_provenance,VARCHAR,"official, third_party, archive, or unverified; null before schema 1.18."
+checks,stop_count,INTEGER,Boardable stops read from stops.txt; null when not recorded.
+checks,primary_mode,VARCHAR,Trip-weighted primary GTFS mode; null before the mode profile existed.
+checks,finding_count,INTEGER,Rows in the findings table for this check.
+checks,top_fix_code,VARCHAR,The notice code ranked first among the fixes; null when none.
+checks,license_id,VARCHAR,License class from the registry's structured block; null when no block is on file.
+checks,license_status,VARCHAR,"unreviewed, needs_review, or reviewed; null when no block."
+checks,attribution_required,VARCHAR,"true, false, or unknown as the block records it; null when no block."
+checks,redistribution_allowed,VARCHAR,"true, false, or unknown as the block records it; null when no block."
+checks,share_alike,VARCHAR,"true, false, or unknown as the block records it; null when no block."
+checks,license_terms_url,VARCHAR,"The publisher's terms, when the block links them."
+checks,publisher_credit,VARCHAR,"The credit line the publisher asks for, when the block records one."
+checks,license_note,VARCHAR,The registry's prose note on the feed's terms; never a grant.
+checks,license_notice,VARCHAR,"The share-alike reuse notice when the block affirms one; null means no share-alike license is recorded, not that the license is known or permissive."
+findings,agency_id,VARCHAR,Joins to checks.agency_id.
+findings,snapshot_date,DATE,Joins to checks.snapshot_date.
+findings,category,VARCHAR,"correctness, freshness, completeness, or realtime."
+findings,finding_index,INTEGER,"Position within the category's finding list, from 0."
+findings,code,VARCHAR,The notice code: a validator notice or a scorecard_ finding.
+findings,severity,VARCHAR,"ERROR, WARNING, or INFO as the artifact recorded it."
+findings,count,BIGINT,Instances the finding counted; null when it has no count.
+findings,points,DOUBLE,Points the finding cost in its category; null when not recorded.
+findings,owner,VARCHAR,"Who the fix most likely belongs to, as the scorecard words it; null when absent."
+findings,top_fix_rank,INTEGER,"1, 2, or 3 when the finding is one of the check's top fixes; null otherwise."
+findings,reach_basis,VARCHAR,"What reach is counted against (stops, trips, routes, none); null before schema 1.19."
+findings,reach_affected,BIGINT,Instances affected; null when no share is countable.
+findings,reach_total,BIGINT,The published total the finding is counted against; null when none.
+findings,reach_share,DOUBLE,"affected / total, 0 to 1; null when no share is countable."
+findings,reach_reason,VARCHAR,"Why no share is given (feed_level, sampled_window, ...); null when one is."

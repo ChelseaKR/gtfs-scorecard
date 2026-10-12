@@ -40,8 +40,10 @@ means only that no share-alike license is recorded.
 
 from __future__ import annotations
 
+import csv
 import datetime as dt
 import hashlib
+import io
 import json
 import re
 import tempfile
@@ -50,6 +52,7 @@ from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
+from urllib.parse import unquote, urlsplit, urlunsplit
 
 import yaml
 
@@ -62,8 +65,10 @@ from .metrics import expiry_status, resolve_service_horizon_status
 from .publish import registered_agency_dirs
 from .score import published_overall
 
-#: The shape of the export, independent of the artifact schema it reads.
-TABLES_VERSION: Final = "1.0"
+#: The shape of the export, independent of the artifact schema it reads. 1.1
+#: (2026-10-11): credential-like query values in the two URL columns are
+#: replaced with ``REDACTED`` (``redact_url``).
+TABLES_VERSION: Final = "1.1"
 PRODUCT_NAME: Final = "GTFS Scorecard history tables"
 SOURCE_URL: Final = "https://gtfsscorecard.org"
 EXCLUSIONS_FILENAME: Final = "history-export-exclusions.yaml"
@@ -78,6 +83,18 @@ _CATEGORY_KEYS: Final = ("correctness", "freshness", "completeness", "realtime")
 _DATED_GLOB: Final = "[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"
 _AGENCY_ID: Final = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 _ISO_DATE: Final = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+#: Query parameter names whose value is a credential or a signature. A
+#: redirect to a presigned object (a publisher's S3 or GCS bucket) carries the
+#: temporary credentials it was signed with, and some publishers put an API
+#: key in the download URL itself. The value is replaced, the name is kept, so
+#: a reader can still see that the URL needed one.
+_CREDENTIAL_PARAM: Final = re.compile(
+    r"^(?:x-amz-(?:credential|signature|security-token)|x-goog-(?:credential|signature)|"
+    r"awsaccesskeyid|signature|sig|key|apikey|api[_-]key|token|access[_-]token|auth|"
+    r"authorization|(?:ocp-apim-)?subscription-key|client[_-]secret|secret|password)$",
+    re.IGNORECASE,
+)
+REDACTED: Final = "REDACTED"
 #: Every file in the zip carries this timestamp, so the archive's bytes depend
 #: on its contents alone.
 _ZIP_TIME: Final = (1980, 1, 1, 0, 0, 0)
@@ -186,14 +203,20 @@ CHECKS_COLUMNS: Final[tuple[Column, ...]] = (
     ),
     Column("feed_sha256", "VARCHAR", "SHA-256 of the scored feed bytes."),
     Column("feed_size_bytes", "BIGINT", "Size of the scored archive; null when not recorded."),
-    Column("feed_static_url", "VARCHAR", "The configured feed URL at the time of the check."),
+    Column(
+        "feed_static_url",
+        "VARCHAR",
+        "The configured feed URL at the time of the check; a credential-like query value "
+        "(a key, token, or signature) reads REDACTED.",
+    ),
     Column(
         "fetch_source", "VARCHAR", "origin, mirror, or unknown: where the scored bytes came from."
     ),
     Column(
         "fetch_final_url",
         "VARCHAR",
-        "The URL that actually served the bytes; null when not recorded.",
+        "The URL that actually served the bytes; null when not recorded. A credential-like "
+        "query value (a key, token, or signature) reads REDACTED.",
     ),
     Column(
         "source_provenance",
@@ -456,6 +479,31 @@ def _text_or_none(value: object) -> str | None:
     return None
 
 
+def redact_url(value: object) -> str | None:
+    """A URL with every credential-like query value replaced, or None.
+
+    Scheme, host, path, the order of the parameters and every other value are
+    kept exactly, so the URL still says where the bytes came from. Only the
+    values named by ``_CREDENTIAL_PARAM`` change, and a user-info part
+    (``user:password@``), which is a credential by definition, is dropped.
+    """
+    text = _text_or_none(value)
+    if text is None:
+        return None
+    parts = urlsplit(text)
+    netloc = parts.netloc.rpartition("@")[2]
+    if not parts.query:
+        return urlunsplit((parts.scheme, netloc, parts.path, "", parts.fragment))
+    pairs = []
+    for pair in parts.query.split("&"):
+        name, sep, _ = pair.partition("=")
+        if sep and _CREDENTIAL_PARAM.match(unquote(name)):
+            pairs.append(f"{name}={REDACTED}")
+        else:
+            pairs.append(pair)
+    return urlunsplit((parts.scheme, netloc, parts.path, "&".join(pairs), parts.fragment))
+
+
 def _date_or_none(value: object) -> str | None:
     text = _text_or_none(value)
     if text is None or not _ISO_DATE.fullmatch(text):
@@ -575,9 +623,9 @@ def check_row(
         "service_horizon_status": resolve_service_horizon_status(freshness_details, snapshot_date),
         "feed_sha256": _text_or_none(feed.get("sha256")),
         "feed_size_bytes": _int_or_none(feed.get("size_bytes")),
-        "feed_static_url": _text_or_none(feed.get("static_url")),
+        "feed_static_url": redact_url(feed.get("static_url")),
         "fetch_source": _text_or_none(fetch.get("source")) or "unknown",
-        "fetch_final_url": _text_or_none(fetch.get("final_url")),
+        "fetch_final_url": redact_url(fetch.get("final_url")),
         "source_provenance": _text_or_none(feed.get("source_provenance")),
         "stop_count": _int_or_none((artifact.get("geo") or {}).get("stop_count")),
         "primary_mode": _text_or_none(mode_profile.get("primary_mode")),
@@ -708,6 +756,27 @@ def render_dictionary() -> str:
     lines.append(f"Attribution: {DATA_ATTRIBUTION}.")
     lines.append("")
     return "\n".join(lines)
+
+
+#: The header of the data dictionary a marketplace listing carries
+#: (docs/data-marketplace.md). One row per column of both tables.
+DICTIONARY_CSV_HEADER: Final = ("table_name", "column_name", "data_type", "description")
+
+
+def render_dictionary_csv() -> str:
+    """The same column list as ``render_dictionary``, as CSV for a listing.
+
+    AWS Data Exchange takes one CSV data dictionary per data set (at most
+    1 MB). It is written from the same ``Column`` tuples as the Markdown
+    dictionary in the zip, so the two cannot disagree.
+    """
+    buffer = io.StringIO()
+    writer = csv.writer(buffer, lineterminator="\n")
+    writer.writerow(DICTIONARY_CSV_HEADER)
+    for table, columns in ((CHECKS_TABLE, CHECKS_COLUMNS), (FINDINGS_TABLE, FINDINGS_COLUMNS)):
+        for column in columns:
+            writer.writerow((table, column.name, column.type, column.meaning))
+    return buffer.getvalue()
 
 
 def _duckdb() -> Any:

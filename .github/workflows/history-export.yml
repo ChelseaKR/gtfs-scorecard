@@ -39,6 +39,8 @@ jobs:
   export:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    outputs:
+      month: ${{ steps.write.outputs.month }}
     permissions:
       contents: read
       id-token: write # read the artifact tree and write the export through AWS OIDC
@@ -158,6 +160,7 @@ jobs:
       # provenance file goes beside it so the owner can read what a month holds
       # without downloading the zip. Encrypted at rest like the stored orders.
       - name: Write the month's export to the private history prefix
+        id: write
         shell: bash
         env:
           ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
@@ -170,6 +173,26 @@ jobs:
           aws s3 cp ../history-out/PROVENANCE.json "s3://${ARTIFACTS_BUCKET}/history/${month}/PROVENANCE.json" \
             --content-type application/json --sse AES256 --only-show-errors
           echo "wrote history/${month}/history.zip" >> "$GITHUB_STEP_SUMMARY"
+          echo "month=${month}" >> "$GITHUB_OUTPUT"
+
+      # The marketplace listing (ADR 0065, docs/data-marketplace.md) delivers
+      # the same five files unzipped, so a subscriber can query the Parquet
+      # where it lands. Only once the owner has set ADX_DATA_SET_ID; until
+      # then this step is skipped and the run is what it was before.
+      - name: Write the unzipped tables for the marketplace revision
+        if: ${{ vars.ADX_DATA_SET_ID != '' }}
+        shell: bash
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+          MONTH: ${{ steps.write.outputs.month }}
+        run: |
+          set -euo pipefail
+          month="${MONTH}"
+          for name in checks.parquet findings.parquet DATA-DICTIONARY.md PROVENANCE.json LICENSE.md; do
+            aws s3 cp "../history-out/${name}" "s3://${ARTIFACTS_BUCKET}/history/${month}/tables/${name}" \
+              --sse AES256 --only-show-errors
+          done
+          echo "wrote history/${month}/tables/ (five files) for the marketplace revision" >> "$GITHUB_STEP_SUMMARY"
 
       # No upload-artifact step, on purpose: a run artifact of a public
       # repository is published, and this zip is the paid deliverable.
@@ -178,3 +201,80 @@ jobs:
         shell: bash
         run: |
           echo "::error::This month's history export did not complete. A buyer who checks out before the next successful run is told no build exists and their checkout is left unused; re-run this workflow on main."
+
+  # One new AWS Data Exchange revision for the month (ADR 0065,
+  # docs/data-marketplace.md). Runs only when the owner has created the data
+  # set and the product and set ADX_DATA_SET_ID; otherwise the job is skipped
+  # and this workflow is exactly the Stripe tier's monthly build. Its own role,
+  # separate from the export's: it can add a revision to the one data set and
+  # read history/*/tables/*, nothing else. It never creates or changes a
+  # product, an offer, or a price; those stay console steps for the owner.
+  marketplace:
+    needs: export
+    if: ${{ vars.ADX_DATA_SET_ID != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      id-token: write # assume the marketplace publishing role through AWS OIDC
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - name: Refuse to start without the publishing role
+        working-directory: ${{ github.workspace }}
+        shell: bash
+        env:
+          MARKETPLACE_AWS_ROLE_ARN: ${{ secrets.MARKETPLACE_AWS_ROLE_ARN }}
+          MONTH: ${{ needs.export.outputs.month }}
+        run: |
+          set -euo pipefail
+          if [ -z "${MARKETPLACE_AWS_ROLE_ARN}" ]; then
+            echo "::error::ADX_DATA_SET_ID is set but the MARKETPLACE_AWS_ROLE_ARN secret is not. See docs/data-marketplace.md."
+            exit 1
+          fi
+          if ! [[ "${MONTH}" =~ ^[0-9]{4}-(0[1-9]|1[0-2])$ ]]; then
+            echo "::error::The export job did not report the month it wrote."
+            exit 1
+          fi
+
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install the locked environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv sync --locked
+
+      - name: Authenticate to AWS (marketplace publishing role)
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
+        with:
+          role-to-assume: ${{ secrets.MARKETPLACE_AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+
+      # Creates the month's revision, imports the five files, checks that the
+      # revision holds exactly those five, and finalizes it. A month that is
+      # already published is reported and left alone; an unfinalized revision
+      # an interrupted run left is deleted and rebuilt.
+      - name: Publish the month as a new revision
+        shell: bash
+        env:
+          ADX_DATA_SET_ID: ${{ vars.ADX_DATA_SET_ID }}
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+          AWS_REGION_NAME: ${{ vars.AWS_REGION || 'us-west-2' }}
+          MONTH: ${{ needs.export.outputs.month }}
+        run: |
+          set -euo pipefail
+          uv run --with boto3 python -m scorecard_pipeline.marketplace_revision \
+            --data-set-id "${ADX_DATA_SET_ID}" --bucket "${ARTIFACTS_BUCKET}" \
+            --month "${MONTH}" --region "${AWS_REGION_NAME}" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Say that the revision was not published
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          echo "::error::This month's AWS Data Exchange revision was not published. Subscribers keep the previous month's build. Re-run this job on main; an unfinalized revision is rebuilt from the start."

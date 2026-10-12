@@ -34,7 +34,11 @@ from collections.abc import Callable
 from typing import Any
 
 from .instance import BASE_URL as DEFAULT_BASE_URL
-from .metrics import presented_freshness_summary, resolve_service_horizon_status
+from .metrics import (
+    expiry_status,
+    presented_freshness_summary,
+    resolve_service_horizon_status,
+)
 from .ntd import presented_readiness as presented_ntd_readiness
 
 PROTOCOL_VERSION = "2025-06-18"
@@ -179,6 +183,10 @@ def get_scorecard(fetch: Fetch, agency_id: str) -> dict[str, Any]:
             category["service_horizon_status"] = resolve_service_horizon_status(
                 details, art.get("snapshot_date")
             )
+            # service_horizon_status only flags an implausibly distant end date;
+            # it reads "within_review_threshold" for an expired feed too. The
+            # catalog's expiry bucket is what says whether the feed has lapsed.
+            category["expiry_status"] = expiry_status(details.get("days_until_expiry"))
             category["effective_expiry_date"] = details.get("effective_expiry_date")
         categories[key] = category
         if cat.get("status") != "measured":
