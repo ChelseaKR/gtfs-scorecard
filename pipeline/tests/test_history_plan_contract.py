@@ -338,7 +338,9 @@ def test_the_export_workflow_carries_no_buyer_data_and_touches_only_its_prefix()
     for line in text.splitlines():
         if "aws s3 cp" in line and "s3://" in line:
             assert "/history/${month}/" in line, line
-    assert text.count("aws s3 cp") == 2
+    # The zip, its provenance, and (only once the marketplace listing is on,
+    # ADR 0065) the same five files unzipped under the month's tables/ folder.
+    assert text.count("aws s3 cp") == 3
     assert "unzip -Z1" in text and "checks.parquet" in text and "findings.parquet" in text
     assert "deliver_to" not in text and "program_name" not in text and "session" not in text.lower()
 

@@ -27,23 +27,14 @@ the declared public surface).
 
 ## [Unreleased]
 
-### Security
+### Added
 
-- **Published feed URLs no longer carry credentials.** An artifact's
-  `fetch.final_url` and `feed.static_url` were published exactly as fetched.
-  When a feed redirects to a presigned object in someone else's bucket, the
-  recorded URL carried that object's temporary credential and signature
-  (`AWSAccessKeyId`, `Signature`, `x-amz-security-token`, `X-Amz-*`, `sig`,
-  `jwt`), and a few publishers put an API key in the download URL. One rule,
-  `pipeline/src/scorecard_pipeline/url_redaction.py`, now replaces those
-  query values with `REDACTED` and drops a `user:password@` part, from an
-  explicit, case-insensitive list. It runs where artifacts are written
-  (`publish.py`), where the site renderer reads them (so the catalog,
-  directory, API files, scorecard pages and JSON-LD `isBasedOn` inherit it),
-  in the dataset and global-coverage exports, and on every JSON file
-  `assemble_public_artifacts.sh` copies into the deployed site, which covers
-  artifacts written before this change. What the pipeline fetches is
-  unchanged. ADR 0066 records why committed history is not rewritten.
+- The history tables can be listed on AWS Data Exchange as a second storefront
+  (ADR 0065, `docs/data-marketplace.md`). Built and off: an owned data set and a
+  least-privilege publishing role behind `marketplace_enabled` in
+  `infra/artifacts`, and a `marketplace` job in `history-export.yml` that
+  publishes each monthly build as a new revision once `ADX_DATA_SET_ID` is set.
+  The listing's CSV data dictionary is generated from the export's column list.
 
 ### Changed
 
@@ -62,6 +53,29 @@ the declared public surface).
   the newest published Action release. `docs/ci-action.md` says that
   `v1.5.1` changes nothing the Action does and that the floating `v1` moved to
   it on 2026-10-11.
+- History tables version 1.1: a credential-like query value (an API key, a
+  token, or a presigned URL's signature and temporary credentials) in
+  `feed_static_url` or `fetch_final_url` reads `REDACTED`, and a user-info part
+  is dropped. The free site applies its own rule for the same values (ADR 0066,
+  under Security below).
+
+### Security
+
+- **Published feed URLs no longer carry credentials.** An artifact's
+  `fetch.final_url` and `feed.static_url` were published exactly as fetched.
+  When a feed redirects to a presigned object in someone else's bucket, the
+  recorded URL carried that object's temporary credential and signature
+  (`AWSAccessKeyId`, `Signature`, `x-amz-security-token`, `X-Amz-*`, `sig`,
+  `jwt`), and a few publishers put an API key in the download URL. One rule,
+  `pipeline/src/scorecard_pipeline/url_redaction.py`, now replaces those
+  query values with `REDACTED` and drops a `user:password@` part, from an
+  explicit, case-insensitive list. It runs where artifacts are written
+  (`publish.py`), where the site renderer reads them (so the catalog,
+  directory, API files, scorecard pages and JSON-LD `isBasedOn` inherit it),
+  in the dataset and global-coverage exports, and on every JSON file
+  `assemble_public_artifacts.sh` copies into the deployed site, which covers
+  artifacts written before this change. What the pipeline fetches is
+  unchanged. ADR 0066 records why committed history is not rewritten.
 
 ## [1.5.1] - 2026-10-09
 
