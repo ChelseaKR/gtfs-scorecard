@@ -712,6 +712,36 @@ def feed_change_date(history: list[dict[str, Any]] | None) -> str | None:
     return str(rows[index]["date"])
 
 
+# The date the scorecard template last changed what every agency page says,
+# deployed. Bump it in the change that does that, and only then: a sitemap
+# lastmod Google cannot verify against the page teaches it to ignore every
+# lastmod (docs/decisions/0067-agency-lastmod-and-moved-companion-pages.md).
+# 2026-10-06: "About this feed", the feed history table and the de-duplicated
+# finding handoff reached every scorecard (#501, #502).
+AGENCY_TEMPLATE_REVISED = "2026-10-06"
+
+
+def agency_page_lastmod(history: list[dict[str, Any]] | None) -> str:
+    """The sitemap ``<lastmod>`` for an agency page: the later of the day its
+    feed file last changed (``feed_change_date``) and the day the template last
+    changed every agency page. Both are days the page's content changed; the
+    daily check date, which moves whether or not anything did, is neither."""
+    dates = [
+        row["date"]
+        for row in (history or [])
+        if isinstance(row, dict)
+        and isinstance(row.get("date"), str)
+        and _ISO_DATE.fullmatch(row["date"])
+    ]
+    # A scorecard first published after the revision was never on the old
+    # template; its first check is when its content began.
+    candidates = [AGENCY_TEMPLATE_REVISED, min(dates, default=AGENCY_TEMPLATE_REVISED)]
+    changed = feed_change_date(history)
+    if changed is not None:
+        candidates.append(changed)
+    return max(candidates)
+
+
 def _agency_feed_events(artifact: dict[str, Any], history: list[dict[str, Any]]) -> list[Any]:
     """Grade/score/expiry events plus, when the latest run's export changed
     structurally (EXP-18), a synthetic ``export_change`` event naming what
@@ -11970,6 +12000,52 @@ def _write_removed_twin_redirects(
         )
 
 
+# The pages every scorecard links beside itself. When a scorecard moves, each
+# of their old addresses points at the successor's scorecard, which links its
+# own brief, board and (when there is one) clearance log. Not at the
+# successor's brief or board: those are noindex, and a redirect must land on a
+# page that can be indexed (the structural SEO contract's alias rule).
+_AGENCY_COMPANION_PAGES: tuple[tuple[str, str], ...] = (
+    ("brief/", "call-prep brief"),
+    ("board/", "board one-pager"),
+    ("fixes/", "clearance log"),
+)
+
+
+def _write_agency_subpage_redirects(
+    write: Callable[[str, str], None],
+    registry_by_id: dict[str, Agency],
+    retained_agency_redirects: dict[str, str],
+) -> None:
+    """Redirect a moved scorecard's brief, board and clearance-log URLs too.
+
+    A retired or removed id's scorecard already redirects, but the pages it
+    linked beside itself answered 404, and Search Console counts them: in a
+    2026-10-11 probe every brief, board and fixes URL of a redirected id was a
+    404. Each now redirects to the successor's scorecard and is recorded in the
+    redirect manifest, so the structural SEO gate validates it like any other
+    redirect. Kept out of ``render_site`` so the orchestrator's complexity does
+    not grow (docs/lint-complexity-ratchet.md).
+    """
+    for source_path, target_path in sorted(retained_agency_redirects.copy().items()):
+        target_id = target_path.strip("/").rsplit("/", 1)[-1]
+        successor = registry_by_id.get(target_id)
+        successor_name = successor.name if successor else target_id
+        for suffix, label in _AGENCY_COMPANION_PAGES:
+            companion = f"{source_path}{suffix}"
+            if companion in retained_agency_redirects:
+                continue
+            retained_agency_redirects[companion] = target_path
+            write(
+                f"{companion.lstrip('/')}index.html",
+                _redirect_page(
+                    target_path,
+                    f"{successor_name} {label}",
+                    link_label=successor_name,
+                ),
+            )
+
+
 def _remove_stale_agency_index_pages(page_root: Path) -> None:
     """Remove only generated numeric directory pages before rebuilding them."""
     if not page_root.exists():
@@ -12307,6 +12383,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # record. Their pages were indexed and still draw search traffic, so the
     # old URL points at the kept record's current scorecard instead of a 404.
     _write_removed_twin_redirects(write, registry_by_id, published_ids, retained_agency_redirects)
+    _write_agency_subpage_redirects(write, registry_by_id, retained_agency_redirects)
     write(
         "_meta/retained-agency-redirects.json",
         json.dumps(
@@ -12788,11 +12865,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 ),
                 f"{BASE_URL}/agency/{agency_id}/",
                 # The sitemap's <lastmod> is the date the published feed file
-                # last changed, as observed in the history. It is omitted when
-                # that is unknown. Never the snapshot date: every daily check
+                # last changed, as observed in the history, or the last
+                # template revision if later. Never the snapshot date: every daily check
                 # moves that, and it would tell crawlers 2,400 pages changed
                 # every day when most did not.
-                lastmod=feed_change_date(history),
+                lastmod=agency_page_lastmod(history),
             )
             # The named, dated badge the page's embed snippet points at. Written
             # beside the page so it lives and dies with it, and kept out of the

@@ -213,7 +213,12 @@ artifact and adds `service_horizon_status` so pages and API consumers can avoid
 presenting a very large countdown as evidence that the feed is actively
 maintained. Presentation and API builders derive the same status from dated
 legacy records whose explicit status is absent; records without usable date
-evidence remain unknown.
+evidence remain unknown. This status only detects an implausibly distant end
+date. It says nothing about expiry: a feed that ran out years ago still reads
+`within_review_threshold`. Whether a feed has expired is `expiry_status`
+(`current`, `expiring_soon`, `lapsed`, `stale`, or `unknown`), published beside
+it on catalog rows, the open dataset, the `api/v1/agencies.json` list, and the
+MCP scorecard's freshness block.
 
 ## Rider experience completeness (25%)
 

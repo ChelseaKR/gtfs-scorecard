@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from scorecard_pipeline.mcp_server import TOOLS, call_tool, handle_request
 
 _CATALOG = {
@@ -200,6 +202,31 @@ def test_get_scorecard_normalizes_legacy_embedded_countdown() -> None:
     assert freshness["service_horizon_status"] == "unusually_distant"
     assert "unusually distant" in freshness["summary"]
     assert "26834" not in json.dumps(card)
+
+
+@pytest.mark.parametrize(
+    ("days", "expected"),
+    [(-2381, "stale"), (-14, "lapsed"), (10, "expiring_soon"), (120, "current"), (None, "unknown")],
+)
+def test_get_scorecard_freshness_carries_expiry_status(days: int | None, expected: str) -> None:
+    # The horizon status reads "within_review_threshold" for an expired feed,
+    # so the freshness block also carries the catalog's expiry bucket.
+    artifact: dict[str, Any] = copy.deepcopy(_ARTIFACT)
+    artifact["categories"]["freshness"] = {
+        "status": "measured",
+        "score": 0.0 if days is not None and days <= 0 else 100.0,
+        "summary": "Service data window.",
+        "findings": [],
+        "details": {"days_until_expiry": days},
+    }
+
+    card = call_tool("get_scorecard", {"agency_id": "unitrans"}, lambda _url: artifact)
+    freshness = card["categories"]["freshness"]
+    assert freshness["expiry_status"] == expected
+    if days is not None:
+        assert freshness["service_horizon_status"] == "within_review_threshold"
+    # Only freshness carries it; other categories are unchanged.
+    assert "expiry_status" not in card["categories"]["correctness"]
 
 
 def test_tools_call_wraps_payload_and_errors_in_content() -> None:
