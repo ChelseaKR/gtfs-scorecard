@@ -2160,6 +2160,7 @@ def _latest_records(agency_ids: list[str] | None = None) -> list[dict[str, Any]]
 
     from .config import artifacts_dir
     from .publish import registered_agency_dirs
+    from .url_redaction import redact_artifact
 
     root = artifacts_dir()
     if not root.exists():
@@ -2176,6 +2177,9 @@ def _latest_records(agency_ids: list[str] | None = None) -> list[dict[str, Any]]
             art = _json.loads(latest.read_text())
         except (OSError, ValueError):
             continue
+        # These records feed public exports (the dataset and portfolio
+        # commands); an older artifact's URLs pass the one redaction rule.
+        redact_artifact(art)
         comp = art.get("categories", {}).get("completeness", {}).get("details", {})
         records.append(
             {

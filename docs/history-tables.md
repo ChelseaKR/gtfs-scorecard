@@ -62,6 +62,11 @@ artifacts under `data/artifacts`, joined on `agency_id` and `snapshot_date`:
   severity, instance count, points, its rank among the top fixes, and the
   reach numbers from the consequence block where the artifact has one.
 
+The two URL columns are references to the publisher's own download, never
+feed bytes. From tables version 1.1 a credential-like query value in either
+(an API key, a token, or a presigned URL's signature and temporary
+credentials) reads `REDACTED`, and a user-info part is dropped.
+
 Beside them: `DATA-DICTIONARY.md` (every column, its type, and what a null
 means), `PROVENANCE.json` (what was read, the snapshot date range, the
 artifact schema versions seen, the row counts, the SHA-256 of each table, and
@@ -145,6 +150,13 @@ Every step is an owner action; none is taken by automation or by an agent.
    `"Product"` to the `/data/history/` entry of `required_json_ld_types` in
    `site-seo.json` (the offers block is the page's Product node, and the
    deploy gate requires it only once the plan is on), and merge.
+
+## A second storefront
+
+The same files, at the same price per monthly build, can also be listed on
+AWS Data Exchange: [data-marketplace.md](data-marketplace.md) and
+[ADR 0065](decisions/0065-history-tables-on-aws-data-exchange.md). It is built
+and off until the owner registers as a seller.
 
 ## What stays free
 

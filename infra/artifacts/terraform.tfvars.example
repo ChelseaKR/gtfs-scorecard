@@ -7,3 +7,8 @@ github_repo = "ChelseaKR/gtfs-scorecard"
 # Set false only if this AWS account already has a GitHub OIDC provider
 # (token.actions.githubusercontent.com); an account may have just one.
 # create_oidc_provider = true
+
+# The history tables on AWS Data Exchange (docs/data-marketplace.md). Leave
+# false until the account is a qualified Data Exchange provider; true creates
+# one data set and the role history-export.yml's marketplace job assumes.
+# marketplace_enabled = false
