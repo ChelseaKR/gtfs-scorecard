@@ -66,9 +66,15 @@ def as_of_points(index: dict[str, Any], *, min_coverage: float = 0.8) -> list[di
         for v in agencies.values()
     ]
 
+    # Rows rescored under the current rubric from an earlier record
+    # (rescore_history.py) are counted per date, so a series that mixes them
+    # with native rows says how much of each point is rescored.
+    has_rescored = any("rescored_from_rubric" in h for history in sorted_histories for h in history)
+
     raw: list[dict[str, Any]] = []
     for date in all_dates:
         scores: list[float] = []
+        rescored = 0
         grades = dict.fromkeys(_GRADES, 0)
         expired = 0
         for sorted_history in sorted_histories:
@@ -76,6 +82,8 @@ def as_of_points(index: dict[str, Any], *, min_coverage: float = 0.8) -> list[di
             if latest is None or latest.get("score") is None:
                 continue
             scores.append(float(latest["score"]))
+            if latest.get("rescored_from_rubric"):
+                rescored += 1
             g = latest.get("grade")
             if g in grades:
                 grades[g] += 1
@@ -85,15 +93,16 @@ def as_of_points(index: dict[str, Any], *, min_coverage: float = 0.8) -> list[di
         if not scores:
             continue
         n = len(scores)
-        raw.append(
-            {
-                "date": date,
-                "agency_count": n,
-                "average_score": round(sum(scores) / n, 1),
-                "grade_distribution": grades,
-                "expired_pct": round(expired / n * 100, 1),
-            }
-        )
+        point: dict[str, Any] = {
+            "date": date,
+            "agency_count": n,
+            "average_score": round(sum(scores) / n, 1),
+            "grade_distribution": grades,
+            "expired_pct": round(expired / n * 100, 1),
+        }
+        if has_rescored:
+            point["rescored_agency_count"] = rescored
+        raw.append(point)
 
     if not raw:
         return []

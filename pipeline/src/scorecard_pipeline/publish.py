@@ -14,7 +14,7 @@ import functools
 import json
 import logging
 import sys
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
 from pathlib import Path
 from typing import Any
 
@@ -631,6 +631,72 @@ def enrich_index_history_provenance(index: dict[str, Any], root: Path | None = N
     return changed
 
 
+def _backfill_rows(
+    agency_dir: Path, agency_id: str, have: set[str], tail: str, skipped: dict[str, int]
+) -> list[dict[str, Any]]:
+    """History rows for mirrored dated records the index lacks (see below)."""
+    rows: list[dict[str, Any]] = []
+    for path in sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json")):
+        if path.stem in have:
+            continue
+        if path.stem > tail:
+            skipped["after_tail"] += 1
+            continue
+        artifact = _read_artifact(path)
+        try:
+            if artifact is None:
+                raise TypeError("unreadable")
+            matches = (
+                str(artifact["snapshot_date"]) == path.stem
+                and str(artifact["agency"]["id"]) == agency_id
+            )
+            row = _history_entry(artifact)
+        except (KeyError, TypeError, ValueError):
+            skipped["unreadable"] += 1
+            continue
+        if not matches:
+            skipped["mismatched"] += 1
+            continue
+        rows.append(row)
+    return rows
+
+
+def backfill_index_history(index: dict[str, Any], mirror: Path) -> dict[str, Any]:
+    """Restore index history rows from a local mirror of the S3 dated records.
+
+    Until the incremental-publish fix, every intraday re-score or freshness
+    sweep rebuilt an agency's index history from the dated files in a bounded
+    checkout, so rows whose dated record lived only in S3 were dropped from
+    index.json while the records themselves stayed in S3. This puts them back.
+
+    Only feed records already in the index are touched, and only for dates
+    with no row: an existing row is never replaced, and nothing after the
+    agency's current index tail is added (the tail is the published commit
+    pointer). A mirror file is used only when it parses, its path date equals
+    its ``snapshot_date``, and its agency id equals the directory name. Each
+    added row is exactly what publishing that record would have written
+    (:func:`_history_entry`). Returns counts; mutates ``index`` in place.
+    """
+    added = 0
+    agencies_changed = 0
+    skipped: dict[str, int] = {"unreadable": 0, "mismatched": 0, "after_tail": 0}
+    for agency_id, entry in (index.get("agencies") or {}).items():
+        history = entry.get("history") or []
+        agency_dir = mirror / str(agency_id)
+        if not history or not agency_dir.is_dir():
+            continue
+        have = {str(row.get("date")) for row in history}
+        tail = str(history[-1].get("date") or "")
+        new_rows = _backfill_rows(agency_dir, str(agency_id), have, tail, skipped)
+        if new_rows:
+            entry["history"] = merge_index_history(
+                history, new_rows, {str(row["date"]) for row in new_rows}
+            )
+            added += len(new_rows)
+            agencies_changed += 1
+    return {"rows_added": added, "feed_records_changed": agencies_changed, "skipped": skipped}
+
+
 def _indexable_agency_dirs(root: Path, withdrawn: Iterable[str]) -> list[Path]:
     """Registered agency directories, minus the ones whose grade is withdrawn.
 
@@ -802,6 +868,28 @@ def _reindex_artifact_sequence(
     return [artifacts[date] for date in sorted(artifacts)], present_dates
 
 
+def merge_index_history(
+    prior_history: Iterable[dict[str, Any]],
+    local_history: Iterable[dict[str, Any]],
+    present_dates: Collection[str],
+) -> list[dict[str, Any]]:
+    """One agency's index history: local dated evidence over the prior index.
+
+    ``present_dates`` are the dated files that exist locally, readable or not.
+    A prior row survives only when its date has no local file (the dated
+    object lives in S3 and was not hydrated); a local readable artifact always
+    wins for its date. Used by both index writers so an incremental publish and
+    a full reindex cannot disagree about which dates a feed has.
+    """
+    by_date = {
+        str(item.get("date")): item
+        for item in prior_history
+        if item.get("date") and str(item.get("date")) not in present_dates
+    }
+    by_date.update({str(item["date"]): item for item in local_history})
+    return [by_date[date] for date in sorted(by_date)]
+
+
 def rebuild_index() -> Path:
     """Rebuild index.json, and reconcile each agency's latest.json + badge, from
     every dated artifact on disk.
@@ -909,13 +997,7 @@ def rebuild_index() -> Path:
             # while index.json carries the compact complete trend. Preserve
             # entries whose dated file is simply absent locally; an unreadable
             # file that is present is still dropped so corruption stays visible.
-            by_date = {
-                str(item.get("date")): item
-                for item in prior_history
-                if item.get("date") and str(item.get("date")) not in present_dates
-            }
-            by_date.update({str(item["date"]): item for item in history})
-            merged_history = [by_date[date] for date in sorted(by_date)]
+            merged_history = merge_index_history(prior_history, history, present_dates)
             entry: dict[str, Any] = {"name": name, "history": merged_history}
             if operating_note:
                 entry["operating_note"] = operating_note
@@ -966,16 +1048,24 @@ def _update_index(agency_id: str, artifact: dict[str, Any]) -> None:
         _write_json(index_path, index)
         return
 
-    # Reconcile this agency's history from the dated artifacts actually on disk,
-    # rather than appending to whatever the index held. This keeps an incremental
-    # publish identical to a full rebuild_index for that agency, so deleted dates
-    # drop and the two index code paths can't disagree.
+    # Reconcile this agency's history from the dated artifacts on disk, and keep
+    # the index's own rows for dates whose dated file is simply not in this
+    # checkout, exactly as rebuild_index does. S3 is the durable dated store; a
+    # CI checkout holds only the cutover snapshot plus the days a workflow
+    # hydrated. Rebuilding from local files alone erased every S3-only row each
+    # time the intraday refresh re-scored or freshness-swept a feed. By
+    # 2026-10-12 index.json held only the checkout's cutover dates plus the last
+    # two days for every feed (173,581 rows gone), and the national trend had
+    # two dates left. A dated file that is present
+    # but unreadable is still dropped, so corruption stays visible.
     agency_dir = artifacts_dir() / agency_id
-    history = [
-        _history_entry(art)
-        for dated in sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"))
-        if (art := _read_artifact(dated)) is not None
+    dated_paths = sorted(agency_dir.glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"))
+    present_dates = {path.stem for path in dated_paths}
+    local_history = [
+        _history_entry(art) for dated in dated_paths if (art := _read_artifact(dated)) is not None
     ]
+    prior_history = index.get("agencies", {}).get(agency_id, {}).get("history", [])
+    history = merge_index_history(prior_history, local_history, present_dates)
     entry: dict[str, Any] = {
         "name": resolve_published_agency_name(
             agency_id,

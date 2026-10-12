@@ -667,6 +667,76 @@ def _current_rubric_history(history: list[dict[str, Any]]) -> list[dict[str, Any
     return current_producer_contract_suffix(history)
 
 
+def _rescored_trend(
+    art: Path,
+    index: dict[str, Any],
+    comparable_ids: set[str],
+    native_points: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    """The corpus trend with earlier-rubric records rescored under the current one.
+
+    Reads ``rescored-history.json`` (rescore_history.py) beside the index. Each
+    comparable feed's index history has its earlier-rubric rows replaced, date
+    for date, by rescored rows, and then goes through the same contract suffix
+    and coverage rule as the native series. A record that could not be
+    rescored keeps its old row, which still ends the feed's suffix, so no value
+    is carried across it. None when there is no usable file.
+    """
+    from .national_trend import as_of_points, trend_summary
+    from .rescore_history import (
+        RESCORED_HISTORY_FILENAME,
+        rescored_history_rows,
+        splice_rescored,
+    )
+
+    path = art / RESCORED_HISTORY_FILENAME
+    if not path.exists():
+        return None
+    try:
+        document = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        log.warning("ignoring unreadable %s: %s", path, exc)
+        return None
+    if not isinstance(document, dict):
+        return None
+    rows = rescored_history_rows(document)
+    if not rows:
+        return None
+    spliced = {
+        "agencies": {
+            agency_id: {
+                **entry,
+                "history": _current_rubric_history(
+                    splice_rescored(entry.get("history", []), rows.get(agency_id, {}))
+                ),
+            }
+            for agency_id, entry in index.get("agencies", {}).items()
+            if agency_id in comparable_ids
+        }
+    }
+    points = as_of_points(spliced)
+    reproduction = document.get("reproduction") or {}
+    checked = reproduction.get("native_records_checked")
+    exact = reproduction.get("native_records_exact")
+    reproduces = bool(
+        isinstance(checked, int)
+        and not isinstance(checked, bool)
+        and checked > 0
+        and exact == checked
+    )
+    return {
+        "rubric_version": document.get("rubric_version"),
+        "scoring_profile_id": document.get("scoring_profile_id"),
+        "method": document.get("method"),
+        "coverage": document.get("coverage"),
+        "reproduction": reproduction,
+        "reproduces_native_exactly": reproduces,
+        "native_points_since": native_points[0]["date"] if native_points else None,
+        "points": points,
+        "summary": trend_summary(points),
+    }
+
+
 _SHA256_HEX = re.compile(r"[0-9a-f]{64}")
 _ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 
@@ -8312,6 +8382,8 @@ def _render_pulse_page(
     improvers: list[dict[str, Any]] | None,
     ridership_impact: dict[str, Any] | None = None,
     histories: dict[str, list[dict[str, Any]]] | None = None,
+    *,
+    rescored_trend: dict[str, Any] | None = None,
 ) -> str:
     """The coverage overview (/pulse/): named changes and the corpus trend.
 
@@ -8332,7 +8404,7 @@ def _render_pulse_page(
             str(trend_points[0].get("date") or "").strip() if len(trend_points) == 1 else None
         )
         changes_content = _changes_sections(changes, baseline_date=baseline_date)
-        trend_content = _trend_sections(trend_points, trend_sum, improvers)
+        trend_content = _trend_sections(trend_points, trend_sum, improvers, rescored_trend)
     else:
         changes_content = (
             '<p class="page-lede">Named changes are unavailable until current-contract '
@@ -11788,65 +11860,172 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
     )
 
 
+def _trend_chart_and_table(points: list[dict[str, Any]]) -> tuple[str, str]:
+    """Sparkline and by-date table for a series of two or more points."""
+    scores = [float(p["average_score"]) for p in points]
+    lo, hi = min(scores), max(scores)
+    # The shared sparkline, autoscaled to the data range (y_min/y_max) so a
+    # few-point move is visible: a dot at each date carries a native hover
+    # tooltip (date and average), matching the per-agency chart, and the
+    # numbers also live in the aria-label and the by-date table below.
+    spark = _spark_svg(
+        [(str(p["date"]), p["average_score"]) for p in points],
+        aria_label=f"Covered-corpus average score by date (axis {lo:.1f} to {hi:.1f})",
+        w=640,
+        h=120,
+        pad=12,
+        y_min=lo,
+        y_max=hi,
+    )
+    # A visible range caption, since the line is autoscaled with no drawn axis;
+    # aria-hidden because the aria-label and table already carry these numbers.
+    axis = (
+        f'<p class="trend-axis" aria-hidden="true">Score axis {lo:.0f} to {hi:.0f}. '
+        f"{esc(str(points[0]['date']))} to {esc(str(points[-1]['date']))}.</p>"
+    )
+    rescored_col = any("rescored_agency_count" in p for p in points)
+    rows = "".join(
+        f"<tr><td>{esc(p['date'])}</td><td>{esc(p['average_score'])}</td>"
+        f"<td>{esc(p['agency_count'])}</td>"
+        + (f"<td>{esc(p.get('rescored_agency_count', 0))}</td>" if rescored_col else "")
+        + f"<td>{esc(p['expired_pct'])}%</td></tr>"
+        for p in reversed(points)
+    )
+    table = (
+        '<section class="feed-details"><h2 class="section-title">By date</h2>'
+        '<table class="leaderboard"><thead><tr><th>Date</th><th>Avg score</th>'
+        "<th>Feeds</th>"
+        + ("<th>Of which rescored</th>" if rescored_col else "")
+        + "<th>Expired</th></tr></thead>"
+        f"<tbody>{rows}</tbody></table></section>"
+    )
+    chart = (
+        '<section class="feed-details"><h2 class="section-title">Covered-corpus average '
+        f"score</h2><p>{spark}</p>{axis}</section>"
+    )
+    return chart, table
+
+
+def _trend_move(summary: dict[str, Any]) -> str:
+    delta = summary.get("score_delta")
+    return (
+        "held about steady"
+        if delta is None or abs(delta) < 0.1
+        else f"rose {delta} points"
+        if delta > 0
+        else f"slipped {abs(delta)} points"
+    )
+
+
+def _rescored_note(rescored: dict[str, Any]) -> str:
+    """One plain sentence on what the rescored points are and what they leave out."""
+    coverage = rescored.get("coverage") or {}
+    done = coverage.get("records_rescored")
+    left = coverage.get("records_not_rescored")
+    version = esc(str(rescored.get("rubric_version") or ""))
+    since = rescored.get("native_points_since")
+    since_text = f" before {esc(str(since))}" if since else ""
+    counts = (
+        f" {esc(done)} earlier records were rescored this way; {esc(left)} could not be, "
+        "because what they stored is not enough to apply the new rules, and they are left "
+        "out rather than estimated."
+        if isinstance(done, int) and isinstance(left, int)
+        else ""
+    )
+    return (
+        f"Points{since_text} use records from earlier rubric versions, rescored with the "
+        f"rubric {version} rules from what each record stored. No feed was downloaded "
+        f"again.{counts}"
+    )
+
+
+def _rescored_control_note(rescored: dict[str, Any]) -> str:
+    """What the native reproduction control found, in plain words."""
+    reproduction = rescored.get("reproduction") or {}
+    checked = reproduction.get("native_records_checked")
+    exact = reproduction.get("native_records_exact")
+    worst = reproduction.get("max_overall_difference")
+    if not isinstance(checked, int) or not isinstance(exact, int) or checked <= 0:
+        return ""
+    by_date = reproduction.get("native_average_by_date") or {}
+    same = sum(
+        1
+        for value in by_date.values()
+        if isinstance(value, dict)
+        and value.get("rescored_average") is not None
+        and value.get("rescored_average") == value.get("published_average")
+    )
+    text = (
+        f"As a check, the same method was run on the {checked:,} records the current rubric "
+        f"published itself: {exact:,} come out exactly as published."
+    )
+    if exact < checked and isinstance(worst, (int, float)):
+        text += (
+            f" The rest differ by at most {worst} point in the overall score, because "
+            "category scores are stored to one decimal."
+        )
+    if by_date:
+        text += (
+            f" On {same} of the {len(by_date)} dates those records cover, the national "
+            "average matches the published one to one decimal."
+        )
+    return text
+
+
 def _trend_sections(
     points: list[dict[str, Any]],
     summary: dict[str, Any],
     improvers: list[dict[str, Any]] | None = None,
+    rescored: dict[str, Any] | None = None,
 ) -> str:
     """The guarded corpus quality trend, inside the coverage page: the average score over
     time as an autoscaled line plus a by-date table and the 90-day improvers.
-    A measure of the whole corpus, not of any one agency; changes no grade."""
-    if len(points) >= 2:
-        scores = [float(p["average_score"]) for p in points]
-        lo, hi = min(scores), max(scores)
-        # The shared sparkline, autoscaled to the data range (y_min/y_max) so a
-        # few-point move is visible: a dot at each date carries a native hover
-        # tooltip (date and average), matching the per-agency chart, and the
-        # numbers also live in the aria-label and the by-date table below.
-        spark = _spark_svg(
-            [(str(p["date"]), p["average_score"]) for p in points],
-            aria_label=f"Covered-corpus average score by date (axis {lo:.1f} to {hi:.1f})",
-            w=640,
-            h=120,
-            pad=12,
-            y_min=lo,
-            y_max=hi,
-        )
-        # A visible range caption, since the line is autoscaled with no drawn axis;
-        # aria-hidden because the aria-label and table already carry these numbers.
-        axis = (
-            f'<p class="trend-axis" aria-hidden="true">Score axis {lo:.0f} to {hi:.0f}. '
-            f"{esc(str(points[0]['date']))} to {esc(str(points[-1]['date']))}.</p>"
-        )
-        rows = "".join(
-            f"<tr><td>{esc(p['date'])}</td><td>{esc(p['average_score'])}</td>"
-            f"<td>{esc(p['agency_count'])}</td><td>{esc(p['expired_pct'])}%</td></tr>"
-            for p in reversed(points)
-        )
-        table = (
-            '<section class="feed-details"><h2 class="section-title">By date</h2>'
-            '<table class="leaderboard"><thead><tr><th>Date</th><th>Avg score</th>'
-            "<th>Feeds</th><th>Expired</th></tr></thead>"
-            f"<tbody>{rows}</tbody></table></section>"
-        )
-        delta = summary.get("score_delta")
-        move = (
-            "held about steady"
-            if delta is None or abs(delta) < 0.1
-            else f"rose {delta} points"
-            if delta > 0
-            else f"slipped {abs(delta)} points"
-        )
+    A measure of the whole corpus, not of any one agency; changes no grade.
+
+    When earlier-rubric records have been rescored under the current rubric
+    (``rescored``) and that method reproduces every native current-rubric
+    record exactly, the longer rescored series is the one charted, with the
+    rescored share named on every row. If the control does not hold, the native
+    series stays the headline and the rescored one is shown apart, labeled.
+    """
+    rescored_points = list((rescored or {}).get("points") or [])
+    merged = bool(
+        rescored
+        and rescored.get("reproduces_native_exactly")
+        and len(rescored_points) > len(points)
+    )
+    apart = ""
+    if merged and rescored is not None:
+        shown, shown_summary = rescored_points, dict(rescored.get("summary") or {})
+    else:
+        shown, shown_summary = points, summary
+        if rescored is not None and len(rescored_points) >= 2:
+            r_chart, _r_table = _trend_chart_and_table(rescored_points)
+            r_summary = rescored.get("summary") or {}
+            apart = (
+                '<section class="feed-details"><h2 class="section-title">Earlier records '
+                f"rescored under rubric {esc(str(rescored.get('rubric_version') or ''))}</h2>"
+                f"<p>{_rescored_note(rescored)} {_rescored_control_note(rescored)} "
+                "Because that check is not exact for every record, this series is shown "
+                "apart from the one above rather than joined to it. "
+                f"Over it, the average {_trend_move(r_summary)} between "
+                f"{esc(str((r_summary.get('first') or {}).get('date')))} and "
+                f"{esc(str((r_summary.get('last') or {}).get('date')))}.</p>"
+                f"{r_chart}</section>"
+            )
+    if len(shown) >= 2:
+        chart, table = _trend_chart_and_table(shown)
         lead = (
             f"Across feed scorecards with one rubric, scoring profile, validator, and measured "
-            f"category set, the corpus average score {move} between "
-            f"{esc(summary['first']['date'])} and {esc(summary['last']['date'])} "
-            f"(now {esc(summary['last']['average_score'])})."
+            f"category set, the corpus average score {_trend_move(shown_summary)} between "
+            f"{esc(shown_summary['first']['date'])} and {esc(shown_summary['last']['date'])} "
+            f"(now {esc(shown_summary['last']['average_score'])})."
         )
-        chart = f'<section class="feed-details"><h2 class="section-title">Covered-corpus average score</h2><p>{spark}</p>{axis}</section>'
-    elif len(points) == 1:
+        if merged and rescored is not None:
+            lead += " " + _rescored_note(rescored)
+    elif len(shown) == 1:
         table = chart = ""
-        date = esc(str(points[0].get("date") or ""))
+        date = esc(str(shown[0].get("date") or ""))
         lead = (
             f"Comparable history under the current scoring contract begins on {date}. "
             "A trend appears after the corpus is checked on a later date. Rechecks on "
@@ -11857,6 +12036,7 @@ def _trend_sections(
         lead = (
             "A coverage trend appears here once the corpus has been checked on more than one day."
         )
+    chart += apart
 
     # Top improvers section
     if improvers:
@@ -13196,6 +13376,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     }
     trend_points = as_of_points(trend_index)
     trend_sum = trend_summary(trend_points)
+    # Earlier-rubric records rescored under the current rubric from stored data
+    # (rescore_history.py). Additive: `points` above keeps its meaning (records
+    # the current rubric produced), and the rescored series is published beside
+    # it with its method, coverage, and the native reproduction control.
+    rescored_trend = _rescored_trend(art, index, comparable_ids, trend_points)
     improvers: list[dict[str, Any]] = []
     write(
         "api/v1/trend.json",
@@ -13208,6 +13393,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 "points": trend_points,
                 "top_improvers": improvers,
                 "comparison": _comparison_metadata,
+                **({"rescored": rescored_trend} if rescored_trend else {}),
             },
             indent=2,
             sort_keys=True,
@@ -13406,7 +13592,14 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write(
         "pulse/index.html",
         _render_pulse_page(
-            board, changes, trend_points, trend_sum, improvers, ridership_impact, histories
+            board,
+            changes,
+            trend_points,
+            trend_sum,
+            improvers,
+            ridership_impact,
+            histories,
+            rescored_trend=rescored_trend,
         ),
         f"{BASE_URL}/pulse/",
     )

@@ -4189,6 +4189,52 @@ def _cmd_canary(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_backfill_index_history(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Restore index.json rows that bounded checkouts dropped (see publish.py)."""
+    from .config import artifacts_dir
+    from .publish import _write_json, backfill_index_history
+
+    index_path = Path(args.index) if args.index else artifacts_dir() / "index.json"
+    mirror = Path(args.mirror)
+    if not mirror.is_dir():
+        parser.error(f"mirror directory not found: {mirror}")
+    index = json.loads(index_path.read_text())
+    counts = backfill_index_history(index, mirror)
+    print(json.dumps(counts, indent=2, sort_keys=True))
+    if args.write:
+        _write_json(index_path, index)
+        print(f"wrote {index_path}")
+    else:
+        print("dry run: pass --write to update the index")
+    return 0
+
+
+def _cmd_rescore_history(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Rescore stored earlier-rubric records under the current rubric (offline)."""
+    from .config import artifacts_dir
+    from .rescore_history import RESCORED_HISTORY_FILENAME, build_rescored_history
+
+    mirror = Path(args.mirror)
+    if not mirror.is_dir():
+        parser.error(f"mirror directory not found: {mirror}")
+    index_path = Path(args.index) if args.index else artifacts_dir() / "index.json"
+    index = json.loads(index_path.read_text())
+    agencies = index.get("agencies") or {}
+    through = {
+        str(agency_id): str(entry["history"][-1]["date"])
+        for agency_id, entry in agencies.items()
+        if entry.get("history")
+    }
+    document = build_rescored_history(mirror, through, through=through)
+    out = Path(args.out) if args.out else index_path.parent / RESCORED_HISTORY_FILENAME
+    # Compact on purpose: ~150,000 rows. The file is a derived input to the
+    # trend, not a page anyone reads by eye.
+    out.write_text(json.dumps(document, sort_keys=True, separators=(",", ":")) + "\n")
+    print(json.dumps(document["coverage"], indent=2, sort_keys=True))
+    print(f"wrote {out}")
+    return 0
+
+
 def _cmd_reproduce(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .reproduce import ReproduceError, reproduce
 
@@ -4945,6 +4991,22 @@ def main(argv: list[str] | None = None) -> int:
     )
     campaign.add_argument("--out", help="write the campaign here instead of stdout")
     sub.add_parser("reindex", help="rebuild index.json from artifacts on disk")
+    backfill = sub.add_parser(
+        "backfill-index-history",
+        help="restore index.json rows from a local mirror of the stored dated records",
+    )
+    backfill.add_argument(
+        "--mirror", required=True, help="local copy of data/artifacts dated files"
+    )
+    backfill.add_argument("--index", help="index.json to update (default: the artifacts dir)")
+    backfill.add_argument("--write", action="store_true", help="write the index (default: dry run)")
+    rescore_hist = sub.add_parser(
+        "rescore-history",
+        help="rescore stored earlier-rubric records under the current rubric, offline",
+    )
+    rescore_hist.add_argument("--mirror", required=True, help="local copy of the dated records")
+    rescore_hist.add_argument("--index", help="index.json naming the feed records and their tails")
+    rescore_hist.add_argument("--out", help="output path (default: beside the index)")
     sub.add_parser("render-site", help="generate crawlable static HTML pages, sitemap, robots")
     sub.add_parser(
         "render-constants",
@@ -5350,6 +5412,8 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "rollups": _cmd_rollups,
         "campaign": _cmd_campaign,
         "reindex": _cmd_reindex,
+        "backfill-index-history": _cmd_backfill_index_history,
+        "rescore-history": _cmd_rescore_history,
         "render-site": _cmd_render_site,
         "render-constants": _cmd_render_constants,
         "render-measure": _cmd_render_measure,

@@ -6916,3 +6916,95 @@ def test_rt_page_dates_nothing_when_it_publishes_no_readings() -> None:
     assert "unavailable until current-contract checks" in html
     assert "observation date" not in html
     assert "readings were taken" not in html
+
+
+def _rescored_block(*, exact: int, checked: int, points: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "rubric_version": "1.4",
+        "coverage": {"records_rescored": 120, "records_not_rescored": 7},
+        "reproduction": {
+            "native_records_checked": checked,
+            "native_records_exact": exact,
+            "max_overall_difference": 0.1 if exact < checked else 0.0,
+            "native_average_by_date": {
+                "2026-10-02": {"rescored_average": 70.0, "published_average": 70.0}
+            },
+        },
+        "reproduces_native_exactly": exact == checked,
+        "native_points_since": "2026-10-02",
+        "points": points,
+        "summary": {
+            "score_delta": -1.0,
+            "first": {"date": points[0]["date"], "average_score": 71.0},
+            "last": {"date": points[-1]["date"], "average_score": 70.0},
+        },
+    }
+
+
+_NATIVE_POINTS = [
+    {"date": "2026-10-02", "average_score": 70.0, "agency_count": 10, "expired_pct": 5},
+    {"date": "2026-10-03", "average_score": 70.0, "agency_count": 10, "expired_pct": 5},
+]
+_NATIVE_SUMMARY = {
+    "score_delta": 0.0,
+    "first": {"date": "2026-10-02"},
+    "last": {"date": "2026-10-03", "average_score": 70.0},
+}
+_RESCORED_POINTS = [
+    {
+        "date": "2026-09-05",
+        "average_score": 71.0,
+        "agency_count": 9,
+        "expired_pct": 6,
+        "rescored_agency_count": 9,
+    },
+    {
+        "date": "2026-10-03",
+        "average_score": 70.0,
+        "agency_count": 10,
+        "expired_pct": 5,
+        "rescored_agency_count": 0,
+    },
+    {
+        "date": "2026-10-04",
+        "average_score": 70.0,
+        "agency_count": 10,
+        "expired_pct": 5,
+        "rescored_agency_count": 0,
+    },
+]
+
+
+def test_rescored_series_is_shown_apart_when_reproduction_is_not_exact() -> None:
+    from scorecard_pipeline.render_site import _trend_sections
+
+    rescored = _rescored_block(exact=95, checked=100, points=_RESCORED_POINTS)
+    html = _trend_sections(_NATIVE_POINTS, _NATIVE_SUMMARY, [], rescored)
+    # The headline stays on records the current rubric produced.
+    assert "between 2026-10-02 and 2026-10-03" in html
+    assert "Earlier records rescored under rubric 1.4" in html
+    assert "shown apart" in html
+    assert "95 come out exactly as published" in html
+    assert "at most 0.1 point" in html
+    assert "No feed was downloaded again" in html
+    assert "120 earlier records were rescored" in html and "7 could not be" in html
+    # The native table carries no rescored column.
+    assert "Of which rescored" not in html
+
+
+def test_rescored_series_becomes_the_chart_only_when_reproduction_is_exact() -> None:
+    from scorecard_pipeline.render_site import _trend_sections
+
+    rescored = _rescored_block(exact=100, checked=100, points=_RESCORED_POINTS)
+    html = _trend_sections(_NATIVE_POINTS, _NATIVE_SUMMARY, [], rescored)
+    assert "between 2026-09-05 and 2026-10-04" in html
+    assert "Of which rescored" in html
+    assert "Points before 2026-10-02 use records from earlier rubric versions" in html
+    assert "shown apart" not in html
+
+
+def test_trend_without_rescored_file_is_unchanged() -> None:
+    from scorecard_pipeline.render_site import _trend_sections
+
+    html = _trend_sections(_NATIVE_POINTS, _NATIVE_SUMMARY, [])
+    assert "rescored" not in html.lower()

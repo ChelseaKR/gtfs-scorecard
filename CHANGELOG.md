@@ -29,6 +29,15 @@ the declared public surface).
 
 ### Added
 
+- **Earlier records rescored under the current rubric, shown as their own
+  series.** `scorecard rescore-history` rescores rubric 1.1 to 1.3 records from
+  what each record stored, without downloading any feed again, and writes
+  `rescored-history.json` beside `index.json`. `api/v1/trend.json` gains an
+  additive `rescored` block (method, coverage by reason, the native
+  reproduction control, and the series). The coverage page shows it apart from
+  the native series unless rescoring reproduces every native record exactly.
+  ADR 0068.
+
 - The history tables can be listed on AWS Data Exchange as a second storefront
   (ADR 0065, `docs/data-marketplace.md`). Built and off: an owned data set and a
   least-privilege publishing role behind `marketplace_enabled` in
@@ -94,6 +103,17 @@ the declared public surface).
   unchanged. ADR 0066 records why committed history is not rewritten.
 
 ### Fixed
+
+- **The national trend kept two days of history.** "Is transit data getting
+  better?" (`/pulse/#trend`, `api/v1/trend.json`) showed only 2026-10-11 and
+  2026-10-12. Every intraday re-score and freshness sweep rebuilt a feed's
+  `index.json` history from the dated files in the CI checkout alone, so each
+  one dropped every row whose dated record lived only in S3 (173,581 rows by
+  2026-10-12). `publish._update_index` now keeps those rows, as
+  `rebuild_index` already did, through one shared `merge_index_history`.
+  `scorecard backfill-index-history` restores the lost rows from the stored
+  records, and the dispatch-only `trend-history-repair.yml` runs it against the
+  store. ADR 0068.
 
 - **The open dataset, `api/v1/agencies.json`, and the MCP scorecard say when a
   feed has expired.** `service_horizon_status` only flags an end date more than

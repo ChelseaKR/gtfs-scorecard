@@ -655,6 +655,49 @@ def test_reindex_preserves_s3_history_not_present_in_clean_checkout() -> None:
     assert dates == ["2026-06-16", "2026-06-17"]
 
 
+def test_incremental_publish_preserves_s3_history_not_present_locally() -> None:
+    """A re-score in a bounded checkout must not erase S3-only index rows.
+
+    Intraday refresh hydrates index.json plus today's and yesterday's dated
+    files, then re-scores and freshness-sweeps feeds through publish(). Each
+    publish used to rebuild the agency's history from local files alone, so
+    every older S3-only date vanished; by 2026-10-12 the national trend had two
+    dates left.
+    """
+    from scorecard_pipeline.publish import rebuild_index
+
+    for day, score in ((16, 70.0), (17, 75.0), (18, 80.0)):
+        publish(make_artifact(dt.date(2026, 6, day), score=score))
+    # The checkout no longer holds the two older dated files; S3 does.
+    for day in (16, 17):
+        (artifacts_dir() / "unitrans" / f"2026-06-{day}.json").unlink()
+
+    publish(make_artifact(dt.date(2026, 6, 19), score=85.0))
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    history = index["agencies"]["unitrans"]["history"]
+    assert [item["date"] for item in history] == [
+        "2026-06-16",
+        "2026-06-17",
+        "2026-06-18",
+        "2026-06-19",
+    ]
+    assert [item["score"] for item in history] == [70.0, 75.0, 80.0, 85.0]
+
+    # The full reindex that follows in the workflow agrees.
+    rebuild_index()
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    assert len(index["agencies"]["unitrans"]["history"]) == 4
+
+
+def test_incremental_publish_still_drops_an_unreadable_local_date() -> None:
+    """A dated file that is present but unreadable stays out of the history."""
+    publish(make_artifact(dt.date(2026, 6, 16), score=70.0))
+    (artifacts_dir() / "unitrans" / "2026-06-16.json").write_text("{not json")
+    publish(make_artifact(dt.date(2026, 6, 17), score=80.0))
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    assert [item["date"] for item in index["agencies"]["unitrans"]["history"]] == ["2026-06-17"]
+
+
 def test_reindex_preserves_authoritative_latest_when_current_dated_is_absent() -> None:
     """A skipped feed cannot roll back to the checkout's older cutover file."""
     from scorecard_pipeline.publish import rebuild_index
