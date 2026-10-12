@@ -45,6 +45,7 @@ from .ntd import (
 from .ntd import (
     assess as assess_ntd,
 )
+from .url_redaction import redact_url_text
 from .warehouse import to_parquet
 
 _TEXT_EXPORTS = (
@@ -434,7 +435,9 @@ def _validate_catalog_surfaces(
         if agency_id not in catalog:
             continue
         row = catalog[agency_id]
-        if row.get("feed_url") != agency.static_gtfs_url:
+        # The catalog publishes the configured URL through the redaction rule
+        # (ADR 0066), so compare against the registry URL in that same form.
+        if row.get("feed_url") != redact_url_text(agency.static_gtfs_url):
             raise DatasetReleaseError("catalog.json feed URL disagrees with the registry")
         location = resolve_published_location(
             registry_country=agency.country,

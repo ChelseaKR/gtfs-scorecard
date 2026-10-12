@@ -53,6 +53,7 @@ from .identity import resolve_published_agency_name
 from .metrics import expiry_status, resolve_service_horizon_status
 from .score import Scorecard
 from .site_shell import CATEGORY_LABELS
+from .url_redaction import redact_url_text
 
 log = logging.getLogger(__name__)
 
@@ -155,7 +156,10 @@ def _fetch_block(fetch: FetchResult) -> dict[str, Any]:
         "source": fetch.source,
         # A snapshot from before provenance recording has no final_url on disk;
         # the configured feed URL is the best available statement of the fetch.
-        "final_url": fetch.final_url or fetch.url,
+        # Published URLs pass through the one redaction rule (ADR 0066): a
+        # redirect to a presigned object carries its signature and temporary
+        # credential, and some publishers put an API key in the URL.
+        "final_url": redact_url_text(fetch.final_url or fetch.url),
         "user_agent": fetch.user_agent,
         "reader_archive_profile": fetch.reader_archive_profile,
     }
@@ -232,7 +236,7 @@ def build_artifact(
         "generated_at": generated_at.isoformat(timespec="seconds"),
         "snapshot_date": fetch.fetched_date.isoformat(),
         "feed": {
-            "static_url": fetch.url,
+            "static_url": redact_url_text(fetch.url),
             "sha256": fetch.sha256,
             "size_bytes": fetch.size_bytes,
             "license_note": agency.license_note,

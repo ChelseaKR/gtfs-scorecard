@@ -83,3 +83,12 @@ jq -r '.agencies | keys[]' "$index_path" | while IFS= read -r agency_id; do
     esac
   done
 done
+
+# Every JSON file that crossed the boundary above passes the one URL redaction
+# rule (src/scorecard_pipeline/url_redaction.py, ADR 0066). Artifacts written
+# before publish-time redaction, including the committed fallback snapshot,
+# can carry a presigned redirect's signature or a publisher's API key in a
+# recorded URL. Standard library only, so no pipeline environment is needed;
+# it prints counts, never a value.
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+python3 -I "$script_dir/../src/scorecard_pipeline/url_redaction.py" "$dest_root" --write

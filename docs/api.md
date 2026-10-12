@@ -239,7 +239,8 @@ Changelog:
               "operating_note": "optional curator-verified status; absent if unset" },
   "generated_at": "2026-06-12T13:25:01+00:00",   // when this grade was produced (retrieved_at in the catalog)
   "snapshot_date": "2026-06-12",
-  "feed": { "static_url": "...", "sha256": "...", "size_bytes": 0, "license_note": "...",
+  "feed": { "static_url": "...", // the configured feed URL; credential-like query values read REDACTED
+            "sha256": "...", "size_bytes": 0, "license_note": "...",
             "source_provenance": "official" }, // or archive, third_party, unverified
   "mode_profile": {
     "measured": true, "graded": false,
@@ -287,7 +288,9 @@ Changelog:
   "fetch": { "source": "origin",      // or "mirror" (MobilityData hosted copy); "unknown" for
                                       // snapshots downloaded before provenance recording
                                       // (fetch policy itself: gtfsscorecard.org/fetcher/)
-             "final_url": "...",      // the URL that actually served the graded bytes
+             "final_url": "...",      // the URL that actually served the graded bytes; a
+                                      // credential-like query value (a key, token, or
+                                      // presigned signature) reads REDACTED (ADR 0066)
              "user_agent": "...",     // the User-Agent presented to that server
              "max_attempts": 4,       // configured attempt ceiling; omitted when unknown
              "origin_error": "...",  // exception that forced the mirror; only on mirror fetches

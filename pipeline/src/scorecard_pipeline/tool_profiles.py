@@ -41,6 +41,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from .config import repo_root
+from .url_redaction import redact_url_text
 
 # How a fix reaches the published feed, per tool.
 #   hosted    — a service produces and hosts the feed; the agency asks them.
@@ -357,10 +358,15 @@ def _load_snapshot(path: Path) -> dict[str, tuple[str, str]]:
         url = str(record.get("url") or "")
         if not url:
             continue
-        index[url] = (
+        declaration = (
             str(record.get("publisher_name") or ""),
             str(record.get("publisher_url") or ""),
         )
+        index[url] = declaration
+        # A published artifact names the feed by its redacted URL (ADR 0066),
+        # so the declaration answers to that form too. A clean URL maps to
+        # itself and adds nothing.
+        index.setdefault(redact_url_text(url), declaration)
     return index
 
 
