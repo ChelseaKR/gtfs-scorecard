@@ -51,6 +51,7 @@ _SETUP = (_WEB / "bundle" / "setup" / "index.html").read_text()
 _BUNDLE_JS = (_WEB / "src" / "bundle.js").read_text()
 _REPORT_GOLDENS = _REPO / "pipeline" / "tests" / "goldens" / "report"
 _AGENCY_GOLDEN = _REPO / "pipeline" / "tests" / "goldens" / "agency" / "unitrans" / "index.html"
+_ROLLUP_GOLDEN = _REPO / "pipeline" / "tests" / "goldens" / "program" / "all" / "index.html"
 
 _KEY = "phc_TestKey0123456789abcdefghijklmnopqrstuv"  # gitleaks:allow (fixture key, not real)
 _PAGE_TYPES = ("home", "agency", "program", "bundle", "support", "fix", "directory", "other")
@@ -246,7 +247,7 @@ def test_the_shim_reports_only_controls_that_opt_in_by_name() -> None:
     ]
     assert [path.name for path in marked] == ["bundle.js"]
     # The one marked control rendered from Python: the link to /bundle/ in the
-    # program panel at the end of every agency scorecard (ADR 0058).
+    # program panel at the end of every program rollup page (ADR 0064).
     pipeline_src = _REPO / "pipeline" / "src" / "scorecard_pipeline"
     rendered = [
         path.name
@@ -277,8 +278,13 @@ def test_the_history_pointers_are_plain_links_that_opt_nothing_in() -> None:
     assert seen >= 6, f"only {seen} pointer links found across four pages; this proves little"
 
 
-def test_the_agency_program_panel_link_is_counted_and_disclosed() -> None:
-    page = _AGENCY_GOLDEN.read_text()
+def test_the_program_panel_link_is_counted_and_disclosed() -> None:
+    """The panel moved from agency scorecards to the rollup pages (ADR 0064).
+    The counted link moved with it: one on /program/all/, none on an agency's
+    scorecard, and the privacy statement names where it now is."""
+    agency_links = re.findall(r'<a [^>]*data-measure="([^"]*)"[^>]*>', _AGENCY_GOLDEN.read_text())
+    assert agency_links == [], "an agency scorecard still carries a counted link"
+    page = _ROLLUP_GOLDEN.read_text()
     links = re.findall(r'<a [^>]*data-measure="([^"]*)"[^>]*>', page)
     assert links == ["bundle_panel_click"]
     link = re.search(r'<a [^>]*data-measure="bundle_panel_click"[^>]*>', page)
@@ -290,7 +296,8 @@ def test_the_agency_program_panel_link_is_counted_and_disclosed() -> None:
     ]
     flat = " ".join(privacy.split())
     assert "It records two further events" in flat
-    assert "the link to the bundle page at the end of an agency's scorecard" in flat
+    assert "the link to the bundle page at the end of a program rollup page" in flat
+    assert "agency's scorecard" not in flat
 
 
 def test_the_page_families_the_shim_sends_are_the_ones_the_disclosure_names() -> None:

@@ -4,15 +4,14 @@ The program report bundle (ADR 0049) is the only thing on this site that costs
 money, and the site's credibility rests on two claims that a visibility change
 is the easiest way to break:
 
-1. **Agency-facing scoring is free.** An agency's call brief, its board
-   one-pager, and the self-contained report it hands a board carry no offer at
-   all. Its scorecard page carries exactly one, the program panel addressed to
-   people who support several agencies, placed after the evidence and the
-   standards section and never in the hero beside the grade (ADR 0058, which
-   narrowed the earlier "no offer anywhere on an agency page" rule). These
-   tests assert the absences and the one exception's shape, because an absence
-   is exactly what no accessibility scan, golden diff, or link checker will
-   notice going away.
+1. **Agency-facing scoring is free.** An agency's scorecard, its call brief,
+   its board one-pager, and the self-contained report it hands a board carry
+   no offer above the shared footer. From 2026-09-18 the scorecard carried one
+   program panel (ADR 0058); 0 of 2,945 sessions that landed on an agency page
+   reached /bundle/, and ADR 0064 moved the panel to the program rollup pages,
+   where the people it addresses already look. These tests assert the
+   absences and the panel's new shape, because an absence is exactly what no
+   accessibility scan, golden diff, or link checker will notice going away.
 2. **A price lives in web/bundle/plan.json and nowhere else.** A price copied
    into a template is a price that keeps selling after the plan changes. A
    price *generated* from that file into a delimited region, by
@@ -243,7 +242,7 @@ def test_the_history_tables_stay_out_of_the_shared_chrome_and_off_agency_pages()
     The shared nav and footer reach every page at once and stay as they were.
     An agency's scorecard, call brief, board one-pager, and clearance log name
     nothing about this tier, the way they name nothing about the bundle
-    outside the scorecard's program panel (ADR 0058). Swept over every agency
+    (ADR 0064 moved the program panel to the rollup pages). Swept over every agency
     golden rather than a list, so a new agency page family is covered the day
     it renders.
     """
@@ -612,61 +611,71 @@ def test_the_home_page_states_the_tier_as_a_section_not_a_passing_mention() -> N
 
 
 _PROGRAM_PANEL_RE = re.compile(
-    r'<section class="action-panel program-offer" aria-labelledby="program-offer-h">.*?</section>',
+    r'<section class="action-panel program-offer" aria-labelledby="bundle-h">.*?</section>',
     re.S,
 )
 
 
-def test_agency_pages_name_the_paid_tier_only_in_the_program_panel() -> None:
-    """The call brief and the on-site board one-pager are the free product and
-    name nothing paid above the shared footer. The scorecard page names it in
-    exactly one place, the program panel (ADR 0058), and that panel sits after
-    the standards section: below the grade, the fixes, and the evidence.
+def test_agency_pages_name_nothing_paid_above_the_footer() -> None:
+    """The scorecard, the call brief, and the on-site board one-pager are the
+    free product. Since ADR 0064 none of them names the paid tier above the
+    shared footer: the program panel the scorecard carried under ADR 0058 now
+    lives on the program rollup pages (the next test pins it there).
 
     Split on the footer rather than searching the whole document, or this test
-    would pass the moment the footer link were moved into the page body. The
-    panel is subtracted by its exact opening tag, once, so a second offer, or
-    a /bundle/ link typed anywhere else on the page, still fails.
+    would pass the moment the footer link were moved into the page body. Swept
+    over every agency golden, so a new agency page family is covered the day
+    it renders.
     """
-    for rel in (
-        "agency/unitrans/brief/index.html",
-        "agency/unitrans/board/index.html",
-        "agency/yolobus/brief/index.html",
-        "agency/yolobus/board/index.html",
-        "agency/barrie-transit/brief/index.html",
-        "agency/barrie-transit/board/index.html",
-    ):
-        html = (_GOLDENS / rel).read_text()
+    swept = 0
+    scorecards = 0
+    for path in sorted((_GOLDENS / "agency").rglob("*.html")):
+        rel = path.relative_to(_GOLDENS).as_posix()
+        html = path.read_text()
         head, sep, _footer = html.partition(_FOOTER_TAG)
-        assert sep, f"{rel}: no shared footer found; the split below proves nothing"
+        if not sep:
+            assert 'http-equiv="refresh"' in html, (
+                f"{rel}: no shared footer and not a redirect stub; the split proves nothing"
+            )
+            continue
+        swept += 1
         assert "/bundle/" not in head, (
-            f"{rel}: the paid tier is named on an agency's brief or board page. "
-            "Those stay free of any offer; the scorecard's program panel is the one place."
+            f"{rel}: the paid tier is named on an agency page. The program panel "
+            "lives on the program rollup pages (ADR 0064)."
         )
         assert "program-offer" not in head, f"{rel}: carries the program panel"
+        assert "For programs" not in head.partition('class="report-content"')[0], (
+            f"{rel}: the report route still lists a program stop"
+        )
+        if rel.count("/") == 2:
+            scorecards += 1
+    assert scorecards >= 3, f"only {scorecards} scorecard pages were swept"
+    assert swept >= 9, f"only {swept} agency pages were swept; this gate would prove little"
 
-    for rel in (
-        "agency/unitrans/index.html",
-        "agency/yolobus/index.html",
-        "agency/barrie-transit/index.html",
-    ):
-        html = (_GOLDENS / rel).read_text()
-        head, sep, _footer = html.partition(_FOOTER_TAG)
+
+def test_the_program_panel_sits_on_every_rollup_page_after_the_member_list() -> None:
+    """The panel's new home (ADR 0064): one per rollup page, after the member
+    list, with the plan's price, the counted link to /bundle/, the sample, and
+    the independence promise. /program/all/ is the rollup with fix-intent
+    search traffic; the per-program pages carry the same panel."""
+    rollups = sorted((_GOLDENS / "program").glob("*/index.html"))
+    assert {p.parent.name for p in rollups} >= {"all", "california"}, (
+        "the rollup goldens moved; this test would sweep nothing"
+    )
+    for path in rollups:
+        rel = path.relative_to(_GOLDENS).as_posix()
+        head, sep, _footer = path.read_text().partition(_FOOTER_TAG)
         assert sep, f"{rel}: no shared footer found; the split below proves nothing"
         panels = _PROGRAM_PANEL_RE.findall(head)
         assert len(panels) == 1, f"{rel}: expected exactly one program panel, found {len(panels)}"
-        assert "/bundle/" in panels[0], f"{rel}: the program panel no longer reaches /bundle/"
-        assert _INDEPENDENCE in panels[0], f"{rel}: the panel dropped the independence promise"
-        rest = _PROGRAM_PANEL_RE.sub("", head, count=1)
-        assert "/bundle/" not in rest, (
-            f"{rel}: the paid tier is named outside the program panel, "
-            "which is the only place on a scorecard page it may appear."
+        panel = panels[0]
+        assert 'data-measure="bundle_panel_click"' in panel, f"{rel}: the panel link is not counted"
+        assert '<a href="/bundle/sample/">' in panel, f"{rel}: the panel lost the sample"
+        assert _INDEPENDENCE in panel, f"{rel}: the panel dropped the independence promise"
+        assert ", paid once" in panel, f"{rel}: the panel quotes no plan"
+        assert head.index('id="members-h"') < head.index('id="bundle-h"'), (
+            f"{rel}: the program panel moved above the member list"
         )
-        assert head.index('id="standards-h"') < head.index('id="program-offer-h"'), (
-            f"{rel}: the program panel moved above the standards section, toward the grade"
-        )
-        hero_end = head.index('class="report-route"')
-        assert "/bundle/" not in head[:hero_end], f"{rel}: an offer reached the hero"
 
 
 def test_the_self_contained_board_report_carries_no_purchase_link() -> None:

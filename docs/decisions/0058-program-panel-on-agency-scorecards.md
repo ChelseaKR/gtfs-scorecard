@@ -1,6 +1,9 @@
 # ADR 0058: One program panel on each agency scorecard
 
-**Status:** Accepted (2026-09-18)
+**Status:** Accepted (2026-09-18). Placement amended 2026-10-11 by
+[ADR 0064](0064-program-offer-moves-to-program-pages.md): in 23 days 0 of
+2,945 sessions that landed on an agency page reached `/bundle/`, and the panel
+moved to the program rollup pages. The scorecard no longer carries it.
 
 ## Context
 
