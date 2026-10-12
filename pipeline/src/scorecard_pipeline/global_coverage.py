@@ -16,6 +16,7 @@ from typing import Any
 
 from . import DATA_ATTRIBUTION, DATA_LICENSE
 from .location import country_name, normalize_location
+from .url_redaction import redact_url_text
 
 GLOBAL_COVERAGE_SCHEMA_VERSION = "1.0"
 FRESHNESS_WINDOW_DAYS = 7
@@ -275,6 +276,10 @@ def _exception_rows(exceptions: dict[str, list[str]]) -> list[dict[str, Any]]:
     ]
 
 
+def _redacted(url: object) -> object:
+    return redact_url_text(url) if isinstance(url, str) else url
+
+
 def _feature_denominator(
     features: Mapping[str, Any], feature_rows: dict[str, dict[str, Any]], ids_valid: bool
 ) -> tuple[int | None, bool]:
@@ -335,7 +340,8 @@ def _assess_feed_record(
                 if directory_row is not None
                 else _field(agency, "subdivision_name", "")
             ),
-            "feed_url": _field(agency, "static_gtfs_url"),
+            # Published, so through the one redaction rule (ADR 0066).
+            "feed_url": _redacted(_field(agency, "static_gtfs_url")),
             "scorecard_url": (directory_row or {}).get("scorecard_url"),
             "retrieved_at": (directory_row or {}).get("retrieved_at"),
             "fresh": fresh,
