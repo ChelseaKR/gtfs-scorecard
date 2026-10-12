@@ -282,7 +282,12 @@ def test_the_publishing_role_is_least_privilege() -> None:
     # Exchange's own buckets, and only through Data Exchange.
     assert '"${aws_s3_bucket.artifacts.arn}/history/*/tables/*"' in text
     assert '"arn:aws:s3:::*aws-data-exchange*"' in text
-    assert "dataexchange.amazonaws.com" in text
+    called_via = re.findall(
+        r'variable\s*=\s*"aws:CalledVia"\s*\n\s*values\s*=\s*\[([^\]]*)\]', text
+    )
+    assert [re.findall(r'"([^"]*)"', values) for values in called_via] == [
+        ["dataexchange.amazonaws.com"]
+    ], "the write into Data Exchange's buckets must be conditioned on Data Exchange alone"
     # The same main-only trust as the module's other two roles.
     assert "assume_role_policy = data.aws_iam_policy_document.deploy_assume.json" in text
 
