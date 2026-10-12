@@ -70,7 +70,8 @@ List on AWS Data Exchange first. Snowflake is not built.
   records whose fetch URL carried an expired presigned signature and temporary
   credentials, and 7 with a publisher's API key in the configured URL. From
   tables version 1.1 those values read `REDACTED` in both storefronts'
-  files. The free dated artifacts are unchanged by this decision.
+  files. The free site's published URLs are redacted separately, by ADR
+  0066's shared rule; this export keeps its own `redact_url`.
 
 ## Consequences
 

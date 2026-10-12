@@ -56,7 +56,8 @@ the declared public surface).
 - History tables version 1.1: a credential-like query value (an API key, a
   token, or a presigned URL's signature and temporary credentials) in
   `feed_static_url` or `fetch_final_url` reads `REDACTED`, and a user-info part
-  is dropped. The free dated artifacts are unchanged.
+  is dropped. The free site applies its own rule for the same values (ADR 0066,
+  under Security below).
 
 ### Security
 
