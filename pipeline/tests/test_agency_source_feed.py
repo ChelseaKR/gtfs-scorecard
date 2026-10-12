@@ -47,6 +47,18 @@ _HREF_RE = re.compile(r'href="([^"]+)"')
 _JSONLD_RE = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
 _BARRIE_URL = "http://www.myridebarrie.ca/gtfs/Google_transit.zip"
 _BARRIE_MDB = "https://mobilitydatabase.org/feeds/gtfs/mdb-3"
+_SITE_HOST = "gtfsscorecard.org"
+
+
+def _host(url: str) -> str:
+    """The URL's hostname, parsed, never matched as a substring."""
+    return (urlsplit(url).hostname or "").lower()
+
+
+def _is_this_site(host: str) -> bool:
+    """This site or one of its subdomains, compared label by label."""
+    labels = host.lower().split(".")
+    return labels[-2:] == _SITE_HOST.split(".")
 
 
 def _artifact(agency_id: str = "barrie-transit") -> dict[str, Any]:
@@ -105,7 +117,8 @@ def test_every_golden_scorecard_links_its_feed_and_never_this_site(agency_id: st
     hrefs = _HREF_RE.findall(line)
     for href in hrefs:
         host = urlsplit(href).hostname or ""
-        assert host and not host.endswith("gtfsscorecard.org"), f"{agency_id}: {href}"
+        assert host, f"{agency_id}: {href} has no host"
+        assert not _is_this_site(host), f"{agency_id}: {href}"
     # The JSON-LD names the same source the reader sees.
     assert _dataset_jsonld(html)["isBasedOn"] == hrefs[0]
 
@@ -158,10 +171,10 @@ _SABOTAGE: dict[str, tuple[_Sabotage, _Landed]] = {
     "no-url": (_no_url, lambda a: "static_url" not in a["feed"]),
     "javascript-url": (_javascript, lambda a: a["feed"]["static_url"].startswith("javascript:")),
     "credentialed": (_credentialed, lambda a: a["fetch"]["auth_kind"] == "header"),
-    "this-site": (_this_site, lambda a: "//gtfsscorecard.org/" in a["feed"]["static_url"]),
+    "this-site": (_this_site, lambda a: _host(a["feed"]["static_url"]) == _SITE_HOST),
     "this-site-subdomain": (
         _this_site_subdomain,
-        lambda a: ".gtfsscorecard.org/" in a["feed"]["static_url"],
+        lambda a: _host(a["feed"]["static_url"]) == "files." + _SITE_HOST,
     ),
 }
 
@@ -181,7 +194,7 @@ def test_negative_control_no_public_source_renders_no_line_and_no_isbasedon(case
     assert "Source feed" not in html
     assert 'class="feed-source"' not in html
     # No Mobility Database link on its own either: no label without a link.
-    assert "mobilitydatabase.org/feeds/" not in html
+    assert not [h for h in _HREF_RE.findall(html) if _host(h) == "mobilitydatabase.org"]
     assert '"isBasedOn"' not in html
 
 
@@ -276,3 +289,14 @@ def test_a_known_mobility_database_id_links_its_feed_page(mdb_id: object, page: 
 )
 def test_an_unknown_mobility_database_id_is_omitted(mdb_id: object) -> None:
     assert _mdb_feed_page(mdb_id) is None
+
+
+def test_the_site_host_check_compares_labels_not_substrings() -> None:
+    """The guard the golden sweep above relies on must itself be able to fail."""
+    assert _is_this_site("gtfsscorecard.org")
+    assert _is_this_site("files.gtfsscorecard.org")
+    assert not _is_this_site("evilgtfsscorecard.org")
+    assert not _is_this_site("gtfsscorecard.org.example.com")
+    assert _host("https://Files.GTFSScorecard.org/x.zip?u=https://ex.org/") == (
+        "files.gtfsscorecard.org"
+    )
