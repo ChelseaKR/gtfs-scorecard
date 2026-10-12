@@ -1,0 +1,128 @@
+name: Trend history repair
+
+# Operator-only, dispatch-only. Two steps the national trend needs and no
+# scheduled workflow can do, because both read the whole dated store:
+#
+# 1. Restore index.json history rows. Until the incremental-publish fix
+#    (publish.merge_index_history), every intraday re-score or freshness sweep
+#    rebuilt a feed's index history from the bounded checkout, so rows whose
+#    dated record lived only in S3 dropped out of index.json. On 2026-10-12 the
+#    public trend had two dates left. `scorecard backfill-index-history` puts
+#    those rows back from the stored dated records; it never replaces a row and
+#    never adds one past a feed's current index tail.
+# 2. Rescore earlier-rubric records under the current rubric from what each
+#    record stored (`scorecard rescore-history`, rescore_history.py), and write
+#    the derived rescored-history.json beside index.json. The Pages deploy reads
+#    it for the trend. Dated records are never rewritten.
+#
+# The default is a dry run that prints the counts. `write: true` uploads the two
+# derived files. The job holds the shared artifact-publish lock, so it cannot
+# interleave with the daily, intraday, or targeted publishers.
+
+on:
+  workflow_dispatch:
+    inputs:
+      write:
+        description: "Upload the repaired index.json and rescored-history.json (default: dry run)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      id-token: write # AWS OIDC: read the dated store, write the two derived files
+    concurrency:
+      group: artifacts-publish
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - name: Install the pipeline
+        working-directory: pipeline
+        run: uv sync --locked
+
+      - name: Require the authoritative artifact bucket
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          if [ -z "$ARTIFACTS_BUCKET" ]; then
+            echo "::error title=ARTIFACTS_BUCKET is required::There is no dated store to repair from."
+            exit 1
+          fi
+
+      - name: Authenticate to AWS
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+
+      # About 270,000 small objects (measured 2026-10-12: 7.9 GB including
+      # retired directories). Raised concurrency keeps the copy to minutes.
+      - name: Mirror the dated records and the current index
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+          aws configure set default.s3.max_concurrent_requests 64
+          mirror="$RUNNER_TEMP/dated"
+          mkdir -p "$mirror"
+          aws s3 cp "s3://${ARTIFACTS_BUCKET}/data/artifacts/index.json" \
+            "$RUNNER_TEMP/index.json" --only-show-errors
+          aws s3 sync "s3://${ARTIFACTS_BUCKET}/data/artifacts" "$mirror" \
+            --exclude "*" --include "*/20[0-9][0-9]-[0-1][0-9]-[0-3][0-9].json" \
+            --only-show-errors
+          echo "dated records mirrored: $(find "$mirror" -name '*.json' | wc -l)"
+
+      - name: Restore dropped index rows
+        working-directory: pipeline
+        run: |
+          set -euo pipefail
+          uv run scorecard backfill-index-history \
+            --mirror "$RUNNER_TEMP/dated" --index "$RUNNER_TEMP/index.json" --write \
+            | tee "$RUNNER_TEMP/backfill.txt"
+
+      - name: Rescore earlier-rubric records
+        working-directory: pipeline
+        run: |
+          set -euo pipefail
+          uv run scorecard rescore-history \
+            --mirror "$RUNNER_TEMP/dated" --index "$RUNNER_TEMP/index.json" \
+            --out "$RUNNER_TEMP/rescored-history.json" | tee "$RUNNER_TEMP/rescore.txt"
+          jq '.reproduction' "$RUNNER_TEMP/rescored-history.json" | tee -a "$RUNNER_TEMP/rescore.txt"
+          {
+            echo "## Index rows restored"
+            echo '```'
+            cat "$RUNNER_TEMP/backfill.txt"
+            echo '```'
+            echo "## Rescore coverage and native reproduction"
+            echo '```'
+            cat "$RUNNER_TEMP/rescore.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the two derived files
+        if: ${{ inputs.write }}
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+          artifact_uri="s3://${ARTIFACTS_BUCKET}/data/artifacts"
+          # rescored-history.json first: index.json is the commit pointer.
+          aws s3 cp "$RUNNER_TEMP/rescored-history.json" \
+            "${artifact_uri}/rescored-history.json" \
+            --cache-control "max-age=300" --only-show-errors
+          aws s3 cp "$RUNNER_TEMP/index.json" "${artifact_uri}/index.json" \
+            --cache-control "max-age=300" --only-show-errors
+          echo "Uploaded. The next Pages deploy renders the repaired trend."
