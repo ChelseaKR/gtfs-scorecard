@@ -282,8 +282,15 @@ def test_repo_registry_includes_2026_10_coverage_cohort_and_repairs(
     for agency_id, ntd_id in cohort.items():
         agency = by_id[agency_id]
         assert agency.country == "US"
-        assert agency.is_official is True
         assert agency.is_canonical_feed
+        # Atlas-sourced records carry no Mobility Database id or official flag:
+        # the Atlas states neither, and nothing here is taken from the
+        # files.mobilitydatabase.org export.
+        if agency.mdb_id:
+            assert agency.mdb_id.isdigit()
+            assert agency.is_official is True
+        else:
+            assert agency.is_official is None
         assert agency.ntd_id == ntd_id
         assert agency.license_note  # absence of a stated license is recorded, not implied
         assert agency.static_gtfs_url.startswith("https://")

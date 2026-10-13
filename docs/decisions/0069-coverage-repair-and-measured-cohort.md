@@ -96,13 +96,11 @@ the open catalogs it draws from and with FTA's reporter roster.
 
 ## Not decided here
 
-- Whether the daily fetcher reads robots.txt, and whether it keeps the browser
-  User-Agent. Both are open in `docs/mobility-database-access-review.md`, and
-  the 39 percent figure above is the cost of the strictest answer.
-- Whether `supersessions` keeps reading `files.mobilitydatabase.org/feeds_v2.csv`
-  on its weekly schedule. That host's robots.txt disallows every path. Against
-  the compliant export the repoint finds 19 candidates; against the v2 export,
-  33. The sanctioned route is the Mobility Feed API with a maintainer token.
+- The daily fetcher's User-Agent and robots handling, and the weekly
+  `supersessions` step's catalog source. The maintainer decided both on
+  2026-10-13 (an identifying User-Agent, obey robots.txt with a short tested
+  allowlist for object stores and API hosts, and the Mobility Database API in
+  place of `files.mobilitydatabase.org`). They land in a separate change.
 - How many more NTD-reporter cohorts to add, and in what order. The measurement
   that sizes them is in the pull request for this change.
 - Twelve agencies carry two live records where the catalog's redirect joins
