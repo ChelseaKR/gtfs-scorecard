@@ -35,17 +35,41 @@ jobs:
       - run: uv sync --locked
         working-directory: pipeline
 
+      # ADR 0070: the catalog is read only through the Mobility Database API.
+      # Without MOBILITY_FEED_API_TOKEN the update pauses here and says so; it
+      # never falls back to files.mobilitydatabase.org, whose robots.txt
+      # disallows every path, or to any other source.
+      - name: Check that the Mobility Database API token is configured
+        id: token
+        env:
+          MOBILITY_FEED_API_TOKEN: ${{ secrets.MOBILITY_FEED_API_TOKEN }}
+        run: |
+          if [ -z "$MOBILITY_FEED_API_TOKEN" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            msg="Catalog update paused: the MOBILITY_FEED_API_TOKEN secret is not set. Nothing was read and nothing changed. Set it to resume (ADR 0070)."
+            echo "::warning title=Catalog update paused::$msg"
+            echo "$msg" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Check expired feeds against the Mobility Database
+        if: steps.token.outputs.configured == 'true'
         working-directory: pipeline
-        run: uv run scorecard discover --expired --apply --out ../docs/feed-discovery.md
+        env:
+          MOBILITY_FEED_API_TOKEN: ${{ secrets.MOBILITY_FEED_API_TOKEN }}
+        run: uv run scorecard discover --catalog api --expired --apply --out ../docs/feed-discovery.md
 
       # The catalog also retires whole feed records and names what replaced
       # them. Left unread, the retired record keeps publishing a current grade
       # beside its successor and one agency carries two. Same review path as
       # the moved-URL check: the edit lands on a branch, a human merges it.
       - name: Check tracked records against the catalog's own retirements
+        if: steps.token.outputs.configured == 'true'
         working-directory: pipeline
-        run: uv run scorecard supersessions --apply --out ../docs/feed-supersessions.md
+        env:
+          MOBILITY_FEED_API_TOKEN: ${{ secrets.MOBILITY_FEED_API_TOKEN }}
+        run: uv run scorecard supersessions --catalog api --apply --out ../docs/feed-supersessions.md
 
       # Report-only: orphaned artifact directories (agency removed from the
       # registry, pages still live). Deletion stays a curator decision per

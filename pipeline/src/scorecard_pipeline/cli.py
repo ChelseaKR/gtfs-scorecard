@@ -52,6 +52,7 @@ import jsonschema
 import requests
 
 from .agencies import AgencyConfigError, load_agencies
+from .catalog_api import CatalogPausedError
 from .config import AGENCIES, Agency, current_agency_ids, raw_dir, repo_root, utc_today
 from .constants_export import GRADE_RANK
 from .fetch import FetchResult, fetch_static, prepare_reader_archive
@@ -73,7 +74,7 @@ from .worklock import heavy_section, outside_heavy_section
 
 if TYPE_CHECKING:  # imported lazily at runtime, inside the commands that use it
     from .liveness import LivenessRecord
-    from .mobilitydb import FeedMatch
+    from .mobilitydb import CatalogFeed, FeedMatch
 
 log = logging.getLogger(__name__)
 
@@ -986,6 +987,13 @@ def _liveness_unchanged(agency_id: str) -> bool:
     state_path = repo_root() / "data" / "liveness.json"
     state = load_state(state_path)
     prev = state.get(agency_id)
+    from .robots_policy import shared_checker
+
+    if not shared_checker().check(agency.static_gtfs_url).allowed:
+        # ADR 0070: no conditional GET either. Score it, so the fetch records
+        # the refusal as "not fetched" with its reason.
+        log.info("Re-scoring %s: robots.txt refuses the feed URL", agency_id)
+        return False
     record, classification = check_feed(agency.static_gtfs_url, prev)
     state[agency_id] = record
     save_state(state_path, state)
@@ -1007,6 +1015,23 @@ def _log_run_failure(agency_id: str, exc: Exception, *, single: bool) -> None:
         log.error("%s: %s", agency_id, exc)
     else:
         log.exception("%s: pipeline run failed", agency_id)
+
+
+def _unreachable_reason(exc: Exception) -> str | None:
+    """The fixed reason for an unreachable outcome that is ours, not the feed's.
+
+    A missing credential is our configuration (#371) and a robots.txt refusal
+    is our policy (ADR 0070). Naming them lets /status/ and the operator tell
+    either apart from a publisher outage. Anything else is None.
+    """
+    from .feed_auth import CredentialNotConfiguredError
+    from .robots_policy import RobotsRefusedError
+
+    if isinstance(exc, CredentialNotConfiguredError):
+        return CredentialNotConfiguredError.reason
+    if isinstance(exc, RobotsRefusedError):
+        return exc.reason
+    return None
 
 
 def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
@@ -1076,17 +1101,9 @@ def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             failures += 1
             _log_run_failure(agency_id, exc, single=len(targets) == 1)
             if outcome_out:
-                from .feed_auth import CredentialNotConfiguredError
                 from .run_summary import AgencyOutcome, append_outcome
 
-                # A missing credential is our configuration, not the feed's
-                # fault (#371): name that reason so /status/ and the operator
-                # can tell it apart from a publisher outage.
-                reason = (
-                    CredentialNotConfiguredError.reason
-                    if isinstance(exc, CredentialNotConfiguredError)
-                    else None
-                )
+                reason = _unreachable_reason(exc)
                 append_outcome(
                     outcome_out,
                     AgencyOutcome(
@@ -1720,20 +1737,44 @@ def _report_discovery(
     return appliable
 
 
+# Exit code for "the catalog update is paused" (no API token): distinct from a
+# failure (1) and from the single-agency skip (2) so a workflow can say so.
+CATALOG_PAUSED_EXIT = 3
+
+
+def _catalog_feeds(catalog: str | None, default_url: str) -> list[CatalogFeed]:
+    """Catalog rows from the API (``--catalog api``), a local CSV, or a CSV URL.
+
+    ``api`` reads the Mobility Database API and raises ``CatalogPausedError``
+    before any request when the token is missing (ADR 0070). It never falls
+    back to another source. A URL on a host that disallows us is refused by
+    ``fetch_catalog``.
+    """
+    from .mobilitydb import fetch_catalog, parse_catalog
+
+    if catalog == "api":
+        from .catalog_api import load_api_catalog
+
+        return load_api_catalog()
+    source = catalog or default_url
+    if source.startswith(("http://", "https://")):
+        return parse_catalog(fetch_catalog(source))
+    return parse_catalog(Path(source).read_text())
+
+
 def _cmd_discover(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .config import repo_root
     from .mobilitydb import (
         DEFAULT_CATALOG_URL,
         apply_replacements,
-        fetch_catalog,
         find_replacements,
-        parse_catalog,
     )
 
-    source = args.catalog or DEFAULT_CATALOG_URL
-    is_url = source.startswith(("http://", "https://"))
-    csv_text = fetch_catalog(source) if is_url else Path(source).read_text()
-    feeds = parse_catalog(csv_text)
+    try:
+        feeds = _catalog_feeds(args.catalog, DEFAULT_CATALOG_URL)
+    except CatalogPausedError as paused:
+        log.warning("%s", paused)
+        return CATALOG_PAUSED_EXIT
 
     # Which tracked agencies to check. Default to the expired ones, since a
     # current feed's URL is by definition still working; --all checks every one.
@@ -1790,18 +1831,17 @@ def _cmd_supersessions(args: argparse.Namespace, parser: argparse.ArgumentParser
     from .mobilitydb import (
         DEFAULT_PROPOSAL_CATALOG_URL,
         apply_supersessions,
-        fetch_catalog,
         find_supersessions,
         hold_for_review,
-        parse_catalog,
         render_supersessions_md,
     )
     from .supersession_review import REVIEW_FILENAME, read_review
 
-    source = args.catalog or DEFAULT_PROPOSAL_CATALOG_URL
-    is_url = source.startswith(("http://", "https://"))
-    csv_text = fetch_catalog(source) if is_url else Path(source).read_text()
-    feeds = parse_catalog(csv_text)
+    try:
+        feeds = _catalog_feeds(args.catalog, DEFAULT_PROPOSAL_CATALOG_URL)
+    except CatalogPausedError as paused:
+        log.warning("%s", paused)
+        return CATALOG_PAUSED_EXIT
     found, unresolved = find_supersessions(feeds, AGENCIES.values())
     superseded, held = hold_for_review(found, read_review(repo_root()))
     report = render_supersessions_md(

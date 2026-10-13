@@ -154,10 +154,28 @@ def test_parse_catalog_keeps_gtfs_rows_only() -> None:
     assert types["101"] == "gtfs-rt"
 
 
-def test_v2_source_is_separate_from_legacy_operational_default() -> None:
-    assert DEFAULT_PROPOSAL_CATALOG_URL == MOBILITY_DATABASE_FEEDS_V2_URL
+def test_no_default_catalog_reads_the_disallowed_v2_host() -> None:
+    """ADR 0070: files.mobilitydatabase.org disallows every path in robots.txt."""
+    assert DEFAULT_PROPOSAL_CATALOG_URL == LEGACY_MOBILITY_DATABASE_CATALOG_URL
     assert DEFAULT_CATALOG_URL == LEGACY_MOBILITY_DATABASE_CATALOG_URL
-    assert DEFAULT_PROPOSAL_CATALOG_URL != DEFAULT_CATALOG_URL
+    assert "files.mobilitydatabase.org" in MOBILITY_DATABASE_FEEDS_V2_URL
+    assert "files.mobilitydatabase.org" not in DEFAULT_PROPOSAL_CATALOG_URL
+
+
+def test_a_catalog_url_on_the_disallowed_host_is_refused_before_any_request(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import mobilitydb as m
+
+    calls: list[str] = []
+    monkeypatch.setattr(m, "safe_get", lambda url, **kw: calls.append(url) or b"id\n")
+    with pytest.raises(ValueError, match="disallows automated access"):
+        fetch_catalog_bytes(MOBILITY_DATABASE_FEEDS_V2_URL)
+    assert calls == []
+    # Negative control: the same stub serves an allowed host, so the refusal
+    # above is the host rule and not a broken stub.
+    assert fetch_catalog_bytes("https://example.org/catalog.csv") == b"id\n"
+    assert calls == ["https://example.org/catalog.csv"]
 
 
 def test_v2_fixture_has_exact_schema_and_maps_supported_fields() -> None:
@@ -490,7 +508,8 @@ def test_catalog_fetch_exposes_exact_bytes_for_one_fetch_parse_and_hash(
 
     calls: list[tuple[str, int, int]] = []
 
-    def fake_safe_get(url: str, *, timeout: int, max_bytes: int) -> bytes:
+    def fake_safe_get(url: str, *, timeout: int, max_bytes: int, headers: dict[str, str]) -> bytes:
+        assert "Mozilla" not in headers["User-Agent"]
         calls.append((url, timeout, max_bytes))
         return b"id,data_type\nsource,gtfs\n"
 
