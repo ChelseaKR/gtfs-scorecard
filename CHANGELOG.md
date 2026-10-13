@@ -29,6 +29,24 @@ the declared public surface).
 
 ### Added
 
+- **Retired feeds follow the catalog to their successor.** `scorecard
+  supersessions` now proposes a repoint when a tracked record's catalog record
+  is retired into one current record nobody tracks: the record keeps its page
+  and history, and its feed URL and catalog id move to the successor. Each
+  proposal is held, with the reason, when the successor is ambiguous, keyed,
+  looks like a different agency, is pinned by a curator note, or sits on a host
+  whose robots.txt refuses us (`robots_policy.py`, one request per origin, an
+  identifying User-Agent). A retired alias of the same record does not
+  block the move, which fixes Stanislaus Regional Transit being graded on a
+  feed that expired in 2020 while its alias held the current one. Applied once
+  by hand for Kansas City, Chattanooga, Richmond, Virginia Breeze, Monroe
+  County, Birmingham, Stanislaus and Thousand Oaks. ADR 0069.
+- **23 more US feed records**, all public operators no record tracked: 16
+  Pennsylvania NTD reporters from the Transitland Atlas, plus Manchester,
+  Charlottesville, Danville's fixed-route feed, two Golden Crescent feeds,
+  Jefferson County NY and Jackson County IL. Each host's robots.txt was read
+  first and each feed was valid and current when fetched. ADR 0069.
+
 - **Earlier records rescored under the current rubric, shown as their own
   series.** `scorecard rescore-history` rescores rubric 1.1 to 1.3 records from
   what each record stored, without downloading any feed again, and writes
