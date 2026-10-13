@@ -759,3 +759,16 @@ agencies:
     static_gtfs_url: https://passio3.com/senecanation/passioTransit/gtfs/google_transit.zip
     mdb_id: ntd-22929
     license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Mobility Database mdb-3392, active and official, not yet tracked.
+  # The catalog's license link (proxy.busone.app/cotral/readme) is an unrelated document, so it is not recorded.
+  # Robots.txt checked; fetched with an honest User-Agent, valid and current.
+  - id: jefferson-county-public-transit-jcpt
+    name: Jefferson County Public Transit (JCPT)
+    country: US
+    subdivision_code: US-NY
+    subdivision_name: New York
+    is_official: true
+    static_gtfs_url: https://feeds.gtfsfoundry.com/feeds/JCPT-NY-045/static.zip
+    mdb_id: 3392
+    license_note: No stated data license in the source catalog; verify before publishing.

@@ -74,12 +74,13 @@ agencies:
     mdb_id: 506
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-523 is deprecated and redirects to mdb-3460; the feed URL follows it (ADR 0069).
   - id: monroe-county-transportation-authority-mcta
     name: Monroe County Transportation Authority (MCTA)
     subdivision_code: US-PA
     subdivision_name: Pennsylvania
-    static_gtfs_url: https://www.gomcta.com/google_transit.zip
-    mdb_id: 523
+    static_gtfs_url: https://ponytracker.availtec.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 3460
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   # Mobility Database mdb-807 is deprecated and redirects to mdb-2000.
@@ -151,4 +152,212 @@ agencies:
     is_official: true
     static_gtfs_url: https://lats.rideralerts.com/infopoint/gtfs-zip.ashx
     mdb_id: ntd-30116
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-altoona~metro~transit, NTD reporter 30011.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: altoona-metro-transit-amtran
+    name: Altoona Metro Transit (AMTRAN)
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://amtran.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-4669
+    ntd_id: "30011"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-cambria~county~transit~authority, NTD reporter 30012.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: cambria-county-transit-authority-camtran
+    name: Cambria County Transit Authority (CamTran)
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://live.camtranbus.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-4671
+    ntd_id: "30012"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-luzerne~county~transit~authority, NTD reporter 30015.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: luzerne-county-transportation-authority-lcta
+    name: Luzerne County Transportation Authority (LCTA)
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://realtimelctabus.availtec.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-4555
+    ntd_id: "30015"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-county~of~lackawanna~transit, NTD reporter 30025.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: county-of-lackawanna-transit-system-colts
+    name: County of Lackawanna Transit System (COLTS)
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://coltsivl.availtec.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-4553
+    ntd_id: "30025"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-shenango~valley~shuttle~service~pa, NTD reporter 30055.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: shenango-valley-shuttle-service
+    name: Shenango Valley Shuttle Service
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://svss.availtec.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-4663
+    ntd_id: "30055"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-mid~mon~valley~transit~authority~pa, NTD reporter 30061.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: mid-mon-valley-transit-authority
+    name: Mid Mon Valley Transit Authority
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://mmvta.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-5503
+    ntd_id: "30061"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-pottstown~area~rapid~transit, NTD reporter 30077.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: pottstown-area-rapid-transit
+    name: Pottstown Area Rapid Transit
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://part.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-7025
+    ntd_id: "30077"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-fayette~area~coordinated~transportatio, NTD reporter 30087.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: fayette-area-coordinated-transportation
+    name: Fayette Area Coordinated Transportation (FACT)
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://fact.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-7027
+    ntd_id: "30087"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-hazleton~public~transit, NTD reporter 30093.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: hazleton-public-transit
+    name: Hazleton Public Transit
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://realtimehpts.availtec.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-4665
+    ntd_id: "30093"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-lebanon~transit~pa~us, NTD reporter 30095.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: lebanon-transit
+    name: Lebanon Transit
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://realtime.lebanontransit.org/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-5531
+    ntd_id: "30095"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-freedom~transit~pa~us, NTD reporter 30111.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: freedom-transit
+    name: Freedom Transit (Washington County)
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://freedom.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-4134
+    ntd_id: "30111"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-schuylkill~transportation~system, NTD reporter 30127.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: schuylkill-transportation-system
+    name: Schuylkill Transportation System
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://sts.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-4688
+    ntd_id: "30127"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-new~castle~area~transit~authority, NTD reporter 30151.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: new-castle-area-transit-authority
+    name: New Castle Area Transit Authority
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://ncata.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-7030
+    ntd_id: "30151"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-indiana~county~transit~authority, NTD reporter 30177.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: indiana-county-transit-authority-indigo
+    name: Indiana County Transit Authority (IndiGO)
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://indigobus.availtec.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-4661
+    ntd_id: "30177"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-crawford~area~transportation~authority, NTD reporter 30185.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: crawford-area-transportation-authority
+    name: Crawford Area Transportation Authority (CATA)
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://catabus.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-4674
+    ntd_id: "30185"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feed f-area~transit~authority~north~central~p, NTD reporter 30196.
+  # Host serves no robots.txt (404); fetched with an honest User-Agent, valid and current.
+  - id: area-transportation-authority-of-north-central-pa
+    name: Area Transportation Authority of North Central Pennsylvania
+    country: US
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://rideata.rideralerts.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-4551
+    ntd_id: "30196"
     license_note: No stated data license in the source catalog; verify before publishing.

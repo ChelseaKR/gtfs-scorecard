@@ -182,3 +182,29 @@ agencies:
     static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11728/texarkanaurbantransit-tx-us.zip
     mdb_id: ntd-60093
     license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Transitland Atlas feeds f-victoriatransit~tx~us and
+  # f-goldencrescent~commuter~tx~us, NTD reporter 60095; no robots.txt (404); valid and current.
+  - id: golden-crescent-victoria-transit
+    name: Victoria Transit (Golden Crescent Regional Planning Commission)
+    country: US
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    is_official: true
+    static_gtfs_url: https://gtfs.gcrpc.org/gtfs/GCRPC-Fixed.zip
+    ntd_id: "60095"
+    organization_id: golden-crescent-regional-planning-commission
+    feed_variant: fixed route
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  - id: golden-crescent-commuter
+    name: Golden Crescent Commuter (Golden Crescent Regional Planning Commission)
+    country: US
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    is_official: true
+    static_gtfs_url: https://gtfs.gcrpc.org/gtfs/commuter/GCRPC-Commuter.zip
+    ntd_id: "60095"
+    organization_id: golden-crescent-regional-planning-commission
+    feed_variant: commuter
+    license_note: No stated data license in the source catalog; verify before publishing.

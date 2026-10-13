@@ -27,3 +27,16 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/concordareatransit-nh-us/concordareatransit-nh-us--flex-v2.zip
     mdb_id: 2164
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Mobility Database mdb-3432, active and official, not yet tracked.
+  # Robots.txt checked; fetched with an honest User-Agent, valid and current.
+  - id: manchester-transit-authority
+    name: Manchester Transit Authority (MTA)
+    country: US
+    subdivision_code: US-NH
+    subdivision_name: New Hampshire
+    is_official: true
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7841/NHMTAGTFS.zip
+    mdb_id: 3432
+    ntd_id: "10002"
+    license_note: No stated data license in the source catalog; verify before publishing.

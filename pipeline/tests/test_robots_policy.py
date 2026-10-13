@@ -132,5 +132,7 @@ def test_negative_control_the_403_rule_is_what_holds_a_403_host() -> None:
     with pytest.MonkeyPatch.context() as patch:
         patch.setattr(rp, "classify_robots_response", permissive)
         # The sabotage landed: the module now answers from the stub.
-        assert rp.classify_robots_response(target_url=TARGET) == rp.RobotsVerdict(True, "sabotaged")
+        assert rp.classify_robots_response(
+            target_url=TARGET, status=403, final_url=RULES, content_type="", body=""
+        ) == rp.RobotsVerdict(True, "sabotaged")
         assert RobotsChecker(get=get).check(TARGET) == rp.RobotsVerdict(True, "sabotaged")

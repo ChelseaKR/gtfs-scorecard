@@ -53,12 +53,13 @@ agencies:
     mdb_id: 1121
     license_note: "License: http://www.knoxvilletn.gov/government/opendata/knoxville_area_transit_kat_gtfs_feed"
 
+  # Mobility Database mdb-2082 is deprecated and redirects to mdb-3474; the feed URL follows it (ADR 0069).
   - id: chattanooga-area-regional-transportation-authority-carta-2082
     name: Chattanooga Area Regional Transportation Authority (CARTA)
     subdivision_code: US-TN
     subdivision_name: Tennessee
-    static_gtfs_url: https://www.gocarta.org/wp-content/uploads/2024/01/GTFS.zip
-    mdb_id: 2082
+    static_gtfs_url: https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip
+    mdb_id: 3474
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: jackson-transit-authority
