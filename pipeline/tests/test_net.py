@@ -151,9 +151,10 @@ def test_safe_get_exhausts_retries_and_raises_last(monkeypatch: pytest.MonkeyPat
     assert calls["n"] == 3  # initial try + 2 retries
 
 
-def test_feed_headers_present_as_a_browser() -> None:
-    assert FEED_HEADERS["User-Agent"].startswith("Mozilla/5.0")
-    assert "gtfs-scorecard" not in FEED_HEADERS["User-Agent"]  # WAFs block our old token
+def test_feed_headers_identify_the_project_never_a_browser() -> None:
+    """ADR 0070: the maintainer withdrew the browser User-Agent on 2026-10-13."""
+    assert FEED_HEADERS["User-Agent"].startswith("gtfs-scorecard/")
+    assert "Mozilla" not in FEED_HEADERS["User-Agent"]
     assert "Accept" in FEED_HEADERS
 
 

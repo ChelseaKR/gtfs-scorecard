@@ -66,9 +66,12 @@ def test_a_disallowed_feed_is_not_requested_at_all(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     requested: list[str] = []
-    monkeypatch.setattr(
-        fetchmod, "safe_get", lambda url, **_: requested.append(url) or _zip_bytes()
-    )
+
+    def fake_safe_get(url: str, **_: Any) -> bytes:
+        requested.append(url)
+        return _zip_bytes()
+
+    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
     monkeypatch.setattr(
         "scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: "https://m.example/x.zip"
     )

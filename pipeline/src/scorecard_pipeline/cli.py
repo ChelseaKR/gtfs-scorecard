@@ -1485,11 +1485,30 @@ def _validated_sync_catalog(
         catalog_schema = proposal_catalog_schema(csv_text)
     except ValueError as exc:
         parser.error(f"cannot use proposal catalog: {exc}")
-    if source == default_source and catalog_schema != "mobilitydatabase-feeds-v2":
-        parser.error(
-            "the default Mobility Database proposal URL must return the V2 feeds_v2.csv schema"
-        )
+    if source == default_source:
+        # ADR 0070: the default is the storage.googleapis.com export. It must
+        # prove the eligibility columns are present, so a truncated or wrong
+        # response cannot become an empty, apparently successful intake run.
+        header = {c.strip() for c in next(iter(csv.reader([csv_text.partition("\n")[0]])), [])}
+        missing = sorted(_DEFAULT_PROPOSAL_COLUMNS - header)
+        if catalog_schema != "mobilitydatabase-legacy" or missing:
+            parser.error(
+                "the default Mobility Database proposal URL must return the full export "
+                "schema" + (f" (missing: {', '.join(missing)})" if missing else "")
+            )
     return csv_text, catalog_schema
+
+
+_DEFAULT_PROPOSAL_COLUMNS = frozenset(
+    {
+        "mdb_source_id",
+        "data_type",
+        "status",
+        "is_official",
+        "urls.direct_download",
+        "urls.authentication_type",
+    }
+)
 
 
 def _sync_proposal_outputs(

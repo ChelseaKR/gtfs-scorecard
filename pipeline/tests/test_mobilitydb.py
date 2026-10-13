@@ -168,7 +168,12 @@ def test_a_catalog_url_on_the_disallowed_host_is_refused_before_any_request(
     from scorecard_pipeline import mobilitydb as m
 
     calls: list[str] = []
-    monkeypatch.setattr(m, "safe_get", lambda url, **kw: calls.append(url) or b"id\n")
+
+    def fake_safe_get(url: str, **kw: object) -> bytes:
+        calls.append(url)
+        return b"id\n"
+
+    monkeypatch.setattr(m, "safe_get", fake_safe_get)
     with pytest.raises(ValueError, match="disallows automated access"):
         fetch_catalog_bytes(MOBILITY_DATABASE_FEEDS_V2_URL)
     assert calls == []
