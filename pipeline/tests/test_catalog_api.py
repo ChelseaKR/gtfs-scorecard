@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import pytest
 import yaml
@@ -114,8 +115,8 @@ def test_without_a_token_nothing_is_requested() -> None:
 
     # Negative control: the same callables with a token make the two calls.
     load_api_catalog(environ={"MOBILITY_FEED_API_TOKEN": "refresh"}, post=post, get=get)
-    assert calls[0].endswith("/v1/tokens")
-    assert "/v1/gtfs_feeds?" in calls[1]
+    assert urlsplit(calls[0]).path == "/v1/tokens"
+    assert urlsplit(calls[1]).path == "/v1/gtfs_feeds"
 
 
 def test_token_exchange_and_pagination(monkeypatch: pytest.MonkeyPatch) -> None:

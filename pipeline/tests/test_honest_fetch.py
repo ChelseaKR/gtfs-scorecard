@@ -8,6 +8,7 @@ import io
 import zipfile
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import pytest
 import requests
@@ -39,7 +40,7 @@ def _zip_bytes() -> bytes:
 def _robots(response_by_host: dict[str, RobotsResponse]) -> None:
     def get(url: str) -> RobotsResponse:
         for host, response in response_by_host.items():
-            if host in url:
+            if urlsplit(url).hostname == host:
                 return response
         return RobotsResponse(404, url, "", "")
 
@@ -113,7 +114,10 @@ def test_the_mobility_database_file_host_is_never_used_as_a_mirror(
         fetchmod._download_with_mirror_fallback(AGENCY, tmp_path / "g.zip", None)
 
     assert mirror not in requested
-    assert not any("mobilitydatabase" in url for url in requested + robots_reads)
+    assert not any(
+        (urlsplit(url).hostname or "").endswith(".mobilitydatabase.org")
+        for url in requested + robots_reads
+    )
 
 
 def test_a_mirror_whose_robots_refuses_us_is_not_requested(

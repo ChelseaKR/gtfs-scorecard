@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import pytest
 import yaml
@@ -1277,7 +1278,7 @@ def test_sync_defaults_to_the_allowed_export_not_the_disallowed_v2_host(
 
     assert main(["sync"]) == 0
     assert fetched == [mobilitydb.LEGACY_MOBILITY_DATABASE_CATALOG_URL]
-    assert "files.mobilitydatabase.org" not in fetched[0]
+    assert urlsplit(fetched[0]).hostname != "files.mobilitydatabase.org"
     assert mobilitydb.DEFAULT_CATALOG_URL == mobilitydb.LEGACY_MOBILITY_DATABASE_CATALOG_URL
 
 

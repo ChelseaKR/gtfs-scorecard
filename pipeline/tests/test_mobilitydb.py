@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 from dataclasses import replace
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import pytest
 import yaml
@@ -158,8 +159,10 @@ def test_no_default_catalog_reads_the_disallowed_v2_host() -> None:
     """ADR 0070: files.mobilitydatabase.org disallows every path in robots.txt."""
     assert DEFAULT_PROPOSAL_CATALOG_URL == LEGACY_MOBILITY_DATABASE_CATALOG_URL
     assert DEFAULT_CATALOG_URL == LEGACY_MOBILITY_DATABASE_CATALOG_URL
-    assert "files.mobilitydatabase.org" in MOBILITY_DATABASE_FEEDS_V2_URL
-    assert "files.mobilitydatabase.org" not in DEFAULT_PROPOSAL_CATALOG_URL
+    disallowed = "files.mobilitydatabase.org"
+    assert urlsplit(MOBILITY_DATABASE_FEEDS_V2_URL).hostname == disallowed
+    assert urlsplit(DEFAULT_PROPOSAL_CATALOG_URL).hostname != disallowed
+    assert urlsplit(DEFAULT_CATALOG_URL).hostname != disallowed
 
 
 def test_a_catalog_url_on_the_disallowed_host_is_refused_before_any_request(
