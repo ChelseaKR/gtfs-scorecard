@@ -177,7 +177,7 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 2_672
+    assert len(agencies) == 2_695
     assert len(european) == 760
     assert len({agency.country for agency in european}) == 28
 
@@ -237,6 +237,105 @@ def test_repo_registry_includes_2026_09_ntd_official_cohort(
     }
     assert cohort_ids <= by_id.keys()
     assert len(cohort_ids) == 28
+
+
+def test_repo_registry_includes_2026_10_coverage_cohort_and_repairs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR 0069: 23 new US feed records and 8 catalog-successor repairs.
+
+    The new records are NTD reporters with a Transitland Atlas feed, or active
+    official Mobility Database records, that no registry record tracked. Each
+    host's robots.txt was read first and each feed was fetched with an honest
+    User-Agent and found valid and current on 2026-10-13. The repairs keep the
+    tracked record and follow the catalog's own retirement to its successor.
+    """
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+
+    cohort = {
+        "altoona-metro-transit-amtran": "30011",
+        "cambria-county-transit-authority-camtran": "30012",
+        "luzerne-county-transportation-authority-lcta": "30015",
+        "county-of-lackawanna-transit-system-colts": "30025",
+        "shenango-valley-shuttle-service": "30055",
+        "mid-mon-valley-transit-authority": "30061",
+        "pottstown-area-rapid-transit": "30077",
+        "fayette-area-coordinated-transportation": "30087",
+        "hazleton-public-transit": "30093",
+        "lebanon-transit": "30095",
+        "freedom-transit": "30111",
+        "schuylkill-transportation-system": "30127",
+        "new-castle-area-transit-authority": "30151",
+        "indiana-county-transit-authority-indigo": "30177",
+        "crawford-area-transportation-authority": "30185",
+        "area-transportation-authority-of-north-central-pa": "30196",
+        "manchester-transit-authority": "10002",
+        "charlottesville-area-transit-cat": "30036",
+        "danville-transit-fixed-route": "30069",
+        "golden-crescent-victoria-transit": "60095",
+        "golden-crescent-commuter": "60095",
+        "jefferson-county-public-transit-jcpt": "",
+        "jackson-county-mass-transit-district-jax": "",
+    }
+    assert len(cohort) == 23
+    for agency_id, ntd_id in cohort.items():
+        agency = by_id[agency_id]
+        assert agency.country == "US"
+        assert agency.is_canonical_feed
+        # Atlas-sourced records carry no Mobility Database id or official flag:
+        # the Atlas states neither, and nothing here is taken from the
+        # files.mobilitydatabase.org export.
+        if agency.mdb_id:
+            assert agency.mdb_id.isdigit()
+            assert agency.is_official is True
+        else:
+            assert agency.is_official is None
+        assert agency.ntd_id == ntd_id
+        assert agency.license_note  # absence of a stated license is recorded, not implied
+        assert agency.static_gtfs_url.startswith("https://")
+    # One operator, two feeds: they share an organization and say which is which.
+    gcrpc = [by_id["golden-crescent-victoria-transit"], by_id["golden-crescent-commuter"]]
+    assert {a.organization_id for a in gcrpc} == {"golden-crescent-regional-planning-commission"}
+    assert {a.feed_variant for a in gcrpc} == {"fixed route", "commuter"}
+
+    repaired = {
+        "kansas-city-area-transportation-authority-kcata": (
+            "3519",
+            "https://ridekc.org/static-gtfs",
+        ),
+        "chattanooga-area-regional-transportation-authority-carta-2082": (
+            "3474",
+            "https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip",
+        ),
+        "grtc-transit-system": (
+            "3518",
+            "https://www.ridegrtc.com/wp-content/uploads/2025/02/gtfs.zip",
+        ),
+        "virginia-breeze": ("3506", "https://maps.tds.ai/download-feed/virginia-breeze-gtfs"),
+        "monroe-county-transportation-authority-mcta": (
+            "3460",
+            "https://ponytracker.availtec.com/InfoPoint/gtfs-zip.ashx",
+        ),
+        "birmingham-jefferson-county-transit-authority-max-2263": (
+            "3434",
+            "https://maxtransit.org/GTFS/2026/google_transit_Working.zip",
+        ),
+    }
+    # The 2026-07-11 dedupe kept StaRT's expired 2020 Trillium feed canonical
+    # and aliased the twin on the operator's current feed; the repair follows
+    # the alias. Thousand Oaks was already on its successor's URL; only the
+    # catalog id moves.
+    repaired["stanislaus-regional-transit-start"] = (
+        "2273",
+        "https://stanrta.rideralerts.com/InfoPoint/gtfs-zip.ashx",
+    )
+    repaired["thousand-oaks-transit"] = (
+        "3100",
+        "https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip",
+    )
+    for agency_id, (mdb_id, url) in repaired.items():
+        assert (by_id[agency_id].mdb_id, by_id[agency_id].static_gtfs_url) == (mdb_id, url)
 
 
 def test_repo_registry_carries_reviewed_coverage_recovery_updates(
