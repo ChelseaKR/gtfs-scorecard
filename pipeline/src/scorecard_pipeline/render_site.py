@@ -1685,6 +1685,34 @@ def _liveness_note(record: dict[str, Any] | None, now: dt.datetime | None = None
     return f'<p class="monitoring-note">{esc("; ".join(parts))}.</p>'
 
 
+_NOT_FETCHED_COPY = {
+    "not fetched: robots disallows": (
+        "The latest run did not download this feed: the host's robots.txt asks "
+        "automated tools not to request it, and this scorecard follows that."
+    ),
+    "not fetched: robots.txt refused or unreadable": (
+        "The latest run did not download this feed: the host's robots.txt could not "
+        "be read, and this scorecard does not request a feed until it can."
+    ),
+}
+
+
+def _not_fetched_note(reason: str | None, artifact: dict[str, Any]) -> str:
+    """Say plainly that the latest run chose not to request this feed (ADR 0070).
+
+    The grade on the page is the last one measured, with its own date; it is
+    not replaced by a zero or by anything else.
+    """
+    if not reason:
+        return ""
+    copy = _NOT_FETCHED_COPY.get(reason)
+    if copy is None:
+        return ""
+    date = str(artifact.get("snapshot_date") or "")
+    since = f" The grade shown was measured on {date}." if date else ""
+    return f'<p class="monitoring-note">{esc(copy + since)}</p>'
+
+
 def _artifact_source_provenance(artifact: dict[str, Any]) -> object:
     """Configured-source classification, absent on artifacts before schema 1.18."""
 
@@ -3533,6 +3561,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     license_notice: LicenseNotice | None = None,
     similar: list[dict[str, Any]] | None = None,
     source_withheld: bool = False,
+    not_fetched_reason: str | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -3801,7 +3830,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     </div>
     {report_route}
     <div class="report-content">
-    {_liveness_note(liveness, now)}{confidence_block}{license_notice_block}
+    {_liveness_note(liveness, now)}{_not_fetched_note(not_fetched_reason, artifact)}{confidence_block}{license_notice_block}
     {_about_feed_section(artifact, history)}
     {_route_rule()}
     <section aria-labelledby="fixes-h">
@@ -11033,13 +11062,22 @@ def _status_evidence_section(
         unreachable_agencies = run_summary.get("unreachable_agencies", [])
         omitted_unreachable = int(run_summary.get("unreachable_outside_current_published_set", 0))
         names_by_id = {row["id"]: row["name"] for row in catalog}
+        # ADR 0070: a record we chose not to request says why, so a reader can
+        # tell "robots.txt asked us not to" from "the publisher was down".
+        run_reasons = run_summary.get("unreachable_reasons") or {}
+        not_fetched_reasons = {
+            str(aid): str(reason)
+            for aid, reason in run_reasons.items()
+            if str(reason).startswith("not fetched:")
+        }
+
+        def _unreachable_item(aid: str) -> str:
+            link = f'<a href="/agency/{esc(aid)}/">{esc(names_by_id.get(aid, aid))}</a>'
+            note = not_fetched_reasons.get(str(aid))
+            return f"<li>{link} ({esc(note)})</li>" if note else f"<li>{link}</li>"
+
         current_unreachable_list = (
-            "<ul>"
-            + "".join(
-                f'<li><a href="/agency/{esc(aid)}/">{esc(names_by_id.get(aid, aid))}</a></li>'
-                for aid in unreachable_agencies
-            )
-            + "</ul>"
+            "<ul>" + "".join(_unreachable_item(aid) for aid in unreachable_agencies) + "</ul>"
             if unreachable_agencies
             else "<p>No currently published feed record was unreachable in this run.</p>"
         )
@@ -11093,6 +11131,7 @@ def _status_evidence_section(
       <dt>Scored (fresh data this run)</dt><dd>{run_summary.get("scored", 0)}</dd>
       <dt>Reused (feed unchanged since last check)</dt><dd>{run_summary.get("reused", 0)}</dd>
       <dt>Unreachable (all attempted records)</dt><dd>{run_summary.get("unreachable", 0)}</dd>
+      <dt>Of those, not fetched because of robots.txt</dt><dd>{run_summary.get("not_fetched", 0)}</dd>
       <dt>Unreachable records still in the current catalog</dt><dd>{run_summary.get("current_published_unreachable_count", 0)}</dd>
       <dt>Fell back to the Mobility Database mirror</dt><dd>{run_summary.get("mirrored", 0)}</dd>
       <dt>Validator cache hits</dt><dd>{run_summary.get("cache_hit", 0)}</dd>
@@ -12937,6 +12976,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 file=sys.stderr,
             )
     run_summary = _scope_run_summary(run_summary, catalog)
+    # ADR 0070: records the latest run chose not to request, by reason.
+    not_fetched_by_id: dict[str, str] = {
+        str(aid): str(reason)
+        for aid, reason in ((run_summary or {}).get("unreachable_reasons") or {}).items()
+        if str(reason).startswith("not fetched:")
+    }
     write("api/v1/run-status.json", json.dumps(run_summary, indent=2, sort_keys=True) + "\n")
     # The combined /status/ page (EXP-10 + FIX-11): the commitment (status_doc,
     # computed above from liveness state) and latest-run evidence (run_summary
@@ -13082,6 +13127,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                         or agency_id in withheld_sources
                         or _license_forbids_redistribution(agency_cfg)
                     ),
+                    not_fetched_reason=not_fetched_by_id.get(agency_id),
                 ),
                 f"{BASE_URL}/agency/{agency_id}/",
                 # The sitemap's <lastmod> is the date the published feed file

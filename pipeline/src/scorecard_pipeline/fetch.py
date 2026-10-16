@@ -26,20 +26,17 @@ from .feed_auth import (
     resolve_credential,
 )
 from .net import FetchTrace, UnresolvableHostError, UnsafeURLError, safe_download, safe_get
+from .robots_policy import USER_AGENT as ROBOTS_USER_AGENT
+from .robots_policy import shared_checker
 from .worklock import outside_heavy_section
 
 log = logging.getLogger(__name__)
 
-# Many agencies serve their public GTFS from behind a WAF or CDN that rejects
-# non-browser User-Agents with a 403 (the same way it would a scraper), which
-# blocked legitimate public-feed fetches used for exactly this kind of
-# consumption. Present as a current browser, the way Google's and Apple's
-# transit fetchers and ordinary trip planners do, with the Accept headers a
-# browser sends. We still fetch once a day and honor polling etiquette.
-USER_AGENT = (
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
-)
+# Every feed request identifies the project and links to it, so a publisher
+# can see who is asking and say no. Until 2026-10-13 this presented as Chrome to
+# get past WAFs that refuse non-browser clients; the maintainer withdrew that
+# (ADR 0070). A host that refuses this User-Agent is recorded as unreachable.
+USER_AGENT = ROBOTS_USER_AGENT
 FEED_HEADERS = {
     "User-Agent": USER_AGENT,
     "Accept": "application/zip,application/octet-stream,application/x-zip-compressed,*/*",
@@ -544,6 +541,9 @@ def _download_with_mirror_fallback(
     """
     import requests
 
+    # ADR 0070: robots.txt first. A refusal raises RobotsRefusedError, which the
+    # run records as "not fetched", never as the agency's outage or a score.
+    shared_checker().require(agency.static_gtfs_url)
     if agency.fetch_auth is not None:
         return _download_credentialed(agency, agency.fetch_auth, dest, limits)
 
@@ -570,6 +570,34 @@ def _download_with_mirror_fallback(
                 agency.id, agency.name, agency.static_gtfs_url, agency.mdb_id
             )
         if not mirror:
+            raise
+        from urllib.parse import urlsplit
+
+        from .mobilitydb import DISALLOWED_CATALOG_HOSTS
+
+        if (urlsplit(mirror).hostname or "").lower() in DISALLOWED_CATALOG_HOSTS:
+            # ADR 0070: the Mobility Database's hosted copies live on a host
+            # whose robots.txt disallows every path. Not even asked.
+            log.warning(
+                "%s: origin %s unreachable (%s); no mirror fallback (%s is not read)",
+                agency.id,
+                agency.static_gtfs_url,
+                type(origin_exc).__name__,
+                urlsplit(mirror).hostname,
+            )
+            raise
+        mirror_verdict = shared_checker().check(mirror)
+        if not mirror_verdict.allowed:
+            # The mirror host's robots.txt refuses us, so the origin's own
+            # failure stands.
+            log.warning(
+                "%s: origin %s unreachable (%s); mirror %s not fetched (%s)",
+                agency.id,
+                agency.static_gtfs_url,
+                type(origin_exc).__name__,
+                mirror,
+                mirror_verdict.reason,
+            )
             raise
         log.warning(
             "%s: origin %s unreachable (%s); falling back to Mobility Database mirror %s",
