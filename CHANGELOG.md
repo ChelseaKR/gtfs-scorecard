@@ -29,6 +29,14 @@ the declared public surface).
 
 ### Added
 
+- **A guard for the Pages deploy role's read list.** The role's S3 policy
+  names readable keys one by one, and PR #522 added `rescored-history.json` to
+  the deploy's sync without adding it, so every deploy from 2026-10-13 failed
+  with AccessDenied and the live data went stale. The policy now lists the key,
+  and a test reads `pages.yml` and the Terraform policy and fails when a key
+  the deploy syncs or copies, or a prefix it lists, is not covered, matching
+  patterns the way IAM does.
+
 - **Earlier records rescored under the current rubric, shown as their own
   series.** `scorecard rescore-history` rescores rubric 1.1 to 1.3 records from
   what each record stored, without downloading any feed again, and writes
