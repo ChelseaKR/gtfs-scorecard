@@ -210,6 +210,10 @@ STATIC_NAV_PAGES: dict[str, str | None] = {
     # doc-stats sweep reads them.
     "bundle/index.html": "/about/",
     "bundle/setup/index.html": "/about/",
+    # Buy by invoice or purchase order: the same product as /bundle/ for a
+    # buyer who cannot use a card link. A request page that composes a mailto
+    # link; no checkout, no stored data, and every price read from plan.json.
+    "invoice/index.html": "/about/",
     # The scorecard history tables (ADR 0063, docs/history-tables.md): the
     # landing page is indexable and sits under /data/, the free open-data page;
     # /data/history/setup/ is the post-checkout page and stays noindex and out
