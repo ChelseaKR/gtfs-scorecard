@@ -7008,3 +7008,86 @@ def test_trend_without_rescored_file_is_unchanged() -> None:
 
     html = _trend_sections(_NATIVE_POINTS, _NATIVE_SUMMARY, [])
     assert "rescored" not in html.lower()
+
+
+def _compact_rollup(count: int) -> dict[str, Any]:
+    grades = ["A", "B", "C", "D", "F"]
+    members = []
+    for i in range(count):
+        m = _member(f"agency{i}", "ready", grade=grades[i % 5])
+        m["top_fix_code"] = "stop_times_future_date"
+        m["needs_attention"] = i % 7 == 0
+        m["attention_reason"] = "feed expired" if i % 7 == 0 else None
+        members.append(m)
+    return {
+        "rollup": {"id": "all", "name": "All tracked agencies"},
+        "agency_count": count,
+        "average_score": 75.0,
+        "grade_distribution": {"A": 1},
+        "comparison": {"eligible_count": 0},
+        "needs_attention": sum(1 for m in members if m["needs_attention"]),
+        "expired": {"lapsed": 0, "stale": 0, "total": 0},
+        "members": members,
+    }
+
+
+def test_large_rollup_lists_each_agency_once_under_grade_headings() -> None:
+    import re
+
+    from scorecard_pipeline import render_site
+
+    count = render_site.COMPACT_ROLLUP_MIN_MEMBERS + 5
+    html = render_site._render_rollup(_compact_rollup(count))
+
+    # One link per agency, no handoff links, no per-row heading or hidden chip.
+    assert len(re.findall(r'href="/agency/agency\d+/"', html)) == count
+    assert "?finding=" not in html
+    assert "Open next finding" not in html
+    assert "program-row" not in html
+    assert "checked 2026-06-12" not in html
+    # Five grade headings replace the per-row headings.
+    grade_headings = re.findall(r'<h3 class="section-sub" id="members-grade-[a-f]">', html)
+    assert len(grade_headings) == 5
+    # The needs-attention pill text and the score survive.
+    assert 'pill-warn">feed expired</span>' in html
+    assert "75.0 out of 100" in html
+
+
+def test_small_rollup_keeps_the_full_rows_and_handoff_links() -> None:
+    from scorecard_pipeline import render_site
+
+    html = render_site._render_rollup(_compact_rollup(12))
+
+    assert html.count('class="program-row"') == 12
+    assert "Open next finding" in html
+    assert "?finding=stop_times_future_date#finding-handoff" in html
+    assert "members-grade-" not in html
+
+
+def test_large_rollup_expired_rows_are_compact_too() -> None:
+    from scorecard_pipeline import render_site
+
+    rollup = _compact_rollup(render_site.COMPACT_ROLLUP_MIN_MEMBERS + 1)
+    for m in rollup["members"][:3]:
+        m["expiry_status"] = "lapsed"
+        m["days_until_expiry"] = -40
+    html = render_site._rollup_expired_section(rollup)
+
+    assert "Recently lapsed" in html
+    assert "program-row" not in html
+    assert "?finding=" not in html
+
+
+def test_compact_rollup_negative_control_threshold_sabotage_is_detected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Raising the threshold must bring back the old rows, proving the checks
+    above can fail: the sabotage is asserted to have taken effect first."""
+    from scorecard_pipeline import render_site
+
+    rollup = _compact_rollup(render_site.COMPACT_ROLLUP_MIN_MEMBERS + 5)
+    monkeypatch.setattr(render_site, "COMPACT_ROLLUP_MIN_MEMBERS", 10**6)
+    assert render_site._is_large_rollup(rollup) is False  # the sabotage applied
+    html = render_site._render_rollup(rollup)
+    assert "?finding=" in html
+    assert "program-row" in html

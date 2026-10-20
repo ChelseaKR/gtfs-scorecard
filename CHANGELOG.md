@@ -106,6 +106,17 @@ the declared public surface).
 
 ### Changed
 
+- **The all-agencies rollup page is well under half the size.** `/program/all/` listed
+  every agency as a full card, each with its own heading, grade chip, snapshot
+  date and a second "Open next finding" link to the same agency page with a
+  `?finding=` query, which made the page over a megabyte with thousands of
+  duplicate-canonical links. Rollups with more than 500 members now list each
+  agency once, with one name link, its score and its needs-attention note,
+  under one heading per grade; the expired and shapes.txt worklists use the
+  same compact rows. State and country rollups keep today's cards, every agency
+  stays linked from the page, and titles, descriptions, canonicals and
+  structured data are unchanged. A tighter page-weight budget pins the result.
+
 - **The install wording leads with PyPI, because 1.5.1 is there.** The v1.5.1
   run of `pypi-publish.yml` uploaded `gtfs-scorecard` 1.5.1 and read it back,
   and the MCP Registry lists `io.github.ChelseaKR/gtfs-scorecard` 1.5.1 with

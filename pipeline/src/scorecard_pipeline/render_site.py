@@ -6343,21 +6343,23 @@ def _rollup_description(name: str, agency_count: int, needs_attention: int) -> s
     return f"{name}: GTFS grades for {agency_count} {noun}, {attention}, plus the fixes they share."
 
 
-def _render_rollup(
-    rollup: dict[str, Any],
-    others: tuple[str, list[dict[str, Any]]] | None = None,
-    offer: ProgramOffer | None = None,
-) -> str:
-    rid = rollup["rollup"]["id"]
-    rname = rollup["rollup"]["name"]
-    canonical = f"{BASE_URL}/program/{rid}/"
-    desc = _rollup_description(
-        str(rname),
-        _whole_number(rollup.get("agency_count")),
-        _whole_number(rollup.get("needs_attention")),
-    )
+# A rollup with more members than this renders its member lists compactly: one
+# link per agency under a heading per grade, with no per-row heading, grade chip,
+# snapshot date or ?finding= handoff link. Those extras multiplied by every
+# member made /program/all/ over a megabyte and added thousands of links to the
+# same agency pages with different query strings (ADR 0067 "Alternate page with
+# proper canonical"). State and country rollups stay below the line and keep
+# the full rows.
+COMPACT_ROLLUP_MIN_MEMBERS = 500
+
+
+def _is_large_rollup(rollup: dict[str, Any]) -> bool:
+    return len(rollup.get("members") or []) > COMPACT_ROLLUP_MIN_MEMBERS
+
+
+def _full_member_rows(members: list[dict[str, Any]]) -> str:
     rows_parts = []
-    for m in rollup["members"]:
+    for m in members:
         top_fix_code = _safe_finding_code(m.get("top_fix_code"))
         handoff_link = (
             f' · <a class="program-next" href="{esc(_finding_url(f"/agency/{m['id']}/", top_fix_code))}">'
@@ -6378,7 +6380,63 @@ def _render_rollup(
             f"{handoff_link}</p>"
             "</div></li>"
         )
-    rows = "".join(rows_parts)
+    return "".join(rows_parts)
+
+
+def _compact_member_item(m: dict[str, Any], pill_text: str | None) -> str:
+    pill = f' <span class="pill-warn">{esc(pill_text)}</span>' if pill_text else ""
+    return (
+        f'<li><a href="/agency/{esc(m["id"])}/">{esc(m["name"])}</a>{pill} '
+        f'<span class="fineprint">{m["score"]} out of 100</span></li>'
+    )
+
+
+def _compact_member_groups(members: list[dict[str, Any]]) -> str:
+    """Members grouped under one heading per grade, in the order given."""
+    by_grade: dict[str, list[dict[str, Any]]] = {g: [] for g in _GRADES}
+    for m in members:
+        by_grade.setdefault(str(m["grade"]), []).append(m)
+    parts = []
+    for grade, group in by_grade.items():
+        if not group:
+            continue
+        items = "".join(
+            _compact_member_item(
+                m,
+                (m.get("attention_reason") or "needs attention")
+                if m.get("needs_attention")
+                else None,
+            )
+            for m in group
+        )
+        parts.append(
+            f'<h3 class="section-sub" id="members-grade-{esc(grade.lower())}">Grade {esc(grade)} '
+            f'<span class="grade-count">{len(group)}</span></h3>'
+            f'<ul class="program-list program-list-compact">{items}</ul>'
+        )
+    return "".join(parts)
+
+
+def _render_rollup(
+    rollup: dict[str, Any],
+    others: tuple[str, list[dict[str, Any]]] | None = None,
+    offer: ProgramOffer | None = None,
+) -> str:
+    rid = rollup["rollup"]["id"]
+    rname = rollup["rollup"]["name"]
+    canonical = f"{BASE_URL}/program/{rid}/"
+    desc = _rollup_description(
+        str(rname),
+        _whole_number(rollup.get("agency_count")),
+        _whole_number(rollup.get("needs_attention")),
+    )
+    compact = _is_large_rollup(rollup)
+    if compact:
+        members_heading = "Feed scorecards by grade: attention first, then alphabetical"
+        members_html = _compact_member_groups(rollup["members"])
+    else:
+        members_heading = "Feed scorecards: attention first, then alphabetical"
+        members_html = f'<ul class="program-list">{_full_member_rows(rollup["members"])}</ul>'
     raw_comparison = rollup.get("comparison")
     comparison = raw_comparison if isinstance(raw_comparison, dict) else {}
     raw_distribution = rollup.get("grade_distribution")
@@ -6452,8 +6510,8 @@ def _render_rollup(
     {shapes_section}
     {common_fixes_section}
     <section aria-labelledby="members-h">
-      <h2 class="section-title" id="members-h">Feed scorecards: attention first, then alphabetical</h2>
-      <ul class="program-list">{rows}</ul>
+      <h2 class="section-title" id="members-h">{members_heading}</h2>
+      {members_html}
     </section>{outside_section}
     {_program_offer_section(offer)}"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
@@ -6646,8 +6704,13 @@ def _program_offer_section(offer: ProgramOffer | None) -> str:
     )
 
 
-def _rollup_member_row(m: dict[str, Any], note: str) -> str:
-    """A program-list row for the expired worklist, with a how-long-ago flag."""
+def _rollup_member_row(m: dict[str, Any], note: str, compact: bool = False) -> str:
+    """A program-list row for the expired worklist, with a how-long-ago flag.
+
+    ``compact`` is the large-rollup form: one name link, the note and the score.
+    """
+    if compact:
+        return _compact_member_item(m, note)
     top_fix_code = _safe_finding_code(m.get("top_fix_code"))
     handoff_link = (
         f' · <a class="program-next" href="{esc(_finding_url(f"/agency/{m['id']}/", top_fix_code))}">'
@@ -6682,10 +6745,13 @@ def _rollup_expired_section(rollup: dict[str, Any]) -> str:
         # Most recently expired first: closest to recovery, most likely still running.
         group.sort(key=lambda m: m.get("days_until_expiry") or 0, reverse=True)
 
+    compact = _is_large_rollup(rollup)
     groups = []
     if by_status["lapsed"]:
         rows = "".join(
-            _rollup_member_row(m, f"expired {_expired_ago(m['days_until_expiry'])}")
+            _rollup_member_row(
+                m, f"expired {_expired_ago(m['days_until_expiry'])}", compact=compact
+            )
             for m in by_status["lapsed"]
         )
         groups.append(
@@ -6697,7 +6763,9 @@ def _rollup_expired_section(rollup: dict[str, Any]) -> str:
         )
     if by_status["stale"]:
         rows = "".join(
-            _rollup_member_row(m, f"expired {_expired_ago(m['days_until_expiry'])}")
+            _rollup_member_row(
+                m, f"expired {_expired_ago(m['days_until_expiry'])}", compact=compact
+            )
             for m in by_status["stale"]
         )
         groups.append(
@@ -6884,7 +6952,12 @@ def _rollup_shapes_section(rollup: dict[str, Any]) -> str:
     gaps = [m for m in rollup["members"] if m.get("shapes_status") in ("not_ready", "at_risk")]
     gaps.sort(key=lambda m: (m["shapes_status"] != "not_ready", m["id"]))
     rows = "".join(
-        _rollup_member_row(m, _NTD_LABELS.get(m["shapes_status"], m["shapes_status"])) for m in gaps
+        _rollup_member_row(
+            m,
+            _NTD_LABELS.get(m["shapes_status"], m["shapes_status"]),
+            compact=_is_large_rollup(rollup),
+        )
+        for m in gaps
     )
     measured = shapes["total"] - shapes["not_measured"]
     return (
