@@ -32,6 +32,15 @@ Outcome = Literal["scored", "reused", "unreachable"]
 # them (the ideation doc's ">N% not refreshed" trigger).
 DEGRADED_THRESHOLD = 0.05
 
+# The prefix every robots.txt refusal's reason starts with (ADR 0070). Those
+# records were not attempted by our choice, so they are counted on their own
+# and kept out of the degraded fraction, which is about publisher outages.
+NOT_FETCHED_PREFIX = "not fetched:"
+
+
+def _not_fetched(reason: str | None) -> bool:
+    return bool(reason) and str(reason).startswith(NOT_FETCHED_PREFIX)
+
 
 @dataclasses.dataclass(frozen=True)
 class AgencyOutcome:
@@ -122,6 +131,7 @@ def build_shard_summary(
         "scored": len(scored),
         "reused": len(reused),
         "unreachable": len(unreachable),
+        "not_fetched": sum(1 for o in unreachable if _not_fetched(o.reason)),
         "mirrored": sum(1 for o in outcomes if o.mirrored),
         "cache_hit": sum(1 for o in outcomes if o.cache_hit),
         "unreachable_agencies": sorted(o.agency_id for o in unreachable),
@@ -166,6 +176,7 @@ def merge_run_summaries(
     total_scored = sum(s.get("scored", 0) for s in shards)
     total_reused = sum(s.get("reused", 0) for s in shards)
     total_unreachable = sum(s.get("unreachable", 0) for s in shards)
+    total_not_fetched = sum(int(s.get("not_fetched", 0)) for s in shards)
     total_mirrored = sum(s.get("mirrored", 0) for s in shards)
     total_cache_hit = sum(s.get("cache_hit", 0) for s in shards)
     total_agencies = total_scored + total_reused + total_unreachable
@@ -178,7 +189,8 @@ def merge_run_summaries(
         if isinstance(s.get("unreachable_reasons"), dict)
         for aid, reason in s["unreachable_reasons"].items()
     }
-    fraction_unreachable = (total_unreachable / total_agencies) if total_agencies else 0.0
+    outages = total_unreachable - total_not_fetched
+    fraction_unreachable = (outages / total_agencies) if total_agencies else 0.0
     missing_shards = (
         max(0, expected_shard_count - len(shards)) if expected_shard_count is not None else 0
     )
@@ -194,7 +206,7 @@ def merge_run_summaries(
         )
     if fraction_unreachable > DEGRADED_THRESHOLD:
         degraded_reasons.append(
-            f"{total_unreachable} of {total_agencies} attempted feed records could not be "
+            f"{outages} of {total_agencies} attempted feed records could not be "
             f"refreshed, above the {round(DEGRADED_THRESHOLD * 100)}% warning threshold."
         )
     merged: dict[str, Any] = {
@@ -206,6 +218,7 @@ def merge_run_summaries(
         "scored": total_scored,
         "reused": total_reused,
         "unreachable": total_unreachable,
+        "not_fetched": total_not_fetched,
         "mirrored": total_mirrored,
         "cache_hit": total_cache_hit,
         "unreachable_agencies": unreachable_agencies,

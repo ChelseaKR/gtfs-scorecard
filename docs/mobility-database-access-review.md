@@ -1,7 +1,10 @@
 # Mobility Database access review
 
-**Status:** open question for the maintainer. Nothing in this document changes
-fetching behavior; it exists so the decision can be made on facts.
+**Status:** decided 2026-10-13. The maintainer chose an identifying
+User-Agent, robots.txt on every feed request, and the Mobility Database API in
+place of `files.mobilitydatabase.org`; see
+[ADR 0070](decisions/0070-honest-fetch-robots-and-catalog-api.md). The review
+below is kept as the record the decision was made on.
 
 **Reviewed:** 2026-08-15. All URLs and robots.txt bodies below were fetched on
 that date and are quoted verbatim.

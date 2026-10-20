@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>About our fetcher — GTFS Scorecard</title>
   <meta name="description"
-        content="How the GTFS Scorecard downloads feeds: request identity, polling cadence, retry and mirror behavior, safety guards, and how to reach us.">
+        content="How the GTFS Scorecard downloads feeds: request identity, robots.txt, polling cadence, retries, safety guards, and how to reach us.">
   <link rel="canonical" href="https://gtfsscorecard.org/fetcher/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="About our fetcher — GTFS Scorecard">
-  <meta property="og:description" content="How the GTFS Scorecard downloads feeds: request identity, polling cadence, retry and mirror behavior, and how to reach us.">
+  <meta property="og:description" content="How the GTFS Scorecard downloads feeds: request identity, robots.txt, polling cadence, retries, and how to reach us.">
   <meta property="og:url" content="https://gtfsscorecard.org/fetcher/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:alt" content="GTFS Scorecard: transit data quality for small agencies.">
@@ -77,27 +77,29 @@
 
     <section aria-labelledby="ua-h">
       <h2 class="section-title" id="ua-h">The User-Agent, stated honestly</h2>
-      <p>Our requests currently present a standard desktop-browser User-Agent (Chrome on
-      Linux) rather than a custom bot string. That is a deliberate, documented choice: many
-      transit feeds sit behind bot filters that answer a non-browser User-Agent with a 403,
-      and a feed we cannot read becomes a feed we cannot help fix. We would rather state the
-      practice plainly here than present a bot string and silently lose the agencies this
-      tool exists for.</p>
-      <p>An honest-first experiment (try a
-      <code>gtfs-scorecard/&lt;version&gt;</code> User-Agent, fall back to the browser
-      string, and record which one succeeded) is on the roadmap so this choice can rest on
-      measured data. If it ships, this page will say so.</p>
+      <p>Every request identifies itself as <code>gtfs-scorecard/&lt;version&gt;
+      (+https://gtfsscorecard.org)</code>. Until October 2026 the fetcher presented a desktop
+      browser&#8217;s User-Agent to get past bot filters; that practice has ended. If your
+      server refuses this User-Agent, the feed is shown as unreachable with its last known
+      grade, and you can tell us to use a different URL.</p>
+      <p>Before requesting a feed we read your host&#8217;s <code>robots.txt</code> and follow
+      it. If it disallows the feed&#8217;s path, we do not download the feed, and its page says
+      &#8220;not fetched: robots disallows&#8221; beside the last grade we measured, never a
+      zero. A <code>robots.txt</code> that answers with an error or redirects elsewhere is
+      treated the same way. The one exception is cloud object storage and API hosts (Amazon S3
+      and similar), where a 403 is the standard answer for any file that does not exist; the
+      list of those hosts, and why each is on it, is in the
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/pipeline/src/scorecard_pipeline/robots_policy.py">source</a>.</p>
     </section>
 
     <section aria-labelledby="retry-h">
-      <h2 class="section-title" id="retry-h">Retries and the mirror fallback</h2>
+      <h2 class="section-title" id="retry-h">Retries</h2>
       <p>A failed download is retried a small number of times with exponential backoff, and
       only on responses that usually mean "try again" (403 from a web application firewall,
-      408, 425, 429, and 5xx). If your endpoint still cannot be reached, we fall back to the
-      MobilityData hosted mirror of your feed rather than drop your agency, and the scorecard
-      then says so: the artifact's fetch block records <code>source: mirror</code>, and the
-      agency page notes the copy that was scored. A feed that cannot be fetched at all is
-      shown as unreachable with its last known grade, never as a zero.</p>
+      408, 425, 429, and 5xx). We no longer fall back to the MobilityData hosted mirror: it is
+      served from a host whose <code>robots.txt</code> asks automated tools to stay away. A
+      feed that cannot be fetched is shown as unreachable with its last known grade, never as
+      a zero.</p>
     </section>
 
     <section aria-labelledby="contact-h">
@@ -107,8 +109,8 @@
       the <a href="/claim/">correct-or-claim form</a> works too, and the
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">listing
       policy</a> explains how to update your feed URL or ask not to be listed at all. If you
-      prefer we score the MobilityData mirror instead of your origin server, that is a
-      one-line registry change.</p>
+      would rather we read your feed from a different URL, that is a one-line registry
+      change.</p>
     </section>
   </main>
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -19,7 +20,7 @@ from scorecard_pipeline.catalog_repoint import (
 )
 from scorecard_pipeline.config import Agency
 from scorecard_pipeline.mobilitydb import parse_catalog
-from scorecard_pipeline.robots_policy import RobotsVerdict
+from scorecard_pipeline.robots_policy import RobotsChecker, RobotsResponse, RobotsVerdict
 
 HEADER = (
     "id,data_type,entity_type,location.country_code,location.subdivision_name,provider,name,"
@@ -197,6 +198,79 @@ def test_a_note_that_names_the_current_host_holds_the_move() -> None:
     assert repoint.hold == (cr.NOTE_PINS_CURRENT_HOST,)
 
 
+def _policy_checker(responses: Mapping[str, RobotsResponse | Exception]) -> RobotsChecker:
+    """A checker running ADR 0070's real policy over canned /robots.txt answers."""
+
+    def fake_get(url: str) -> RobotsResponse:
+        answer = responses[url]
+        if isinstance(answer, Exception):
+            raise answer
+        return answer
+
+    return RobotsChecker(get=fake_get)
+
+
+@pytest.mark.parametrize(
+    ("answer", "ready", "code"),
+    [
+        (RobotsResponse(404, "https://n/robots.txt", "text/html", ""), True, "no_robots_file"),
+        (
+            RobotsResponse(200, "https://n/robots.txt", "text/plain", "User-agent: *\nAllow: /"),
+            True,
+            "allowed_by_robots",
+        ),
+        (
+            RobotsResponse(
+                200, "https://n/robots.txt", "text/plain", "User-agent: *\nDisallow: /a"
+            ),
+            False,
+            "disallowed_by_robots",
+        ),
+        (RobotsResponse(403, "https://n/robots.txt", "text/html", ""), False, "robots_status_403"),
+        (RobotsResponse(503, "https://n/robots.txt", "text/html", ""), False, "robots_status_503"),
+        (
+            RobotsResponse(200, "https://n/landing", "text/html", "<html>"),
+            False,
+            "robots_redirected_off",
+        ),
+        (
+            RobotsResponse(200, "https://n/robots.txt", "text/html", "<!doctype html>"),
+            False,
+            "robots_not_a_rules_file",
+        ),
+        (OSError("down"), False, "robots_unreachable"),
+    ],
+)
+def test_successor_url_is_held_unless_the_adr_0070_policy_allows_it(
+    answer: RobotsResponse | Exception, ready: bool, code: str
+) -> None:
+    proposal = Repoint("a", "A", "1", "http://o/a", "mdb-2", "A", "https://n/a")
+    checker = _policy_checker({"https://n/robots.txt": answer})
+
+    [out] = check_successor_robots([proposal], checker.check)
+
+    assert out.ready is ready
+    assert out.hold == (() if ready else (code,))
+    if not ready:
+        text = render_repoints_md([out])
+        assert "Held:" in text
+        assert code not in text  # the report says it in words, not as a code
+
+
+def test_a_403_at_robots_txt_is_no_file_only_on_an_allowlisted_object_store() -> None:
+    s3 = Repoint("a", "A", "1", "http://o/a", "mdb-2", "A", "https://bucket.s3.amazonaws.com/a.zip")
+    city = Repoint("b", "B", "3", "http://o/b", "mdb-4", "B", "https://transit.city.example/b.zip")
+    forbidden = {
+        "https://bucket.s3.amazonaws.com/robots.txt": RobotsResponse(403, "", "", ""),
+        "https://transit.city.example/robots.txt": RobotsResponse(403, "", "", ""),
+    }
+
+    out = check_successor_robots([s3, city], _policy_checker(forbidden).check)
+
+    assert out[0].ready
+    assert out[1].hold == ("robots_status_403",)
+
+
 def test_robots_refusal_holds_only_ready_proposals_and_costs_no_request_for_held() -> None:
     ready = Repoint("a", "A", "1", "http://o/a", "mdb-2", "A", "https://n/a")
     held = Repoint("b", "B", "3", "http://o/b", "mdb-4", "B", "https://n/b", hold=("x",))
@@ -312,7 +386,7 @@ def test_report_lists_ready_and_held_with_reasons() -> None:
 
 
 def test_supersessions_command_applies_ready_moves_and_holds_robots_refusals(
-    tmp_path: Path, isolated_repo_root: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, isolated_repo_root: Path, request: pytest.FixtureRequest
 ) -> None:
     from scorecard_pipeline import robots_policy
     from scorecard_pipeline.cli import main
@@ -346,12 +420,17 @@ def test_supersessions_command_applies_ready_moves_and_holds_robots_refusals(
         + _row("mdb-51", "Saint Louis Transit", "https://blocked.example/stl.zip")
     )
 
-    def verdict(self: object, url: str) -> RobotsVerdict:
-        if "blocked.example" in url:
-            return RobotsVerdict(False, "robots_status_403")
-        return RobotsVerdict(True, "no_robots_file")
+    asked: list[str] = []
 
-    monkeypatch.setattr(robots_policy.RobotsChecker, "check", verdict)
+    def fake_get(url: str) -> RobotsResponse:
+        # No network: the real ADR 0070 policy classifies these canned answers.
+        asked.append(url)
+        if "blocked.example" in url:
+            return RobotsResponse(403, url, "text/html", "Forbidden")
+        return RobotsResponse(404, url, "text/html", "")
+
+    robots_policy.reset_shared_checker(RobotsChecker(get=fake_get))
+    request.addfinalizer(robots_policy.reset_shared_checker)
     report = tmp_path / "report.md"
 
     assert main(["supersessions", "--catalog", str(catalog), "--out", str(report), "--apply"]) == 0
@@ -361,7 +440,13 @@ def test_supersessions_command_applies_ready_moves_and_holds_robots_refusals(
     assert after["stl-transit"].static_gtfs_url == "http://old.example/stl.zip"
     text = report.read_text()
     assert "## Retired, with a successor we do not track yet" in text
-    assert "Held: robots_status_403." in text
+    assert "answered 403" in text
+    assert "off-limits" in text
+    # Each successor origin was read once, through the policy's own getter.
+    assert sorted(asked) == [
+        "https://blocked.example/robots.txt",
+        "https://new.example/robots.txt",
+    ]
 
 
 def test_a_retired_twin_of_the_same_record_does_not_block_the_repair() -> None:

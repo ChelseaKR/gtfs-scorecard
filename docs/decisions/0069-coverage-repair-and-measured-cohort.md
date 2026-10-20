@@ -30,15 +30,16 @@ the open catalogs it draws from and with FTA's reporter roster.
   (MTA New York City Transit, MTA Maryland, Houston METRO, Culver City), so the
   real gap there is an `ntd_id`, not a feed. The rest, mostly small
   Pennsylvania authorities on Avail InfoPoint hosting, are real gaps.
-- **robots.txt is not read by the daily fetcher**, and the fetcher presents a
-  browser User-Agent (`fetch.py`, discussed in
-  `docs/mobility-database-access-review.md`). A sweep of the 530 hosts the
+- **The daily fetcher did not read robots.txt and presented a browser
+  User-Agent** when this was measured (`fetch.py`, discussed in
+  `docs/mobility-database-access-review.md`). The maintainer decided that on
+  2026-10-13 and ADR 0070 records it. A sweep of the 530 hosts the
   registry requests found 666 current records on hosts whose `/robots.txt`
   answers 403 (505 of them `api.gtfs-data.jp`, and S3 buckets, which answer 403
   for any missing object) and 307 on hosts whose rules disallow the feed path
   (246 on `www.data.gouv.fr`). Applying the strictest reading to the existing
-  registry would remove about 39 percent of it. That is a maintainer decision
-  and is not taken here.
+  registry would remove about 39 percent of it. ADR 0070 took that decision with
+  a short allowlist for object stores and API hosts, so this ADR does not.
 - **Search.** ADR 0067 found that US agency pages first published together on
   2026-07-03 are 18 percent indexed, while every agency page published later is
   93 to 100 percent indexed. Nothing on the page separated kept from dropped.
@@ -61,17 +62,18 @@ the open catalogs it draws from and with FTA's reporter roster.
    same agency (different state or country, a name that is not a rename); a
    note on the record names the host it is tracked on; or the successor host's
    robots.txt refuses us.
-3. **New URLs pass a robots check first** (`robots_policy.py`). One request per
-   origin, with an identifying User-Agent and never a browser one. A 404 or 410
-   is no rules. Any other error status, a redirect off the `robots.txt` path,
-   or an HTML page served there is a refusal. Otherwise the rules are parsed
-   for our User-Agent. A network failure is a refusal. This applies to URLs the
-   project starts requesting through this path. It does not change the daily
-   fetcher.
+3. **New URLs pass the robots policy before they are used, and it is ADR 0070's.** This ADR
+   adds no robots rules of its own. A repoint's successor URL, and a new
+   agency's feed, are checked with `robots_policy.py` as the daily fetch checks
+   them: an identifying User-Agent, an explicit Disallow obeyed, a 404 or 410
+   meaning no rules, a 403 meaning no file on the allowlisted object-store
+   and API hosts and nowhere else, and any other error, an off-path redirect, an HTML page or an
+   unreadable file meaning off-limits. A refused repoint is held for a person
+   with the reason in words; a refused new record is not added.
 4. **New agencies arrive in small, verified cohorts.** A record is added only
    when it is a public operator (an NTD reporter, or an official catalog
    record), no registry record tracks it under another name or URL, its host's
-   robots.txt permits the request under the rules in item 3, and a fetch with
+   robots.txt permits the request under the policy in item 3, and a fetch with
    an honest User-Agent returns a valid GTFS archive whose service runs past the
    day of review. A record that never scores never gets a page, so a dead or
    blocked feed adds nothing to the site. A cohort stays under about 50 records
@@ -98,9 +100,9 @@ the open catalogs it draws from and with FTA's reporter roster.
 
 - The daily fetcher's User-Agent and robots handling, and the weekly
   `supersessions` step's catalog source. The maintainer decided both on
-  2026-10-13 (an identifying User-Agent, obey robots.txt with a short tested
-  allowlist for object stores and API hosts, and the Mobility Database API in
-  place of `files.mobilitydatabase.org`). They land in a separate change.
+  2026-10-13 and ADR 0070 records them (an identifying User-Agent, obey
+  robots.txt with a short tested allowlist for object stores and API hosts, and
+  the Mobility Database API in place of `files.mobilitydatabase.org`).
 - How many more NTD-reporter cohorts to add, and in what order. The measurement
   that sizes them is in the pull request for this change.
 - Twelve agencies carry two live records where the catalog's redirect joins
@@ -120,5 +122,6 @@ the open catalogs it draws from and with FTA's reporter roster.
 - The weekly supersession report gains a section listing repoints, ready and
   held, so a stale URL with a catalog successor is no longer silent.
 - A host that refuses non-browser clients at `/robots.txt` (several municipal
-  CivicPlus sites, `gtfs.calitp.org` redirecting to its landing page) cannot be
-  reached through this path. Those repoints wait for a person.
+  CivicPlus sites, `gtfs.calitp.org` redirecting to its landing page) is
+  off-limits under ADR 0070 unless it is on the allowlist. Those repoints wait
+  for a person.

@@ -95,7 +95,7 @@ repoint instead of an alias: the tracked record keeps its id and page, and its
 two catalog ids. It is held, with the reason in the report, when the successor
 is ambiguous, needs a key, looks like a different agency by the rules above, is
 pinned by a note that names the current host, or sits on a host whose
-robots.txt refuses the request. See `docs/decisions/0069-coverage-repair-and-measured-cohort.md`.
+robots.txt refuses the request under ADR 0070's policy. See `docs/decisions/0069-coverage-repair-and-measured-cohort.md`.
 
 ### Reviewed reuse evidence
 

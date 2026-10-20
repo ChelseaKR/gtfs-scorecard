@@ -43,14 +43,17 @@ from .supersession_review import (
     review_flags,
 )
 
-# https://mobilitydatabase.org — V2 is the current proposal corpus. The legacy
-# export remains the default for existing consumers that depend on its mirror
-# and redirect behavior.
+# https://mobilitydatabase.org. The V2 CSV's address is kept only so code and
+# tests can name the host that is refused below; nothing requests it.
 MOBILITY_DATABASE_FEEDS_V2_URL = "https://files.mobilitydatabase.org/feeds_v2.csv"
 LEGACY_MOBILITY_DATABASE_CATALOG_URL = (
     "https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media"
 )
-DEFAULT_PROPOSAL_CATALOG_URL = MOBILITY_DATABASE_FEEDS_V2_URL
+# ADR 0070: files.mobilitydatabase.org serves `Disallow: /` and is never read.
+# Manual proposals default to the storage.googleapis.com export, and the weekly
+# update reads the Mobility Database API (catalog_api.py).
+DISALLOWED_CATALOG_HOSTS = frozenset({"files.mobilitydatabase.org"})
+DEFAULT_PROPOSAL_CATALOG_URL = LEGACY_MOBILITY_DATABASE_CATALOG_URL
 DEFAULT_CATALOG_URL = LEGACY_MOBILITY_DATABASE_CATALOG_URL
 
 # Mobility Database gtfs-rt rows carry an entity_type; map it to our rt kinds.
@@ -1013,8 +1016,20 @@ def fetch_catalog_bytes(url: str = DEFAULT_CATALOG_URL) -> bytes:
 
     Routed through safe_get so an operator-supplied --catalog URL gets the same
     SSRF and size guards as every other fetch, rather than a raw urlopen.
+    A host whose robots.txt forbids us (ADR 0070) is refused before any request.
     """
-    return safe_get(url, timeout=60, max_bytes=128 * 1024 * 1024)
+    from urllib.parse import urlsplit
+
+    from .robots_policy import USER_AGENT
+
+    if (urlsplit(url).hostname or "").lower() in DISALLOWED_CATALOG_HOSTS:
+        raise ValueError(
+            f"{urlsplit(url).hostname} disallows automated access in robots.txt and is not "
+            "read; use the Mobility Database API (--catalog api) or a local CSV"
+        )
+    return safe_get(
+        url, headers={"User-Agent": USER_AGENT}, timeout=60, max_bytes=128 * 1024 * 1024
+    )
 
 
 def fetch_catalog(url: str = DEFAULT_CATALOG_URL) -> str:

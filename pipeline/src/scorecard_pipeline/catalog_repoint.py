@@ -24,7 +24,8 @@ with its reason so a curator can act on it by hand:
   check already uses;
 - no curator note on the record names the current host, which is a recorded
   decision to track that host;
-- the successor host's robots.txt permits the request (``robots_policy``).
+- the successor host's robots.txt permits the request under the project's
+  policy (``robots_policy``, ADR 0070), the same policy the daily fetch applies.
 
 Like the other catalog checks, this proposes; ``--apply`` writes the edit into
 the registry shard on a branch and a person merges it.
@@ -49,7 +50,14 @@ from .mobilitydb import (
     _schedule_exclusion_reasons,
     pinning_note,
 )
-from .robots_policy import RobotsVerdict
+from .robots_policy import (
+    DISALLOWED_BY_ROBOTS,
+    INVALID_URL,
+    ROBOTS_NOT_A_RULES_FILE,
+    ROBOTS_REDIRECTED_OFF,
+    ROBOTS_UNREACHABLE,
+    RobotsVerdict,
+)
 from .supersession_review import FLAG_REASONS, blocking, review_flags
 
 # Hold reasons. Stable strings: they are written into the weekly report.
@@ -64,6 +72,27 @@ _HOLD_TEXT = {
     SUCCESSOR_ALREADY_TRACKED: "another registry record already tracks the successor",
     NOTE_PINS_CURRENT_HOST: "a curator note names the host this record is tracked on",
 }
+
+# Robots holds carry the policy's reason code (ADR 0070). A person reading the
+# report needs the sentence, so these map the codes to one.
+_ROBOTS_HOLD_TEXT = {
+    DISALLOWED_BY_ROBOTS: "not fetched: the successor host's robots.txt disallows this path",
+    ROBOTS_REDIRECTED_OFF: "the successor host's /robots.txt redirects somewhere else",
+    ROBOTS_NOT_A_RULES_FILE: "the successor host serves a web page, not rules, at /robots.txt",
+    ROBOTS_UNREACHABLE: "the successor host's /robots.txt could not be read",
+    INVALID_URL: "the successor URL is not an http or https address",
+}
+
+
+def _hold_text(code: str) -> str | None:
+    """The sentence for a robots hold code, or None for any other code."""
+    if code.startswith("robots_status_"):
+        status = code.removeprefix("robots_status_")
+        return (
+            f"the successor host's /robots.txt answered {status}, "
+            "which the robots policy treats as off-limits"
+        )
+    return _ROBOTS_HOLD_TEXT.get(code)
 
 
 # Notes in these shapes were written by the catalog sync, not by a curator.
@@ -347,7 +376,8 @@ def render_repoints_md(repoints: Iterable[Repoint]) -> str:
         out += ["### Held", ""]
         for r in held:
             reasons = "; ".join(
-                _HOLD_TEXT.get(code) or FLAG_REASONS.get(code) or code for code in r.hold
+                _HOLD_TEXT.get(code) or _hold_text(code) or FLAG_REASONS.get(code) or code
+                for code in r.hold
             )
             out.append(
                 f"- {r.agency_name} (`{r.agency_id}`): {normalized_mdb_id(r.mdb_id)} to "

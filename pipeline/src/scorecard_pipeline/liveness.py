@@ -33,9 +33,10 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
-from .instance import BASE_URL
+from .robots_policy import USER_AGENT as ROBOTS_USER_AGENT
 
-USER_AGENT = f"gtfs-scorecard liveness (+{BASE_URL})"
+# The same identifying User-Agent as every other feed request (ADR 0070).
+USER_AGENT = ROBOTS_USER_AGENT
 
 # Classifications returned per feed.
 UNCHANGED = "unchanged"

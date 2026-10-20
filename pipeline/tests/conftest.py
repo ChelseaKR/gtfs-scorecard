@@ -43,3 +43,21 @@ def isolated_registry() -> Generator[None, None, None]:
     AGENCIES.clear()
     yield
     AGENCIES.clear()
+
+
+@pytest.fixture(autouse=True)
+def offline_robots() -> Generator[None, None, None]:
+    """Answer every robots.txt read with "no file" so no test touches the network.
+
+    Tests of the robots rules themselves install their own checker
+    (ADR 0070).
+    """
+    from scorecard_pipeline.robots_policy import (
+        RobotsChecker,
+        RobotsResponse,
+        reset_shared_checker,
+    )
+
+    reset_shared_checker(RobotsChecker(get=lambda url: RobotsResponse(404, url, "", "")))
+    yield
+    reset_shared_checker(None)

@@ -246,8 +246,9 @@ def test_repo_registry_includes_2026_10_coverage_cohort_and_repairs(
 
     The new records are NTD reporters with a Transitland Atlas feed, or active
     official Mobility Database records, that no registry record tracked. Each
-    host's robots.txt was read first and each feed was fetched with an honest
-    User-Agent and found valid and current on 2026-10-13. The repairs keep the
+    host's robots.txt was read before the record was added and each feed was
+    fetched with an honest User-Agent and found valid and current on
+    2026-10-13. The repairs keep the
     tracked record and follow the catalog's own retirement to its successor.
     """
     monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
