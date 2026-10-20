@@ -3,12 +3,13 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-187 is deprecated and redirects to mdb-3519; the feed URL follows it (ADR 0069).
   - id: kansas-city-area-transportation-authority-kcata
     name: Kansas City Area Transportation Authority (KCATA)
     subdivision_code: US-MO
     subdivision_name: Missouri
-    static_gtfs_url: http://www.kc-metro.com/gtf/google_transit.zip
-    mdb_id: 187
+    static_gtfs_url: https://ridekc.org/static-gtfs
+    mdb_id: 3519
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

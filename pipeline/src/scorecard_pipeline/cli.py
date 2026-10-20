@@ -1846,6 +1846,12 @@ def _cmd_supersessions(args: argparse.Namespace, parser: argparse.ArgumentParser
     current scorecard beside the record that replaced it, so one agency carries
     two grades and neither page mentions the other.
     """
+    from .catalog_repoint import (
+        apply_repoints,
+        check_successor_robots,
+        find_repoints,
+        render_repoints_md,
+    )
     from .config import repo_root
     from .mobilitydb import (
         DEFAULT_PROPOSAL_CATALOG_URL,
@@ -1854,6 +1860,7 @@ def _cmd_supersessions(args: argparse.Namespace, parser: argparse.ArgumentParser
         hold_for_review,
         render_supersessions_md,
     )
+    from .robots_policy import shared_checker
     from .supersession_review import REVIEW_FILENAME, read_review
 
     try:
@@ -1866,6 +1873,15 @@ def _cmd_supersessions(args: argparse.Namespace, parser: argparse.ArgumentParser
     report = render_supersessions_md(
         superseded, unresolved, today=utc_today().isoformat(), held=held
     )
+    # ADR 0069: a retirement whose one current successor we do not track is a
+    # URL repair, not an alias. The successor host's robots.txt is read before
+    # the edit is proposed, under the same policy as the daily fetch (ADR
+    # 0070); a refusal holds it for a person.
+    repoints = check_successor_robots(
+        find_repoints(feeds, AGENCIES.values()),
+        shared_checker().check,
+    )
+    report = report.rstrip("\n") + "\n\n" + render_repoints_md(repoints)
     if args.out:
         Path(args.out).write_text(report)
         log.info("Wrote the supersession report to %s", args.out)
@@ -1898,6 +1914,17 @@ def _cmd_supersessions(args: argparse.Namespace, parser: argparse.ArgumentParser
             log.info("Retired %d superseded record(s) in the registry.", len(changed))
         else:
             log.info("No superseded records to retire.")
+        moved: list[str] = []
+        for registry_path in registry_paths(repo_root()):
+            updated, moved_here = apply_repoints(registry_path.read_text(), repoints)
+            if moved_here:
+                registry_path.write_text(updated)
+                moved.extend(moved_here)
+        log.info(
+            "Moved %d record(s) to the catalog's successor feed; %d held for review.",
+            len(moved),
+            sum(1 for item in repoints if not item.ready),
+        )
     return 0
 
 

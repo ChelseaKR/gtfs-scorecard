@@ -244,13 +244,18 @@ agencies:
     mdb_id: 901
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-902 is deprecated and redirects to mdb-3518; the feed URL follows it (ADR 0069).
   - id: grtc-transit-system
     name: GRTC Transit System
     subdivision_code: US-VA
     subdivision_name: Virginia
-    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/grtc.zip
-    mdb_id: 902
-    license_note: "License: http://ridegrtc.com/gtfs-files-developer-license-agreement-and-terms-of-use"
+    static_gtfs_url: https://www.ridegrtc.com/wp-content/uploads/2025/02/gtfs.zip
+    mdb_id: 3518
+    # Checked 2026-10-13: GRTC's former developer-license page
+    # (ridegrtc.com/gtfs-files-developer-license-agreement-and-terms-of-use)
+    # answers 404, and the catalog's successor record cites Virginia DRPT's GTFS
+    # clearinghouse, which lists this feed and defers to each agency's terms.
+    license_note: No current license page found for this feed; GRTC's former developer-license page is gone and Virginia DRPT's clearinghouse defers to agency terms. Verify before publishing.
 
   - id: loudoun-county-transit
     name: Loudoun County Transit
@@ -314,13 +319,14 @@ agencies:
     mdb_id: 1324
     license_note: "License: http://virginia-gtfs.com/"
 
+  # Mobility Database mdb-1328 is deprecated and redirects to mdb-3506; the feed URL follows it (ADR 0069).
   - id: virginia-breeze
     name: Virginia Breeze
     subdivision_code: US-VA
     subdivision_name: Virginia
-    static_gtfs_url: https://data.trilliumtransit.com/gtfs/virginiabreeze-va-us/virginiabreeze-va-us.zip
-    mdb_id: 1328
-    license_note: "License: http://virginia-gtfs.com/"
+    static_gtfs_url: https://maps.tds.ai/download-feed/virginia-breeze-gtfs
+    mdb_id: 3506
+    license_note: "License: https://drpt.virginia.gov/data/gtfs-feed-clearinghouse/"
 
   - id: pulaski-area-transit-pat-2198
     name: Pulaski Area Transit (PAT)
@@ -497,3 +503,28 @@ agencies:
     static_gtfs_url: https://www.fairfaxva.gov/files/assets/city/v/2/public-works/documents/schedules-and-maps/cue-gtfs.zip
     mdb_id: 2885
     license_note: "License: https://www.fairfaxva.gov/government/public-works/cue-bus-map-schedule#GTFS%20Schedule%20Data%20anchor"
+
+  # Added 2026-10-13 (ADR 0069): Mobility Database mdb-3493, active and official, not yet tracked.
+  # Robots.txt checked; fetched with an honest User-Agent, valid and current.
+  - id: charlottesville-area-transit-cat
+    name: Charlottesville Area Transit (CAT)
+    country: US
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    is_official: true
+    static_gtfs_url: https://apps.charlottesville.gov/publicfiles/GTFS.zip
+    mdb_id: 3493
+    ntd_id: "30036"
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): the fixed-route feed beside the tracked Flex feed (danville-transit).
+  # Transitland Atlas feed f-danville~va~us, NTD reporter 30069; no robots.txt (404); valid and current.
+  - id: danville-transit-fixed-route
+    name: Danville Transit
+    country: US
+    subdivision_code: US-VA
+    subdivision_name: Virginia
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/danville-va-us/danville-va-us.zip
+    ntd_id: "30069"
+    feed_variant: fixed route
+    license_note: No stated data license in the source catalog; verify before publishing.

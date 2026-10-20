@@ -168,3 +168,16 @@ agencies:
     static_gtfs_url: https://gis.ci.galesburg.il.us/cityofgalesburg-il-us.zip
     mdb_id: ntd-50502
     license_note: No stated data license in the source catalog; verify before publishing.
+
+  # Added 2026-10-13 (ADR 0069): Mobility Database mdb-3408, active and official, not yet tracked.
+  # The catalog's license link (proxy.busone.app/cotral/readme) is an unrelated document, so it is not recorded.
+  # Robots.txt checked; fetched with an honest User-Agent, valid and current.
+  - id: jackson-county-mass-transit-district-jax
+    name: JAX Mass Transit District
+    country: US
+    subdivision_code: US-IL
+    subdivision_name: Illinois
+    is_official: true
+    static_gtfs_url: https://passio3.com/JCMTD/passioTransit/gtfs/google_transit.zip
+    mdb_id: 3408
+    license_note: No stated data license in the source catalog; verify before publishing.

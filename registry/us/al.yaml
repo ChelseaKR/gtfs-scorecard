@@ -68,12 +68,13 @@ agencies:
     mdb_id: 2211
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-2263 is deprecated and redirects to mdb-3434; the feed URL follows it (ADR 0069).
   - id: birmingham-jefferson-county-transit-authority-max-2263
     name: Birmingham Jefferson County Transit Authority (MAX)
     subdivision_code: US-AL
     subdivision_name: Alabama
-    static_gtfs_url: https://maxtransit.org/wp-content/uploads/2024/09/google_transit_Working.zip
-    mdb_id: 2263
+    static_gtfs_url: https://maxtransit.org/GTFS/2026/google_transit_Working.zip
+    mdb_id: 3434
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: city-of-gadsen
