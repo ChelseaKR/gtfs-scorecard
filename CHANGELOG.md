@@ -29,6 +29,21 @@ the declared public surface).
 
 ### Added
 
+- **Feed requests identify the project and follow robots.txt.** Every
+  schedule, realtime, liveness and publisher request sends
+  `gtfs-scorecard/<version> (+https://gtfsscorecard.org)` instead of a
+  browser's User-Agent, and reads the host's robots.txt first. A disallowed
+  feed is "not fetched: robots disallows", shown with its last measured grade
+  and never as a zero; an error, redirect or HTML page at robots.txt is
+  off-limits too, except a 403 on the listed object-store and API hosts where
+  403 means "no such file". `/status/` names and counts these apart from
+  outages. About 450 of 2,495 active records stop refreshing as a result,
+  242 of them on `www.data.gouv.fr`. ADR 0070.
+- **The catalog is read through the Mobility Database API.**
+  `files.mobilitydatabase.org`, whose robots.txt disallows everything, is no
+  longer read: no mirror fallback, and a catalog URL on it is refused. The
+  weekly discover job reads the API with `MOBILITY_FEED_API_TOKEN` and pauses,
+  saying so, until the token is set. ADR 0070.
 - **A guard for the Pages deploy role's read list.** The role's S3 policy
   names readable keys one by one, and PR #522 added `rescored-history.json` to
   the deploy's sync without adding it, so every deploy from 2026-10-13 failed

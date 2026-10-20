@@ -48,12 +48,12 @@ sys.path.insert(0, str(REPO_ROOT / "pipeline" / "src"))
 from scorecard_pipeline.agencies import load_agencies  # noqa: E402
 from scorecard_pipeline.config import AGENCIES, utc_today  # noqa: E402
 from scorecard_pipeline.fetch import FEED_HEADERS  # noqa: E402
+from scorecard_pipeline.robots_policy import shared_checker  # noqa: E402
 
 OUT = REPO_ROOT / "data" / "feed-publishers.json"
 SCHEMA_VERSION = "1.0"
-# The same headers the daily fetch sends, so this reads the feeds the pipeline
-# reads. fetch.py explains why they are a browser's: several hosts answer a
-# non-browser User-Agent with 403 and would leave those feeds without evidence.
+# The same headers the daily fetch sends, including its identifying
+# User-Agent (ADR 0070), so this reads the feeds the pipeline reads.
 HEADERS = dict(FEED_HEADERS)
 # A feed served without a content length, or by a host that ignores Range, is
 # downloaded whole. Anything past this is skipped rather than pulled down: the
@@ -189,6 +189,9 @@ def _sweep(agencies: list[Any], existing: dict[str, Any]) -> tuple[dict[str, Any
             if position:
                 time.sleep(REQUEST_SPACING_SECONDS)
             try:
+                # ADR 0070: robots.txt first; a refusal is "no evidence", like
+                # any other feed this sweep cannot read.
+                shared_checker().require(agency.static_gtfs_url)
                 row = _read_declaration(agency.static_gtfs_url)
             except Exception as exc:  # unreachable, not a zip, too large: no evidence
                 with lock:

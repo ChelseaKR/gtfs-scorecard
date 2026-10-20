@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import pytest
 import yaml
@@ -1255,10 +1256,11 @@ def test_sync_source_reference_redacts_credentials_and_sensitive_query_values() 
     assert reference["location_redacted"] is True
 
 
-def test_sync_defaults_only_proposals_to_mobility_database_v2(
+def test_sync_defaults_to_the_allowed_export_not_the_disallowed_v2_host(
     isolated_repo_root: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """ADR 0070: files.mobilitydatabase.org disallows every path."""
     from scorecard_pipeline import mobilitydb
     from scorecard_pipeline.cli import main
 
@@ -1267,13 +1269,16 @@ def test_sync_defaults_only_proposals_to_mobility_database_v2(
 
     def fake_fetch(url: str) -> bytes:
         fetched.append(url)
-        return _SYNC_PROVENANCE_CATALOG.partition(b"\n")[0] + b"\n"
+        return (
+            b"mdb_source_id,data_type,provider,status,is_official,"
+            b"urls.direct_download,urls.authentication_type\n"
+        )
 
     monkeypatch.setattr(mobilitydb, "fetch_catalog_bytes", fake_fetch)
 
     assert main(["sync"]) == 0
-    assert fetched == [mobilitydb.DEFAULT_PROPOSAL_CATALOG_URL]
-    assert mobilitydb.DEFAULT_PROPOSAL_CATALOG_URL == mobilitydb.MOBILITY_DATABASE_FEEDS_V2_URL
+    assert fetched == [mobilitydb.LEGACY_MOBILITY_DATABASE_CATALOG_URL]
+    assert urlsplit(fetched[0]).hostname != "files.mobilitydatabase.org"
     assert mobilitydb.DEFAULT_CATALOG_URL == mobilitydb.LEGACY_MOBILITY_DATABASE_CATALOG_URL
 
 
