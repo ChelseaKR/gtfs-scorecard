@@ -1,7 +1,7 @@
 # Convenience targets. CI runs the same commands directly (see .github/workflows);
 # these just give them stable names. `uv` runs inside the pipeline/ project.
 
-.PHONY: clients clients-check clients-control clients-test clients-build verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav sync-measure sync-bundle-offers mutation mutation-results iac
+.PHONY: clients clients-check clients-control clients-test clients-build verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav sync-measure sync-bundle-offers sync-invoice-docs mutation mutation-results iac
 
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
@@ -90,6 +90,12 @@ sync-measure:
 # plan disagree, so a price cannot change without the page changing with it.
 sync-bundle-offers:
 	cd pipeline && uv run python -c "from scorecard_pipeline.site_shell import sync_bundle_offers, sync_history_offers; print('synced:', [str(p) for p in sync_bundle_offers() + sync_history_offers()])"
+
+# Regenerate docs/invoice/quote-template.{md,html} from web/bundle/plan.json, the
+# single source of every price. tests/test_invoice_docs.py fails CI when the
+# committed quote and the plan disagree.
+sync-invoice-docs:
+	cd pipeline && uv run python -c "from scorecard_pipeline.invoice_docs import sync_invoice_docs; print('synced:', [str(p) for p in sync_invoice_docs()])"
 
 # Rebuild the national all-routes vector tiles + PMTiles archive (web/tiles/).
 # Requires tippecanoe on PATH (brew install tippecanoe). NOT part of `verify` or

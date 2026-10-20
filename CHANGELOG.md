@@ -46,6 +46,12 @@ the declared public surface).
   Charlottesville, Danville's fixed-route feed, two Golden Crescent feeds,
   Jefferson County NY and Jackson County IL. Each host's robots.txt was read
   first and each feed was valid and current when fetched. ADR 0069.
+- **Buy by invoice or purchase order.** `/invoice/` lets a public agency or
+  program that cannot use a card link ask for a quote by email, accept it with a
+  purchase order, and receive an invoice. The form composes a `mailto:` link in the
+  browser and sends nothing. A blank quote, with line items and prices generated
+  from `web/bundle/plan.json` by `make sync-invoice-docs`, is in
+  `docs/invoice/`. The Stripe links and `paymentsAvailable` are unchanged.
 
 - **Earlier records rescored under the current rubric, shown as their own
   series.** `scorecard rescore-history` rescores rubric 1.1 to 1.3 records from

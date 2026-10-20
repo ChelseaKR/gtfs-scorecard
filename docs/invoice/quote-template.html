@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quote: GTFS Scorecard program report bundle</title>
+<style>
+body { font: 16px/1.5 Georgia, "Times New Roman", serif; color: #111; background: #fff;
+  max-width: 46rem; margin: 2rem auto; padding: 0 1rem; }
+h1 { font-size: 1.6rem; margin: 0 0 1rem; }
+h2 { font-size: 1.15rem; margin: 1.6rem 0 0.4rem; }
+table { border-collapse: collapse; width: 100%; margin: 0.6rem 0; }
+th, td { border: 1px solid #555; padding: 0.4rem 0.5rem; text-align: left; vertical-align: top; }
+th { background: #eee; }
+@media print { body { margin: 0; max-width: none; font-size: 11pt; }
+  h2 { break-after: avoid; } table, tr { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<h1>Quote: GTFS Scorecard program report bundle</h1>
+<p>This is a blank quote. The seller fills every <code>[OWNER FILL: ...]</code> field before
+sending it, and the buyer fills every <code>[BUYER FILL: ...]</code> field. Prices in the table
+are read from <code>web/bundle/plan.json</code>. See
+<a href="https://gtfsscorecard.org/invoice/">Buy by invoice or purchase order</a>.</p>
+<h2>Parties</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quote number</td>
+<td>[OWNER FILL: quote number]</td>
+</tr>
+<tr>
+<td>Date issued</td>
+<td>[OWNER FILL: date]</td>
+</tr>
+<tr>
+<td>Valid until</td>
+<td>[OWNER FILL: date]</td>
+</tr>
+<tr>
+<td>Seller</td>
+<td>[OWNER FILL: seller legal name]</td>
+</tr>
+<tr>
+<td>Seller address</td>
+<td>[OWNER FILL: seller mailing address]</td>
+</tr>
+<tr>
+<td>Seller contact</td>
+<td>[OWNER FILL: contact name and email]</td>
+</tr>
+<tr>
+<td>Buyer</td>
+<td>[BUYER FILL: organization legal name]</td>
+</tr>
+<tr>
+<td>Buyer address</td>
+<td>[BUYER FILL: billing address]</td>
+</tr>
+<tr>
+<td>Buyer contact</td>
+<td>[BUYER FILL: contact name and email]</td>
+</tr>
+<tr>
+<td>Where the archive is sent</td>
+<td>[BUYER FILL: delivery email]</td>
+</tr>
+</tbody>
+</table>
+<h2>Line items</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Billing</th>
+<th>Unit price (USD)</th>
+<th>Quantity</th>
+<th>Amount (USD)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One bundle, up to 25 agencies</td>
+<td>once</td>
+<td>$149</td>
+<td>[BUYER FILL: quantity]</td>
+<td>[OWNER FILL: quantity times unit price]</td>
+</tr>
+<tr>
+<td>One bundle, up to 100 agencies</td>
+<td>once</td>
+<td>$349</td>
+<td>[BUYER FILL: quantity]</td>
+<td>[OWNER FILL: quantity times unit price]</td>
+</tr>
+<tr>
+<td>Monthly refresh, billed yearly</td>
+<td>per year</td>
+<td>$490</td>
+<td>[BUYER FILL: quantity]</td>
+<td>[OWNER FILL: quantity times unit price]</td>
+</tr>
+<tr>
+<td>Another item, quoted separately</td>
+<td>[OWNER FILL: billing]</td>
+<td>[OWNER FILL: price]</td>
+<td>[BUYER FILL: quantity]</td>
+<td>[OWNER FILL: amount]</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td>[OWNER FILL: total]</td>
+</tr>
+</tbody>
+</table>
+<h2>What is included</h2>
+<p>One self-contained board report per agency id the buyer names, in a single archive,
+with a manifest that lists every id asked for and what happened to it. A program name,
+logo, and accent color appear on every cover. The numbers are the ones on the public
+site. A purchase buys no influence over grades, methodology, or which agencies are
+listed.</p>
+<p>Program name for the cover: [BUYER FILL: program name]</p>
+<p>Agency ids to include: [BUYER FILL: list of agency ids, up to the item's limit]</p>
+<h2>Terms</h2>
+<ul>
+<li>Payment terms: [OWNER FILL: payment terms]</li>
+<li>What starts the delivery clock, and the delivery date: [OWNER FILL: trigger and date]</li>
+<li>Refund terms for an invoiced order: [OWNER FILL: refund terms]</li>
+<li>How to pay (remit-to details): [OWNER FILL: payment instructions]</li>
+<li>Supplier forms supplied with this quote, if any: [OWNER FILL: list of forms]</li>
+<li>Purchase order number, once issued: [BUYER FILL: purchase order number]</li>
+</ul>
+<h2>Acceptance</h2>
+<p>To accept, cite the quote number on a purchase order, or sign below.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Seller</th>
+<th>Buyer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td>[OWNER FILL: name]</td>
+<td>[BUYER FILL: name]</td>
+</tr>
+<tr>
+<td>Title</td>
+<td>[OWNER FILL: title]</td>
+<td>[BUYER FILL: title]</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>[OWNER FILL: date]</td>
+<td>[BUYER FILL: date]</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
