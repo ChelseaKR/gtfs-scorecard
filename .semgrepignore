@@ -4,11 +4,18 @@
 # (sourced from the Mobility Database registry) — see .gitleaks.toml for the
 # matching secret-scan allowlist. Hand-written source stays in scope.
 #
-# Waiver review (SEC-10): this exclusion list expires 2026-10-17 and is
+# Waiver review (SEC-10): this exclusion list expires 2027-01-17 and is
 # reviewed quarterly. At each review, re-run semgrep over the excluded paths,
 # drop any entry that no longer flags, and renew the expiry date in this
 # comment. A lapsed date here is itself a review finding.
-# Last reviewed: 2026-08-16.
+# Last reviewed: 2026-10-19. Re-ran semgrep 1.176.0 (p/default, p/python,
+# p/javascript, --severity ERROR) over every excluded path with the exclusions
+# lifted: 1,219 findings remain in registry/**/*.yaml, data/, web/agency/,
+# web/api/, web/catalog.json, web/catalog.csv and pipeline/tests/fixtures/
+# (feed-URL access keys, JWT-shaped tokens and SHA-256 digests that the
+# generic secrets rules read as keys), so those entries stay. Dropped as no
+# longer needed: registry/**/*.yml (no such files exist), web/dataset.json
+# (0 findings) and web/dataset.csv (file does not exist).
 #
 # "Hand-written source stays in scope" was not true of web/ until 2026-08-16.
 # A blanket `web/` excluded the ~6,600 lines of browser JavaScript in web/src/
@@ -19,14 +26,11 @@
 # here: semgrep skips the file anyway, so a broad pattern cannot be carved out
 # and each generated tree has to be named.
 registry/**/*.yaml
-registry/**/*.yml
 data/
 web/agency/
 web/api/
 web/catalog.json
 web/catalog.csv
-web/dataset.json
-web/dataset.csv
 pipeline/tests/fixtures/
 
 # Standard housekeeping (mirrors Semgrep's built-in default ignore list,
