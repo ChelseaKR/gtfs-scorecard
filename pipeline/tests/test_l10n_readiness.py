@@ -96,6 +96,9 @@ HARDCODED_STRING_BASELINE = {
     # cannot-run messages. New modules, so these are first recorded baselines
     # rather than increases, to move into the catalog with the rest of the
     # paid-tier copy when the tier joins it.
+    # /invoice/ (buy by invoice or purchase order): all reader-facing wording is in
+    # the HTML, so the two matches are a class-name template and a selector, not copy.
+    "invoice.js": 2,
     "history-setup.js": 11,
     "history.js": 11,
     "config.js": 1,
