@@ -170,6 +170,7 @@ data "aws_iam_policy_document" "pages_read_s3" {
       "${aws_s3_bucket.artifacts.arn}/data/artifacts/scoring.json",
       "${aws_s3_bucket.artifacts.arn}/data/artifacts/sensitivity.json",
       "${aws_s3_bucket.artifacts.arn}/data/artifacts/canada-equity.json",
+      "${aws_s3_bucket.artifacts.arn}/data/artifacts/rescored-history.json",
       "${aws_s3_bucket.artifacts.arn}/data/artifacts/changes/*",
       "${aws_s3_bucket.artifacts.arn}/data/artifacts/rollups/*",
       "${aws_s3_bucket.artifacts.arn}/data/artifacts/run/*",
