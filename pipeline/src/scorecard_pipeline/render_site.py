@@ -6299,6 +6299,21 @@ def _rollup_outside_section(others: tuple[str, list[dict[str, Any]]] | None) -> 
     </section>"""
 
 
+def _rollup_description(name: str, agency_count: int, needs_attention: int) -> str:
+    """Search-result description for a program rollup.
+
+    Leads with the searcher's words (GTFS grades for transit feeds) and the
+    two counts the page itself shows, from the same rollup payload, so a
+    result never states a figure the page does not. The whole sentence is
+    kept under the description bound for the longest rollup name.
+    """
+    noun = "transit feed" if agency_count == 1 else "transit feeds"
+    attention = (
+        f"{needs_attention} needing attention" if needs_attention else "none needing attention"
+    )
+    return f"{name}: GTFS grades for {agency_count} {noun}, {attention}, plus the fixes they share."
+
+
 def _render_rollup(
     rollup: dict[str, Any],
     others: tuple[str, list[dict[str, Any]]] | None = None,
@@ -6307,10 +6322,10 @@ def _render_rollup(
     rid = rollup["rollup"]["id"]
     rname = rollup["rollup"]["name"]
     canonical = f"{BASE_URL}/program/{rid}/"
-    desc = (
-        f"{rname}: GTFS data quality across {rollup['agency_count']} feed scorecards, "
-        f"with {rollup['needs_attention']} needing attention and the fixes shared "
-        "across the group."
+    desc = _rollup_description(
+        str(rname),
+        _whole_number(rollup.get("agency_count")),
+        _whole_number(rollup.get("needs_attention")),
     )
     rows_parts = []
     for m in rollup["members"]:
@@ -6414,7 +6429,7 @@ def _render_rollup(
     {_program_offer_section(offer)}"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
-        title=f"{rname} — GTFS Scorecard",
+        title=f"{rname}: GTFS quality scores — GTFS Scorecard",
         description=desc,
         canonical=canonical,
         body=body,
