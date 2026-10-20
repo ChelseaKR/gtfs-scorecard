@@ -29,6 +29,13 @@ the declared public surface).
 
 ### Added
 
+- **A guard for the Pages deploy role's read list.** The role's S3 policy
+  names readable keys one by one, and PR #522 added `rescored-history.json` to
+  the deploy's sync without adding it, so every deploy from 2026-10-13 failed
+  with AccessDenied and the live data went stale. The policy now lists the key,
+  and a test reads `pages.yml` and the Terraform policy and fails when a key
+  the deploy syncs or copies, or a prefix it lists, is not covered, matching
+  patterns the way IAM does.
 - **Buy by invoice or purchase order.** `/invoice/` lets a public agency or
   program that cannot use a card link ask for a quote by email, accept it with a
   purchase order, and receive an invoice. The form composes a `mailto:` link in the
