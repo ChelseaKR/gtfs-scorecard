@@ -1600,7 +1600,8 @@ main:focus { outline: none; }
   margin: 0 0 2.4rem;
 }
 .expired-panel > .page-lede { margin-top: 0.2rem; }
-.expired-panel .section-sub {
+.expired-panel .section-sub,
+#members-h ~ .section-sub {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1.08rem;
@@ -2381,6 +2382,11 @@ main:focus { outline: none; }
 }
 .program-row h3 { margin: 0 0 0.2rem; font-size: 1.05rem; }
 .program-row > div { flex: 1; }
+.program-list-compact li {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.program-list-compact .fineprint { margin-inline-start: 0.4rem; }
 .program-fix { margin: 0.3rem 0 0; font-size: 0.9rem; color: var(--ink-soft); }
 
 /* Supporter workspace (cohort): change line, private notes, shared fixes. */
