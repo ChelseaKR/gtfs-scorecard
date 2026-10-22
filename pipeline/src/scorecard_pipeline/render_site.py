@@ -82,8 +82,10 @@ from .metrics import (
     resolve_service_horizon_status,
 )
 from .mobilitydb import canonical_state
+from .ntd import MIN_STATE_PAGE_FEEDS, StateFeedRow, state_slug
 from .ntd import assess as ntd_assess
 from .ntd import presented_readiness as presented_ntd_readiness
+from .ntd import state_pages as ntd_state_pages
 from .ntd_coverage import published_reporter_coverage
 from .pages_tools import (
     _render_check_page,
@@ -10212,7 +10214,9 @@ def _reporter_coverage_section(coverage: dict[str, Any] | None) -> str:
 
 
 def _render_ntd_page(
-    payload: dict[str, Any], histories: dict[str, list[dict[str, Any]]] | None = None
+    payload: dict[str, Any],
+    histories: dict[str, list[dict[str, Any]]] | None = None,
+    state_pages: dict[str, str] | None = None,
 ) -> str:
     """The national NTD GTFS-readiness view, for an FTA or state-DOT
     program lead. Reads the same ntd.json the pipeline publishes (the published,
@@ -10225,7 +10229,7 @@ def _render_ntd_page(
     by_state = payload.get("by_state", {}) or {}
     if total:
         state_rows = "".join(
-            f"<tr><td>{esc(state)}</td><td>{esc(c.get('ready', 0))}</td>"
+            f"<tr><td>{_state_cell(state, state_pages)}</td><td>{esc(c.get('ready', 0))}</td>"
             f"<td>{esc(c.get('at_risk', 0))}</td><td>{esc(c.get('not_ready', 0))}</td>"
             f"<td>{esc(c.get('total', 0))}</td></tr>"
             for state, c in sorted(by_state.items())
@@ -10234,7 +10238,15 @@ def _render_ntd_page(
             '<section class="feed-details"><h2 class="section-title">By state</h2>'
             '<table class="leaderboard"><thead><tr><th>State</th><th>Ready</th>'
             "<th>At risk</th><th>Not ready</th><th>Total</th></tr></thead>"
-            f"<tbody>{state_rows}</tbody></table></section>"
+            f"<tbody>{state_rows}</tbody></table>"
+            + (
+                '<p class="fineprint">A state name that is a link opens that state\'s '
+                "Report Year 2026 list of tracked feeds, with the shapes.txt and agency_id "
+                "checks for each.</p>"
+                if state_pages
+                else ""
+            )
+            + "</section>"
         )
         lead = (
             f"<strong>{esc(payload.get('pct_ready', 0))}% of {esc(total)} tracked feeds "
@@ -10280,9 +10292,10 @@ def _render_ntd_page(
         "service have had to publish and maintain GTFS. For RY2026, every submission must "
         "provide a stable agency_id for each represented reporter and crosswalk it to the "
         "reporter's NTD ID on P-50; agency_id does not need to equal that five-digit ID. "
-        "An agency that cannot comply yet can request "
-        "a one-year waiver by showing it is pursuing technical assistance to establish "
-        "its GTFS data. The same rule adds shapes.txt to the published feed: "
+        "In 2022 FTA proposed that a reporter without a GTFS feed could request a "
+        "one-year waiver by documenting that it is seeking technical assistance; we have "
+        "not confirmed how that waiver works under the current rule, so ask your NTD "
+        "validation analyst. The same rule adds shapes.txt to the published feed: "
         '<a href="/ntd/shapes/">does your feed need shapes.txt, explained</a>.</p>'
         f"{one_fix_table}"
         '<p class="fineprint">Source: FTA\'s '
@@ -10334,7 +10347,25 @@ _FEDERAL_REGISTER_RY2026 = (
 )
 
 
-def _render_shapes_page(shapes: dict[str, Any]) -> str:
+_FEDERAL_REGISTER_RY2026_PROPOSAL = (
+    "https://www.federalregister.gov/documents/2024/10/31/2024-25341/"
+    "national-transit-database-proposed-reporting-changes-and-clarifications-for-report-years-2025-and"
+)
+_FEDERAL_REGISTER_GTFS_WAIVER_PROPOSAL = (
+    "https://www.federalregister.gov/documents/2022/07/07/2022-14502/"
+    "national-transit-database-reporting-changes-and-clarifications"
+)
+
+
+def _state_cell(state: str, state_pages: dict[str, str] | None) -> str:
+    """A state name in a table, linked to its RY2026 page when it has one."""
+    href = (state_pages or {}).get(state)
+    if href:
+        return f'<a href="{esc(href)}">{esc(state)}</a>'
+    return esc(state)
+
+
+def _render_shapes_page(shapes: dict[str, Any], state_pages: dict[str, str] | None = None) -> str:
     """The shapes.txt RY2026 explainer (/ntd/shapes/): does your GTFS feed need
     shapes.txt, who FTA's requirement covers and when, how to check and fix a
     feed, and where tracked feeds stand nationally and per state.
@@ -10352,9 +10383,16 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
     total = shapes.get("total", 0)
     pct_ready = shapes.get("pct_ready", 0)
     by_state = shapes.get("by_state", {}) or {}
+    state_pages_note = (
+        '<p class="fineprint">A state name that is a link opens that state\'s list of '
+        "tracked feeds. A state appears there once at least "
+        f"{MIN_STATE_PAGE_FEEDS} of its feeds have been checked for shapes.txt.</p>"
+        if state_pages
+        else ""
+    )
     if total:
         state_rows = "".join(
-            f"<tr><td>{esc(state)}</td><td>{esc(c.get('ready', 0))}</td>"
+            f"<tr><td>{_state_cell(state, state_pages)}</td><td>{esc(c.get('ready', 0))}</td>"
             f"<td>{esc(c.get('at_risk', 0))}</td><td>{esc(c.get('not_ready', 0))}</td>"
             f"<td>{esc(c.get('total', 0))}</td></tr>"
             for state, c in sorted(by_state.items())
@@ -10375,7 +10413,8 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
             '<h3 class="section-title">By state</h3>'
             '<table class="leaderboard"><thead><tr><th>State</th><th>Full</th>'
             "<th>Partial</th><th>None</th><th>Checked</th></tr></thead>"
-            f"<tbody>{state_rows}</tbody></table></section>"
+            f"<tbody>{state_rows}</tbody></table>"
+            f"{state_pages_note}</section>"
         )
         reporter_numbers = (
             f"<p>&ldquo;Of {esc(total)} tracked US transit feeds checked, "
@@ -10424,10 +10463,13 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
       <tr><td>Reduced, Rural, and Tribal Reporters</td><td>Report Year 2026</td></tr>
     </tbody></table>
     <p>Report Year 2026 is the step that reaches most small agencies, many of them
-    publishing GTFS under the NTD requirement for the first time. An agency that cannot
-    comply yet can request a one-year waiver by showing it is pursuing technical
-    assistance to establish its GTFS data. Your reporter type and any waiver live in your
-    own NTD filing, not on this site.</p>
+    publishing GTFS under the NTD requirement for the first time. In 2022 FTA proposed
+    that a reporter without a GTFS feed could request a one-year waiver by documenting
+    that it is seeking technical assistance
+    (<a href="{_FEDERAL_REGISTER_GTFS_WAIVER_PROPOSAL}">the 2022 proposal</a>). We have
+    not confirmed how that waiver works under the current rule, so ask your NTD
+    validation analyst. Your reporter type and any waiver live in your own NTD filing,
+    not on this site.</p>
     <p class="fineprint">Source: FTA's
     <a href="{_FEDERAL_REGISTER_RY2026}">NTD reporting changes for report years 2025 and
     2026</a>. Reporters with no fixed-route or deviated-fixed-route service are outside
@@ -10439,7 +10481,10 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
     covers your trips&rdquo; in the NTD GTFS readiness section. If your agency is
     not tracked here, <a href="/try.html">paste your feed's URL</a> to grade it in about a
     minute, or run <a href="/check/">the pre-publish check</a> on an export you have not
-    published yet; that one reads the zip in your browser and uploads nothing.</p></section>
+    published yet; that one reads the zip in your browser and uploads nothing.</p>
+    <p>FTA's notice describes the requirement as a shapes.txt file for each route. This
+    site counts something simpler and stricter: whether every trip in trips.txt carries a
+    shape_id that matches a path in shapes.txt.</p></section>
 
     <section class="feed-details"><h2 class="section-title">How to add it</h2>
     <p>Shape data usually comes from the software that builds your feed, not from
@@ -10455,8 +10500,10 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
     2026 story</h2>
     <p>The story here is population-level: a federal data requirement reaches the smallest
     transit agencies in Report Year 2026, and a measurable share of published feeds do not
-    carry the file yet. When FTA finalized the rule in July 2025, it estimated that just
-    over a third of reporters already provided shapes.txt.</p>
+    carry the file yet. When FTA proposed the requirement in October 2024, it estimated
+    that over one-third of all reporters already maintained the file
+    (<a href="{_FEDERAL_REGISTER_RY2026_PROPOSAL}">the proposal</a>); the final notice does
+    not repeat the estimate.</p>
     {reporter_numbers}
     <p>Two claims these numbers do not support. First, &ldquo;Agency X is out of
     compliance&rdquo;: reporter type and waiver status live in an agency's own NTD filing,
@@ -10489,6 +10536,147 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
         body=body,
         jsonld=jsonld,
     )
+
+
+_STATE_SHAPES_LABELS = {
+    "ready": "Every trip has a shape",
+    "at_risk": "Some trips are missing a shape",
+    "not_ready": "No shapes yet",
+}
+_STATE_AGENCY_ID_LABELS = {
+    "ready": "Provided in agency.txt",
+    "at_risk": "Needs attention",
+    "not_ready": "Missing from agency.txt",
+}
+
+
+def _state_shapes_cell(row: StateFeedRow) -> str:
+    if row.shapes is None:
+        return "Not checked yet"
+    label = _STATE_SHAPES_LABELS.get(row.shapes, row.shapes)
+    if row.shapes == "at_risk" and row.total_trips and row.trips_with_shape is not None:
+        label += f" ({row.trips_with_shape:,} of {row.total_trips:,} trips have one)"
+    return label
+
+
+def _render_ntd_state_page(state: str, rows: list[StateFeedRow]) -> str:
+    """One state's Report Year 2026 view (/ntd/states/<slug>/): which tracked feeds
+    in the state carry shapes.txt for every trip and provide agency_id, as a
+    worklist for the manager asking about one feed and the state program asking
+    about all of them.
+
+    Counts cover only the feeds where the check ran. A feed it did not run for is
+    listed as "Not checked yet" and left out of every count, so a missing
+    measurement never reads as a pass or a failure. The page states what a
+    published feed contains; reporter type, waivers, and filing dates live in each
+    agency's own NTD filing and in FTA's reporting calendar, and are not shown.
+    """
+    measured = [r for r in rows if r.shapes is not None]
+    full = sum(1 for r in measured if r.shapes == "ready")
+    partial = sum(1 for r in measured if r.shapes == "at_risk")
+    none_yet = sum(1 for r in measured if r.shapes == "not_ready")
+    unchecked = len(rows) - len(measured)
+    slug = state_slug(state)
+    canonical = f"{BASE_URL}/ntd/states/{slug}/"
+    table_rows = "".join(
+        f'<tr><td><a href="/agency/{esc(r.id)}/">{esc(r.name)}</a></td>'
+        f"<td>{esc(_state_shapes_cell(r))}</td>"
+        f"<td>{esc(_STATE_AGENCY_ID_LABELS.get(r.agency_id or '', 'Not checked yet'))}</td></tr>"
+        for r in rows
+    )
+    unchecked_note = (
+        f"<p>{esc(unchecked)} of the {esc(len(rows))} feeds listed "
+        f"{'has' if unchecked == 1 else 'have'} not been checked for shapes.txt yet. "
+        "They are listed as not checked and left out of the counts above.</p>"
+        if unchecked
+        else ""
+    )
+    shape_links = [
+        f'<a href="/fix/{code}/">{code}</a>'
+        for code in ("unused_shape", "stop_too_far_from_shape")
+        if code in FIX_CODES_WITH_PAGES
+    ]
+    shape_guides = (
+        " Two validator notices commonly follow new shapes: " + " and ".join(shape_links) + "."
+        if shape_links
+        else ""
+    )
+    body = f"""    {_breadcrumb([("Home", "/"), ("NTD readiness", "/ntd/"), ("shapes.txt, explained", "/ntd/shapes/"), (state, None)])}
+    <a class="backlink" href="/ntd/shapes/">&larr; shapes.txt, explained</a>
+    <h1 class="page-title">{esc(state)} transit feeds and the NTD shapes.txt requirement.</h1>
+    <p class="page-lede">Of the {esc(len(measured))} {esc(state)} feeds this site tracks and
+    has checked for shapes.txt, <strong>{esc(full)} carry a shape for every trip</strong>,
+    {esc(partial)} cover some trips, and {esc(none_yet)} {"has" if none_yet == 1 else "have"} no shapes yet.</p>
+
+    <section class="feed-details"><h2 class="section-title">What the requirement says</h2>
+    <p>FTA's July 2025 final notice makes shapes.txt part of the GTFS that NTD reporters with
+    fixed-route service publish: Full Reporters from Report Year 2025, and Reduced, Rural,
+    and Tribal Reporters from Report Year 2026. The same notice makes agency_id a required
+    field from Report Year 2025, where it had been required only when a feed names several
+    agencies. This page does not say which reporter type a feed belongs to, and filing dates
+    are FTA's to set: check your reporter type in your own NTD filing and the due date in
+    FTA's NTD reporting calendar. See
+    <a href="/ntd/shapes/">the shapes.txt explainer</a> for the rule and its sources.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">Tracked {esc(state)} feeds</h2>
+    <table class="leaderboard"><thead><tr><th>Agency</th><th>shapes.txt</th>
+    <th>agency_id</th></tr></thead><tbody>{table_rows}</tbody></table>
+    {unchecked_note}
+    <p class="fineprint">FTA's notice describes shapes.txt as a file for each route. The
+    shapes.txt column counts something simpler and stricter: whether every trip in trips.txt
+    carries a shape_id that matches a path in shapes.txt. The agency_id column reads agency.txt
+    only; the notice also names routes.txt and fare_attributes.txt. Each row reflects the
+    feed's most recent scoring run. Absence from this list means a feed is not tracked here, not that it
+    is out of compliance.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">If your feed is on the list</h2>
+    <p>Ask whoever builds your GTFS export for shapes.txt with trips.shape_id set to
+    match, republish, and the next completed scoring run re-checks the feed.{shape_guides}</p>
+    <p>Not tracked here? <a href="/try.html">Paste your feed's URL</a> to grade it in about
+    a minute, or run <a href="/check/">the pre-publish check</a> on an export you have not
+    published yet; that one reads the zip in your browser and uploads nothing.</p></section>
+
+    <p class="fineprint">This page is a data-quality heads-up, not an official compliance
+    determination or legal advice. The official record is each agency's own NTD filing and
+    annual <a href="https://www.transit.dot.gov/ntd">D-10 certification</a>. Source:
+    <a href="{_FEDERAL_REGISTER_RY2026}">NTD reporting changes for report years 2025 and
+    2026</a>.</p>"""
+    description = (
+        f"Which tracked {state} transit feeds carry shapes.txt for every trip and provide "
+        "agency_id, two items in FTA's NTD GTFS requirement."
+    )
+    jsonld = _tech_article_jsonld(
+        headline=f"{state} transit feeds and the NTD shapes.txt requirement",
+        description=description,
+        canonical=canonical,
+        about={"@type": "Thing", "name": "GTFS shapes.txt NTD requirement"},
+    )
+    return _page(
+        title=f"{state} NTD shapes.txt readiness",
+        description=description,
+        canonical=canonical,
+        wide=True,
+        body=body,
+        jsonld=jsonld,
+    )
+
+
+def _write_ntd_state_pages(
+    write: Callable[..., None], artifacts: list[dict[str, Any]]
+) -> dict[str, str]:
+    """Write one page per state with enough measured feeds
+    (``ntd.MIN_STATE_PAGE_FEEDS``): the same RY2026 checks as a worklist, for the
+    manager asking about one feed and the state program asking about all of them.
+    Returns state name -> site path for the hub tables to link."""
+    links: dict[str, str] = {}
+    for state, rows in ntd_state_pages(artifacts).items():
+        links[state] = f"/ntd/states/{state_slug(state)}/"
+        write(
+            f"ntd/states/{state_slug(state)}/index.html",
+            _render_ntd_state_page(state, rows),
+            f"{BASE_URL}{links[state]}",
+        )
+    return links
 
 
 def _render_disappeared_page() -> str:
@@ -13355,13 +13543,18 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         ntd_payload["reporter_coverage"] = reporter_coverage
     write("ntd.json", json.dumps(ntd_payload, indent=2, sort_keys=True) + "\n")
     # The human page over the same readiness numbers, for an FTA or state-DOT lead.
-    write("ntd/index.html", _render_ntd_page(ntd_payload, histories), f"{BASE_URL}/ntd/")
+    ntd_state_links = _write_ntd_state_pages(write, ntd_artifacts)
+    write(
+        "ntd/index.html",
+        _render_ntd_page(ntd_payload, histories, ntd_state_links),
+        f"{BASE_URL}/ntd/",
+    )
     # The shapes.txt explainer: the RY2026 requirement in plain language, with the
     # national and per-state coverage numbers, for the manager hearing about the
     # requirement for the first time and the reporter covering it.
     write(
         "ntd/shapes/index.html",
-        _render_shapes_page(shapes_payload),
+        _render_shapes_page(shapes_payload, ntd_state_links),
         f"{BASE_URL}/ntd/shapes/",
     )
     # The symptom-first troubleshooting guide: why service vanishes from trip

@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: trips do not state wheelchair accessibility
+# Trips with no wheelchair accessibility value
 
 Code: `scorecard_wheelchair_accessible_unknown`
+
+## The short answer
+
+trips.txt leaves wheelchair_accessible blank. Fix: set 1 or 2 on each trip; a fully accessible fleet is usually one default in your export.
 
 ## What this means
 

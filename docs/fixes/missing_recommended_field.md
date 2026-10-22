@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: recommended fields left empty
+# missing_recommended_field: recommended fields left empty
 
 Code: `missing_recommended_field` (MobilityData validator)
+
+## The short answer
+
+The notice names a file and column the spec recommends but your feed leaves empty. Fix: fill that column in your export settings.
 
 ## What this means
 

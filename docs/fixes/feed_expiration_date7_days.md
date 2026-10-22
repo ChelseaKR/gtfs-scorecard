@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: the feed expires within 7 days
+# feed_expiration_date7_days: the feed expires within 7 days
 
 Code: `feed_expiration_date7_days` (MobilityData validator)
+
+## The short answer
+
+feed_end_date is within a week, and trip planners drop the agency when it passes. Fix: re-export today with a later end date and publish to the same URL.
 
 ## What this means
 

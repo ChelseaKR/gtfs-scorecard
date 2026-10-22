@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-04"
-date_modified: "2026-10-01"
+date_modified: "2026-10-22"
 ---
 
-# Fix: service coverage expires soon
+# scorecard_feed_expiring_soon: service coverage expires soon
 
 Code: `scorecard_feed_expiring_soon`
+
+## The short answer
+
+Your feed's earlier end date is under 30 days away. Fix: re-export with a validity window at least 60 days out, and export on a routine.
 
 ## What this means
 

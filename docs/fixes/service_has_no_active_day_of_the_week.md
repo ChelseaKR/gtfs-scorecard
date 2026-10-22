@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: service calendars with no days switched on
+# A calendar with no days switched on
 
 Code: `service_has_no_active_day_of_the_week` (MobilityData validator)
+
+## The short answer
+
+A calendar.txt row has monday through sunday all set to 0. Fix: switch on the days it runs, or delete the row and the trips that use it.
 
 ## What this means
 

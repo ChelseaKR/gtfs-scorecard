@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: files contain columns that are not part of GTFS
+# unknown_column: columns that are not part of GTFS
 
 Code: `unknown_column` (MobilityData validator)
+
+## The short answer
+
+A file has a column the GTFS spec does not define. Fix: correct it if it is a typo of a real field; otherwise remove it or leave it.
 
 ## What this means
 

@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: a recommended GTFS file is missing
+# missing_recommended_file: a recommended GTFS file is missing
 
 Code: `missing_recommended_file` (MobilityData validator)
+
+## The short answer
+
+A recommended file, usually feed_info.txt, is absent from the zip. Fix: turn on feed_info.txt in your export and enter the publisher details once.
 
 ## What this means
 

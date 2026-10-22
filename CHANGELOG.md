@@ -29,6 +29,19 @@ the declared public surface).
 
 ### Added
 
+- **NTD Report Year 2026 state pages and a rewrite of the fix guides.** Each
+  state with at least five tracked feeds measured for shapes.txt gets
+  `/ntd/states/<state>/`: every tracked feed in the state with its shapes.txt
+  and agency_id checks, worst first. A feed the check did not run for is listed
+  as not checked and left out of every count; a state below the threshold has no
+  page. The 41 `/fix/<code>/` guides now open with a search-phrase heading and a
+  one-line "short answer" under the code. The NTD pages also stop saying two
+  things the sources do not support: that FTA estimated "just over a third" when
+  it finalized the rule (the estimate, "over one-third of all reporters", is in
+  the October 2024 proposal and the final notice does not repeat it), and that
+  an agency can request a one-year waiver today (FTA proposed that in 2022; the
+  2023 final notice does not mention it). Review the Search Console data for
+  these pages on 2027-06-30.
 - **Retired feeds follow the catalog to their successor.** `scorecard
   supersessions` now proposes a repoint when a tracked record's catalog record
   is retired into one current record nobody tracks: the record keeps its page

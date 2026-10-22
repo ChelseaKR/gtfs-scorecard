@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-04"
-date_modified: "2026-07-04"
+date_modified: "2026-10-22"
 ---
 
-# Fix: flexible service with no booking rules
+# Flexible service with no booking rules
 
 Code: `scorecard_flex_no_booking_rules`
+
+## The short answer
+
+The feed describes flexible service but has no booking_rules.txt. Fix: add it, and reference it from stop_times.txt with the booking rule ids.
 
 ## What this means
 

@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: a required column is missing from a file
+# A required column is missing from a file
 
 Code: `missing_required_column` (MobilityData validator)
+
+## The short answer
+
+A file lacks a column the GTFS spec requires. Fix: add the column the notice names, with a valid value on every row, from your export settings.
 
 ## What this means
 

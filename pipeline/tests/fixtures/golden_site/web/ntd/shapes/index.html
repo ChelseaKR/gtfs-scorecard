@@ -78,10 +78,13 @@
       <tr><td>Reduced, Rural, and Tribal Reporters</td><td>Report Year 2026</td></tr>
     </tbody></table>
     <p>Report Year 2026 is the step that reaches most small agencies, many of them
-    publishing GTFS under the NTD requirement for the first time. An agency that cannot
-    comply yet can request a one-year waiver by showing it is pursuing technical
-    assistance to establish its GTFS data. Your reporter type and any waiver live in your
-    own NTD filing, not on this site.</p>
+    publishing GTFS under the NTD requirement for the first time. In 2022 FTA proposed
+    that a reporter without a GTFS feed could request a one-year waiver by documenting
+    that it is seeking technical assistance
+    (<a href="https://www.federalregister.gov/documents/2022/07/07/2022-14502/national-transit-database-reporting-changes-and-clarifications">the 2022 proposal</a>). We have
+    not confirmed how that waiver works under the current rule, so ask your NTD
+    validation analyst. Your reporter type and any waiver live in your own NTD filing,
+    not on this site.</p>
     <p class="fineprint">Source: FTA's
     <a href="https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026">NTD reporting changes for report years 2025 and
     2026</a>. Reporters with no fixed-route or deviated-fixed-route service are outside
@@ -93,7 +96,10 @@
     covers your trips&rdquo; in the NTD GTFS readiness section. If your agency is
     not tracked here, <a href="/try.html">paste your feed's URL</a> to grade it in about a
     minute, or run <a href="/check/">the pre-publish check</a> on an export you have not
-    published yet; that one reads the zip in your browser and uploads nothing.</p></section>
+    published yet; that one reads the zip in your browser and uploads nothing.</p>
+    <p>FTA's notice describes the requirement as a shapes.txt file for each route. This
+    site counts something simpler and stricter: whether every trip in trips.txt carries a
+    shape_id that matches a path in shapes.txt.</p></section>
 
     <section class="feed-details"><h2 class="section-title">How to add it</h2>
     <p>Shape data usually comes from the software that builds your feed, not from
@@ -109,8 +115,10 @@
     2026 story</h2>
     <p>The story here is population-level: a federal data requirement reaches the smallest
     transit agencies in Report Year 2026, and a measurable share of published feeds do not
-    carry the file yet. When FTA finalized the rule in July 2025, it estimated that just
-    over a third of reporters already provided shapes.txt.</p>
+    carry the file yet. When FTA proposed the requirement in October 2024, it estimated
+    that over one-third of all reporters already maintained the file
+    (<a href="https://www.federalregister.gov/documents/2024/10/31/2024-25341/national-transit-database-proposed-reporting-changes-and-clarifications-for-report-years-2025-and">the proposal</a>); the final notice does
+    not repeat the estimate.</p>
     <p>Once the coverage rollup has run, this page carries the national and per-state numbers; the machine-readable copy lives in <a href="/ntd.json">ntd.json</a>.</p>
     <p>Two claims these numbers do not support. First, &ldquo;Agency X is out of
     compliance&rdquo;: reporter type and waiver status live in an agency's own NTD filing,

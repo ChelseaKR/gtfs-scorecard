@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: trips slightly longer than their drawn route shape
+# Trips slightly longer than their shape
 
 Code: `trip_distance_exceeds_shape_distance_below_threshold` (MobilityData validator)
+
+## The short answer
+
+A trip's stops travel a little farther than its drawn shape. Fix: extend the shape to the first and last stops, or correct the outlying stop.
 
 ## What this means
 

@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: the feed lists no technical contact
+# The feed lists no technical contact
 
 Code: `scorecard_no_feed_contact`
+
+## The short answer
+
+feed_info.txt has no contact email or URL. Fix: add feed_contact_email, ideally a role inbox, or feed_contact_url.
 
 ## What this means
 

@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-05"
-date_modified: "2026-07-05"
+date_modified: "2026-10-22"
 ---
 
-# Fix: the VehiclePositions feed failed during sampling
+# The VehiclePositions feed failed
 
 Code: `scorecard_rt_vehicle_positions_unreachable`
+
+## The short answer
+
+The scorecard could not read your VehiclePositions feed. Fix: ask your AVL vendor to check the endpoint returns fresh GTFS-Realtime data at the same URL.
 
 ## What this means
 

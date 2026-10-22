@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-04"
-date_modified: "2026-07-04"
+date_modified: "2026-10-22"
 ---
 
-# Fix: a stop sits far from the route line
+# stop_too_far_from_shape: a stop sits far from the route line
 
 Code: `stop_too_far_from_shape` (MobilityData validator)
+
+## The short answer
+
+A stop is far from its route's shapes.txt path. Fix: correct the stop's stop_lat and stop_lon, or regenerate the shape so it passes the stop.
 
 ## What this means
 

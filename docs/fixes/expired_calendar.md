@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: service calendars that have already expired
+# Service calendars that have already expired
 
 Code: `expired_calendar` (MobilityData validator)
+
+## The short answer
+
+Some calendar.txt rows end in the past. Fix: turn on your export's active-service-only option, then confirm the remaining calendars reach weeks ahead.
 
 ## What this means
 

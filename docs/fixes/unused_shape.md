@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: the feed contains route shapes no trip uses
+# unused_shape: route shapes no trip uses
 
 Code: `unused_shape` (MobilityData validator)
+
+## The short answer
+
+shapes.txt has shapes that no trip references. Fix: turn on remove-unused-shapes in your export, or retire the old patterns that left them.
 
 ## What this means
 

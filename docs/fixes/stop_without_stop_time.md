@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: stops that no trip ever serves
+# stop_without_stop_time: stops that no trip ever serves
 
 Code: `stop_without_stop_time` (MobilityData validator)
+
+## The short answer
+
+Some stops.txt rows appear in no stop_times.txt row. Fix: remove retired stops from the export, or restore them to the trips that should serve them.
 
 ## What this means
 

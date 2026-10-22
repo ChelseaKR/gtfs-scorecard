@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: a bus appears to move impossibly fast between two stops
+# A bus moves impossibly fast between two stops
 
 Code: `fast_travel_between_consecutive_stops` (MobilityData validator)
+
+## The short answer
+
+Two consecutive stop times imply an impossible speed. Fix: correct the mistyped time or the misplaced stop coordinates, or merge duplicate stops.
 
 ## What this means
 

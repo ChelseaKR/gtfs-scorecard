@@ -1,11 +1,15 @@
 ---
 date_published: "2026-10-01"
-date_modified: "2026-10-01"
+date_modified: "2026-10-22"
 ---
 
-# Fix: feed_info ends earlier than your service calendar
+# The feed_info end date is before your service calendar
 
 Code: `scorecard_feed_end_date_before_calendar`
+
+## The short answer
+
+feed_end_date is earlier than the last service date in your calendar. Fix: set feed_end_date in feed_info.txt to your calendar's last day.
 
 ## What this means
 

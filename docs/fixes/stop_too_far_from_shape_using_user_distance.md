@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-14"
+date_modified: "2026-10-22"
 ---
 
-# Fix: a stop sits far from the route's drawn path
+# A stop far from the shape by shape_dist_traveled
 
 Code: `stop_too_far_from_shape_using_user_distance` (MobilityData validator)
+
+## The short answer
+
+A stop is far from the shape at its shape_dist_traveled value. Fix: correct the shape, the stop coordinates, or regenerate shape_dist_traveled.
 
 ## What this means
 
