@@ -1303,6 +1303,101 @@ def test_the_watchdog_measures_publish_jobs_against_the_bounds_they_declare() ->
     assert 'if [ -z "$ids" ]; then' in step
 
 
+def _watchdog_bound_step() -> str:
+    watchdog = _workflow("watchdog.yml")
+    name = "- name: No scheduled publish job is running up against its own bound"
+    at = watchdog.index(name)
+    return watchdog[at : watchdog.index("\n      - name:", at + len(name))]
+
+
+def _classify_bound_source(step: str) -> str:
+    start = step.index("# classify_bound START")
+    end = step.index("# classify_bound END")
+    return step[start:end]
+
+
+def _branches(step: str) -> dict[str, str]:
+    """The text of each outcome's `case` branch in the bound step."""
+    pattern = r"^ +(killed|hard_stop|warn)\)\n(.*?);;"
+    return dict(re.findall(pattern, step, re.MULTILINE | re.DOTALL))
+
+
+def _classify(
+    conclusion: str, steps: int, minutes: int, bound: int, source: str | None = None
+) -> str:
+    """Run the watchdog's own `classify_bound` shell function, not a copy of it."""
+    function = source if source is not None else _classify_bound_source(_watchdog_bound_step())
+    script = f'set -euo pipefail\n{function}\nclassify_bound "$1" "$2" "$3" "$4"\n'
+    bash = shutil.which("bash")
+    assert bash, "bash is required; the workflow itself runs it on every hosted runner"
+    done = subprocess.run(  # noqa: S603 - fixed bash, integer arguments and a conclusion word
+        [bash, "-c", script, "classify", conclusion, str(steps), str(minutes), str(bound)],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return done.stdout.strip()
+
+
+def test_a_refresh_at_90_percent_of_its_bound_is_a_warning_and_not_a_red_run() -> None:
+    """Measured 2026-10-21: run 39578016995 finished at 162 of 175 minutes, published,
+    and turned the Watchdog red for 18 hours while it stayed in the three-run window.
+    A run that succeeded is not a fault; the hard stop and a kill still are."""
+    step = _watchdog_bound_step()
+    bound = _job_timeout(_workflow("refresh.yml"), "refresh")
+    assert bound == 175
+
+    # 90% of the bound (158 of 175) and the measured 162 are annotations.
+    assert _classify("success", 21, 158, bound) == "warn"
+    assert _classify("success", 21, 162, bound) == "warn"
+    # Well under is quiet.
+    assert _classify("success", 21, 63, bound) == "ok"
+    # The hard stop: within 3% of the bound, one slower cycle is a kill.
+    assert _classify("success", 21, 169, bound) == "warn"
+    assert _classify("success", 21, 170, bound) == "hard_stop"
+    assert _classify("success", 21, 174, bound) == "hard_stop"
+    # A job stopped by its own bound is a kill whatever else is true.
+    assert _classify("cancelled", 20, 175, bound) == "killed"
+    assert _classify("cancelled", 20, 174, bound) == "killed"
+    # Cancelled early (a human, or a superseding run) is not a bound kill.
+    assert _classify("cancelled", 20, 40, bound) == "ok"
+
+    # Only the two fault outcomes set the failure flag; the warning must not.
+    cases = _branches(step)
+    assert "fail=1" in cases["killed"]
+    assert "fail=1" in cases["hard_stop"]
+    assert "fail=1" not in cases["warn"]
+    assert "::warning::" in cases["warn"]
+    assert "::error::" not in cases["warn"]
+
+
+def test_the_bound_classifier_negative_control_would_notice_a_softened_hard_stop() -> None:
+    """Sabotage the function two ways and assert each sabotage applied and was caught."""
+    source = _classify_bound_source(_watchdog_bound_step())
+    bound = 175
+
+    # Control: the unmodified function passes the property the test relies on.
+    assert _classify("success", 21, 172, bound, source) == "hard_stop"
+    assert _classify("cancelled", 20, 175, bound, source) == "killed"
+
+    # Sabotage 1: remove the hard stop (every success below the kill reads as at most a warning).
+    no_hard_stop = source.replace("-ge $((bound * 97))", "-ge $((bound * 1000))")
+    assert no_hard_stop != source, "the sabotage did not apply"
+    assert _classify("success", 21, 172, bound, no_hard_stop) != "hard_stop"
+
+    # Sabotage 2: stop treating a cancelled job at its bound as a kill.
+    no_kill = source.replace('"$conclusion" = "cancelled"', '"$conclusion" = "never"')
+    assert no_kill != source, "the sabotage did not apply"
+    assert _classify("cancelled", 20, 175, bound, no_kill) != "killed"
+
+    # Sabotage 3: put the warning back to red. A copy of the step whose warn branch fails.
+    step = _watchdog_bound_step()
+    loud = step.replace("::warning::", "::error::")
+    assert loud != step, "the sabotage did not apply"
+    assert "::error::" not in _branches(step)["warn"]
+    assert "::error::" in _branches(loud)["warn"], "the control cannot tell loud from quiet"
+
+
 #: 53 minutes of a 55-minute bound, the slowest Daily score shard on 2026-09-09; 52 on
 #: 2026-09-14. The shard held one feed (autolinee-toscane) that took 20.6 minutes
 #: alone, and it now has a shard of its own. Restated here as the evidence the
@@ -1371,8 +1466,8 @@ def test_the_watchdog_reads_the_slowest_matrix_leg_and_not_its_neighbors() -> No
 
 
 def test_the_score_bound_would_have_flagged_the_shard_that_ran_at_53_of_55() -> None:
-    """The watchdog fails a job at 90% of its bound. Restating the bound's own
-    arithmetic here keeps the `score` row honest: the 2026-09-09 shard was already
+    """The watchdog annotates a job at 90% of its bound and fails it at 97%. Restating
+    the bound's own arithmetic here keeps the `score` row honest: the 2026-09-09 shard was already
     past it, and the fix (a shard for the one slow feed) is what brings the
     slowest shard back under."""
     bound = _job_timeout(_workflow("scorecard.yml"), "score")
