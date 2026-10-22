@@ -28,6 +28,7 @@ WORKFLOWS = ROOT / ".github" / "workflows"
 # (workflow file, job id, key family, name of the step that hydrates)
 CASES = [
     ("refresh.yml", "refresh", "refresh", "Hydrate current artifacts from S3"),
+    ("pages.yml", "lighthouse", "pages", "Sync published artifacts from S3"),
 ]
 PRIVATE_PREFIXES = ("cache/", "fixlog", "structure", "validator-cache")
 
@@ -117,3 +118,45 @@ def test_overlay_runs_after_the_sync_and_the_pointer_is_copied(
     assert run.index("aws s3 sync") < run.index("scripts/overlay-s3-mirror.sh")
     assert 'scripts/overlay-s3-mirror.sh "$mirror" data/artifacts "$today" "$yesterday"' in run
     assert "aws s3 cp" in run and "data/artifacts/index.json" in run
+
+
+def test_pages_reads_the_pointer_before_any_agency_file() -> None:
+    """Reading index.json first keeps the generation order the pages guard expects."""
+    run = _joined(
+        _step(_steps("pages.yml", "lighthouse"), "Sync published artifacts from S3")["run"]
+    )
+
+    pointer = run.index("data/artifacts/index.json")
+    assert pointer < run.index("aws s3 sync")
+
+
+@pytest.mark.parametrize(("workflow", "job", "family", "hydrate"), CASES)
+def test_cache_is_restored_by_day_and_saved_once_a_day_on_a_miss(
+    workflow: str, job: str, family: str, hydrate: str
+) -> None:
+    steps = _steps(workflow, job)
+    restore = next(s for s in steps if str(s.get("uses", "")).startswith("actions/cache/restore"))
+    save = next(s for s in steps if str(s.get("uses", "")).startswith("actions/cache/save"))
+    prefix = f"public-artifact-mirror-v1-{family}-"
+    key = f"{prefix}${{{{ steps.mirror-day.outputs.today }}}}"
+
+    assert restore["with"]["key"] == key
+    assert restore["with"]["restore-keys"].strip() == prefix
+    assert save["with"]["key"] == key
+    assert save["with"]["path"] == restore["with"]["path"]
+    # Never per run: a run id in the key would write a ~400 MB entry every cycle.
+    assert "run_id" not in key and "run_attempt" not in key
+    assert f"steps.{restore['id']}.outputs.cache-hit != 'true'" in save["if"]
+    names = [s.get("name") for s in steps]
+    assert names.index(restore["name"]) < names.index(hydrate) < names.index(save["name"])
+
+
+def test_pages_keeps_its_route_geometry_mirror_separate() -> None:
+    """The geometry mirror is keyed per run on purpose; the new one must not share it."""
+    steps = _steps("pages.yml", "lighthouse")
+    keys = [
+        s["with"]["key"] for s in steps if str(s.get("uses", "")).startswith("actions/cache/save")
+    ]
+    assert len(keys) == 2
+    assert len(set(keys)) == 2
+    assert any(key.startswith("route-geometry-v1-") for key in keys)
