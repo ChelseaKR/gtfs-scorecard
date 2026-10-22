@@ -106,6 +106,14 @@ the declared public surface).
 
 ### Changed
 
+- **Less S3 data transfer out for the refresh and the deploy.** The Intraday
+  refresh and Deploy site now keep the public per-agency artifact set (every
+  `latest.json`, today's and yesterday's dated snapshots, badges) in the
+  Actions cache and transfer only the objects S3 changed, instead of
+  re-downloading all of it on every run. Published bytes are unchanged
+  (`scripts/overlay-s3-mirror.sh`, `tests/test_overlay_s3_mirror.py`). A
+  draft, unapplied lifecycle rule is in `docs/s3-feeds-lifecycle-draft.md`.
+
 - **The all-agencies rollup page is well under half the size.** `/program/all/` listed
   every agency as a full card, each with its own heading, grade chip, snapshot
   date and a second "Open next finding" link to the same agency page with a
