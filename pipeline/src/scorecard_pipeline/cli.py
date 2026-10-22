@@ -3394,22 +3394,32 @@ def _warn_held_back_from_sweep(held_back: list[str], corrections_filename: str) 
     )
 
 
-def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    from .config import artifacts_dir
-    from .corrections import CORRECTIONS_FILENAME
-    from .publish import publish, registered_agency_dirs
+@dataclasses.dataclass
+class _SweepOutcome:
+    """What one freshness sweep did, by agency id."""
+
+    swept_ids: list[str] = dataclasses.field(default_factory=list)
+    held_back: list[str] = dataclasses.field(default_factory=list)
+    deferred: list[str] = dataclasses.field(default_factory=list)
+    changes: list[dict[str, Any]] = dataclasses.field(default_factory=list)
+
+
+def _sweep_agencies(
+    root: Path, today: dt.date, *, apply: bool, deadline: float | None
+) -> _SweepOutcome:
+    """Re-date every registered agency that is due, until ``deadline`` passes.
+
+    ``deadline`` is a ``time.monotonic()`` reading; None means no budget.
+    """
+    from .publish import flush_index, publish, registered_agency_dirs
     from .sweep import carries_a_grade_the_scorer_would_refuse, needs_sweep, resweep
 
-    today = args.date
-    root = artifacts_dir()
-    if not root.exists():
-        log.info("No artifacts to sweep.")
-        return 0
-
-    swept = 0
-    swept_ids: list[str] = []
-    held_back: list[str] = []
-    changes: list[dict[str, Any]] = []
+    outcome = _SweepOutcome()
+    # index.json is written once, after the loop, instead of once per agency:
+    # every publish re-serialized the whole file, which holds every agency's
+    # full history (148 MB on 2026-10-22), and that alone made a first-of-day
+    # sweep of ~2,500 agencies take 134 to 167 minutes.
+    index_batch: dict[str, dict[str, Any]] = {}
     # Bounded to the registry: re-stamping an unlisted S3-hydrated directory
     # keeps a delisted feed looking alive (docs/listing-policy.md).
     for agency_dir in registered_agency_dirs(root):
@@ -3421,21 +3431,67 @@ def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentPars
         # a new date. Retracting it is a reviewed corrections.yaml entry, and
         # nobody can write one for a record they were never told about.
         if carries_a_grade_the_scorer_would_refuse(artifact):
-            held_back.append(agency_dir.name)
+            outcome.held_back.append(agency_dir.name)
             continue
         if not needs_sweep(artifact, today):
             continue
+        if deadline is not None and time.monotonic() >= deadline:
+            # Its last published record stays as it is, byte for byte: its
+            # snapshot_date and recompute.as_of still say when it was last
+            # computed, and the next cycle finds it again because that date
+            # is still older than today.
+            outcome.deferred.append(agency_dir.name)
+            continue
         new_artifact, summary = resweep(artifact, today)
-        swept += 1
-        swept_ids.append(str(summary["id"]))
+        outcome.swept_ids.append(str(summary["id"]))
         if summary["grade_changed"]:
-            changes.append(summary)
-        if args.apply:
-            publish(new_artifact)
+            outcome.changes.append(summary)
+        if apply:
+            publish(new_artifact, index_batch=index_batch)
+    if apply:
+        flush_index(index_batch)
+    return outcome
+
+
+def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .config import artifacts_dir
+    from .corrections import CORRECTIONS_FILENAME
+
+    today = args.date
+    root = artifacts_dir()
+    if not root.exists():
+        log.info("No artifacts to sweep.")
+        return 0
+
+    # The budget counts from here, not from the job's start: this step does no
+    # network work, so its own clock is the one that says whether it is still
+    # the cheap step the cadence assumes.
+    deadline = None if args.budget_seconds is None else time.monotonic() + args.budget_seconds
+    outcome = _sweep_agencies(root, today, apply=args.apply, deadline=deadline)
 
     if args.changed_out:
-        Path(args.changed_out).write_text("".join(f"{agency_id}\n" for agency_id in swept_ids))
+        Path(args.changed_out).write_text(
+            "".join(f"{agency_id}\n" for agency_id in outcome.swept_ids)
+        )
 
+    _log_sweep_grade_changes(outcome.changes)
+    _warn_held_back_from_sweep(outcome.held_back, CORRECTIONS_FILENAME)
+    _warn_deferred_from_sweep(outcome.deferred, args.budget_seconds, len(outcome.swept_ids))
+    verb = "Applied" if args.apply else "Would change"
+    log.info(
+        "Freshness sweep for %s: %d agencies reswept, %d held back, %d deferred, %s %d grade(s).%s",
+        today.isoformat(),
+        len(outcome.swept_ids),
+        len(outcome.held_back),
+        len(outcome.deferred),
+        verb.lower(),
+        len(outcome.changes),
+        "" if args.apply else " Re-run with --apply to publish.",
+    )
+    return 0
+
+
+def _log_sweep_grade_changes(changes: list[dict[str, Any]]) -> None:
     for c in sorted(changes, key=lambda c: (c["new_grade"], c["id"] or "")):
         log.info(
             "%s: %s -> %s (%s -> %s days)",
@@ -3445,18 +3501,35 @@ def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentPars
             c["old_days"],
             c["new_days"],
         )
-    _warn_held_back_from_sweep(held_back, CORRECTIONS_FILENAME)
-    verb = "Applied" if args.apply else "Would change"
-    log.info(
-        "Freshness sweep for %s: %d agencies reswept, %d held back, %s %d grade(s).%s",
-        today.isoformat(),
+
+
+def _warn_deferred_from_sweep(deferred: list[str], budget_seconds: int | None, swept: int) -> None:
+    """Name every agency the sweep's time budget left for the next cycle.
+
+    A deferred record is not rewritten: it keeps the expiry countdown and the
+    dates it was published with, and a reader can tell how old those are from
+    its own ``snapshot_date`` and ``recompute.as_of``. Nothing writes a zero or
+    a null into it to mean "not recomputed today". The log carries every id;
+    the annotation carries the count, because the job summary is where a
+    person first sees that a cycle came up short.
+    """
+    if not deferred:
+        return
+    log.warning(
+        "Freshness sweep stopped at its %ss budget: %d agencies reswept, %d deferred. "
+        "A deferred agency keeps its last published record (expiry countdown not "
+        "recomputed today) and is swept next cycle. Deferred: %s",
+        budget_seconds,
         swept,
-        len(held_back),
-        verb.lower(),
-        len(changes),
-        "" if args.apply else " Re-run with --apply to publish.",
+        len(deferred),
+        ", ".join(sorted(deferred)),
     )
-    return 0
+    print(
+        f"::warning title=freshness sweep deferred::{len(deferred)} agencies not re-dated "
+        f"within {budget_seconds}s; each keeps its last published record and is swept next "
+        "cycle (the ids are in the step log)",
+        file=sys.stderr,
+    )
 
 
 def _liveness_targets(
@@ -5254,6 +5327,13 @@ def main(argv: list[str] | None = None) -> int:
     sweep.add_argument(
         "--changed-out",
         help="write ids whose artifacts were refreshed (one per line)",
+    )
+    sweep.add_argument(
+        "--budget-seconds",
+        type=_positive_int,
+        default=None,
+        help="start no agency once this many seconds have passed; the rest keep their last "
+        "record and are named in the log (default: no budget)",
     )
 
     liveness = sub.add_parser(

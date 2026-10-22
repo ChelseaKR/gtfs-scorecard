@@ -1117,3 +1117,195 @@ def test_the_schema_still_accepts_a_joined_value() -> None:
     block["ridership"] = {"annual_rider_trips": 0, "ntd_id": "90142", "reason": ""}
     block["served_area_need"] = {"tier": "high", "scale": "us_acs", "reason": ""}
     validate_artifact(good)
+
+
+# ------------------------------------------------------------- index batching
+#
+# The intraday freshness sweep publishes ~2,500 feeds in one process. Each
+# publish parsed and rewrote the whole index.json, which since the history
+# restore above holds every agency's full history (148 MB on 2026-10-22), so
+# the first sweep of each UTC day ran 134 to 167 minutes and was cancelled at
+# the job's 175-minute bound. publish() now takes an index_batch and the
+# caller writes the index once. These tests hold that the once-written index
+# is the same bytes the per-publish path leaves behind.
+
+CORPUS_SIZE = 50
+
+
+def _corpus_registry() -> dict[str, Agency]:
+    """Fifty canonical feeds plus one retired alias, whose dated evidence may
+    still be published but whose index entry is removed, not written."""
+    agencies = [
+        Agency(
+            id=f"agency-{i:02d}",
+            name=f"Agency {i:02d}",
+            static_gtfs_url=f"https://example.org/{i:02d}.zip",
+            license_note="test",
+        )
+        for i in range(CORPUS_SIZE)
+    ]
+    agencies.append(
+        Agency(
+            id="alias-retired",
+            name="Retired Alias",
+            static_gtfs_url="https://example.org/retired.zip",
+            license_note="test",
+            alias_of="agency-00",
+        )
+    )
+    return {agency.id: agency for agency in agencies}
+
+
+def _corpus_artifact(agency: Agency, date: dt.date, score: float) -> dict[str, Any]:
+    fetch = FetchResult(
+        agency_id=agency.id,
+        path=Path("/tmp/gtfs.zip"),
+        url=agency.static_gtfs_url,
+        fetched_date=date,
+        sha256=FEED_SHA,
+        size_bytes=1024,
+        reused=False,
+        source="unknown",
+    )
+    card = build_scorecard([CategoryResult(name="correctness", score=score, summary="s")])
+    return build_artifact(agency, fetch, card, GENERATED_AT)
+
+
+def _count_index_writes(monkeypatch: pytest.MonkeyPatch) -> list[Path]:
+    """Every index.json write, counted at the one writer all index updates use."""
+    from scorecard_pipeline import publish as publish_module
+
+    real = publish_module._write_json
+    writes: list[Path] = []
+
+    def counting(path: Path, payload: dict[str, Any]) -> None:
+        if path.name == "index.json":
+            writes.append(path)
+        real(path, payload)
+
+    monkeypatch.setattr(publish_module, "_write_json", counting)
+    return writes
+
+
+def _publish_corpus(
+    root: Path, registry: dict[str, Agency], *, batched: bool
+) -> tuple[bytes, int, dict[str, dict[str, Any]] | None]:
+    """Publish the corpus into ``root`` and return the index bytes, the number
+    of publishes made, and the batch (None on the per-publish path)."""
+    from scorecard_pipeline.publish import flush_index
+
+    artifacts_dir().mkdir(parents=True)
+    # Rows the checkout does not hold (their dated files live in S3 alone):
+    # the merge must carry them, on both paths.
+    seed = {
+        "schema_version": SCHEMA_VERSION,
+        "agencies": {
+            "agency-03": {
+                "name": "Agency 03",
+                "history": [{"date": "2026-05-01", "score": 50.0, "grade": "F"}],
+            },
+            "agency-07": {
+                "name": "Agency 07",
+                "history": [{"date": "2026-05-02", "score": 51.0, "grade": "F"}],
+            },
+        },
+    }
+    (artifacts_dir() / "index.json").write_text(json.dumps(seed, indent=2, sort_keys=True) + "\n")
+
+    batch: dict[str, dict[str, Any]] | None = {} if batched else None
+    publishes = 0
+    for i in range(CORPUS_SIZE):
+        agency = registry[f"agency-{i:02d}"]
+        publish(_corpus_artifact(agency, dt.date(2026, 6, 16), 60.0 + i / 2), index_batch=batch)
+        publishes += 1
+    # A second date for one feed, and the retired alias's evidence, in the same loop.
+    publish(_corpus_artifact(registry["agency-10"], dt.date(2026, 6, 17), 70.0), index_batch=batch)
+    publish(
+        _corpus_artifact(registry["alias-retired"], dt.date(2026, 6, 16), 40.0), index_batch=batch
+    )
+    publishes += 2
+    if batch is not None:
+        flush_index(batch)
+    return (artifacts_dir() / "index.json").read_bytes(), publishes, batch
+
+
+def test_a_batched_index_flush_is_byte_identical_to_per_publish_updates(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Fifty-two publishes over fifty agencies, a seeded index with S3-only
+    rows, one feed published on two dates and one retired alias: the index the
+    batch flushes once is the same bytes the per-publish path writes fifty-two
+    times. The write count is the control: the per-publish path really did
+    write the index once per publish, so the counter sees every write and the
+    batch is what removed all but one of them."""
+    from scorecard_pipeline.config import AGENCIES
+
+    registry = _corpus_registry()
+    AGENCIES.update(registry)
+    writes = _count_index_writes(monkeypatch)
+
+    monkeypatch.setenv("SCORECARD_ROOT", str(tmp_path / "sequential"))
+    sequential, publishes, no_batch = _publish_corpus(
+        tmp_path / "sequential", registry, batched=False
+    )
+    sequential_writes = len(writes)
+    writes.clear()
+
+    monkeypatch.setenv("SCORECARD_ROOT", str(tmp_path / "batched"))
+    batched, _, batch = _publish_corpus(tmp_path / "batched", registry, batched=True)
+    batched_writes = len(writes)
+
+    assert no_batch is None
+    assert batch is not None
+    # agency-10's second publish replaced its first entry; the alias is held too.
+    assert len(batch) == CORPUS_SIZE + 1
+    assert batched == sequential
+    assert batched_writes == 1
+    # The negative control, and proof it applied: the index_batch=None path wrote
+    # the index on every one of the fifty-two publishes.
+    assert publishes == CORPUS_SIZE + 2
+    assert sequential_writes == publishes
+
+    index = json.loads(batched)
+    assert len(index["agencies"]) == CORPUS_SIZE
+    assert "alias-retired" not in index["agencies"]
+    history = {k: [row["date"] for row in v["history"]] for k, v in index["agencies"].items()}
+    assert history["agency-03"] == ["2026-05-01", "2026-06-16"]
+    assert history["agency-07"] == ["2026-05-02", "2026-06-16"]
+    assert history["agency-10"] == ["2026-06-16", "2026-06-17"]
+    assert history["agency-00"] == ["2026-06-16"]
+
+
+def test_a_batched_publish_leaves_the_index_alone_until_the_flush(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Between publishes the index is untouched, and an empty batch is a no-op:
+    a loop that published nothing never wrote the index, and still does not."""
+    from scorecard_pipeline.publish import flush_index
+
+    writes = _count_index_writes(monkeypatch)
+    index_path = artifacts_dir() / "index.json"
+
+    flush_index({})
+    assert not index_path.exists()
+    assert writes == []
+
+    batch: dict[str, dict[str, Any]] = {}
+    publish(make_artifact(dt.date(2026, 6, 16), score=70.0), index_batch=batch)
+    publish(make_artifact(dt.date(2026, 6, 17), score=80.0), index_batch=batch)
+    assert not index_path.exists()
+    assert writes == []
+    assert list(batch) == ["unitrans"]
+    assert batch["unitrans"]["snapshot_date"] == "2026-06-17"
+    # The dated evidence and the current pointers were written as they always are.
+    assert (artifacts_dir() / "unitrans" / "2026-06-16.json").exists()
+    latest = json.loads((artifacts_dir() / "unitrans" / "latest.json").read_text())
+    assert latest["snapshot_date"] == "2026-06-17"
+
+    flush_index(batch)
+    assert writes == [index_path]
+    index = json.loads(index_path.read_text())
+    assert [row["date"] for row in index["agencies"]["unitrans"]["history"]] == [
+        "2026-06-16",
+        "2026-06-17",
+    ]

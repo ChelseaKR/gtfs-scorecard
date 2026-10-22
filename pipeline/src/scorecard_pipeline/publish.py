@@ -412,13 +412,28 @@ def _with_consequences(artifact: dict[str, Any], agencies: Iterable[Agency]) -> 
     return with_consequences(artifact, quarantined_ntd_ids=quarantined)
 
 
-def publish(artifact: dict[str, Any]) -> Path:
+def publish(
+    artifact: dict[str, Any],
+    *,
+    index_batch: dict[str, dict[str, Any]] | None = None,
+) -> Path:
     """Write historical evidence and, only for a current feed, current pointers.
 
     Retired registry aliases remain explicitly scoreable for reproduction, but
     that operation writes only its date-shaped evidence. It cannot recreate a
     ``latest.json``, badge, conformance credential, or current geometry after a
     curator has retired the feed.
+
+    ``index_batch`` defers this call's ``index.json`` update: the artifact is
+    recorded under its agency id and the caller writes the index once, through
+    :func:`flush_index`, after its loop. A caller publishing thousands of
+    feeds in one process (the freshness sweep) otherwise parses and rewrites
+    the whole index once per feed, and that file holds every agency's full
+    history. Measured 2026-10-22 against the published 148 MB index: 3.2 s a
+    feed, 2,489 feeds, a step of 134 to 167 minutes, killed at the job's
+    175-minute bound on most first-of-day cycles. The dated file and the
+    current pointers are written here either way, so the deferred merge reads
+    exactly what a per-call update would have read.
     """
     from .config import AGENCIES
 
@@ -440,7 +455,7 @@ def publish(artifact: dict[str, Any]) -> Path:
     dated = agency_dir / f"{date}.json"
     _write_json(dated, artifact)
     if agency is not None and not agency.is_canonical_feed:
-        _update_index(agency_id, artifact)
+        _update_index(agency_id, artifact, index_batch)
         return dated
 
     # A grade taken back stays taken back. The dated file above is written
@@ -459,7 +474,7 @@ def publish(artifact: dict[str, Any]) -> Path:
     _write_json(agency_dir / "latest.json", artifact)
     _write_badge(agency_dir, artifact)
     _write_mark(agency_dir, artifact)
-    _update_index(agency_id, artifact)
+    _update_index(agency_id, artifact, index_batch)
     return dated
 
 
@@ -1026,16 +1041,53 @@ def _write_calibration(stats: dict[str, Any]) -> None:
     _write_json(repo_root() / "data" / "effort-calibration.json", payload)
 
 
-def _update_index(agency_id: str, artifact: dict[str, Any]) -> None:
+def _update_index(
+    agency_id: str,
+    artifact: dict[str, Any],
+    index_batch: dict[str, dict[str, Any]] | None = None,
+) -> None:
+    """Record one publish in data/artifacts/index.json, now or at the flush.
+
+    With no batch the index is read, this agency merged and the file written,
+    as every publish always did. With a batch the artifact is held under its
+    agency id and :func:`flush_index` does the same merge for every held
+    agency in one read and one write.
+    """
+    if index_batch is None:
+        flush_index({agency_id: artifact})
+    else:
+        index_batch[agency_id] = artifact
+
+
+def flush_index(batch: dict[str, dict[str, Any]]) -> None:
     """Maintain data/artifacts/index.json: per-agency history of
     (date, score, grade) so the frontend can draw trends without fetching
-    every artifact."""
-    from .config import AGENCIES
+    every artifact.
 
+    One read and one write for every agency in ``batch``, in insertion order.
+    Each agency's merge touches only its own entry, and reads only its own
+    prior rows and its own dated files, so the file that comes out is
+    byte-identical to the one the same publishes leave behind when each
+    updates the index on its own; tests/test_publish.py holds that over a
+    fifty-agency fixture. An empty batch writes nothing, as a loop that
+    published nothing never touched the index.
+    """
+    if not batch:
+        return
     index_path = artifacts_dir() / "index.json"
     index: dict[str, Any] = {"schema_version": SCHEMA_VERSION, "agencies": {}}
     if index_path.exists():
         index = json.loads(index_path.read_text())
+    for agency_id, artifact in batch.items():
+        _merge_agency_into_index(index, agency_id, artifact)
+    _write_json(index_path, index)
+
+
+def _merge_agency_into_index(
+    index: dict[str, Any], agency_id: str, artifact: dict[str, Any]
+) -> None:
+    """Replace one agency's entry in a loaded index with its reconciled history."""
+    from .config import AGENCIES
 
     # A curator may retain a retired endpoint as an alias so its dated evidence
     # remains reproducible. A manual single-agency re-score may therefore still
@@ -1045,7 +1097,6 @@ def _update_index(agency_id: str, artifact: dict[str, Any]) -> None:
     agency = AGENCIES.get(agency_id)
     if agency is not None and not agency.is_canonical_feed:
         index.setdefault("agencies", {}).pop(agency_id, None)
-        _write_json(index_path, index)
         return
 
     # Reconcile this agency's history from the dated artifacts on disk, and keep
@@ -1077,4 +1128,3 @@ def _update_index(agency_id: str, artifact: dict[str, Any]) -> None:
     if artifact["agency"].get("operating_note"):
         entry["operating_note"] = artifact["agency"]["operating_note"]
     index["agencies"][agency_id] = entry
-    _write_json(index_path, index)
