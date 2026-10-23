@@ -16,7 +16,9 @@ import pytest
 
 _REPO = Path(__file__).resolve().parents[2]
 
-DISCLOSE_ON_REQUEST = "Sponsors are named on the /support/ page and in the repository if they ask to be."
+DISCLOSE_ON_REQUEST = (
+    "Sponsors are named on the /support/ page and in the repository if they ask to be."
+)
 ANON_COUNTED = "Anonymous sponsors are counted and their total is shown."
 ALWAYS_NAMED = (
     "A sponsor that publishes a feed graded on this site, or sells GTFS products or "
@@ -110,5 +112,6 @@ def test_control_a_disagreeing_disclosure_default_fails(rel: str) -> None:
 
 
 def test_control_stale_always_claim_is_detected() -> None:
-    text = _read("web/support/index.html") + " Sponsors are disclosed on this page and in the repository, always."
+    stale = " Sponsors are disclosed on this page and in the repository, always."
+    text = _read("web/support/index.html") + stale
     assert [s for s in _STALE if s in text]
