@@ -335,8 +335,7 @@ jobs:
           # which snapshot it must represent. Reindex uses that verified pair
           # even when lifecycle retention removed its dated object, so it cannot
           # roll current back to the older cutover files in the checkout.
-          aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/index.json" \
-            data/artifacts/index.json --only-show-errors
+          scripts/s3-index.sh get "${{ vars.ARTIFACTS_BUCKET }}" data/artifacts/index.json
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
             --recursive --exclude "*" --include "*/latest.json" --only-show-errors
           # index.json is the public commit pointer. A failed intraday run can
@@ -521,6 +520,11 @@ jobs:
         # Set per step, not job-wide: several steps here (the weekly digest, the
         # coverage check) pipe deliberately tolerantly and would change behavior.
         shell: bash
+        env:
+          # Store the index as gzip (31x smaller to read back) once the repo
+          # variable INDEX_GZIP is "1". Unset, it stays plain JSON; every reader
+          # accepts both (scripts/s3-index.sh).
+          INDEX_GZIP: ${{ vars.INDEX_GZIP }}
         run: |
           # Dated history is additive: S3 is the durable record of artifacts a
           # fresh collect checkout does not carry. The retirement manifest is
@@ -555,7 +559,6 @@ jobs:
           # it is excluded here and uploaded only after all public writes and
           # deletes. Direct mutable latest.json consumers are not atomic with
           # this sequence; the deployed Pages manifest is the bound snapshot.
-          artifact_uri="s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts"
           uv run --project pipeline --with boto3 scorecard publish-artifacts \
             --root data/artifacts \
             --bucket "${{ vars.ARTIFACTS_BUCKET }}" --prefix data/artifacts \
@@ -577,8 +580,7 @@ jobs:
             --delete --cache-control "max-age=300" --only-show-errors
           # Advance the aggregate index only after every public artifact write
           # and bounded deletion above has completed successfully.
-          aws s3 cp data/artifacts/index.json "${artifact_uri}/index.json" \
-            --cache-control "max-age=300" --only-show-errors
+          scripts/s3-index.sh put "${{ vars.ARTIFACTS_BUCKET }}" data/artifacts/index.json
           # Advance private comparison memory only after the public publication
           # it describes succeeded.
           aws s3 sync "$fixlog_stage" \
