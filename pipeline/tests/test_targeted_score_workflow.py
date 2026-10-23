@@ -67,7 +67,12 @@ def test_targeted_hydration_and_etag_guard_cover_authoritative_inputs() -> None:
     assert 'cp "$RUNNER_TEMP/index.before.json" ../data/artifacts/index.json' in text
     assert text.count("aws s3api head-object") == 1
     assert 'if [ "$current_etag" != "$expected_etag" ]' in text
-    assert '--if-match "$expected_etag"' in text
+    # The conditional write is the script's `put ... ETAG`, which sends If-Match
+    # (tests/test_index_gzip_storage.py proves the refusal on a stale ETag).
+    assert (
+        'scripts/s3-index.sh put "$ARTIFACTS_BUCKET" data/artifacts/index.json "$expected_etag"'
+        in text
+    )
 
 
 def test_targeted_publish_is_path_bounded_and_preserves_daily_status() -> None:

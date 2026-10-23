@@ -29,7 +29,7 @@ import re
 import shutil
 import sys
 from collections import Counter
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Final
@@ -845,6 +845,35 @@ def agency_page_lastmod(history: list[dict[str, Any]] | None) -> str:
     if changed is not None:
         candidates.append(changed)
     return max(candidates)
+
+
+def data_date(value: Any) -> str:
+    """A real ISO calendar date from recorded data, or "" for anything else.
+
+    The sitemap ``<lastmod>`` of a clearance log, a directory page and an NTD
+    page is the newest such date the page itself reports (a clearance, a
+    check). It is never the build clock, so two renders of one artifact set
+    agree, and a page with no usable date carries no ``<lastmod>`` rather than
+    a guessed one."""
+    if not isinstance(value, str) or not _ISO_DATE.fullmatch(value):
+        return ""
+    try:
+        dt.date.fromisoformat(value)
+    except ValueError:
+        return ""
+    return value
+
+
+def newest_data_date(values: Iterable[Any]) -> str | None:
+    """The latest valid ISO date among ``values``, or None when there is none."""
+    dates = [d for d in (data_date(v) for v in values) if d]
+    return max(dates) if dates else None
+
+
+def fixlog_lastmod(receipts: list[dict[str, str]]) -> str | None:
+    """The sitemap ``<lastmod>`` for a clearance log: the newest ``cleared`` date
+    it lists. A new receipt is the only thing that changes the page."""
+    return newest_data_date(r.get("cleared") for r in receipts)
 
 
 def _agency_feed_events(artifact: dict[str, Any], history: list[dict[str, Any]]) -> list[Any]:
@@ -5633,10 +5662,12 @@ def _expired_ago(days: int) -> str:
     return f"about {years} year{'s' if years != 1 else ''} ago"
 
 
-def _index_card(aid: str, a: dict[str, Any], note: str = "") -> str:
+def _index_card(aid: str, a: dict[str, Any], note: str = "", *, fixlog: bool = False) -> str:
     """One agency row for the directory. `note` adds a second meta line (used by
     the expired panel to say how long ago the feed lapsed). A curator's
-    operating_note, when present, adds a verified status line below that."""
+    operating_note, when present, adds a verified status line below that.
+    `fixlog` adds a link to the agency's clearance log, which the caller passes
+    only for a log that is indexable, so the link and the sitemap agree."""
     last = a["history"][-1]
     extra = f'<p class="meta meta-flag">{esc(note)}</p>' if note else ""
     op_note = a.get("operating_note")
@@ -5645,12 +5676,18 @@ def _index_card(aid: str, a: dict[str, Any], note: str = "") -> str:
         if op_note
         else ""
     )
+    log = (
+        f'<p class="meta"><a href="/agency/{esc(aid)}/fixes/">Clearance log'
+        f'<span class="visually-hidden"> for {esc(a["name"])}</span></a></p>'
+        if fixlog
+        else ""
+    )
     return (
         f'<li class="agency-card"><span class="grade-chip {_grade_class(last["grade"])}">'
         f'{esc(last["grade"])}<span class="visually-hidden"> grade</span></span>'
         f'<div><h3><a href="/agency/{esc(aid)}/"><bdi>{esc(a["name"])}</bdi></a></h3>'
         f'<p class="meta">Overall {last["score"]} out of 100 · '
-        f"checked {esc(last['date'])}</p>{extra}{op}</div></li>"
+        f"checked {esc(last['date'])}</p>{extra}{op}{log}</div></li>"
     )
 
 
@@ -5753,6 +5790,36 @@ def _agency_index_groups(
     ]
 
 
+def _agency_index_flat_rows(
+    groups: list[dict[str, Any]],
+) -> list[tuple[str, str, dict[str, Any], str]]:
+    """Every directory row in reading order, tagged with its group key."""
+    flat_rows: list[tuple[str, str, dict[str, Any], str]] = []
+    for group in groups:
+        flat_rows.extend(
+            (str(group["key"]), aid, agency, note) for aid, agency, note in group["rows"]
+        )
+    return flat_rows
+
+
+def agency_index_lastmod(
+    index: dict[str, Any],
+    liveness: dict[str, dict[str, Any]],
+    *,
+    page: int = 1,
+    page_size: int = _AGENCY_INDEX_PAGE_SIZE,
+) -> str | None:
+    """The sitemap ``<lastmod>`` for one directory page: the newest "checked"
+    date printed on a card it lists (``_index_card``). None when no listed card
+    carries a valid date."""
+    _, groups = _agency_index_groups(index, liveness)
+    start = (page - 1) * page_size
+    rows = _agency_index_flat_rows(groups)[start : start + page_size]
+    return newest_data_date(
+        (agency.get("history") or [{}])[-1].get("date") for _, _, agency, _ in rows
+    )
+
+
 def _agency_index_pager(page: int, page_count: int, *, label: str) -> str:
     """Compact crawlable previous/next navigation for the directory."""
     if page_count <= 1:
@@ -5803,19 +5870,17 @@ def _render_agency_index(
     *,
     page: int = 1,
     page_size: int = _AGENCY_INDEX_PAGE_SIZE,
+    fixlog_ids: frozenset[str] = frozenset(),
 ) -> str:
-    """Render one bounded page of the crawlable agency directory."""
+    """Render one bounded page of the crawlable agency directory. Agencies in
+    ``fixlog_ids`` (those with an indexable clearance log) link to it."""
     total, groups = _agency_index_groups(index, liveness)
     page_count = max(1, math.ceil(total / page_size))
     if page < 1 or page > page_count:
         raise ValueError(f"directory page {page} is outside 1..{page_count}")
 
-    flat_rows: list[tuple[str, str, dict[str, Any], str]] = []
+    flat_rows = _agency_index_flat_rows(groups)
     group_by_key = {str(group["key"]): group for group in groups}
-    for group in groups:
-        flat_rows.extend(
-            (str(group["key"]), aid, agency, note) for aid, agency, note in group["rows"]
-        )
     start = (page - 1) * page_size
     page_rows = flat_rows[start : start + page_size]
     end = start + len(page_rows)
@@ -5832,7 +5897,10 @@ def _render_agency_index(
         if not selected:
             continue
         group = group_by_key[key]
-        rows = "".join(_index_card(aid, agency, note) for aid, agency, note in selected)
+        rows = "".join(
+            _index_card(aid, agency, note, fixlog=aid in fixlog_ids)
+            for aid, agency, note in selected
+        )
         expired_groups.append(
             f'<section aria-labelledby="{key}-h">'
             f'<h3 class="section-sub" id="{key}-h">{esc(group["heading"])} '
@@ -5857,7 +5925,10 @@ def _render_agency_index(
     selected_current = rows_by_group.get("current", [])
     if selected_current:
         current_group = group_by_key["current"]
-        rows = "".join(_index_card(aid, agency, note) for aid, agency, note in selected_current)
+        rows = "".join(
+            _index_card(aid, agency, note, fixlog=aid in fixlog_ids)
+            for aid, agency, note in selected_current
+        )
         current_section = (
             '<section aria-labelledby="current">'
             '<h2 class="section-title" id="current">Current and upcoming service '
@@ -6419,10 +6490,20 @@ def _compact_member_groups(members: list[dict[str, Any]]) -> str:
     return "".join(parts)
 
 
+def _rollup_ntd_state_link(state: str, href: str) -> str:
+    """A pointer from a state program page to that state's NTD shapes.txt page."""
+    return (
+        '<p class="fineprint">Federal reporting: '
+        f'<a href="{esc(href)}">{esc(state)} transit feeds and the NTD shapes.txt '
+        "requirement</a>, with each tracked feed's shapes.txt and agency_id check.</p>"
+    )
+
+
 def _render_rollup(
     rollup: dict[str, Any],
     others: tuple[str, list[dict[str, Any]]] | None = None,
     offer: ProgramOffer | None = None,
+    ntd_state: tuple[str, str] | None = None,
 ) -> str:
     rid = rollup["rollup"]["id"]
     rname = rollup["rollup"]["name"]
@@ -6457,7 +6538,9 @@ def _render_rollup(
     expired_section = _rollup_expired_section(rollup)
     reconciliation_section = _rollup_reconciliation_section(rollup)
     realtime_section = _rollup_realtime_section(rollup)
-    shapes_section = _rollup_shapes_section(rollup)
+    shapes_section = _rollup_shapes_section(rollup) + (
+        _rollup_ntd_state_link(*ntd_state) if ntd_state else ""
+    )
     common_fixes_section = _rollup_common_fixes_section(rollup) if guarded_summary else ""
     if guarded_summary:
         comparison_note = (
@@ -10675,6 +10758,8 @@ def _write_ntd_state_pages(
             f"ntd/states/{state_slug(state)}/index.html",
             _render_ntd_state_page(state, rows),
             f"{BASE_URL}{links[state]}",
+            # The newest scoring run among the feeds the page lists.
+            lastmod=newest_data_date(r.snapshot_date for r in rows),
         )
     return links
 
@@ -12664,6 +12749,7 @@ def _write_program_pages(
     write: Callable[..., None],
     directory_records: list[dict[str, Any]] | None = None,
     offer: ProgramOffer | None = None,
+    ntd_state_links: dict[str, str] | None = None,
 ) -> None:
     """Every ``/program/<id>/`` rollup page, then ``/program/`` listing them.
 
@@ -12681,6 +12767,11 @@ def _write_program_pages(
     if not rollup_index.exists():
         return
     rendered: list[dict[str, Any]] = []
+    # A state's rollup (id == the state's slug) points at that state's NTD page,
+    # when one was written; nothing else is matched by name.
+    ntd_by_slug = {
+        state_slug(state): (state, href) for state, href in (ntd_state_links or {}).items()
+    }
     for entry in json.loads(rollup_index.read_text()).get("rollups", []):
         payload_file = art / "rollups" / f"{entry['id']}.json"
         if not payload_file.exists():
@@ -12697,7 +12788,7 @@ def _write_program_pages(
         # restate "today" on 68 pages that did not change.
         write(
             f"program/{entry['id']}/index.html",
-            _render_rollup(payload, others, offer),
+            _render_rollup(payload, others, offer, ntd_by_slug.get(str(entry["id"]))),
             f"{BASE_URL}/program/{entry['id']}/",
             lastmod=_rollup_content_date(payload) or None,
         )
@@ -12951,6 +13042,18 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # paint even though the content itself is static.
     agency_page_root = web / "agencies" / "page"
     _remove_stale_agency_index_pages(agency_page_root)
+    # Clearance logs, read once and shared with the per-agency loop below. The
+    # directory links only to a log that will be written and is indexable (in the
+    # sitemap), and only for an agency whose scorecard is rendered, so a listing
+    # link can never point at a page that does not exist.
+    fixlog_receipts: dict[str, list[dict[str, str]]] = {
+        agency_id: load_fixlog(art / agency_id)
+        for agency_id in sorted(index["agencies"])
+        if (art / agency_id / "latest.json").exists()
+    }
+    fixlog_ids = frozenset(
+        agency_id for agency_id, found in fixlog_receipts.items() if fixlog_is_indexable(found)
+    )
     agency_count = len(index.get("agencies") or {})
     agency_page_count = max(1, math.ceil(agency_count / _AGENCY_INDEX_PAGE_SIZE))
     for page_number in range(1, agency_page_count + 1):
@@ -12958,6 +13061,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         page_rel = (
             "agencies/index.html" if page_number == 1 else f"agencies/page/{page_number}/index.html"
         )
+        # Page 1 is already in the hand-authored URL set above, which passes no
+        # date; listing it here too is safe (the sitemap deduplicates, keeping
+        # the first position) and gives it the same derived lastmod.
         write(
             page_rel,
             _render_agency_index(
@@ -12965,8 +13071,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 liveness_state,
                 page=page_number,
                 page_size=_AGENCY_INDEX_PAGE_SIZE,
+                fixlog_ids=fixlog_ids,
             ),
-            f"{BASE_URL}{page_href}" if page_number > 1 else None,
+            f"{BASE_URL}{page_href}",
+            lastmod=agency_index_lastmod(
+                index, liveness_state, page=page_number, page_size=_AGENCY_INDEX_PAGE_SIZE
+            ),
         )
     states = _states_by_agency()
 
@@ -13372,7 +13482,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             # artifact (the map's own data), kept out of the per-day JSON to avoid
             # bloating it. Absent or unreadable geometry simply means no stop list.
             stop_names = _geometry_stop_names(art / agency_id / "geometry.geojson")
-            receipts = load_fixlog(art / agency_id)
+            receipts = (
+                fixlog_receipts[agency_id]
+                if agency_id in fixlog_receipts
+                else load_fixlog(art / agency_id)
+            )
             feed_context = join_feed_context(
                 artifact,
                 consequence_sources,
@@ -13470,6 +13584,8 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                         if fixlog_is_indexable(receipts)
                         else None
                     ),
+                    # The newest clearance the page lists, never the build date.
+                    lastmod=fixlog_lastmod(receipts),
                 )
             elif fixlog_page_dir.exists():
                 shutil.rmtree(fixlog_page_dir)
@@ -13544,10 +13660,13 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write("ntd.json", json.dumps(ntd_payload, indent=2, sort_keys=True) + "\n")
     # The human page over the same readiness numbers, for an FTA or state-DOT lead.
     ntd_state_links = _write_ntd_state_pages(write, ntd_artifacts)
+    # Both national NTD pages report the newest scoring run behind their counts.
+    ntd_lastmod = newest_data_date(a.get("snapshot_date") for a in ntd_artifacts)
     write(
         "ntd/index.html",
         _render_ntd_page(ntd_payload, histories, ntd_state_links),
         f"{BASE_URL}/ntd/",
+        lastmod=ntd_lastmod,
     )
     # The shapes.txt explainer: the RY2026 requirement in plain language, with the
     # national and per-state coverage numbers, for the manager hearing about the
@@ -13556,6 +13675,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         "ntd/shapes/index.html",
         _render_shapes_page(shapes_payload, ntd_state_links),
         f"{BASE_URL}/ntd/shapes/",
+        lastmod=ntd_lastmod,
     )
     # The symptom-first troubleshooting guide: why service vanishes from trip
     # planners, for the manager who searches the symptom rather than a notice
@@ -14007,7 +14127,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/equity/",
     )
 
-    _write_program_pages(art, write, directory["agencies"], program_offer)
+    _write_program_pages(art, write, directory["agencies"], program_offer, ntd_state_links)
 
     write("sitemap.xml", _sitemap(urls, sitemap_lastmods))
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n")
