@@ -8,7 +8,14 @@ A program or consultancy that prepares packets for many agencies can buy every a
 
 ## What sponsorship pays for
 
-The core service costs single-digit dollars a month today. A $75 to $200 monthly
+The core service is built to be cheap and is not yet as cheap as it should be. In
+September 2026 the Amazon S3 charges in the region that holds the published scorecard
+data were $28.35, read from AWS Cost Explorer: $17.26 for data leaving the bucket,
+$8.80 for requests, and $2.29 for storage. We have not yet measured which readers cause
+the outbound data; the likeliest cause is the project's own scheduled runs re-reading
+what they published earlier, and changes to cut it are under way. The target is under
+$10 a month by March 31, 2027. Other AWS charges, such as DNS and the web firewall, are
+shared with other projects, so this page states no total. A $75 to $200 monthly
 operating envelope would add bounded capacity while keeping hard spending caps:
 
 - Hosting and bandwidth for the static site, the read API, and the grade badges the project publishes.
@@ -42,7 +49,7 @@ it arrives through; nothing is earmarked.
 
 | Tier | What it is sized to |
 | --- | --- |
-| $5 a month | The static core: site, daily scoring run, read API, single-digit dollars a month today. |
+| $5 a month | The static core: site, daily scoring run, read API. Their S3 charges were $28.35 in September 2026; the cost section above has the breakdown and the target. |
 | $25 a month | The dynamic edges: the subscribe API, the badge and API worker, and the MCP endpoint, which run on per-request compute at about $15 a month at plausible volume. |
 | $50 one time | About one month of on-demand scoring at demo-era volume ($20 to $60), the next capacity the project would add. |
 | $100 a month | On-demand scoring of any GTFS URL from a web form, every month ([ADR 0029](decisions/0029-instant-score-funnel.md)). Written, not switched on; this is its running cost. |
