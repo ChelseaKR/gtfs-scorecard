@@ -63,21 +63,24 @@
       <h2 class="section-title">Reporters, not feeds</h2>
       <p class="page-lede">Of the <strong>1,253 NTD reporters</strong>
       that operated at least one fixed-route mode in Report Year
-      2024, between <strong>473 and
-      641</strong> have no feed discoverable in any open catalog this
-      site reads. The low end counts a shared rare word in an agency name as a match;
-      the high end does not. The gap between them is how wide a name-based join is,
-      and it is stated rather than averaged away.</p>
+      2024, between <strong>35 and
+      48</strong> have no GTFS link reported to FTA and no feed found in
+      the three open catalogs this site reads (this project's registry, the Transitland
+      Atlas, and the Mobility Database). The others either report a GTFS link to FTA or
+      are matched to a feed in those catalogs. The low end counts a shared rare word in an agency name as a catalog match; the high end does not. The gap between them is how wide a name-based join is, and it is stated rather than averaged away.</p>
       <table class="leaderboard"><thead><tr><th>Reporters</th><th>Count</th></tr></thead>
-      <tbody><tr><td>Matched to a feed this site tracks</td><td>573</td></tr><tr><td>Feed found in another open catalog</td><td>39</td></tr><tr><td>Name overlap only, needs a human</td><td>168</td></tr>
-      <tr><td>No candidate found anywhere</td><td>473</td></tr></tbody></table>
+      <tbody><tr><td>Matched to a feed this site tracks</td><td>573</td></tr><tr><td>Feed found in another open catalog</td><td>39</td></tr><tr><td>GTFS link reported to FTA, not matched to a catalog</td><td>593</td></tr><tr><td>Name overlap only, needs a human</td><td>13</td></tr>
+      <tr><td>No GTFS link reported and no candidate in the catalogs read</td><td>35</td></tr></tbody></table>
       <p class="fineprint">These are counts of NTD reporters. The
       1,253 above is a different denominator from the tracked-feed
       count at the top of this page, which counts feed records: one operator can
       publish several, and a regional feed can carry many operators. The two are never
-      added. A reporter with no discoverable feed is a limit of what open catalogs
-      can see, not a finding about that agency, and the fix may belong to FTA's own
-      crosswalk or to a catalog rather than to the agency. Report year
+      added. A reporter with no link and no catalog match is a limit of what these sources can see, not a finding about that agency, and the fix may belong to FTA's own
+      crosswalk or to a catalog rather than to the agency. A GTFS link in FTA's NTD data is self-reported by the agency and is not fetched or validated by this project. It shows that the agency has told FTA
+      where its feed is, not that the feed is current or valid. The link table has no
+      report-year column, so it is matched by NTD ID against the Report Year
+      2024 reporters; it was retrieved
+      2026-10-23. Report year
       2024, retrieved 2026-08-15;
       sources and terms are in <code>data/ntd/PROVENANCE.md</code>.</p>
     </section>

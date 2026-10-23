@@ -86,6 +86,15 @@ from .ntd import MIN_STATE_PAGE_FEEDS, StateFeedRow, state_slug
 from .ntd import assess as ntd_assess
 from .ntd import presented_readiness as presented_ntd_readiness
 from .ntd import state_pages as ntd_state_pages
+from .ntd_coverage import (
+    ABSENCE_CAVEAT as NTD_ABSENCE_CAVEAT,
+)
+from .ntd_coverage import (
+    FTA_LINK_CAVEAT as NTD_FTA_LINK_CAVEAT,
+)
+from .ntd_coverage import (
+    RANGE_CAVEAT as NTD_RANGE_CAVEAT,
+)
 from .ntd_coverage import published_reporter_coverage
 from .pages_tools import (
     _render_check_page,
@@ -10319,43 +10328,72 @@ def _reporter_coverage_section(coverage: dict[str, Any] | None) -> str:
 
     Three things this section is careful about. Every number is a count of
     reporters, and the registry counts feed records, so the two are never added.
-    A reporter with no discoverable feed is a limit of what open catalogs can
-    see, not a finding about the agency and never a zero. And the range is
-    published at both ends, because a name-based join is wide and pretending
-    otherwise would be the overclaim.
+    A reporter with no GTFS link reported to FTA and no catalog match is a limit
+    of what these sources can see, not a finding about the agency and never a
+    zero; "has no feed" is never printed. And the range is published at both
+    ends, because a name-based join is wide and pretending otherwise would be
+    the overclaim. The link table is read by NTD ID and is self-reported: when
+    the snapshot says it was not read, the section says so rather than quietly
+    printing the older, wider range.
     """
     if not coverage:
         return ""
     obligated = coverage["obligated_reporters"]
     low = coverage["no_discoverable_feed_low"]
     high = coverage["no_discoverable_feed_high"]
+    fta_read = bool(coverage.get("fta_links_read"))
+    row_specs = [
+        ("tracked_by_registry", "Matched to a feed this site tracks"),
+        ("discoverable_elsewhere", "Feed found in another open catalog"),
+    ]
+    if fta_read:
+        row_specs.append(
+            ("fta_link_reported", "GTFS link reported to FTA, not matched to a catalog")
+        )
+    row_specs.append(("needs_human_review", "Name overlap only, needs a human"))
     rows = "".join(
         f"<tr><td>{esc(label)}</td><td>{esc(f'{coverage[key]:,}')}</td></tr>"
-        for key, label in (
-            ("tracked_by_registry", "Matched to a feed this site tracks"),
-            ("discoverable_elsewhere", "Feed found in another open catalog"),
-            ("needs_human_review", "Name overlap only, needs a human"),
-        )
+        for key, label in row_specs
     )
+    if fta_read:
+        last_row = "No GTFS link reported and no candidate in the catalogs read"
+        lede = f"""between <strong>{esc(f"{low:,}")} and
+      {esc(f"{high:,}")}</strong> have no GTFS link reported to FTA and no feed found in
+      the three open catalogs this site reads (this project's registry, the Transitland
+      Atlas, and the Mobility Database). The others either report a GTFS link to FTA or
+      are matched to a feed in those catalogs. {NTD_RANGE_CAVEAT}"""
+        fta_note = f""" {NTD_FTA_LINK_CAVEAT} It shows that the agency has told FTA
+      where its feed is, not that the feed is current or valid. The link table has no
+      report-year column, so it is matched by NTD ID against the Report Year
+      {esc(coverage["report_year"])} reporters; it was retrieved
+      {esc(coverage["fta_links_retrieved"])}."""
+        absence = NTD_ABSENCE_CAVEAT
+    else:
+        last_row = "No candidate in the three catalogs read"
+        lede = f"""between <strong>{esc(f"{low:,}")} and
+      {esc(f"{high:,}")}</strong> have no feed found in the three open catalogs this site
+      reads (this project's registry, the Transitland Atlas, and the Mobility Database).
+      {NTD_RANGE_CAVEAT} The GTFS links agencies report to FTA were not read for this
+      snapshot, so some reporters counted here do report a feed to FTA."""
+        fta_note = ""
+        absence = (
+            "A reporter with no feed found in these catalogs is a limit of what they can "
+            "see, not a finding about that agency"
+        )
     return f"""<section class="feed-details" id="reporters">
       <h2 class="section-title">Reporters, not feeds</h2>
       <p class="page-lede">Of the <strong>{esc(f"{obligated:,}")} NTD reporters</strong>
       that operated at least one fixed-route mode in Report Year
-      {esc(coverage["report_year"])}, between <strong>{esc(f"{low:,}")} and
-      {esc(f"{high:,}")}</strong> have no feed discoverable in any open catalog this
-      site reads. The low end counts a shared rare word in an agency name as a match;
-      the high end does not. The gap between them is how wide a name-based join is,
-      and it is stated rather than averaged away.</p>
+      {esc(coverage["report_year"])}, {lede}</p>
       <table class="leaderboard"><thead><tr><th>Reporters</th><th>Count</th></tr></thead>
       <tbody>{rows}
-      <tr><td>No candidate found anywhere</td><td>{esc(f"{low:,}")}</td></tr></tbody></table>
+      <tr><td>{esc(last_row)}</td><td>{esc(f"{low:,}")}</td></tr></tbody></table>
       <p class="fineprint">These are counts of NTD reporters. The
       {esc(f"{obligated:,}")} above is a different denominator from the tracked-feed
       count at the top of this page, which counts feed records: one operator can
       publish several, and a regional feed can carry many operators. The two are never
-      added. A reporter with no discoverable feed is a limit of what open catalogs
-      can see, not a finding about that agency, and the fix may belong to FTA's own
-      crosswalk or to a catalog rather than to the agency. Report year
+      added. {absence}, and the fix may belong to FTA's own
+      crosswalk or to a catalog rather than to the agency.{fta_note} Report year
       {esc(coverage["report_year"])}, retrieved {esc(coverage["retrieved_utc"][:10])};
       sources and terms are in <code>data/ntd/PROVENANCE.md</code>.</p>
     </section>"""
