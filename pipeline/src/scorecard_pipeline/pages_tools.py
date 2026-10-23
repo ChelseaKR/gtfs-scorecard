@@ -995,6 +995,12 @@ _TOOLS = [
         "No account",
     ),
     (
+        "/gtfs-validator/",
+        "GTFS validator and the scorecard grade",
+        "How the scorecard works with the MobilityData validator, how to check a feed, and what the grade does not claim.",
+        "No account",
+    ),
+    (
         "/try.html",
         "Request a one-off score",
         "Submit a published feed URL through the GitHub-backed request path, or run the scorer locally; hosted instant scoring is not enabled.",

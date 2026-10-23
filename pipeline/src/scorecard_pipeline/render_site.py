@@ -7467,6 +7467,62 @@ def _render_crosswalk_page(document: _AuthoredMarkdown) -> str:
     )
 
 
+#: Meta description for /gtfs-validator/ (50-155 characters by site-seo.json).
+VALIDATOR_PAGE_DESCRIPTION = (
+    "How the GTFS Scorecard works with the MobilityData GTFS validator: how to check "
+    "a feed, what the grade adds to validator notices, and its limits."
+)
+
+
+def _render_validator_page(document: _AuthoredMarkdown) -> str:
+    """The GTFS validator explainer (docs/gtfs-validator.md) as a crawlable page.
+
+    Answers the "gtfs validator" / "gtfs feed validator" search intent with what
+    the scorecard does with the canonical MobilityData validator. Every claim in
+    the Markdown is backed by docs/rubric.md, the About page, the pre-publish
+    check, or the one-off score request page (tests/test_validator_page.py pins
+    that). The sitemap ``<lastmod>`` is the document's authored ``date_modified``,
+    the same rule the crosswalk follows, never the render clock."""
+    canonical = f"{BASE_URL}/gtfs-validator/"
+    body_html, title_text = _md_to_html(document.body)
+    title_text = title_text or "GTFS validator and the scorecard grade"
+    desc = VALIDATOR_PAGE_DESCRIPTION
+    body_html = _insert_authored_dates(body_html, document)
+    crumb = _breadcrumb([("Home", "/"), ("Tools", "/tools/"), ("GTFS validator", None)])
+    body = f"""    {crumb}
+    <article class="feed-details">{body_html}</article>"""
+    jsonld = _tech_article_jsonld(
+        headline=title_text,
+        description=desc,
+        canonical=canonical,
+    )
+    jsonld["datePublished"] = document.date_published
+    jsonld["dateModified"] = document.date_modified
+    return _page(
+        title=f"{title_text} — GTFS Scorecard",
+        description=desc,
+        canonical=canonical,
+        body=body,
+        jsonld=jsonld,
+    )
+
+
+def _write_validator_page(root: Path, write: Callable[..., None]) -> None:
+    """Write /gtfs-validator/ and list it in the sitemap with the document's
+    authored ``date_modified`` as ``<lastmod>``. A checkout without the document
+    renders without the page, as the crosswalk does."""
+    validator_file = root / "docs" / "gtfs-validator.md"
+    if not validator_file.exists():
+        return
+    document = _parse_authored_markdown(validator_file.read_text(), str(validator_file))
+    write(
+        "gtfs-validator/index.html",
+        _render_validator_page(document),
+        f"{BASE_URL}/gtfs-validator/",
+        lastmod=document.date_modified,
+    )
+
+
 def _render_claim_page() -> str:
     """Explain the evidence-backed correction and agency-claim process.
 
@@ -13002,6 +13058,8 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             f"{BASE_URL}/crosswalk/",
             lastmod=crosswalk.date_modified,
         )
+
+    _write_validator_page(root, write)
 
     # web/ is committed between renders. Remove generated scorecard directories
     # that are no longer present in the registry-bounded index, or a delisted
