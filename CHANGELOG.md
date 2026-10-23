@@ -172,6 +172,20 @@ the declared public surface).
 
 ### Fixed
 
+- **The intraday expiry sweep no longer runs out the job's clock.** Once the
+  fix below restored every agency's history to `index.json` (148 MB, 224,890
+  rows on 2026-10-22), each of the ~2,489 feeds the first sweep after UTC
+  midnight re-dates parsed and rewrote the whole file, 3.2 s a feed, so the
+  "Refresh expiry from calendar data" step ran 134 to 167 minutes and was
+  cancelled at the job's 175-minute bound on most days from 2026-10-14; a
+  cancelled job publishes nothing, so the next cycle repeated it and
+  scorecards stayed stale for up to ten hours. `publish()` now takes an
+  `index_batch`, and the sweep writes the index once after its loop
+  (`publish.flush_index`), byte-identical to the per-feed result. The sweep
+  also takes `--budget-seconds` (2400 in the workflow): past it no new agency
+  starts, the rest are named in the log and a warning annotation, each keeps
+  its last published record, and the step exits 0. The step carries
+  `timeout-minutes: 50` as the backstop for a wedged runner.
 - **The national trend kept two days of history.** "Is transit data getting
   better?" (`/pulse/#trend`, `api/v1/trend.json`) showed only 2026-10-11 and
   2026-10-12. Every intraday re-score and freshness sweep rebuilt a feed's

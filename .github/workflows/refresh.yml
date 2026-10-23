@@ -226,10 +226,32 @@ jobs:
               "data/cache/structure/$1.json" --only-show-errors || true
           ' fingerprint < "$RUNNER_TEMP/changed.txt"
 
+      # RELIABILITY: a local-disk step with no network, and until 2026-10-22
+      # the step with no bound of its own. Every publish re-serialized the
+      # whole index.json, which holds every agency's full history since #522
+      # (148 MB, 224,890 rows on 2026-10-22), so the first sweep after UTC
+      # midnight (~2,489 agencies, 3.2 s each) ran 134 to 167 minutes and was
+      # killed at the job's 175-minute bound on most days (runs 39703075009,
+      # 39557688508, 39524867695, 39382419582, 39365201144, 39351069391). A
+      # killed job publishes nothing, so the next cycle repeated the sweep.
+      # The index is now written once per sweep (publish.flush_index).
+      #
+      # 2400 s is the budget the sweep honors itself: the same first-of-day
+      # sweep took 17 to 28 minutes through 2026-10-13, when the index was a
+      # fraction of its present size, so a budget of 40 minutes clears every
+      # sweep that was ever healthy and still sits under the 50-minute step
+      # timeout, which is the backstop for a wedged disk or runner. Both sit
+      # far below 175. A sweep that reaches the budget stops taking agencies,
+      # publishes what it swept, names the rest in the log and a warning
+      # annotation, and exits 0; a deferred agency keeps its last published
+      # record and is found again next cycle. tests/test_workflow_safety.py
+      # holds budget < step timeout < job timeout.
       - name: Refresh expiry from calendar data (no fetch, no validator)
         working-directory: pipeline
+        timeout-minutes: 50
         run: |
           uv run scorecard freshness-sweep --apply \
+            --budget-seconds 2400 \
             --changed-out "$RUNNER_TEMP/swept.txt"
 
       # `scorecard rescore` (pipeline/src/scorecard_pipeline/rescore.py) is

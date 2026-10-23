@@ -2089,3 +2089,55 @@ def test_the_built_archive_is_never_kept_on_the_run() -> None:
     # And no summary tells a reader to go and get it there.
     raw = _workflow("report-bundle.yml")
     assert "attached to this run" not in raw.replace("is not attached to this run", "")
+
+
+def _expiry_sweep_step() -> str:
+    workflow = _workflow("refresh.yml")
+    step_at = workflow.index("- name: Refresh expiry from calendar data")
+    return workflow[step_at : workflow.index("\n      - name:", step_at + 1)]
+
+
+def test_the_expiry_sweep_has_a_budget_under_a_step_timeout_under_the_job_bound() -> None:
+    """The "Refresh expiry from calendar data" step had no bound of its own and
+    no budget, so it could spend the whole job. Measured 2026-10-22 over the
+    216 scheduled runs back to 2026-09-15: through 2026-10-13 the first sweep
+    after UTC midnight took 17 to 28 minutes; from 2026-10-14, once #522 made
+    index.json carry every agency's full history (148 MB, 224,890 rows), each
+    of the ~2,489 publishes rewrote the whole file at 3.2 s a feed and the
+    step ran 134 to 167 minutes. Runs 39703075009 (163.7 min), 39557688508
+    (154.4), 39524867695 (166.6), 39382419582, 39365201144 and 39351069391
+    were cancelled at the job's 175-minute bound with the loop still inside
+    the alphabet; 39578016995 finished in 134.6. A cancelled job publishes
+    nothing, so the next cycle repeated the sweep from "a".
+
+    The sweep now writes the index once (tests/test_publish.py), honors a
+    budget of its own (tests/test_sweep.py), and the step has a timeout as
+    the backstop for a wedged runner. This holds the three numbers in order:
+    the budget the sweep stops itself at, under the step's own timeout, under
+    the job's. 2400 s clears every sweep that was healthy (28 minutes at the
+    most, when the index was a fraction of its present size) and leaves ten
+    minutes under the step timeout for the agency in flight and the one
+    index write; 50 minutes is well under the 175 the job allows, so a wedged
+    sweep fails visibly inside the hour instead of eating the cadence.
+    """
+    workflow = _workflow("refresh.yml")
+    step = _expiry_sweep_step()
+    job_timeout = _job_timeout(workflow, "refresh")
+
+    bound = re.search(r"^        timeout-minutes: (\d+)$", step, re.MULTILINE)
+    assert bound, "the expiry sweep step declares no timeout-minutes of its own"
+    step_timeout = int(bound.group(1))
+    budget = re.search(r"--budget-seconds (\d+)", step)
+    assert budget, "the sweep is not handed a --budget-seconds"
+    budget_seconds = int(budget.group(1))
+
+    assert "--apply" in step, "the workflow's sweep must publish, or the budget guards nothing"
+    assert budget_seconds < step_timeout * 60 < job_timeout * 60, (
+        f"budget {budget_seconds}s, step timeout {step_timeout} min, job timeout "
+        f"{job_timeout} min must be strictly increasing"
+    )
+    # Room under the step timeout for the agency in flight when the budget
+    # passes and for the single index write after the loop.
+    assert step_timeout * 60 - budget_seconds >= 5 * 60
+    # Both sit far below the bound the sweep was being killed at.
+    assert step_timeout * 2 <= job_timeout
