@@ -670,8 +670,13 @@ agencies:
     mdb_id: 2177
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # The Mobility Database record (mdb-2183) is marked deprecated with the free-text
+  # name "do not use - deprecfated" and no redirect. The feed itself is current
+  # (feed_version 15-Oct-2026, service through 2027-11-01) and names its agency
+  # "Sound Generations: Hyde Shuttle" in agency.txt, so the record keeps its id and
+  # takes that name (checked 2026-10-23).
   - id: sound-generations-hyde-shuttle
-    name: do not use - deprecfated
+    name: "Sound Generations: Hyde Shuttle"
     subdivision_code: US-WA
     subdivision_name: Washington
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/soundgenerations-wa-us/soundgenerations-wa-us-hyde--flex-v2.zip

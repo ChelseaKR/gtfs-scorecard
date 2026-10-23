@@ -42,9 +42,17 @@ FEED_DESCRIPTOR_NAMES = frozenset(
 )
 
 
+# The catalog's "do not use" notes are free text, and a typo ("deprecfated",
+# mdb-2183) slipped past the exact-match set above and was published as an
+# agency name on /ntd/states/washington/. Any name that opens with this phrase
+# is a curator's note about the feed, never an agency.
+_DO_NOT_USE_PREFIX = "do not use"
+
+
 def is_feed_descriptor(name: str) -> bool:
     """True when a name is a feed descriptor, not a real agency name."""
-    return name.strip().lower() in FEED_DESCRIPTOR_NAMES
+    normalized = " ".join(name.lower().split())
+    return normalized in FEED_DESCRIPTOR_NAMES or normalized.startswith(_DO_NOT_USE_PREFIX)
 
 
 @dataclass(frozen=True)
