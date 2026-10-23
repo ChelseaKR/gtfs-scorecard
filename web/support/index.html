@@ -105,11 +105,16 @@
 
     <section aria-labelledby="costs-h">
       <h2 class="section-title" id="costs-h">What it costs to run</h2>
-      <p>The core site is deliberately cheap. Static pages, a scheduled daily scoring run, and a read
-      <abbr title="application programming interface">API</abbr> together cost single-digit
-      dollars a month today. A bounded operating envelope of roughly
-      <strong>$75 to $200 a month</strong> would add capacity while preserving hard spending
-      caps. Sponsorship at that level pays for:</p>
+      <p>The core site is built to be cheap, and it is not as cheap as it should be yet. In
+      September 2026 the Amazon S3 charges in the region that holds the published scorecard
+      data were <strong>$28.35</strong>, read from AWS Cost Explorer: $17.26 for data leaving
+      the bucket, $8.80 for requests, and $2.29 for storage. We have not yet measured which
+      readers cause the outbound data; the likeliest cause is the project's own scheduled runs
+      re-reading what they published earlier, and changes to cut it are under way. The target
+      is under $10 a month by March 31, 2027. Other AWS charges, such as DNS and the web
+      firewall, are shared with other projects, so this page states no total. A bounded
+      operating envelope of roughly <strong>$75 to $200 a month</strong> would add capacity
+      while preserving hard spending caps. Sponsorship at that level pays for:</p>
       <ul>
         <li><strong>Hosting and bandwidth</strong> for the site, the read API, and the grade
         badges the project publishes.</li>
@@ -175,8 +180,9 @@
       nothing is earmarked.</p>
       <dl class="sponsor-tiers">
         <dt>$5 a month</dt>
-        <dd>The static core: the site, the daily scoring run, and the read API, which together
-        cost single-digit dollars a month today.</dd>
+        <dd>The static core: the site, the daily scoring run, and the read API. Their S3
+        charges were $28.35 in September 2026; the cost section above has the breakdown and
+        the target.</dd>
         <dt>$25 a month</dt>
         <dd>The dynamic edges: the subscribe API, the badge and API worker, and the MCP
         endpoint. They run on per-request compute, about $15 a month at plausible volume.</dd>
