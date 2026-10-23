@@ -197,6 +197,14 @@ the declared public surface).
 
 ### Fixed
 
+- **The support page and `docs/support.md` no longer say the core costs
+  "single-digit dollars a month".** AWS Cost Explorer shows $28.35 of Amazon S3
+  charges in us-west-2 for September 2026 ($17.26 data transfer out, $8.80
+  requests, $2.29 storage). Both pages now state that figure and its month, say
+  the cause by requester is not yet measured, give the Stage 0 target (under
+  $10 a month by 2027-03-31), and state no total because the AWS account is
+  shared. `pipeline/tests/test_support_cost_claim.py` pins the wording.
+
 - **The intraday expiry sweep no longer runs out the job's clock.** Once the
   fix below restored every agency's history to `index.json` (148 MB, 224,890
   rows on 2026-10-22), each of the ~2,489 feeds the first sweep after UTC
