@@ -142,9 +142,8 @@ jobs:
           mirror="$RUNNER_TEMP/public-artifact-mirror"
           log="$RUNNER_TEMP/mirror-sync.log"
           mkdir -p "$mirror"
-          retry_s3_sync "index.json" aws s3 cp \
-            "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/index.json" \
-            data/artifacts/index.json --only-show-errors
+          retry_s3_sync "index.json" scripts/s3-index.sh get \
+            "${{ vars.ARTIFACTS_BUCKET }}" data/artifacts/index.json
           retry_s3_sync "published artifacts" aws s3 sync \
             "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" "$mirror" \
             --exclude "*" \
@@ -285,8 +284,7 @@ jobs:
               --artifacts-root ../data/artifacts)
           }
           reread_index() {
-            aws s3 cp "s3://${bucket}/data/artifacts/index.json" \
-              data/artifacts/index.json --only-show-errors
+            scripts/s3-index.sh get "$bucket" data/artifacts/index.json
           }
           reread_every_latest() {
             reread_index

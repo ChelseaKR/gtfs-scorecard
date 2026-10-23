@@ -310,9 +310,7 @@ def test_daily_index_is_the_last_aggregate_discovery_pointer() -> None:
     publish = workflow.index("scorecard publish-artifacts")
     legacy_cleanup = workflow.index("Remove legacy public-path pipeline state")
     changes_cleanup = workflow.index("Named-change history is a bounded public claim surface")
-    index_upload = workflow.index(
-        'aws s3 cp data/artifacts/index.json "${artifact_uri}/index.json"'
-    )
+    index_upload = workflow.index("scripts/s3-index.sh put")
     private_state = workflow.index("Advance private comparison memory")
 
     # index.json is the aggregate discovery pointer, not another member of the
@@ -1988,7 +1986,8 @@ def _run_hydrate(
         "#!/bin/sh\n"
         'for arg in "$@"; do case "$arg" in s3://*) key="$arg";; esac; done\n'
         'case "$key" in\n'
-        "  *index.json) exit 0 ;;\n"
+        # The index is read through scripts/s3-index.sh, which needs a body.
+        "  *index.json) printf '{}' > \"$4\"; exit 0 ;;\n"
         f"  {'|'.join(f'*/{blip}/*' for blip in sorted(blips)) or '__none__'})\n"
         '    echo "download failed: Connection reset by peer" >&2; exit 1 ;;\n'
         "  *)\n"
@@ -1999,6 +1998,11 @@ def _run_hydrate(
     (stubs / "sleep").write_text("#!/bin/sh\nexit 0\n")
     for stub in stubs.iterdir():
         stub.chmod(0o755)
+    # The step reads the index through the repository's own script, from the
+    # directory above pipeline/.
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    shutil.copy2(ROOT / "scripts" / "s3-index.sh", scripts / "s3-index.sh")
     summary = tmp_path / "summary.md"
     done = subprocess.run(  # noqa: S603 - fixed shell and a repository-owned workflow step
         [_BASH, "-c", str(_hydrate_step()["run"])],
