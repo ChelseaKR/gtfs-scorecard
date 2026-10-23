@@ -29,7 +29,7 @@ import re
 import shutil
 import sys
 from collections import Counter
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Final
@@ -845,6 +845,35 @@ def agency_page_lastmod(history: list[dict[str, Any]] | None) -> str:
     if changed is not None:
         candidates.append(changed)
     return max(candidates)
+
+
+def data_date(value: Any) -> str:
+    """A real ISO calendar date from recorded data, or "" for anything else.
+
+    The sitemap ``<lastmod>`` of a clearance log, a directory page and an NTD
+    page is the newest such date the page itself reports (a clearance, a
+    check). It is never the build clock, so two renders of one artifact set
+    agree, and a page with no usable date carries no ``<lastmod>`` rather than
+    a guessed one."""
+    if not isinstance(value, str) or not _ISO_DATE.fullmatch(value):
+        return ""
+    try:
+        dt.date.fromisoformat(value)
+    except ValueError:
+        return ""
+    return value
+
+
+def newest_data_date(values: Iterable[Any]) -> str | None:
+    """The latest valid ISO date among ``values``, or None when there is none."""
+    dates = [d for d in (data_date(v) for v in values) if d]
+    return max(dates) if dates else None
+
+
+def fixlog_lastmod(receipts: list[dict[str, str]]) -> str | None:
+    """The sitemap ``<lastmod>`` for a clearance log: the newest ``cleared`` date
+    it lists. A new receipt is the only thing that changes the page."""
+    return newest_data_date(r.get("cleared") for r in receipts)
 
 
 def _agency_feed_events(artifact: dict[str, Any], history: list[dict[str, Any]]) -> list[Any]:
@@ -5761,6 +5790,36 @@ def _agency_index_groups(
     ]
 
 
+def _agency_index_flat_rows(
+    groups: list[dict[str, Any]],
+) -> list[tuple[str, str, dict[str, Any], str]]:
+    """Every directory row in reading order, tagged with its group key."""
+    flat_rows: list[tuple[str, str, dict[str, Any], str]] = []
+    for group in groups:
+        flat_rows.extend(
+            (str(group["key"]), aid, agency, note) for aid, agency, note in group["rows"]
+        )
+    return flat_rows
+
+
+def agency_index_lastmod(
+    index: dict[str, Any],
+    liveness: dict[str, dict[str, Any]],
+    *,
+    page: int = 1,
+    page_size: int = _AGENCY_INDEX_PAGE_SIZE,
+) -> str | None:
+    """The sitemap ``<lastmod>`` for one directory page: the newest "checked"
+    date printed on a card it lists (``_index_card``). None when no listed card
+    carries a valid date."""
+    _, groups = _agency_index_groups(index, liveness)
+    start = (page - 1) * page_size
+    rows = _agency_index_flat_rows(groups)[start : start + page_size]
+    return newest_data_date(
+        (agency.get("history") or [{}])[-1].get("date") for _, _, agency, _ in rows
+    )
+
+
 def _agency_index_pager(page: int, page_count: int, *, label: str) -> str:
     """Compact crawlable previous/next navigation for the directory."""
     if page_count <= 1:
@@ -5820,12 +5879,8 @@ def _render_agency_index(
     if page < 1 or page > page_count:
         raise ValueError(f"directory page {page} is outside 1..{page_count}")
 
-    flat_rows: list[tuple[str, str, dict[str, Any], str]] = []
+    flat_rows = _agency_index_flat_rows(groups)
     group_by_key = {str(group["key"]): group for group in groups}
-    for group in groups:
-        flat_rows.extend(
-            (str(group["key"]), aid, agency, note) for aid, agency, note in group["rows"]
-        )
     start = (page - 1) * page_size
     page_rows = flat_rows[start : start + page_size]
     end = start + len(page_rows)
@@ -10703,6 +10758,8 @@ def _write_ntd_state_pages(
             f"ntd/states/{state_slug(state)}/index.html",
             _render_ntd_state_page(state, rows),
             f"{BASE_URL}{links[state]}",
+            # The newest scoring run among the feeds the page lists.
+            lastmod=newest_data_date(r.snapshot_date for r in rows),
         )
     return links
 
@@ -13004,6 +13061,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         page_rel = (
             "agencies/index.html" if page_number == 1 else f"agencies/page/{page_number}/index.html"
         )
+        # Page 1 is already in the hand-authored URL set above, which passes no
+        # date; listing it here too is safe (the sitemap deduplicates, keeping
+        # the first position) and gives it the same derived lastmod.
         write(
             page_rel,
             _render_agency_index(
@@ -13013,7 +13073,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 page_size=_AGENCY_INDEX_PAGE_SIZE,
                 fixlog_ids=fixlog_ids,
             ),
-            f"{BASE_URL}{page_href}" if page_number > 1 else None,
+            f"{BASE_URL}{page_href}",
+            lastmod=agency_index_lastmod(
+                index, liveness_state, page=page_number, page_size=_AGENCY_INDEX_PAGE_SIZE
+            ),
         )
     states = _states_by_agency()
 
@@ -13521,6 +13584,8 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                         if fixlog_is_indexable(receipts)
                         else None
                     ),
+                    # The newest clearance the page lists, never the build date.
+                    lastmod=fixlog_lastmod(receipts),
                 )
             elif fixlog_page_dir.exists():
                 shutil.rmtree(fixlog_page_dir)
@@ -13595,10 +13660,13 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write("ntd.json", json.dumps(ntd_payload, indent=2, sort_keys=True) + "\n")
     # The human page over the same readiness numbers, for an FTA or state-DOT lead.
     ntd_state_links = _write_ntd_state_pages(write, ntd_artifacts)
+    # Both national NTD pages report the newest scoring run behind their counts.
+    ntd_lastmod = newest_data_date(a.get("snapshot_date") for a in ntd_artifacts)
     write(
         "ntd/index.html",
         _render_ntd_page(ntd_payload, histories, ntd_state_links),
         f"{BASE_URL}/ntd/",
+        lastmod=ntd_lastmod,
     )
     # The shapes.txt explainer: the RY2026 requirement in plain language, with the
     # national and per-state coverage numbers, for the manager hearing about the
@@ -13607,6 +13675,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         "ntd/shapes/index.html",
         _render_shapes_page(shapes_payload, ntd_state_links),
         f"{BASE_URL}/ntd/shapes/",
+        lastmod=ntd_lastmod,
     )
     # The symptom-first troubleshooting guide: why service vanishes from trip
     # planners, for the manager who searches the symptom rather than a notice
