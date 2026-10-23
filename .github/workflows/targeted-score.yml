@@ -130,6 +130,10 @@ jobs:
       - name: Guard and publish only the bounded change set
         env:
           ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+          # Store the index as gzip (31x smaller to read back) once the repo
+          # variable INDEX_GZIP is "1". Unset, it stays plain JSON; every reader
+          # accepts both (scripts/s3-index.sh).
+          INDEX_GZIP: ${{ vars.INDEX_GZIP }}
         run: |
           set -euo pipefail
           tag_dated_artifact() {
@@ -224,13 +228,7 @@ jobs:
           # changed. If-Match makes the final write itself conditional on the
           # exact bytes hydrated, closing the race after the early ETag guard.
           if ! cmp -s "$RUNNER_TEMP/index.before.json" data/artifacts/index.json; then
-            aws s3api put-object \
-              --bucket "$ARTIFACTS_BUCKET" \
-              --key data/artifacts/index.json \
-              --body data/artifacts/index.json \
-              --if-match "$expected_etag" \
-              --cache-control "max-age=300" \
-              --content-type application/json >/dev/null
+            scripts/s3-index.sh put "$ARTIFACTS_BUCKET" data/artifacts/index.json "$expected_etag"
           fi
 
           # The public commit completed. Comparison memory may now advance to

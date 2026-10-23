@@ -128,7 +128,7 @@ def test_an_s3_read_that_is_refused_is_read_again_before_the_deploy_fails() -> N
             # The re-read has to actually re-fetch the pointer the guard
             # compares against; re-running the guard over the same bytes only
             # reproduces the same refusal.
-            assert "aws s3 cp" in body and ARTIFACT_INDEX in body, (
+            assert "s3-index.sh get" in body and ARTIFACT_INDEX in body, (
                 f"{name}: nothing re-reads {ARTIFACT_INDEX} after a refusal"
             )
 

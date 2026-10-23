@@ -119,6 +119,18 @@ the declared public surface).
 
 ### Changed
 
+- **The index can be stored compressed, and the history jobs keep a mirror.**
+  `data/artifacts/index.json` carries every agency's full history (151,374,557
+  bytes on 2026-10-22; 4,903,301 gzipped) and every refresh, deploy, collect and
+  report run read all of it from S3. All reads and writes now go through
+  `scripts/s3-index.sh`, which accepts the object plain or gzip and, when the
+  repository variable `INDEX_GZIP` is `1`, writes gzip with
+  `Content-Encoding: gzip`. The key is unchanged, so there is still one index
+  object and no IAM change. With the variable unset nothing stored changes.
+  History export and Trend history repair also sync the dated records into a
+  mirror in the Actions cache (`--exact-timestamps --delete`) instead of
+  downloading about 10 GB on every run. See `docs/deploy.md`.
+
 - **Less S3 data transfer out for the refresh and the deploy.** The Intraday
   refresh and Deploy site now keep the public per-agency artifact set (every
   `latest.json`, today's and yesterday's dated snapshots, badges) in the
