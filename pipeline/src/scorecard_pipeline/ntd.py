@@ -25,7 +25,7 @@ agency's own D-10 and P-50 filing.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from .metrics import expiry_status, resolve_service_horizon_status
@@ -40,6 +40,12 @@ NOT_READY = "not_ready"
 # had a defect we had never looked at. An unmeasured pillar therefore carries
 # this status, is left out of the overall verdict, and is named in the summary.
 NOT_CHECKED = "not_checked"
+# A feed whose every trip is GTFS-Flex demand-response service. It is measured,
+# but it is reported on its own row and is in no shapes.txt headline count: FTA's
+# July 2025 notice does not say whether such a feed is expected to carry shapes,
+# and a zone or time-window trip has no fixed path to trace. Deliberately outside
+# ``_RANK`` so nothing that ranks or counts the three coverage states picks it up.
+FLEX_ONLY = "flex_only"
 
 # Ranks the three verdicts we can actually reach. NOT_CHECKED is absent on
 # purpose: membership in this mapping is what "we measured it" means.
@@ -352,6 +358,7 @@ class ShapesReadiness:
     fix: str  # the concrete action; empty when none is needed
     total_trips: int
     trips_with_shape: int
+    flex_only: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {
@@ -362,10 +369,16 @@ class ShapesReadiness:
         }
         if self.fix:
             out["fix"] = self.fix
+        if self.flex_only:
+            # Present only when true, so every artifact scored before this
+            # existed (no key) and every fixed-route feed serializes as before.
+            out["flex_only"] = True
         return out
 
 
-def assess_shapes_readiness(total_trips: int, trips_with_shape: int) -> ShapesReadiness:
+def assess_shapes_readiness(
+    total_trips: int, trips_with_shape: int, *, flex_only: bool = False
+) -> ShapesReadiness:
     """Assess shape coverage from a feed's own trip/shape counts.
 
     Takes the two counts directly (rather than a GTFS zip path) so the check is
@@ -383,6 +396,17 @@ def assess_shapes_readiness(total_trips: int, trips_with_shape: int) -> ShapesRe
             "",
             0,
             0,
+        )
+    if flex_only:
+        return ShapesReadiness(
+            FLEX_ONLY,
+            f"Every trip in this feed is GTFS-Flex demand-response service "
+            f"({trips_with_shape} of {total_trips} trips have a shape). Flex-only feeds are "
+            "reported on their own row and are not counted in the shapes.txt totals.",
+            "",
+            total_trips,
+            trips_with_shape,
+            True,
         )
     if trips_with_shape == 0:
         return ShapesReadiness(
@@ -425,6 +449,13 @@ class PortfolioSummary:
     not_ready: int
     pct_ready: float
     by_state: dict[str, dict[str, int]]
+    # Feeds set aside as Flex-only (shapes summary only; 0 for the readiness
+    # summary). They are in none of total/ready/at_risk/not_ready.
+    flex_only: int = 0
+    # The same feeds by state. Kept out of ``by_state`` because that mapping is a
+    # published format contract (ntd.json, the dataset release validator) with a
+    # fixed key set.
+    flex_only_by_state: dict[str, int] = field(default_factory=dict)
 
 
 def _state_of(artifact: dict[str, Any]) -> str:
@@ -495,11 +526,14 @@ def shapes_status(artifact: dict[str, Any]) -> str | None:
     total = shapes.get("total_trips")
     with_shape = shapes.get("trips_with_shape")
     if isinstance(total, int) and isinstance(with_shape, int):
-        status = assess_shapes_readiness(total, with_shape).status
+        status = assess_shapes_readiness(
+            total, with_shape, flex_only=shapes.get("flex_only") is True
+        ).status
         # _RANK membership is what "we measured it" means, so a recomputed
         # NOT_CHECKED leaves the population here exactly as an artifact that
-        # predates the check does.
-        return status if status in _RANK else None
+        # predates the check does. A Flex-only feed is measured too, but is its
+        # own state, kept out of the three-way count by the callers.
+        return status if status in _RANK or status == FLEX_ONLY else None
     stored = str(shapes.get("status", ""))
     return stored if stored in _RANK else None
 
@@ -521,6 +555,9 @@ def shapes_portfolio_summary(artifacts: list[dict[str, Any]]) -> PortfolioSummar
         if artifact.get("agency", {}).get("country", "US") == "US"
         and (status := shapes_status(artifact)) is not None
     ]
+    # Flex-only feeds are reported separately and are in no headline denominator.
+    flex_only = sum(1 for status, _ in counted if status == FLEX_ONLY)
+    counted = [(status, state) for status, state in counted if status != FLEX_ONLY]
     total = len(counted)
     ready = at_risk = not_ready = 0
     by_state: dict[str, dict[str, int]] = {}
@@ -536,8 +573,18 @@ def shapes_portfolio_summary(artifacts: list[dict[str, Any]]) -> PortfolioSummar
         else:
             not_ready += 1
             bucket["not_ready"] += 1
+    flex_only_by_state: dict[str, int] = {}
+    for artifact in artifacts:
+        if (
+            artifact.get("agency", {}).get("country", "US") == "US"
+            and shapes_status(artifact) == FLEX_ONLY
+        ):
+            state = _state_of(artifact)
+            flex_only_by_state[state] = flex_only_by_state.get(state, 0) + 1
     pct_ready = round(ready / total * 100, 1) if total else 0.0
-    return PortfolioSummary(total, ready, at_risk, not_ready, pct_ready, by_state)
+    return PortfolioSummary(
+        total, ready, at_risk, not_ready, pct_ready, by_state, flex_only, flex_only_by_state
+    )
 
 
 # A state gets its own /ntd/states/<slug>/ page only when at least this many of
@@ -612,7 +659,7 @@ def state_pages(artifacts: list[dict[str, Any]]) -> dict[str, list[StateFeedRow]
             key=lambda r: (-_RANK.get(r.shapes or "", -1), r.name.lower(), r.id),
         )
         for state, rows in sorted(grouped.items())
-        if sum(1 for r in rows if r.shapes is not None) >= MIN_STATE_PAGE_FEEDS
+        if sum(1 for r in rows if r.shapes not in (None, FLEX_ONLY)) >= MIN_STATE_PAGE_FEEDS
     }
 
 

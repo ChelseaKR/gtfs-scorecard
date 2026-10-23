@@ -379,9 +379,14 @@ def run_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         # 2025 final rule requires shapes.txt from Reduced, Rural, and Tribal
         # NTD reporters starting Report Year 2026 (Full Reporters, RY2025).
         shapes_coverage = read_shapes_coverage(str(reader_path))
-        artifact["shapes_readiness"] = assess_shapes_readiness(
-            shapes_coverage.total_trips, shapes_coverage.trips_with_shape
-        ).to_dict()
+        artifact["shapes_readiness"] = {
+            **assess_shapes_readiness(
+                shapes_coverage.total_trips,
+                shapes_coverage.trips_with_shape,
+                flex_only=shapes_coverage.flex_only,
+            ).to_dict(),
+            **shapes_coverage.stored_fields(),
+        }
         # NTD GTFS readiness (published / valid / current / agency_id), precomputed so
         # the web app and API render it without re-deriving the verdict.
         artifact["ntd_readiness"] = assess_ntd_readiness(artifact).to_dict()

@@ -4840,6 +4840,7 @@ def _google_gate_line(artifact: dict[str, Any], now: dt.datetime | None = None) 
 
 
 _NTD_LABELS = {
+    "flex_only": "Flex-only feed",
     "ready": "Ready",
     "at_risk": "Needs attention",
     "not_ready": "Not ready",
@@ -4857,6 +4858,7 @@ _NTD_PILLAR_NAMES = {
 # Status to badge class. "not_checked" reuses the neutral class the equality row
 # already uses, rather than the warning color that reads as a defect.
 _NTD_STATUS_CLASSES = {
+    "flex_only": "ntd-unknown",
     "ready": "ntd-ready",
     "at_risk": "ntd-at_risk",
     "not_ready": "ntd-not_ready",
@@ -4944,7 +4946,9 @@ def _current_shapes_readiness(artifact: dict[str, Any]) -> dict[str, Any] | None
     if isinstance(total, int) and isinstance(with_shape, int):
         from .ntd import assess_shapes_readiness
 
-        return assess_shapes_readiness(total, with_shape).to_dict()
+        return assess_shapes_readiness(
+            total, with_shape, flex_only=shapes.get("flex_only") is True
+        ).to_dict()
     return dict(shapes)
 
 
@@ -5407,7 +5411,12 @@ def _california_guideline_checklist(artifact: dict[str, Any]) -> list[dict[str, 
         )
 
     shapes = _current_shapes_readiness(artifact)
-    shapes_met = shapes.get("status") == "ready" if shapes else None
+    # A Flex-only feed is neither met nor unmet: the notice is silent on it.
+    shapes_met = (
+        None
+        if not shapes or shapes.get("status") == "flex_only"
+        else shapes.get("status") == "ready"
+    )
 
     has_fares = comp_details.get("has_fares") if comp_measured else None
     fare_free = comp_details.get("fare_free") if comp_measured else None
@@ -10493,11 +10502,11 @@ _SHAPES_NOTICE_QUOTE = (
     "demand-response service."
 )
 _FLEX_SHAPES_CAVEAT = (
-    "Some tracked feeds are named or built as GTFS-Flex (demand-response) service. "
-    "Riders of that service are picked up in zones or time windows rather than along "
-    "a fixed path, so such a feed may legitimately carry few or no shapes. The notice "
-    "does not say whether those feeds are expected to include shapes.txt, and the "
-    "counts on this page include them."
+    "A feed in which every trip is GTFS-Flex demand-response service (riders are picked "
+    "up in zones or time windows, not along a fixed path) is reported on its own row as "
+    "a Flex-only feed and is not counted in the headline totals. The notice does not say "
+    "whether such a feed is expected to include shapes.txt. A feed that also runs "
+    "fixed-route trips stays in the count, even if it publishes Flex as well."
 )
 
 _FEDERAL_REGISTER_RY2026 = (
@@ -10542,6 +10551,8 @@ def _render_shapes_page(shapes: dict[str, Any], state_pages: dict[str, str] | No
     total = shapes.get("total", 0)
     pct_ready = shapes.get("pct_ready", 0)
     by_state = shapes.get("by_state", {}) or {}
+    flex_total = int(shapes.get("flex_only", 0) or 0)
+    flex_by_state = shapes.get("flex_only_by_state", {}) or {}
     state_pages_note = (
         '<p class="fineprint">A state name that is a link opens that state\'s list of '
         "tracked feeds. A state appears there once at least "
@@ -10553,7 +10564,7 @@ def _render_shapes_page(shapes: dict[str, Any], state_pages: dict[str, str] | No
         state_rows = "".join(
             f"<tr><td>{_state_cell(state, state_pages)}</td><td>{esc(c.get('ready', 0))}</td>"
             f"<td>{esc(c.get('at_risk', 0))}</td><td>{esc(c.get('not_ready', 0))}</td>"
-            f"<td>{esc(c.get('total', 0))}</td></tr>"
+            f"<td>{esc(c.get('total', 0))}</td><td>{esc(flex_by_state.get(state, 0))}</td></tr>"
             for state, c in sorted(by_state.items())
         )
         numbers = (
@@ -10561,7 +10572,14 @@ def _render_shapes_page(shapes: dict[str, Any], state_pages: dict[str, str] | No
             "stand</h2>"
             f'<p class="page-lede">Across the {esc(total)} US feeds this site tracks and '
             f"checks, <strong>{esc(pct_ready)}% carry a shape for every trip</strong>. "
-            "The rest have the file to add or finish before their report year.</p>"
+            "The rest have the file to add or finish before their report year."
+            + (
+                f" A further {esc(flex_total)} Flex-only "
+                f"{'feed is' if flex_total == 1 else 'feeds are'} reported separately below."
+                if flex_total
+                else ""
+            )
+            + "</p>"
             f'<p class="fineprint">{_FLEX_SHAPES_CAVEAT}</p>'
             '<table class="leaderboard"><thead><tr><th>Coverage</th><th>Feeds</th></tr></thead>'
             "<tbody>"
@@ -10569,10 +10587,11 @@ def _render_shapes_page(shapes: dict[str, Any], state_pages: dict[str, str] | No
             "<tr><td>Some trips are missing one</td>"
             f"<td>{esc(shapes.get('at_risk', 0))}</td></tr>"
             f"<tr><td>No shapes yet</td><td>{esc(shapes.get('not_ready', 0))}</td></tr>"
+            f"<tr><td>Flex-only feed (not counted above)</td><td>{esc(flex_total)}</td></tr>"
             "</tbody></table>"
             '<h3 class="section-title">By state</h3>'
             '<table class="leaderboard"><thead><tr><th>State</th><th>Full</th>'
-            "<th>Partial</th><th>None</th><th>Checked</th></tr></thead>"
+            "<th>Partial</th><th>None</th><th>Checked</th><th>Flex-only</th></tr></thead>"
             f"<tbody>{state_rows}</tbody></table>"
             f"{state_pages_note}</section>"
         )
@@ -10698,6 +10717,7 @@ def _render_shapes_page(shapes: dict[str, Any], state_pages: dict[str, str] | No
 
 
 _STATE_SHAPES_LABELS = {
+    "flex_only": "Flex-only feed",
     "ready": "Every trip has a shape",
     "at_risk": "Some trips are missing a shape",
     "not_ready": "No shapes yet",
@@ -10715,6 +10735,8 @@ def _state_shapes_cell(row: StateFeedRow) -> str:
     label = _STATE_SHAPES_LABELS.get(row.shapes, row.shapes)
     if row.shapes == "at_risk" and row.total_trips and row.trips_with_shape is not None:
         label += f" ({row.trips_with_shape:,} of {row.total_trips:,} trips have one)"
+    if row.shapes == "flex_only" and row.total_trips is not None:
+        label += f" ({row.trips_with_shape or 0:,} of {row.total_trips:,} trips have a shape)"
     return label
 
 
@@ -10731,10 +10753,18 @@ def _render_ntd_state_page(state: str, rows: list[StateFeedRow]) -> str:
     agency's own NTD filing and in FTA's reporting calendar, and are not shown.
     """
     measured = [r for r in rows if r.shapes is not None]
+    counted = [r for r in measured if r.shapes != "flex_only"]
+    flex_only = len(measured) - len(counted)
     full = sum(1 for r in measured if r.shapes == "ready")
     partial = sum(1 for r in measured if r.shapes == "at_risk")
     none_yet = sum(1 for r in measured if r.shapes == "not_ready")
     unchecked = len(rows) - len(measured)
+    flex_lede = (
+        f" {esc(flex_only)} more {'is a Flex-only feed' if flex_only == 1 else 'are Flex-only feeds'}"
+        " (every trip is demand-response service), listed below and not counted in these numbers."
+        if flex_only
+        else ""
+    )
     slug = state_slug(state)
     canonical = f"{BASE_URL}/ntd/states/{slug}/"
     table_rows = "".join(
@@ -10763,9 +10793,9 @@ def _render_ntd_state_page(state: str, rows: list[StateFeedRow]) -> str:
     body = f"""    {_breadcrumb([("Home", "/"), ("NTD readiness", "/ntd/"), ("shapes.txt, explained", "/ntd/shapes/"), (state, None)])}
     <a class="backlink" href="/ntd/shapes/">&larr; shapes.txt, explained</a>
     <h1 class="page-title">{esc(state)} transit feeds and the NTD shapes.txt requirement.</h1>
-    <p class="page-lede">Of the {esc(len(measured))} {esc(state)} feeds this site tracks and
+    <p class="page-lede">Of the {esc(len(counted))} {esc(state)} feeds this site tracks and
     has checked for shapes.txt, <strong>{esc(full)} carry a shape for every trip</strong>,
-    {esc(partial)} cover some trips, and {esc(none_yet)} {"has" if none_yet == 1 else "have"} no shapes yet.</p>
+    {esc(partial)} cover some trips, and {esc(none_yet)} {"has" if none_yet == 1 else "have"} no shapes yet.{flex_lede}</p>
 
     <section class="feed-details"><h2 class="section-title">What the requirement says</h2>
     <p>FTA's July 2025 final notice makes shapes.txt part of the GTFS that NTD reporters with
@@ -13714,6 +13744,8 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         "at_risk": shapes_summary.at_risk,
         "not_ready": shapes_summary.not_ready,
         "pct_ready": shapes_summary.pct_ready,
+        "flex_only": shapes_summary.flex_only,
+        "flex_only_by_state": shapes_summary.flex_only_by_state,
         "by_state": shapes_summary.by_state,
     }
     ntd_payload = {

@@ -205,7 +205,9 @@ def _shapes_status(latest: dict[str, Any]) -> str | None:
     total = shapes.get("total_trips")
     with_shape = shapes.get("trips_with_shape")
     if isinstance(total, int) and isinstance(with_shape, int):
-        status = assess_shapes_readiness(total, with_shape).status
+        status = assess_shapes_readiness(
+            total, with_shape, flex_only=shapes.get("flex_only") is True
+        ).status
         # A feed with no trips has no coverage denominator, so the check could
         # not run and the member counts under "not_measured" rather than
         # against the cohort's readiness.
