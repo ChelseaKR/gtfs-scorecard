@@ -144,6 +144,35 @@ def test_negative_control_counts_would_change_if_an_unchecked_feed_were_counted(
     assert "Of the 6 Iowa feeds" in sabotaged
 
 
+def test_pages_quote_the_notice_and_carry_the_flex_caveat_not_the_each_route_claim() -> None:
+    """The final notice says "make the shapes.txt file mandatory" and nothing about
+    routes, trips or Flex. The pages say that, not "a file for each route"."""
+    rows = state_pages(_five())["Iowa"]
+    state_html = _render_ntd_state_page("Iowa", rows)
+    shapes = {
+        "total": 5,
+        "ready": 5,
+        "at_risk": 0,
+        "not_ready": 0,
+        "pct_ready": 100.0,
+        "by_state": {"Iowa": {"ready": 5, "at_risk": 0, "not_ready": 0, "total": 5}},
+    }
+    explainer_html = _render_shapes_page(shapes, {"Iowa": "/ntd/states/iowa/"})
+    for html in (state_html, explainer_html):
+        assert "for each route" not in html
+        assert "the shapes.txt file mandatory" in html
+        assert "does not mention GTFS-Flex" in html
+        assert "may legitimately carry few or no shapes" in html
+        assert "counts on this page include them" in html
+    # Negative control: the old, unsourced sentence is what the check rejects.
+    old = state_html.replace(
+        "FTA's final notice says it is making",
+        "FTA's notice describes shapes.txt as a file for each route. It is making",
+    )
+    assert old != state_html  # the sabotage applied
+    assert "for each route" in old
+
+
 def test_state_page_head_fits_the_seo_contract_for_the_longest_name() -> None:
     rows = state_pages(_five("District of Columbia"))["District of Columbia"]
     html = _render_ntd_state_page("District of Columbia", rows)
