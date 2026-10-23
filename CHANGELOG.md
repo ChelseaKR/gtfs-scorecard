@@ -39,6 +39,14 @@ the declared public surface).
   classes, or one a clearance log or directory page does not itself print
   (`sitemap.future_lastmod`, `sitemap.missing_lastmod`, `sitemap.lastmod_not_on_page`).
   No URL is added, removed or noindexed. Resubmit the sitemap in Search Console.
+- **Inbound links to the clearance logs and the NTD state pages.** Each
+  `/agencies/` card whose agency has an indexable clearance log (three or more
+  verified clearances, the same test the sitemap uses) now links to
+  `/agency/<id>/fixes/`, and a state's `/program/<state>/` page links to that
+  state's `/ntd/states/<state>/` page when one exists. Until now a clearance log
+  had one inbound link, from its agency page, and Search Console reported 7 of 18
+  sampled logs as discovered but never crawled. No page is added, removed or
+  noindexed and the sitemap is unchanged.
 - **NTD Report Year 2026 state pages and a rewrite of the fix guides.** Each
   state with at least five tracked feeds measured for shapes.txt gets
   `/ntd/states/<state>/`: every tracked feed in the state with its shapes.txt
