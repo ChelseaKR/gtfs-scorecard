@@ -118,20 +118,64 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
 
+      # The bounded set below (latest.json for every agency plus today's and
+      # yesterday's dated snapshots) is ~400 MB of the ~570 MB this step pulled
+      # on each of eight cycles a day, almost all of it unchanged since the
+      # cycle before. Keep it in the Actions cache and let `aws s3 sync` fetch
+      # only what S3 changed. Everything cached here is public data the site
+      # already serves; the fix-log cache below is private and is not cached.
+      # index.json changes every cycle and is a plain copy.
+      - name: Name the mirror day
+        id: mirror-day
+        run: echo "today=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the public-artifact mirror
+        id: mirror
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/public-artifact-mirror
+          key: public-artifact-mirror-v1-refresh-${{ steps.mirror-day.outputs.today }}
+          restore-keys: |
+            public-artifact-mirror-v1-refresh-
+
       - name: Hydrate current artifacts from S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
           today=$(date -u +%Y-%m-%d)
           yesterday=$(date -u -d yesterday +%Y-%m-%d)
-          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
-            --exclude "*" --include "index.json" \
+          mirror="$RUNNER_TEMP/public-artifact-mirror"
+          log="$RUNNER_TEMP/mirror-sync.log"
+          mkdir -p "$mirror"
+          # `--exact-timestamps`: the default download rule skips a same-size
+          # object whose local copy is older, which would miss a rewrite that
+          # did not change the size. The mirror's files carry the S3 times they
+          # were downloaded with, so an unchanged object compares equal.
+          # `--delete` drops mirror files S3 no longer has (a retired agency).
+          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" "$mirror" \
+            --exclude "*" \
             --include "*/latest.json" \
             --include "*/${today}.json" --include "*/${yesterday}.json" \
-            --only-show-errors
+            --delete --exact-timestamps --no-progress > "$log"
+          echo "::notice title=public-artifact mirror::$(grep -c '^download:' "$log" || true) objects downloaded, $(grep -c '^delete:' "$log" || true) removed"
+          scripts/overlay-s3-mirror.sh "$mirror" data/artifacts "$today" "$yesterday"
+          aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/index.json" \
+            data/artifacts/index.json --only-show-errors
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" data/artifacts \
             --only-show-errors
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
             data/liveness.json --only-show-errors || true
+
+      # Saved once per UTC day, not per run: the sync above makes the mirror
+      # equal to S3 on every run, so a day-old entry only costs the objects
+      # that changed since. Saving each cycle would push a ~400 MB entry eight
+      # times a day into the repository's 10 GB cache.
+      - name: Save the public-artifact mirror
+        if: ${{ vars.ARTIFACTS_BUCKET != '' && steps.mirror.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/public-artifact-mirror
+          key: public-artifact-mirror-v1-refresh-${{ steps.mirror-day.outputs.today }}
 
       - name: Select the feeds due this cycle
         working-directory: pipeline
