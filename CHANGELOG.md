@@ -29,6 +29,16 @@ the declared public surface).
 
 ### Added
 
+- **Sitemap `lastmod` for clearance logs, directory pages and NTD pages.** The
+  1,183 sitemap URLs that carried none now get one derived from the data the page
+  shows: a clearance log takes its newest `cleared` date, an `/agencies/` page the
+  newest "checked" date on a card it lists, and `/ntd/`, `/ntd/shapes/` and each
+  state page the newest scoring run behind them. Never the build date; a page with
+  no usable date still has none, and hand-authored pages are unchanged. The
+  structural SEO check now fails a `lastmod` in the future, one missing from those
+  classes, or one a clearance log or directory page does not itself print
+  (`sitemap.future_lastmod`, `sitemap.missing_lastmod`, `sitemap.lastmod_not_on_page`).
+  No URL is added, removed or noindexed. Resubmit the sitemap in Search Console.
 - **NTD Report Year 2026 state pages and a rewrite of the fix guides.** Each
   state with at least five tracked feeds measured for shapes.txt gets
   `/ntd/states/<state>/`: every tracked feed in the state with its shapes.txt

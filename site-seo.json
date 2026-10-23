@@ -17,6 +17,19 @@
   "conditional_noindex_path_patterns": [
     "/agency/*/fixes/"
   ],
+  "lastmod_required_path_patterns": [
+    "/agencies/",
+    "/agencies/page/*/",
+    "/agency/*/fixes/",
+    "/ntd/",
+    "/ntd/shapes/",
+    "/ntd/states/*/"
+  ],
+  "lastmod_shown_path_patterns": [
+    "/agencies/",
+    "/agencies/page/*/",
+    "/agency/*/fixes/"
+  ],
   "canonical_aliases": {
     "/app/": "/agencies/"
   },
