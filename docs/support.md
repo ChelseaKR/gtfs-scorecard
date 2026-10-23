@@ -35,7 +35,20 @@ Every service runs with a hard spending cap. If a cost line grows past this rang
 
 ## What sponsors get
 
-Acknowledgment, deliberately little else. Sponsors are listed on the [/support/](https://gtfsscorecard.org/support/) page and in the repository, with what their support pays for. Sponsorship buys no influence over grades, methodology, or which agencies are listed; the full rubric is public in [docs/rubric.md](rubric.md).
+Acknowledgment, deliberately little else. Named sponsors are listed with what their support pays for. Sponsorship buys no influence over grades, methodology, or which agencies are listed; the full rubric is public in [docs/rubric.md](rubric.md).
+
+## Who sponsors, and sponsors that are graded here
+
+Sponsors are named on the /support/ page and in the repository if they ask to be. Anonymous sponsors are counted and their total is shown. A sponsor that publishes a feed graded on this site, or sells GTFS products or services, is always named.
+
+- The share of graded feed records that belong to a sponsor, or that a sponsor built, is published beside its name.
+- A feed a sponsor built or publishes is scored and framed identically to every other feed, by the same code and rubric. A sponsor's corrections go through the same public claim form as everyone's.
+- Sponsorship is accepted only at the listed tiers.
+- No sponsorship is accepted while the sponsor has an open dispute about its own grade.
+
+Vendors may sponsor this project; sponsors are listed on /support/ and are graded by the same rubric as every other vendor.
+
+The reasoning, and what this commits the project to, is in [ADR 0071](decisions/0071-sponsors-whose-feeds-are-graded.md).
 
 The real return is the tool itself: it stays free for every agency, including the small and rural systems it was built for.
 
