@@ -607,6 +607,8 @@ def _summary_payload(summary: PortfolioSummary) -> dict[str, Any]:
         "at_risk": summary.at_risk,
         "not_ready": summary.not_ready,
         "pct_ready": summary.pct_ready,
+        "flex_only": summary.flex_only,
+        "flex_only_by_state": summary.flex_only_by_state,
         "by_state": summary.by_state,
     }
 

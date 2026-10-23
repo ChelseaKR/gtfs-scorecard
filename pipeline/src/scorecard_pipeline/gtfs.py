@@ -206,21 +206,100 @@ class ShapesCoverage:
     Used by the shapes readiness check (ntd.assess_shapes_readiness). total_trips
     is the row count of trips.txt; trips_with_shape counts only rows whose
     shape_id is non-blank and actually present in shapes.txt (a dangling
-    reference does not count as coverage)."""
+    reference does not count as coverage).
+
+    ``demand_response_trips`` counts trips whose every stop_times row is a
+    GTFS-Flex row (see ``is_demand_response_row``); ``flex_only`` is true only
+    when that is every trip in a non-empty trips.txt. Both stay 0/False for a
+    feed with no GTFS-Flex files, which is also what a feed whose stop_times.txt
+    was too large to read reports: when in doubt a feed stays in the count."""
 
     total_trips: int
     trips_with_shape: int
+    demand_response_trips: int = 0
+    flex_only: bool = False
+
+    def stored_fields(self) -> dict[str, int]:
+        """Extra keys for the stored shapes_readiness block: present only when the
+        feed has demand-response trips, so a fixed-route feed stores what it always did."""
+        return (
+            {"demand_response_trips": self.demand_response_trips}
+            if self.demand_response_trips
+            else {}
+        )
+
+
+def is_demand_response_row(row: dict[str, str]) -> bool:
+    """Whether one stop_times row is GTFS-Flex service rather than a timed stop.
+
+    GTFS-Flex describes demand-response service by zone (location_id), by a group
+    of stops (location_group_id), or by a pickup/drop-off time window. A row
+    carrying any of those is a request-a-ride row, not a point on a fixed path.
+    """
+    return any(
+        (row.get(column) or "").strip()
+        for column in (
+            "location_id",
+            "location_group_id",
+            "start_pickup_drop_off_window",
+            "end_pickup_drop_off_window",
+            # The spelling an earlier GTFS-Flex draft used, still published
+            # (Colorado's Continuum Flex feed, for one).
+            "start_pickup_dropoff_window",
+            "end_pickup_dropoff_window",
+        )
+    )
+
+
+def _count_demand_response_trips(gtfs_zip_path: str, trip_ids: set[str]) -> int:
+    """Trips in ``trip_ids`` that have at least one stop_times row and only
+    demand-response rows. Streams stop_times.txt, so memory is bounded by the
+    number of trips, not by the number of rows."""
+    seen: set[str] = set()
+    fixed: set[str] = set()
+    for row in iter_table_rows(gtfs_zip_path, "stop_times.txt", max_member_bytes=None):
+        trip_id = (row.get("trip_id") or "").strip()
+        if trip_id not in trip_ids:
+            continue
+        seen.add(trip_id)
+        if not is_demand_response_row(row):
+            fixed.add(trip_id)
+    return len(seen - fixed)
 
 
 def read_shapes_coverage(gtfs_zip_path: str) -> ShapesCoverage:
-    """Read trips.txt and shapes.txt and report shape coverage across trips."""
+    """Read trips.txt and shapes.txt and report shape coverage across trips.
+
+    A feed that ships GTFS-Flex files also gets its trips classified. stop_times.txt
+    is read only then, so an ordinary fixed-route feed costs nothing extra, and
+    ``has_flex`` alone never changes the verdict: a feed is ``flex_only`` only
+    when every one of its trips is demand-response."""
+    from .flex import FLEX_FILES
+
     tables = read_tables(gtfs_zip_path, ["shapes.txt", "trips.txt"])
     shape_ids = {
         row["shape_id"].strip() for row in tables["shapes.txt"] if row.get("shape_id", "").strip()
     }
     trips = tables["trips.txt"]
     with_shape = sum(1 for t in trips if (t.get("shape_id") or "").strip() in shape_ids)
-    return ShapesCoverage(total_trips=len(trips), trips_with_shape=with_shape)
+    demand_response = 0
+    with zipfile.ZipFile(gtfs_zip_path) as zf:
+        has_flex_files = any(name in zf.namelist() for name in FLEX_FILES)
+    if has_flex_files and trips:
+        trip_ids = {(t.get("trip_id") or "").strip() for t in trips} - {""}
+        try:
+            demand_response = _count_demand_response_trips(gtfs_zip_path, trip_ids)
+        except (TableTooLargeError, zipfile.BadZipFile, UnicodeError, csv.Error):
+            demand_response = 0
+        flex_only = bool(trip_ids) and demand_response == len(trips)
+    else:
+        flex_only = False
+    return ShapesCoverage(
+        total_trips=len(trips),
+        trips_with_shape=with_shape,
+        demand_response_trips=demand_response,
+        flex_only=flex_only,
+    )
 
 
 @dataclass(frozen=True)

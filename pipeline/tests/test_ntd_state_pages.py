@@ -162,8 +162,8 @@ def test_pages_quote_the_notice_and_carry_the_flex_caveat_not_the_each_route_cla
         assert "for each route" not in html
         assert "the shapes.txt file mandatory" in html
         assert "does not mention GTFS-Flex" in html
-        assert "may legitimately carry few or no shapes" in html
-        assert "counts on this page include them" in html
+        assert "reported on its own row as a Flex-only feed" in html
+        assert "stays in the count" in html
     # Negative control: the old, unsourced sentence is what the check rejects.
     old = state_html.replace(
         "FTA's final notice says it is making",

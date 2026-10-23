@@ -113,6 +113,8 @@ def _summary_payload(summary: PortfolioSummary) -> dict[str, object]:
         "at_risk": summary.at_risk,
         "not_ready": summary.not_ready,
         "pct_ready": summary.pct_ready,
+        "flex_only": summary.flex_only,
+        "flex_only_by_state": summary.flex_only_by_state,
         "by_state": summary.by_state,
     }
 
@@ -506,6 +508,34 @@ def test_release_rejects_fabricated_shapes_rollup_that_is_internally_consistent(
     }
     (web / "ntd.json").write_text(json.dumps(ntd), encoding="utf-8")
 
+    with pytest.raises(DatasetReleaseError, match="canonical current artifacts"):
+        validate_release_inputs(
+            artifacts_root=artifacts,
+            web_root=web,
+            current_registry=_registry(),
+            retired_registry_ids={"retired-alias"},
+        )
+
+
+def test_release_rejects_a_flex_only_count_the_artifacts_do_not_support(
+    tmp_path: Path,
+) -> None:
+    artifacts, web, _repo, _current = _release_tree(tmp_path)
+    ntd_path = web / "ntd.json"
+    ntd = json.loads(ntd_path.read_text(encoding="utf-8"))
+    honest_flex = ntd["shapes"]["flex_only"]
+    assert honest_flex == 0
+    # Negative control: the honest file validates; moving a feed into the
+    # Flex-only row without any artifact saying so must not.
+    validate_release_inputs(
+        artifacts_root=artifacts,
+        web_root=web,
+        current_registry=_registry(),
+        retired_registry_ids={"retired-alias"},
+    )
+    ntd["shapes"]["flex_only"] = 1
+    ntd_path.write_text(json.dumps(ntd), encoding="utf-8")
+    assert json.loads(ntd_path.read_text(encoding="utf-8"))["shapes"]["flex_only"] == 1
     with pytest.raises(DatasetReleaseError, match="canonical current artifacts"):
         validate_release_inputs(
             artifacts_root=artifacts,
