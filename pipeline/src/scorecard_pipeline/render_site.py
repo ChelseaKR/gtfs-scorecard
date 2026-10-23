@@ -10424,6 +10424,26 @@ def _render_ntd_page(
     )
 
 
+# What the final notice says about shapes.txt, and what it leaves open. Quoted
+# from 90 FR 30772-30773 (document 2025-12813): "FTA received 11 comments in
+# support of the proposed change to make the shapes.txt file mandatory" and
+# "FTA is adopting this change as proposed." The notice never mentions GTFS-Flex
+# or demand-response service, and never says how many routes or trips the file
+# must cover; the pages say so instead of paraphrasing a rule it does not state.
+_SHAPES_NOTICE_QUOTE = (
+    "FTA's final notice says it is making &ldquo;the shapes.txt file mandatory&rdquo; "
+    "and adopting the change &ldquo;as proposed.&rdquo; It does not say how many routes "
+    "or trips the file must cover, and it does not mention GTFS-Flex or other "
+    "demand-response service."
+)
+_FLEX_SHAPES_CAVEAT = (
+    "Some tracked feeds are named or built as GTFS-Flex (demand-response) service. "
+    "Riders of that service are picked up in zones or time windows rather than along "
+    "a fixed path, so such a feed may legitimately carry few or no shapes. The notice "
+    "does not say whether those feeds are expected to include shapes.txt, and the "
+    "counts on this page include them."
+)
+
 _FEDERAL_REGISTER_RY2026 = (
     "https://www.federalregister.gov/documents/2025/07/10/2025-12813/"
     "national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026"
@@ -10486,6 +10506,7 @@ def _render_shapes_page(shapes: dict[str, Any], state_pages: dict[str, str] | No
             f'<p class="page-lede">Across the {esc(total)} US feeds this site tracks and '
             f"checks, <strong>{esc(pct_ready)}% carry a shape for every trip</strong>. "
             "The rest have the file to add or finish before their report year.</p>"
+            f'<p class="fineprint">{_FLEX_SHAPES_CAVEAT}</p>'
             '<table class="leaderboard"><thead><tr><th>Coverage</th><th>Feeds</th></tr></thead>'
             "<tbody>"
             f"<tr><td>Every trip has a shape</td><td>{esc(shapes.get('ready', 0))}</td></tr>"
@@ -10565,9 +10586,8 @@ def _render_shapes_page(shapes: dict[str, Any], state_pages: dict[str, str] | No
     not tracked here, <a href="/try.html">paste your feed's URL</a> to grade it in about a
     minute, or run <a href="/check/">the pre-publish check</a> on an export you have not
     published yet; that one reads the zip in your browser and uploads nothing.</p>
-    <p>FTA's notice describes the requirement as a shapes.txt file for each route. This
-    site counts something simpler and stricter: whether every trip in trips.txt carries a
-    shape_id that matches a path in shapes.txt.</p></section>
+    <p>{_SHAPES_NOTICE_QUOTE} This site counts something simpler and stricter: whether
+    every trip in trips.txt carries a shape_id that matches a path in shapes.txt.</p></section>
 
     <section class="feed-details"><h2 class="section-title">How to add it</h2>
     <p>Shape data usually comes from the software that builds your feed, not from
@@ -10704,8 +10724,9 @@ def _render_ntd_state_page(state: str, rows: list[StateFeedRow]) -> str:
     <section class="feed-details"><h2 class="section-title">Tracked {esc(state)} feeds</h2>
     <table class="leaderboard"><thead><tr><th>Agency</th><th>shapes.txt</th>
     <th>agency_id</th></tr></thead><tbody>{table_rows}</tbody></table>
+    <p class="fineprint">{_FLEX_SHAPES_CAVEAT}</p>
     {unchecked_note}
-    <p class="fineprint">FTA's notice describes shapes.txt as a file for each route. The
+    <p class="fineprint">{_SHAPES_NOTICE_QUOTE} The
     shapes.txt column counts something simpler and stricter: whether every trip in trips.txt
     carries a shape_id that matches a path in shapes.txt. The agency_id column reads agency.txt
     only; the notice also names routes.txt and fare_attributes.txt. Each row reflects the
