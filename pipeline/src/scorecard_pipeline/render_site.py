@@ -5633,10 +5633,12 @@ def _expired_ago(days: int) -> str:
     return f"about {years} year{'s' if years != 1 else ''} ago"
 
 
-def _index_card(aid: str, a: dict[str, Any], note: str = "") -> str:
+def _index_card(aid: str, a: dict[str, Any], note: str = "", *, fixlog: bool = False) -> str:
     """One agency row for the directory. `note` adds a second meta line (used by
     the expired panel to say how long ago the feed lapsed). A curator's
-    operating_note, when present, adds a verified status line below that."""
+    operating_note, when present, adds a verified status line below that.
+    `fixlog` adds a link to the agency's clearance log, which the caller passes
+    only for a log that is indexable, so the link and the sitemap agree."""
     last = a["history"][-1]
     extra = f'<p class="meta meta-flag">{esc(note)}</p>' if note else ""
     op_note = a.get("operating_note")
@@ -5645,12 +5647,18 @@ def _index_card(aid: str, a: dict[str, Any], note: str = "") -> str:
         if op_note
         else ""
     )
+    log = (
+        f'<p class="meta"><a href="/agency/{esc(aid)}/fixes/">Clearance log'
+        f'<span class="visually-hidden"> for {esc(a["name"])}</span></a></p>'
+        if fixlog
+        else ""
+    )
     return (
         f'<li class="agency-card"><span class="grade-chip {_grade_class(last["grade"])}">'
         f'{esc(last["grade"])}<span class="visually-hidden"> grade</span></span>'
         f'<div><h3><a href="/agency/{esc(aid)}/"><bdi>{esc(a["name"])}</bdi></a></h3>'
         f'<p class="meta">Overall {last["score"]} out of 100 · '
-        f"checked {esc(last['date'])}</p>{extra}{op}</div></li>"
+        f"checked {esc(last['date'])}</p>{extra}{op}{log}</div></li>"
     )
 
 
@@ -5803,8 +5811,10 @@ def _render_agency_index(
     *,
     page: int = 1,
     page_size: int = _AGENCY_INDEX_PAGE_SIZE,
+    fixlog_ids: frozenset[str] = frozenset(),
 ) -> str:
-    """Render one bounded page of the crawlable agency directory."""
+    """Render one bounded page of the crawlable agency directory. Agencies in
+    ``fixlog_ids`` (those with an indexable clearance log) link to it."""
     total, groups = _agency_index_groups(index, liveness)
     page_count = max(1, math.ceil(total / page_size))
     if page < 1 or page > page_count:
@@ -5832,7 +5842,10 @@ def _render_agency_index(
         if not selected:
             continue
         group = group_by_key[key]
-        rows = "".join(_index_card(aid, agency, note) for aid, agency, note in selected)
+        rows = "".join(
+            _index_card(aid, agency, note, fixlog=aid in fixlog_ids)
+            for aid, agency, note in selected
+        )
         expired_groups.append(
             f'<section aria-labelledby="{key}-h">'
             f'<h3 class="section-sub" id="{key}-h">{esc(group["heading"])} '
@@ -5857,7 +5870,10 @@ def _render_agency_index(
     selected_current = rows_by_group.get("current", [])
     if selected_current:
         current_group = group_by_key["current"]
-        rows = "".join(_index_card(aid, agency, note) for aid, agency, note in selected_current)
+        rows = "".join(
+            _index_card(aid, agency, note, fixlog=aid in fixlog_ids)
+            for aid, agency, note in selected_current
+        )
         current_section = (
             '<section aria-labelledby="current">'
             '<h2 class="section-title" id="current">Current and upcoming service '
@@ -6419,10 +6435,20 @@ def _compact_member_groups(members: list[dict[str, Any]]) -> str:
     return "".join(parts)
 
 
+def _rollup_ntd_state_link(state: str, href: str) -> str:
+    """A pointer from a state program page to that state's NTD shapes.txt page."""
+    return (
+        '<p class="fineprint">Federal reporting: '
+        f'<a href="{esc(href)}">{esc(state)} transit feeds and the NTD shapes.txt '
+        "requirement</a>, with each tracked feed's shapes.txt and agency_id check.</p>"
+    )
+
+
 def _render_rollup(
     rollup: dict[str, Any],
     others: tuple[str, list[dict[str, Any]]] | None = None,
     offer: ProgramOffer | None = None,
+    ntd_state: tuple[str, str] | None = None,
 ) -> str:
     rid = rollup["rollup"]["id"]
     rname = rollup["rollup"]["name"]
@@ -6457,7 +6483,9 @@ def _render_rollup(
     expired_section = _rollup_expired_section(rollup)
     reconciliation_section = _rollup_reconciliation_section(rollup)
     realtime_section = _rollup_realtime_section(rollup)
-    shapes_section = _rollup_shapes_section(rollup)
+    shapes_section = _rollup_shapes_section(rollup) + (
+        _rollup_ntd_state_link(*ntd_state) if ntd_state else ""
+    )
     common_fixes_section = _rollup_common_fixes_section(rollup) if guarded_summary else ""
     if guarded_summary:
         comparison_note = (
@@ -12664,6 +12692,7 @@ def _write_program_pages(
     write: Callable[..., None],
     directory_records: list[dict[str, Any]] | None = None,
     offer: ProgramOffer | None = None,
+    ntd_state_links: dict[str, str] | None = None,
 ) -> None:
     """Every ``/program/<id>/`` rollup page, then ``/program/`` listing them.
 
@@ -12681,6 +12710,11 @@ def _write_program_pages(
     if not rollup_index.exists():
         return
     rendered: list[dict[str, Any]] = []
+    # A state's rollup (id == the state's slug) points at that state's NTD page,
+    # when one was written; nothing else is matched by name.
+    ntd_by_slug = {
+        state_slug(state): (state, href) for state, href in (ntd_state_links or {}).items()
+    }
     for entry in json.loads(rollup_index.read_text()).get("rollups", []):
         payload_file = art / "rollups" / f"{entry['id']}.json"
         if not payload_file.exists():
@@ -12697,7 +12731,7 @@ def _write_program_pages(
         # restate "today" on 68 pages that did not change.
         write(
             f"program/{entry['id']}/index.html",
-            _render_rollup(payload, others, offer),
+            _render_rollup(payload, others, offer, ntd_by_slug.get(str(entry["id"]))),
             f"{BASE_URL}/program/{entry['id']}/",
             lastmod=_rollup_content_date(payload) or None,
         )
@@ -12951,6 +12985,18 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # paint even though the content itself is static.
     agency_page_root = web / "agencies" / "page"
     _remove_stale_agency_index_pages(agency_page_root)
+    # Clearance logs, read once and shared with the per-agency loop below. The
+    # directory links only to a log that will be written and is indexable (in the
+    # sitemap), and only for an agency whose scorecard is rendered, so a listing
+    # link can never point at a page that does not exist.
+    fixlog_receipts: dict[str, list[dict[str, str]]] = {
+        agency_id: load_fixlog(art / agency_id)
+        for agency_id in sorted(index["agencies"])
+        if (art / agency_id / "latest.json").exists()
+    }
+    fixlog_ids = frozenset(
+        agency_id for agency_id, found in fixlog_receipts.items() if fixlog_is_indexable(found)
+    )
     agency_count = len(index.get("agencies") or {})
     agency_page_count = max(1, math.ceil(agency_count / _AGENCY_INDEX_PAGE_SIZE))
     for page_number in range(1, agency_page_count + 1):
@@ -12965,6 +13011,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 liveness_state,
                 page=page_number,
                 page_size=_AGENCY_INDEX_PAGE_SIZE,
+                fixlog_ids=fixlog_ids,
             ),
             f"{BASE_URL}{page_href}" if page_number > 1 else None,
         )
@@ -13372,7 +13419,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             # artifact (the map's own data), kept out of the per-day JSON to avoid
             # bloating it. Absent or unreadable geometry simply means no stop list.
             stop_names = _geometry_stop_names(art / agency_id / "geometry.geojson")
-            receipts = load_fixlog(art / agency_id)
+            receipts = (
+                fixlog_receipts[agency_id]
+                if agency_id in fixlog_receipts
+                else load_fixlog(art / agency_id)
+            )
             feed_context = join_feed_context(
                 artifact,
                 consequence_sources,
@@ -14007,7 +14058,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/equity/",
     )
 
-    _write_program_pages(art, write, directory["agencies"], program_offer)
+    _write_program_pages(art, write, directory["agencies"], program_offer, ntd_state_links)
 
     write("sitemap.xml", _sitemap(urls, sitemap_lastmods))
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n")

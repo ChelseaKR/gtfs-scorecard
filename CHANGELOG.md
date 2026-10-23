@@ -29,6 +29,14 @@ the declared public surface).
 
 ### Added
 
+- **Inbound links to the clearance logs and the NTD state pages.** Each
+  `/agencies/` card whose agency has an indexable clearance log (three or more
+  verified clearances, the same test the sitemap uses) now links to
+  `/agency/<id>/fixes/`, and a state's `/program/<state>/` page links to that
+  state's `/ntd/states/<state>/` page when one exists. Until now a clearance log
+  had one inbound link, from its agency page, and Search Console reported 7 of 18
+  sampled logs as discovered but never crawled. No page is added, removed or
+  noindexed and the sitemap is unchanged.
 - **NTD Report Year 2026 state pages and a rewrite of the fix guides.** Each
   state with at least five tracked feeds measured for shapes.txt gets
   `/ntd/states/<state>/`: every tracked feed in the state with its shapes.txt
