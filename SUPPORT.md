@@ -28,6 +28,8 @@ Sponsorship buys acknowledgment and deliberately little else. It does not buy
 influence over grades, methodology, or which agencies are listed, and it never
 buys placement. The full rubric is public in [docs/rubric.md](docs/rubric.md).
 
+Sponsors are named on the /support/ page and in the repository if they ask to be. Anonymous sponsors are counted and their total is shown. A sponsor that publishes a feed graded on this site, or sells GTFS products or services, is always named. A feed a sponsor built or publishes is scored and framed identically to every other feed, by the same code and rubric. The full policy is in [docs/support.md](docs/support.md).
+
 What running the service costs, and what stays free no matter what, is spelled
 out on the [support page](https://gtfsscorecard.org/support/) and in
 [docs/support.md](docs/support.md).
