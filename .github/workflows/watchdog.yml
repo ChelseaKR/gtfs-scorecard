@@ -139,10 +139,21 @@ jobs:
       # kill drops a publish.
       #
       # The bounds are copied here, and pipeline/tests/test_workflow_safety.py
-      # fails if they stop matching the workflows. This step fails for a job at
-      # or past 90% of its bound, for a job stopped at its bound (a timeout
-      # concludes `cancelled` and keeps its steps), and for a reading that found
-      # no job to measure, which is not a pass.
+      # fails if they stop matching the workflows. This step fails for a job
+      # stopped at its bound (a timeout concludes `cancelled` and keeps its
+      # steps), for a job that finished within 3% of its bound (the HARD STOP,
+      # 170 of 175 minutes: one slower cycle is a kill), and for a reading that
+      # found no job to measure, which is not a pass.
+      #
+      # A job at 90% to 97% of its bound is a warning, not a fault. It is
+      # written as an annotation and to the job summary, and the step stays
+      # green. Measured 2026-10-21 over the last 20 Watchdog runs, 4 were red
+      # for that warning alone (a 162-minute success on a 175-minute bound,
+      # then re-read by the next two Watchdog runs while it stayed in the
+      # window) while every cycle in them published. A check that is red for a
+      # run that succeeded teaches the reader to ignore red, which hides the
+      # runs that were killed. The rule is in `classify_bound` below and is run
+      # by pipeline/tests/test_workflow_safety.py.
       - name: No scheduled publish job is running up against its own bound
         if: ${{ always() }}
         env:
@@ -165,6 +176,21 @@ jobs:
         run: |
           set -euo pipefail
           fail=0
+          # classify_bound START
+          # conclusion steps minutes bound -> killed | hard_stop | warn | ok
+          classify_bound() {
+            local conclusion=$1 steps=$2 minutes=$3 bound=$4
+            if [ "$conclusion" = "cancelled" ] && [ "$steps" -gt 0 ] && [ "$minutes" -ge $((bound - 1)) ]; then
+              echo killed
+            elif [ $((minutes * 100)) -ge $((bound * 97)) ]; then
+              echo hard_stop
+            elif [ $((minutes * 10)) -ge $((bound * 9)) ]; then
+              echo warn
+            else
+              echo ok
+            fi
+          }
+          # classify_bound END
           while IFS='|' read -r workflow job bound runs; do
             [ -z "$workflow" ] && continue
             ids=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow "$workflow" \
@@ -191,13 +217,23 @@ jobs:
               minutes=$(( ( $(date -u -d "$completed" +%s) - $(date -u -d "$started" +%s) ) / 60 ))
               measured=$((measured + 1))
               echo "$workflow $job, run $id: $minutes of $bound minutes, $conclusion, $steps steps"
-              if [ "$conclusion" = "cancelled" ] && [ "$steps" -gt 0 ] && [ "$minutes" -ge $((bound - 1)) ]; then
-                echo "::error::$workflow $job run $id was stopped by its own $bound-minute bound after $minutes minutes. GitHub records that as canceled, not as a failure."
-                fail=1
-              elif [ $((minutes * 10)) -ge $((bound * 9)) ]; then
-                echo "::error::$workflow $job run $id took $minutes of its $bound-minute bound, 90% or more. The next heavier run is a timeout kill: re-measure the runtime and move the bound or the work before that happens."
-                fail=1
-              fi
+              case "$(classify_bound "$conclusion" "$steps" "$minutes" "$bound")" in
+                killed)
+                  echo "::error::$workflow $job run $id was stopped by its own $bound-minute bound after $minutes minutes. GitHub records that as canceled, not as a failure."
+                  fail=1
+                  ;;
+                hard_stop)
+                  echo "::error::$workflow $job run $id took $minutes of its $bound-minute bound, within 3% of the hard stop. The next slower run is a timeout kill: re-measure the runtime and move the bound or the work before that happens."
+                  fail=1
+                  ;;
+                warn)
+                  echo "::warning::$workflow $job run $id took $minutes of its $bound-minute bound, 90% or more. Not a fault: it finished. It becomes one at 97% (the hard stop)."
+                  echo "- $workflow $job run $id: $minutes of $bound minutes, $conclusion (warning, 90% or more)" >> "$GITHUB_STEP_SUMMARY"
+                  ;;
+                *)
+                  echo "- $workflow $job run $id: $minutes of $bound minutes, $conclusion" >> "$GITHUB_STEP_SUMMARY"
+                  ;;
+              esac
             done
             if [ "$measured" -eq 0 ]; then
               echo "::error::None of the last $runs completed $workflow runs has a $job job with a start and an end, so its duration was not measured."

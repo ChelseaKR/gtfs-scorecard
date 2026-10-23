@@ -76,8 +76,9 @@ jobs:
     # time, and the rescore (31-94) on servers and realtime sampling windows.
     # Both now overlap that waiting (see each step). Replaying the measured
     # per-feed timings of eight cycles through the new rescore took each from
-    # 33-94 minutes to 10-49. The bound stays at 175 so the watchdog's 90%
-    # line keeps meaning "this job has outgrown its cadence".
+    # 33-94 minutes to 10-49. The bound stays at 175. The watchdog annotates a
+    # run at 90% (158 minutes) and goes red only at 97% (170 minutes) or when
+    # a run is stopped at the bound.
     timeout-minutes: 175
     concurrency:
       group: artifacts-publish
