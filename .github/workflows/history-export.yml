@@ -96,8 +96,30 @@ jobs:
       # index. The checkout's committed snapshot is the fallback for an offline
       # developer and must not be the input here: it runs weeks behind the
       # store. Delete it first so a sync that fails leaves nothing stale to
-      # build from, and retry the sync the way pages.yml does.
+      # build from, and retry the sync the way pages.yml retries its own.
+      #
+      # The dated records are ~300,000 objects and ~10 GB (measured
+      # 2026-10-22), and each one is immutable once its day has passed. Every
+      # run used to download all of them, so each manual re-run of a month cost
+      # a full ~10 GB of S3 egress. They now sync into a mirror kept in the
+      # Actions cache, with the same `--exact-timestamps --delete` the Intraday
+      # refresh and Deploy site mirrors use, so a run transfers only the objects
+      # S3 added or changed since the mirror was saved and drops the ones the
+      # 400-day lifecycle rule expired. The mirror is a copy of public data and
+      # carries nothing private. The index is read separately and in full: it
+      # is the pointer, it changes every cycle, and it is stored compressed
+      # (scripts/s3-index.sh).
+      - name: Restore the dated-artifact mirror
+        id: dated-mirror
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/dated-artifact-mirror
+          key: dated-artifact-mirror-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            dated-artifact-mirror-v1-
+
       - name: Hydrate the dated artifacts from S3
+        id: hydrate
         shell: bash
         env:
           ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
@@ -105,12 +127,16 @@ jobs:
           set -euo pipefail
           rm -rf ../data/artifacts
           mkdir -p ../data/artifacts
+          mirror="$RUNNER_TEMP/dated-artifact-mirror"
+          log="$RUNNER_TEMP/dated-mirror-sync.log"
+          mkdir -p "$mirror"
+          : > "$log"
           retry_s3_sync() {
             local label="$1"
             shift
             local attempt
             for attempt in 1 2 3; do
-              if "$@"; then
+              if "$@" >> "$log"; then
                 return 0
               fi
               if [ "$attempt" -eq 3 ]; then
@@ -122,17 +148,33 @@ jobs:
             done
           }
           retry_s3_sync "dated artifacts" aws s3 sync \
-            "s3://${ARTIFACTS_BUCKET}/data/artifacts" ../data/artifacts \
+            "s3://${ARTIFACTS_BUCKET}/data/artifacts" "$mirror" \
             --exclude "*" \
-            --include "index.json" \
             --include "*/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].json" \
-            --only-show-errors
+            --delete --exact-timestamps --no-progress
+          downloads=$(grep -c '^download:' "$log" || true)
+          removed=$(grep -c '^delete:' "$log" || true)
+          echo "::notice title=dated-artifact mirror::${downloads} objects downloaded, ${removed} removed"
+          echo "downloads=${downloads}" >> "$GITHUB_OUTPUT"
+          echo "removed=${removed}" >> "$GITHUB_OUTPUT"
+          cp -a "$mirror"/. ../data/artifacts/
+          ../scripts/s3-index.sh get "${ARTIFACTS_BUCKET}" ../data/artifacts/index.json
           count=$(find ../data/artifacts -name '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].json' | wc -l | tr -d ' ')
           echo "dated artifacts hydrated: ${count}"
           if [ "${count}" -lt 1000 ]; then
             echo "::error::Only ${count} dated artifacts came down from S3; a corpus this small is a failed sync, not a month to sell."
             exit 1
           fi
+
+      # Save only when the mirror moved or there was none to restore. Saving
+      # on every run would push a fresh entry of the whole dated history into
+      # the repository's 10 GB cache for no change.
+      - name: Save the dated-artifact mirror
+        if: ${{ steps.hydrate.outputs.downloads != '0' || steps.hydrate.outputs.removed != '0' || steps.dated-mirror.outputs.cache-matched-key == '' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/dated-artifact-mirror
+          key: dated-artifact-mirror-v1-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Build the history tables
         shell: bash

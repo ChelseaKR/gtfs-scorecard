@@ -96,6 +96,23 @@ Then:
    workflow's CDN privacy canary falls back to the maintainer's CloudFront
    domain, which a fork does not want to inherit.
 
+### Storing the aggregate index compressed
+
+`data/artifacts/index.json` holds every agency's full score history and is the
+largest single object in the bucket (about 151 MB plain, about 5 MB gzipped).
+The workflows read and write it only through `scripts/s3-index.sh`:
+
+- `get` accepts either form (it looks for the gzip magic bytes) and writes plain
+  JSON, so a reader works before and after the writers change.
+- `put` writes plain JSON unless the Actions variable `INDEX_GZIP` is `1`, in
+  which case it writes gzip labelled `Content-Encoding: gzip` after checking the
+  bytes decode back to the file. A browser or `curl --compressed` still receives
+  JSON; `aws s3 cp` and boto3 do not decode, which is why nothing else reads the
+  object directly.
+
+To turn it on, set `INDEX_GZIP` to `1`; to turn it off, delete the variable. The
+next publish writes the other form and every reader keeps working.
+
 ### How the daily run decides what to upload
 
 The daily publish step does not use `aws s3 sync`. That command transfers a

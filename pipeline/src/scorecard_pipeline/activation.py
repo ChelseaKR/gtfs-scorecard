@@ -9,6 +9,7 @@ documented safety bound.
 from __future__ import annotations
 
 import datetime as dt
+import gzip
 import io
 import json
 import os
@@ -17,6 +18,7 @@ import sys
 import tempfile
 import time
 import unicodedata
+import zlib
 from collections.abc import Callable, Collection
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -412,6 +414,21 @@ def _download_one(
     raise AssertionError("unreachable bounded object read loop")
 
 
+_GZIP_MAGIC = b"\x1f\x8b"
+
+
+def decode_index_bytes(stored: bytes) -> bytes:
+    """The index as plain JSON bytes, from either stored form.
+
+    Same rule as ``scripts/s3-index.sh get``: a gzip body (magic ``1f 8b``) is
+    decoded, anything else is already JSON. ``test_index_gzip_storage`` holds the
+    two to the same answer.
+    """
+    if stored[:2] == _GZIP_MAGIC:
+        return gzip.decompress(stored)
+    return stored
+
+
 def _read_index(
     client: _S3Client,
     bucket: str,
@@ -457,6 +474,15 @@ def _read_index(
     etag = str(etag_value) if etag_value is not None else ""
     if not etag:
         raise ActivationHydrationError("authoritative index response omitted bytes or ETag")
+    # boto3 does not undo Content-Encoding: gzip, and the index may be stored
+    # either way (scripts/s3-index.sh). Everything below, and both files
+    # written, are the decoded JSON.
+    try:
+        body_bytes = decode_index_bytes(body_bytes)
+    except (OSError, EOFError, zlib.error) as exc:
+        raise ActivationHydrationError(
+            f"authoritative index.json is gzip but does not decode: {exc}"
+        ) from exc
     try:
         index = json.loads(body_bytes)
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
