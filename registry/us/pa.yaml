@@ -14,8 +14,14 @@ agencies:
     mdb_id: 221
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # The agency renamed itself Pittsburgh Regional Transit. Its published feed says so
+  # (agency.txt agency_name and feed_info.txt feed_publisher_name), and
+  # portauthority.org/developerresources/GTFS.zip now serves the same bytes as
+  # rideprt.org (checked 2026-10-23). The Mobility Database record (mdb-409) still
+  # reads "Port Authority of Allegheny County". The id stays so URLs and history do
+  # not move.
   - id: port-authority-of-allegheny-county
-    name: Port Authority of Allegheny County
+    name: Pittsburgh Regional Transit
     subdivision_code: US-PA
     subdivision_name: Pennsylvania
     static_gtfs_url: https://www.portauthority.org/developerresources/GTFS.zip

@@ -182,6 +182,71 @@ def test_repo_registry_matches_documented_feed_record_counts(
     assert len({agency.country for agency in european}) == 28
 
 
+def test_repo_registry_has_no_catalog_note_as_an_agency_name(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """mdb-2183 was published as "do not use - deprecfated" on a state NTD page.
+
+    The record is a live feed (agency.txt names it "Sound Generations: Hyde
+    Shuttle"), so it keeps its id and takes the feed's own name. The whole
+    registry must also be free of feed-descriptor names, which is what
+    ``scorecard lint --strict`` blocks a merge on.
+    """
+    from scorecard_pipeline.lint import is_feed_descriptor, lint_registry
+
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    agencies = read_agencies()
+    by_id = {agency.id: agency for agency in agencies}
+
+    assert by_id["sound-generations-hyde-shuttle"].name == "Sound Generations: Hyde Shuttle"
+    assert [i for i in lint_registry(agencies) if i.kind == "feed_descriptor_name"] == []
+
+    # Negative control: put the catalog's note back and the same check must
+    # fire, so a green result above is not a check that cannot fail.
+    sabotaged = by_id["sound-generations-hyde-shuttle"]
+    object.__setattr__(sabotaged, "name", "do not use - deprecfated")
+    try:
+        assert sabotaged.name == "do not use - deprecfated"  # the sabotage applied
+        assert is_feed_descriptor(sabotaged.name)
+        flagged = [i for i in lint_registry(agencies) if i.kind == "feed_descriptor_name"]
+        assert [i.agency_id for i in flagged] == ["sound-generations-hyde-shuttle"]
+    finally:
+        object.__setattr__(sabotaged, "name", "Sound Generations: Hyde Shuttle")
+
+
+def test_repo_registry_names_pittsburgh_regional_transit_by_its_current_name(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The agency renamed from Port Authority of Allegheny County; its feed says so.
+
+    The record keeps its id (URLs, history and the dated artifacts live under
+    it) and takes the name in the feed's own agency.txt. No record may still
+    carry the old name, or a state page would list one agency twice under two
+    names.
+    """
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    agencies = read_agencies()
+    by_id = {agency.id: agency for agency in agencies}
+
+    prt = by_id["port-authority-of-allegheny-county"]
+    assert prt.name == "Pittsburgh Regional Transit"
+    assert prt.mdb_id == "409"
+    assert not [a.id for a in agencies if a.name == "Port Authority of Allegheny County"]
+
+    # Negative control: the record as it stood on origin/main must fail the
+    # same name check, and the sabotage must have applied before we trust it.
+    stale = yaml.safe_load(
+        (REPO_ROOT / "registry" / "us" / "pa.yaml")
+        .read_text(encoding="utf-8")
+        .replace("name: Pittsburgh Regional Transit", "name: Port Authority of Allegheny County")
+    )
+    stale_record = next(
+        a for a in stale["agencies"] if a["id"] == "port-authority-of-allegheny-county"
+    )
+    assert stale_record["name"] == "Port Authority of Allegheny County"  # sabotage applied
+    assert stale_record["name"] != "Pittsburgh Regional Transit"
+
+
 def test_repo_registry_includes_2026_09_ntd_official_cohort(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
