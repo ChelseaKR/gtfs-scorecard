@@ -568,6 +568,9 @@ class StateFeedRow:
     trips_with_shape: int | None
     total_trips: int | None
     agency_id: str | None
+    # The scoring run this row reflects, as recorded; the state page's sitemap
+    # lastmod is the newest of these. Unvalidated here, render_site checks it.
+    snapshot_date: str | None = None
 
 
 def state_pages(artifacts: list[dict[str, Any]]) -> dict[str, list[StateFeedRow]]:
@@ -600,6 +603,7 @@ def state_pages(artifacts: list[dict[str, Any]]) -> dict[str, list[StateFeedRow]
                 trips_with_shape=with_shape if isinstance(with_shape, int) else None,
                 total_trips=total if isinstance(total, int) else None,
                 agency_id=agency_id,
+                snapshot_date=artifact.get("snapshot_date"),
             )
         )
     return {

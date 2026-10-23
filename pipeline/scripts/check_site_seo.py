@@ -11,7 +11,7 @@ import sys
 from collections import Counter, defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
@@ -30,6 +30,8 @@ _CONFIG_KEYS = {
     "fragment_exempt_prefixes",
     "noindex_path_patterns",
     "conditional_noindex_path_patterns",
+    "lastmod_required_path_patterns",
+    "lastmod_shown_path_patterns",
     "canonical_aliases",
     "hreflang_groups",
     "required_json_ld_types",
@@ -133,6 +135,9 @@ class Config:
     measurement_host: str
     measurement_ga4_host: str
     measurement_ga4_id: str
+    # Sitemap <lastmod> rules (see _validate_sitemap_lastmods). Both optional.
+    lastmod_required_path_patterns: tuple[str, ...] = ()
+    lastmod_shown_path_patterns: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, order=True)
@@ -512,7 +517,21 @@ def _read_config_object(path: Path) -> dict[str, Any]:
 
 
 # Keys a site may leave out. Every other key in _CONFIG_KEYS is required.
-_OPTIONAL_CONFIG_KEYS = {"conditional_noindex_path_patterns"}
+_OPTIONAL_CONFIG_KEYS = {
+    "conditional_noindex_path_patterns",
+    "lastmod_required_path_patterns",
+    "lastmod_shown_path_patterns",
+}
+
+
+def _optional_path_patterns(raw: dict[str, Any], key: str) -> tuple[str, ...]:
+    """An optional list of path patterns, validated like every other pattern list."""
+    if key not in raw:
+        return ()
+    patterns = _string_list(raw, key)
+    for pattern in patterns:
+        _validate_path_pattern(pattern, key)
+    return patterns
 
 
 def _validate_config_keys(raw: dict[str, Any]) -> None:
@@ -787,6 +806,10 @@ def load_config(path: Path) -> Config:
         fragment_exempt_prefixes=fragment_prefixes,
         noindex_path_patterns=noindex_patterns,
         conditional_noindex_path_patterns=conditional_patterns,
+        lastmod_required_path_patterns=_optional_path_patterns(
+            raw, "lastmod_required_path_patterns"
+        ),
+        lastmod_shown_path_patterns=_optional_path_patterns(raw, "lastmod_shown_path_patterns"),
         canonical_aliases=canonical_aliases,
         hreflang_groups=_hreflang_groups(raw),
         required_json_ld_types=_required_json_ld_types(raw),
@@ -1976,7 +1999,14 @@ def _parse_sitemap(path: Path, relative_path: str, findings: list[Finding]) -> E
     return cast("Element", root)
 
 
-def _sitemap_locations(root: Element, relative_path: str, findings: list[Finding]) -> list[str]:
+def _sitemap_locations(
+    root: Element,
+    relative_path: str,
+    findings: list[Finding],
+    lastmods: dict[str, str] | None = None,
+) -> list[str]:
+    """The sitemap's URLs. When ``lastmods`` is given it is filled with each
+    URL's first ``<lastmod>`` text; a URL without one is simply absent."""
     locations: list[str] = []
     for url_node in root:
         if url_node.tag != _sitemap_tag("url"):
@@ -1997,6 +2027,8 @@ def _sitemap_locations(root: Element, relative_path: str, findings: list[Finding
         location = (loc_nodes[0].text or "").strip()
         locations.append(location)
         for lastmod in (child for child in url_node if child.tag == _sitemap_tag("lastmod")):
+            if lastmods is not None:
+                lastmods.setdefault(location, (lastmod.text or "").strip())
             if not _valid_iso_date((lastmod.text or "").strip()):
                 findings.append(
                     Finding(
@@ -2006,6 +2038,92 @@ def _sitemap_locations(root: Element, relative_path: str, findings: list[Finding
                     )
                 )
     return locations
+
+
+def _today_utc() -> date:
+    """Today's date in UTC. Used only to reject a lastmod from the future, never
+    to produce one; tests replace it."""
+    return datetime.now(UTC).date()
+
+
+_ISO_DATE_IN_TEXT = re.compile(r"\b(\d{4}-\d{2}-\d{2})\b")
+_HEAD_OR_SCRIPT = re.compile(r"<(head|script|style)\b.*?</\1>", re.IGNORECASE | re.DOTALL)
+
+
+def _dates_shown_in_page(site_root: Path, page: Page) -> set[str]:
+    """ISO dates in a page's body text. The head and scripts are dropped so a
+    date in JSON-LD or a meta tag cannot vouch for a sitemap lastmod."""
+    try:
+        text = (site_root / page.relative_path).read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return set()
+    return set(_ISO_DATE_IN_TEXT.findall(_HEAD_OR_SCRIPT.sub(" ", text)))
+
+
+def _validate_sitemap_lastmods(
+    site_root: Path,
+    pages: dict[str, Page],
+    config: Config,
+    locations: list[str],
+    lastmods: dict[str, str],
+    findings: list[Finding],
+) -> None:
+    """Hold the sitemap's ``<lastmod>`` to what a crawler can verify.
+
+    * ``sitemap.future_lastmod``: no date later than tomorrow (UTC). Google
+      ignores a lastmod it cannot believe, and then ignores the field.
+    * ``sitemap.missing_lastmod``: a URL in ``lastmod_required_path_patterns``
+      has none. Those classes derive one from recorded data, so none means the
+      derivation broke.
+    * ``sitemap.lastmod_not_on_page``: for ``lastmod_shown_path_patterns`` the
+      lastmod must be a date the page itself prints, which a build-clock date
+      is not.
+    """
+    relative_path = config.sitemap_path
+    origin = config.site_origin
+    by_public_path = {page.public_path: page for page in pages.values()}
+    latest_allowed = _today_utc().toordinal() + 1
+    for location in locations:
+        path = location[len(origin) :] if location.startswith(origin) else ""
+        value = lastmods.get(location)
+        if (
+            value
+            and _valid_iso_date(value)
+            and date.fromisoformat(value[:10]).toordinal() > latest_allowed
+        ):
+            findings.append(
+                Finding(
+                    "sitemap.future_lastmod",
+                    relative_path,
+                    f"lastmod {value} for {location!r} is in the future",
+                )
+            )
+        required = any(
+            _matches_path_pattern(path, p) for p in config.lastmod_required_path_patterns
+        )
+        if required and not value:
+            findings.append(
+                Finding(
+                    "sitemap.missing_lastmod",
+                    relative_path,
+                    f"{location!r} must carry a lastmod derived from its data",
+                )
+            )
+        shown = any(_matches_path_pattern(path, p) for p in config.lastmod_shown_path_patterns)
+        page = by_public_path.get(path)
+        if (
+            shown
+            and value
+            and page is not None
+            and value[:10] not in _dates_shown_in_page(site_root, page)
+        ):
+            findings.append(
+                Finding(
+                    "sitemap.lastmod_not_on_page",
+                    relative_path,
+                    f"lastmod {value} for {location!r} is not a date the page shows",
+                )
+            )
 
 
 def _validate_sitemap(
@@ -2019,7 +2137,9 @@ def _validate_sitemap(
     root = _parse_sitemap(site_root / relative_path, relative_path, findings)
     if root is None:
         return
-    locations = _sitemap_locations(root, relative_path, findings)
+    lastmods: dict[str, str] = {}
+    locations = _sitemap_locations(root, relative_path, findings, lastmods)
+    _validate_sitemap_lastmods(site_root, pages, config, locations, lastmods, findings)
     for location, count in sorted(Counter(locations).items()):
         if count > 1:
             findings.append(
