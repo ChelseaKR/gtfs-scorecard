@@ -39,6 +39,14 @@ the declared public surface).
   classes, or one a clearance log or directory page does not itself print
   (`sitemap.future_lastmod`, `sitemap.missing_lastmod`, `sitemap.lastmod_not_on_page`).
   No URL is added, removed or noindexed. Resubmit the sitemap in Search Console.
+- **Inbound links to the clearance logs and the NTD state pages.** Each
+  `/agencies/` card whose agency has an indexable clearance log (three or more
+  verified clearances, the same test the sitemap uses) now links to
+  `/agency/<id>/fixes/`, and a state's `/program/<state>/` page links to that
+  state's `/ntd/states/<state>/` page when one exists. Until now a clearance log
+  had one inbound link, from its agency page, and Search Console reported 7 of 18
+  sampled logs as discovered but never crawled. No page is added, removed or
+  noindexed and the sitemap is unchanged.
 - **NTD Report Year 2026 state pages and a rewrite of the fix guides.** Each
   state with at least five tracked feeds measured for shapes.txt gets
   `/ntd/states/<state>/`: every tracked feed in the state with its shapes.txt
@@ -128,6 +136,18 @@ the declared public surface).
   the same rule.
 
 ### Changed
+
+- **The index can be stored compressed, and the history jobs keep a mirror.**
+  `data/artifacts/index.json` carries every agency's full history (151,374,557
+  bytes on 2026-10-22; 4,903,301 gzipped) and every refresh, deploy, collect and
+  report run read all of it from S3. All reads and writes now go through
+  `scripts/s3-index.sh`, which accepts the object plain or gzip and, when the
+  repository variable `INDEX_GZIP` is `1`, writes gzip with
+  `Content-Encoding: gzip`. The key is unchanged, so there is still one index
+  object and no IAM change. With the variable unset nothing stored changes.
+  History export and Trend history repair also sync the dated records into a
+  mirror in the Actions cache (`--exact-timestamps --delete`) instead of
+  downloading about 10 GB on every run. See `docs/deploy.md`.
 
 - **Less S3 data transfer out for the refresh and the deploy.** The Intraday
   refresh and Deploy site now keep the public per-agency artifact set (every
