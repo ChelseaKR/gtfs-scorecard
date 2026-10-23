@@ -87,6 +87,18 @@ jobs:
         with:
           role-to-assume: ${{ env.PAGES_AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+      - name: Name the mirror day
+        id: mirror-day
+        run: echo "today=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+      - name: Restore the public-artifact mirror
+        id: public-mirror
+        if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/public-artifact-mirror
+          key: public-artifact-mirror-v1-pages-${{ steps.mirror-day.outputs.today }}
+          restore-keys: |
+            public-artifact-mirror-v1-pages-
       - name: Sync published artifacts from S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
         run: |
@@ -117,22 +129,49 @@ jobs:
               sleep $((attempt * 5))
             done
           }
+          # The per-agency half of this set (latest.json, the badges and
+          # conformance files, today's and yesterday's dated snapshots) is
+          # ~400 MB that barely moves between builds, and this workflow runs on
+          # every intraday refresh and every code push. It is kept in the
+          # Actions cache and refreshed with `--exact-timestamps --delete`, so
+          # only objects S3 changed are transferred; the overlay script then
+          # puts the mirror over the working tree. All of it is public data.
+          # index.json is fetched first and on its own: it is the commit
+          # pointer, it changes every cycle, and reading it before the
+          # agency files keeps the generation order the guard below expects.
+          mirror="$RUNNER_TEMP/public-artifact-mirror"
+          log="$RUNNER_TEMP/mirror-sync.log"
+          mkdir -p "$mirror"
+          retry_s3_sync "index.json" aws s3 cp \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/index.json" \
+            data/artifacts/index.json --only-show-errors
           retry_s3_sync "published artifacts" aws s3 sync \
-            "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
+            "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" "$mirror" \
             --exclude "*" \
-            --include "directory.json" --include "index.json" \
+            --include "directory.json" \
             --include "scoring.json" --include "sensitivity.json" \
             --include "canada-equity.json" --include "rescored-history.json" \
             --include "changes/*" --include "rollups/*" --include "run/*" \
             --include "*/latest.json" --include "*/badge.json" --include "*/badge.svg" \
             --include "*/conformance.json" --include "*/mark.svg" \
             --include "*/${today}.json" --include "*/${yesterday}.json" \
-            --only-show-errors
+            --delete --exact-timestamps --no-progress > "$log"
+          echo "::notice title=public-artifact mirror::$(grep -c '^download:' "$log" || true) objects downloaded, $(grep -c '^delete:' "$log" || true) removed"
+          scripts/overlay-s3-mirror.sh "$mirror" data/artifacts "$today" "$yesterday"
           retry_s3_sync "fix-log cache" aws s3 sync \
             "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" data/artifacts \
             --only-show-errors
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
             data/liveness.json --only-show-errors || true
+
+      # Saved once per UTC day, not per run: the sync makes the mirror equal to
+      # S3 on every run, so a day-old entry only costs what changed since.
+      - name: Save the public-artifact mirror
+        if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' && steps.public-mirror.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/public-artifact-mirror
+          key: public-artifact-mirror-v1-pages-${{ steps.mirror-day.outputs.today }}
 
       # Route geometry is the heaviest thing the renderer reads: ~2,300 objects
       # and ~380 MB, against ~190 MB for everything else in the bounded set
