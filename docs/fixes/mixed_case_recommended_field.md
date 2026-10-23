@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: rider-facing names are in ALL CAPS or all lowercase
+# Names in ALL CAPS or all lowercase
 
 Code: `mixed_case_recommended_field` (MobilityData validator)
+
+## The short answer
+
+Rider-facing text such as stop_name is in a single case. Fix: rewrite it in mixed case (Main St & 2nd Ave) and keep real acronyms as they are.
 
 ## What this means
 

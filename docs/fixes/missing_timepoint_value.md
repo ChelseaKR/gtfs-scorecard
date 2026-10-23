@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: stop times without a timepoint value
+# Stop times without a timepoint value
 
 Code: `missing_timepoint_value` (MobilityData validator)
+
+## The short answer
+
+Some stop_times.txt rows leave timepoint blank. Fix: write 1 for scheduled checkpoints and 0 for estimated times on every row.
 
 ## What this means
 

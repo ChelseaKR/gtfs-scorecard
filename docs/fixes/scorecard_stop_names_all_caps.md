@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-04"
-date_modified: "2026-07-04"
+date_modified: "2026-10-22"
 ---
 
-# Fix: stop names are written in ALL CAPS
+# Stop names written in ALL CAPS
 
 Code: `scorecard_stop_names_all_caps`
+
+## The short answer
+
+Your stop_name values are in capitals. Fix: bulk-convert them to mixed case (Main St & 2nd Ave) in your scheduling tool.
 
 ## What this means
 

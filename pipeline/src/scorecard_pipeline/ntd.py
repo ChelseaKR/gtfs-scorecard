@@ -24,6 +24,7 @@ agency's own D-10 and P-50 filing.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -334,8 +335,9 @@ class ShapesReadiness:
     publish: Full Reporters from Report Year 2025, and Reduced, Rural, and Tribal
     Reporters from Report Year 2026
     (https://www.federalregister.gov/documents/2025/07/10/2025-12813/national-transit-database-reporting-changes-and-clarifications-for-report-years-2025-and-2026).
-    FTA estimated only just over a third of reporters already provided it when the
-    rule was finalized.
+    When FTA proposed the change in October 2024 it estimated that over one-third
+    of all reporters already maintained the file (document 2024-25341); the July
+    2025 final notice does not repeat the estimate.
 
     This checks the feed itself, not the agency's reporter type or reporting
     year, so a "not ready" result is a heads-up to check against your own NTD
@@ -536,6 +538,78 @@ def shapes_portfolio_summary(artifacts: list[dict[str, Any]]) -> PortfolioSummar
             bucket["not_ready"] += 1
     pct_ready = round(ready / total * 100, 1) if total else 0.0
     return PortfolioSummary(total, ready, at_risk, not_ready, pct_ready, by_state)
+
+
+# A state gets its own /ntd/states/<slug>/ page only when at least this many of
+# its tracked feeds were actually measured for shapes coverage. Below it the
+# page would be a handful of rows that /ntd/shapes/ already carries in its state
+# table, and the site is still finding out how many of its generated pages
+# Google indexes at all. The number is a design choice, not a regulatory one.
+MIN_STATE_PAGE_FEEDS = 5
+
+
+def state_slug(state: str) -> str:
+    """URL slug for a state name: lowercase words joined by hyphens."""
+    return "-".join(re.findall(r"[a-z0-9]+", state.lower()))
+
+
+@dataclass(frozen=True)
+class StateFeedRow:
+    """One tracked feed on a state's RY2026 readiness page.
+
+    ``shapes`` and ``agency_id`` are ready / at_risk / not_ready, or None when the
+    check did not run for this feed. None is shown as "not checked" and is never
+    counted, so an unmeasured feed cannot read as a pass or a failure.
+    """
+
+    id: str
+    name: str
+    shapes: str | None
+    trips_with_shape: int | None
+    total_trips: int | None
+    agency_id: str | None
+
+
+def state_pages(artifacts: list[dict[str, Any]]) -> dict[str, list[StateFeedRow]]:
+    """Per-state worklists of tracked US feeds for the RY2026 state pages.
+
+    Only states with at least ``MIN_STATE_PAGE_FEEDS`` feeds measured for shapes
+    coverage are returned. Feeds without a state are never grouped under a
+    made-up one.
+    """
+    grouped: dict[str, list[StateFeedRow]] = {}
+    for artifact in artifacts:
+        agency = artifact.get("agency", {})
+        if agency.get("country", "US") != "US":
+            continue
+        state = _state_of(artifact)
+        if state == "Unlocated":
+            continue
+        shapes = shapes_status(artifact)
+        counts = artifact.get("shapes_readiness") or {}
+        total = counts.get("total_trips") if shapes is not None else None
+        with_shape = counts.get("trips_with_shape") if shapes is not None else None
+        pillar = next((p for p in assess(artifact).pillars if p.key == "agency_id"), None)
+        agency_id = pillar.status if pillar is not None and pillar.status in _RANK else None
+        agency_key = str(agency.get("id", ""))
+        grouped.setdefault(state, []).append(
+            StateFeedRow(
+                id=agency_key,
+                name=str(agency.get("name") or agency_key),
+                shapes=shapes,
+                trips_with_shape=with_shape if isinstance(with_shape, int) else None,
+                total_trips=total if isinstance(total, int) else None,
+                agency_id=agency_id,
+            )
+        )
+    return {
+        state: sorted(
+            rows,
+            key=lambda r: (-_RANK.get(r.shapes or "", -1), r.name.lower(), r.id),
+        )
+        for state, rows in sorted(grouped.items())
+        if sum(1 for r in rows if r.shapes is not None) >= MIN_STATE_PAGE_FEEDS
+    }
 
 
 def one_fix_from_ready(artifacts: list[dict[str, Any]]) -> list[dict[str, Any]]:

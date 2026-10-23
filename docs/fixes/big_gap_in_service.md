@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-09"
-date_modified: "2026-07-09"
+date_modified: "2026-10-22"
 ---
 
-# Fix: a service calendar has a gap longer than 13 days
+# big_gap_in_service: a calendar gap of more than 13 days
 
 Code: `big_gap_in_service` (MobilityData validator)
+
+## The short answer
+
+One service_id has more than 13 days with no service. Fix: extend calendar.txt or add calendar_dates.txt exceptions; a real seasonal gap can stay.
 
 ## What this means
 

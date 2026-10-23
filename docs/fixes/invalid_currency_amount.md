@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: a fare amount has the wrong number of decimals
+# A fare amount has the wrong number of decimals
 
 Code: `invalid_currency_amount` (MobilityData validator)
+
+## The short answer
+
+A fare amount does not match its currency's decimals. Fix: write US dollar amounts with two decimals (2.50, not 2.5) and check currency_type.
 
 ## What this means
 

@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: the feed expires within 30 days
+# feed_expiration_date30_days: the feed expires within 30 days
 
 Code: `feed_expiration_date30_days` (MobilityData validator)
+
+## The short answer
+
+feed_end_date in feed_info.txt is less than a month away. Fix: re-export with a later end date and keep exporting on a regular schedule.
 
 ## What this means
 

@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-04"
-date_modified: "2026-10-01"
+date_modified: "2026-10-22"
 ---
 
-# Fix: the feed has already expired
+# scorecard_feed_expired: the feed has already expired
 
 Code: `scorecard_feed_expired`
+
+## The short answer
+
+The earlier of feed_end_date and your last calendar date has passed. Fix: re-export today with a calendar and feed_end_date further out.
 
 ## What this means
 

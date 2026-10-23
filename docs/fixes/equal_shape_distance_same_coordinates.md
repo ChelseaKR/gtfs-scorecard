@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-09"
-date_modified: "2026-07-09"
+date_modified: "2026-10-22"
 ---
 
-# Fix: remove a duplicated point from a route shape
+# A duplicated point in a route shape
 
 Code: `equal_shape_distance_same_coordinates` (MobilityData validator)
+
+## The short answer
+
+Two consecutive shapes.txt rows repeat the same point. Fix: delete one row and renumber shape_pt_sequence so it still increases.
 
 ## What this means
 

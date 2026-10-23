@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-10-01"
+date_modified: "2026-10-22"
 ---
 
-# Fix: trips don't say where they're headed
+# scorecard_missing_headsigns: trips with no headsign
 
 Code: `scorecard_missing_headsigns`
+
+## The short answer
+
+Trips leave trip_headsign blank where a route has several directions or patterns. Fix: set the rider-facing destination once per pattern.
 
 ## What this means
 

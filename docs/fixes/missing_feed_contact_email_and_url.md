@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: the feed lists no contact
+# The feed lists no contact
 
 Code: `missing_feed_contact_email_and_url` (MobilityData validator)
+
+## The short answer
+
+feed_info.txt has no feed_contact_email or feed_contact_url. Fix: add one; a role inbox such as gtfs@youragency.org outlasts staff changes.
 
 ## What this means
 

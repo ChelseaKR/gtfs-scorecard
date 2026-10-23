@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: service dates fall outside the feed's validity window
+# Service dates outside the feed's validity window
 
 Code: `service_window_outside_feed_period` (MobilityData validator)
+
+## The short answer
+
+Calendar dates fall outside feed_start_date and feed_end_date. Fix: update the feed_info.txt dates or trim the stray service periods.
 
 ## What this means
 

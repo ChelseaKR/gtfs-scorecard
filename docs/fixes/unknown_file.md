@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: the feed contains a file that isn't part of GTFS
+# unknown_file: a file that is not part of GTFS
 
 Code: `unknown_file` (MobilityData validator)
+
+## The short answer
+
+The zip has a file the spec does not define. Fix: rename it if it is a misspelled GTFS file; otherwise remove it or leave it.
 
 ## What this means
 

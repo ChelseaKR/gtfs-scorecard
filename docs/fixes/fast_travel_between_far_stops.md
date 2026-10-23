@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: impossibly fast travel between distant stops
+# Impossibly fast travel between distant stops
 
 Code: `fast_travel_between_far_stops` (MobilityData validator)
+
+## The short answer
+
+The times between two far-apart stops imply a speed no bus reaches. Fix: check the stop times first, then the stop coordinates, then a missing stop.
 
 ## What this means
 

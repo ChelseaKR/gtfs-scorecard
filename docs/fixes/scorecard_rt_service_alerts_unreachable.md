@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-05"
-date_modified: "2026-07-05"
+date_modified: "2026-10-22"
 ---
 
-# Fix: the ServiceAlerts realtime feed failed during sampling
+# The ServiceAlerts realtime feed failed
 
 Code: `scorecard_rt_service_alerts_unreachable`
+
+## The short answer
+
+The scorecard could not read your ServiceAlerts feed. Fix: ask your AVL vendor to check the endpoint returns fresh GTFS-Realtime data at the same URL.
 
 ## What this means
 

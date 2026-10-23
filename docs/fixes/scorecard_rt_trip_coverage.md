@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-05"
-date_modified: "2026-07-05"
+date_modified: "2026-10-22"
 ---
 
-# Fix: some scheduled trips have no live predictions
+# Scheduled trips with no live predictions
 
 Code: `scorecard_rt_trip_coverage`
+
+## The short answer
+
+Some scheduled trips have no TripUpdates prediction. Fix: ask your AVL vendor to confirm every vehicle assignment flows into TripUpdates.
 
 ## What this means
 

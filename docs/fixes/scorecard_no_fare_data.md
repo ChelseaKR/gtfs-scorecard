@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: the feed contains no fare information
+# The feed contains no fare information
 
 Code: `scorecard_no_fare_data`
+
+## The short answer
+
+The feed has no fare files. Fix: for a flat fare, add fare_attributes.txt and fare_rules.txt with the right currency, such as USD.
 
 ## What this means
 

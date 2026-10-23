@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-05"
-date_modified: "2026-07-05"
+date_modified: "2026-10-22"
 ---
 
-# Fix: the TripUpdates realtime feed failed during sampling
+# The TripUpdates realtime feed failed
 
 Code: `scorecard_rt_trip_updates_unreachable`
+
+## The short answer
+
+The scorecard could not read your TripUpdates feed. Fix: ask your AVL vendor to check the endpoint returns fresh GTFS-Realtime data at the same URL.
 
 ## What this means
 

@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-03"
-date_modified: "2026-07-03"
+date_modified: "2026-10-22"
 ---
 
-# Fix: stops do not state wheelchair accessibility
+# Stops with no wheelchair boarding value
 
 Code: `scorecard_wheelchair_boarding_unknown`
+
+## The short answer
+
+stops.txt leaves wheelchair_boarding blank. Fix: set 1 (accessible) or 2 (not accessible) on each stop, starting with the busiest.
 
 ## What this means
 

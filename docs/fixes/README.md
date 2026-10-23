@@ -25,6 +25,12 @@ same short structure so a CSM can read it aloud on a call:
   ---
   ```
 
+- An H1 written the way the problem is typed into a search box: the finding
+  code in front when the whole title fits the 60-character title budget,
+  otherwise the plain phrase alone (`tests/test_fix_guides_short_answer.py`).
+- **The short answer**, directly under the code line: one or two sentences, 50
+  to 155 characters, that state what is wrong and end in the one-line fix
+  (`Fix: ...`). The page uses this paragraph as its meta description.
 - **What this means** in plain language.
 - **Why it matters** to a rider or to the agency.
 - **How to fix it**, with the common scheduling tools named where the setting

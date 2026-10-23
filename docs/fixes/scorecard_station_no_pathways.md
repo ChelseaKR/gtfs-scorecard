@@ -1,11 +1,15 @@
 ---
 date_published: "2026-07-04"
-date_modified: "2026-07-04"
+date_modified: "2026-10-22"
 ---
 
-# Fix: a station with no pathways.txt
+# A station with no pathways.txt
 
 Code: `scorecard_station_no_pathways`
+
+## The short answer
+
+stops.txt models a station but the feed has no pathways.txt. Fix: add pathways.txt and levels.txt for multi-level stations; a flat stop needs neither.
 
 ## What this means
 
