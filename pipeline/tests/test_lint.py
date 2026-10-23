@@ -20,6 +20,18 @@ def test_is_feed_descriptor_matches_known_catalog_descriptors() -> None:
     assert not is_feed_descriptor("Flexible Bus Company")
 
 
+def test_is_feed_descriptor_catches_do_not_use_notes_with_typos() -> None:
+    # mdb-2183's name is the catalog's free-text note "do not use - deprecfated"
+    # (sic). The exact-match set missed the typo and the note was published as
+    # an agency name on /ntd/states/washington/.
+    assert is_feed_descriptor("do not use - deprecfated")
+    assert is_feed_descriptor("DO NOT USE")
+    assert is_feed_descriptor("  Do  not use - old feed ")
+    # A real name that merely contains the words later on is not a note.
+    assert not is_feed_descriptor("Donut Express")
+    assert not is_feed_descriptor("Transit, do not use for tickets")
+
+
 def _agency(**kw: object) -> Agency:
     base: dict[str, Any] = {
         "id": "demo",

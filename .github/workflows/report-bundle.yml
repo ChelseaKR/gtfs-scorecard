@@ -178,7 +178,7 @@ jobs:
           ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
         run: |
           set -euo pipefail
-          aws s3 cp "s3://${ARTIFACTS_BUCKET}/data/artifacts/index.json" ../data/artifacts/index.json --only-show-errors
+          ../scripts/s3-index.sh get "${ARTIFACTS_BUCKET}" ../data/artifacts/index.json
           fetch_latest() {
             local id="$1" attempt err
             for attempt in 1 2 3; do

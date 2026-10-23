@@ -738,3 +738,60 @@ def test_local_current_materializer_accepts_a_corpus_read_from_one_generation(
     _torn_corpus(root, indexed_sha=_GENERATION_B, latest_sha=_GENERATION_B)
 
     assert materialize_local_current_artifacts(artifacts_root=root) == 0
+
+
+def test_gzip_stored_index_is_decoded_and_the_etag_is_the_stored_objects(
+    tmp_path: Path,
+) -> None:
+    """boto3 hands back the gzip bytes; the activation reads and writes plain JSON."""
+    import gzip
+
+    key = "data/artifacts/index.json"
+    plain = _objects()[key]
+    stored = gzip.compress(plain, 6)
+    objects = _objects()
+    objects[key] = stored
+    # The sabotage must apply: the stored form really is gzip and really is not JSON.
+    assert stored[:2] == b"\x1f\x8b" and stored != plain
+    with pytest.raises(ValueError):
+        json.loads(stored)
+    client = FakeS3(objects)
+
+    _hydrate(tmp_path, client)
+
+    assert (tmp_path / "index.before.json").read_bytes() == plain
+    assert (tmp_path / "artifacts" / "index.json").read_bytes() == plain
+    assert (tmp_path / "index.etag").read_text() == '"index-etag"\n'
+
+
+def test_plain_and_gzip_index_hydrate_to_identical_trees(tmp_path: Path) -> None:
+    import gzip
+
+    key = "data/artifacts/index.json"
+    plain_tree, gzip_tree = tmp_path / "plain", tmp_path / "gzip"
+    plain_tree.mkdir()
+    gzip_tree.mkdir()
+    _hydrate(plain_tree, FakeS3(_objects()))
+    objects = _objects()
+    objects[key] = gzip.compress(objects[key], 6)
+    _hydrate(gzip_tree, FakeS3(objects))
+
+    def tree(root: Path) -> dict[str, bytes]:
+        return {
+            str(path.relative_to(root)): path.read_bytes()
+            for path in sorted(root.rglob("*"))
+            if path.is_file()
+        }
+
+    assert tree(plain_tree) == tree(gzip_tree)
+    assert tree(plain_tree)["artifacts/index.json"] == _objects()[key]
+
+
+def test_corrupt_gzip_index_aborts_instead_of_publishing_garbage(tmp_path: Path) -> None:
+    key = "data/artifacts/index.json"
+    objects = _objects()
+    objects[key] = b"\x1f\x8b\x08\x00truncated-not-really-gzip"
+    with pytest.raises(ActivationHydrationError, match="gzip"):
+        _hydrate(tmp_path, FakeS3(objects))
+    assert not (tmp_path / "artifacts" / "index.json").exists()
+    assert not (tmp_path / "index.before.json").exists()
