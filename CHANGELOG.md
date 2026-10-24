@@ -215,6 +215,17 @@ the declared public surface).
 
 ### Fixed
 
+- **`/ntd/` no longer reports a limit of the catalogs read as a count.** The
+  reporter join matched 1,253 Report Year 2024 reporters against three catalogs
+  and printed "473 to 641 have no feed discoverable in any open catalog", without
+  reading the GTFS link each agency reports to FTA (NTD GTFS weblinks, Socrata
+  `2u7n-ub22`). That table is now the fifth source, joined by NTD ID as the last
+  strong tier (`ntd_weblink_ntd_id`), so no existing tier count moves and 593
+  reporters leave the two unmatched tiers. The range is 35 to 48 reporters with
+  no GTFS link reported to FTA and no catalog match. A reported link is
+  self-reported and is never fetched or validated, and the page says so; when the
+  table is missing the page says it was not read instead of printing the old
+  range. Provenance and edge-case rules are in `data/ntd/PROVENANCE.md`.
 - **The support page and `docs/support.md` no longer say the core costs
   "single-digit dollars a month".** AWS Cost Explorer shows $28.35 of Amazon S3
   charges in us-west-2 for September 2026 ($17.26 data transfer out, $8.80

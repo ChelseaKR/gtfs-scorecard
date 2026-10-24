@@ -66,6 +66,7 @@ def classify_against(
     by_ntd_id: dict[str, list[str]] | None = None,
     atlas: frozenset[str] = frozenset(),
     catalog: list[FeedRecord] | None = None,
+    weblinks: frozenset[str] = frozenset(),
 ) -> tuple[str, str]:
     match = classify(
         who,
@@ -73,6 +74,7 @@ def classify_against(
         registry=CatalogIndex(registry or [], label="registry"),
         atlas_ntd_ids=atlas,
         catalog=CatalogIndex(catalog or [], label="mdb"),
+        weblink_ntd_ids=weblinks,
     )
     return match.tier, match.evidence
 
@@ -294,3 +296,48 @@ class TestSummarize:
 
 def classify_against_stub(tier: str) -> Match:
     return Match(tier, "")
+
+
+class TestFtaLinkTier:
+    def test_a_reported_link_places_a_reporter_no_catalog_did(self) -> None:
+        tier, evidence = classify_against(reporter(), weblinks=frozenset({"90218"}))
+        assert (tier, evidence) == ("ntd_weblink_ntd_id", "fta-ntd-gtfs-weblinks")
+
+    def test_a_catalog_placement_wins_over_a_reported_link(self) -> None:
+        """So adding the table can never move a reporter out of an existing tier."""
+        record = FeedRecord(key="a", state="CA", name="Riverside County Transportation Commission")
+        tier, _ = classify_against(reporter(), registry=[record], weblinks=frozenset({"90218"}))
+        assert tier == "registry_name_exact"
+        tier, _ = classify_against(
+            reporter(), atlas=frozenset({"90218"}), weblinks=frozenset({"90218"})
+        )
+        assert tier == "atlas_ntd_id"
+
+    def test_a_reported_link_beats_a_weak_name_overlap(self) -> None:
+        sitka = FeedRecord(key="r", state="AK", name="RIDE Sitka")
+        who = reporter(ntd_id="00099", name="Sitka Tribe of Alaska", state="AK", url="")
+        assert classify_against(who, registry=[sitka])[0] == "weak_shared_token"
+        assert classify_against(who, registry=[sitka], weblinks=frozenset({"00099"}))[0] == (
+            "ntd_weblink_ntd_id"
+        )
+
+    def test_a_reporter_not_in_the_table_is_unchanged(self) -> None:
+        assert classify_against(reporter(), weblinks=frozenset({"00001"}))[0] == "no_candidate"
+
+    def test_the_ntd_id_is_matched_as_a_string_not_a_number(self) -> None:
+        assert classify_against(reporter(ntd_id="03R06"), weblinks=frozenset({"03R06"}))[0] == (
+            "ntd_weblink_ntd_id"
+        )
+        assert classify_against(reporter(ntd_id="01234"), weblinks=frozenset({"1234"}))[0] == (
+            "no_candidate"
+        )
+
+    def test_the_link_tier_is_strong_but_not_a_catalog_or_ours(self) -> None:
+        from scorecard_pipeline.ntd_coverage import (
+            CATALOG_TIERS,
+            TRACKED_BY_US_TIERS,
+            WEBLINK_TIER,
+        )
+
+        assert WEBLINK_TIER in STRONG_TIERS
+        assert WEBLINK_TIER not in CATALOG_TIERS | TRACKED_BY_US_TIERS

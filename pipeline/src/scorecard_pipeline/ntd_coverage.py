@@ -10,16 +10,29 @@ all -- is unreachable from that direction.
 This module runs the join the other way. The left side is FTA's own reporter
 roster (NTD Annual Database, Agency Information). The right side is every open
 feed registry we can read: this project's registry, the Transitland Atlas, and
-the Mobility Database. Each reporter is placed in exactly one match tier, and
-the tiers are ordered by how much the evidence is worth, so a reader can draw
-the line wherever they trust it and read a different number.
+the Mobility Database, and then FTA's own table of the GTFS links agencies
+report to it (the NTD GTFS weblinks dataset), joined by NTD ID. Each reporter is
+placed in exactly one match tier, and the tiers are ordered by how much the
+evidence is worth, so a reader can draw the line wherever they trust it and
+read a different number.
+
+The FTA link table is the last strong tier on purpose. It is consulted only for
+a reporter the three catalogs could not place, so adding it moved no reporter
+out of any existing tier; it only drained the two unmatched tiers. Until it was
+read (2026-10-23) the page said 473 to 641 reporters had "no feed discoverable
+in any open catalog this site reads", which was literally true and materially
+misleading: 438 of the 473 had told FTA where their feed is.
 
 Three things this deliberately does not do.
 
-It does not grade anyone. A reporter with no discoverable feed is reported as a
-gap in what open catalogs can see, never as a zero and never as a finding
-about the agency. The fix may belong to FTA's own crosswalk, to a catalog, or
-to us.
+It does not grade anyone. A reporter with no link reported to FTA and no
+catalog match is reported as a gap in what these sources can see, never as a
+zero and never as a finding about the agency. The fix may belong to FTA's own
+crosswalk, to a catalog, or to us.
+
+It does not fetch or validate a link. A GTFS link in FTA's table is
+self-reported by the agency; the tier records that the agency told FTA where
+its feed is, not that the feed is current or valid.
 
 It does not guess. Where the evidence is a name that merely shares a token, the
 tier says so and the number is reported twice: once counting weak matches as
@@ -40,6 +53,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 from .ntd_crosswalk import normalize_name
 
@@ -79,6 +93,11 @@ US_AND_TERRITORY_CODES = frozenset({"US", "PR", "VI", "GU", "AS", "MP"})
 
 # Match tiers, strongest first. `strong` tiers rest on an identifier or an exact
 # name within one state; the rest are heuristics that a human should confirm.
+#
+# `ntd_weblink_ntd_id` is the last strong tier: a reporter lands there only when
+# none of the three catalogs placed it, so the eight catalog tiers count exactly
+# what they counted before the FTA link table was read.
+WEBLINK_TIER = "ntd_weblink_ntd_id"
 TIER_ORDER = (
     "registry_ntd_id",
     "registry_name_exact",
@@ -88,6 +107,7 @@ TIER_ORDER = (
     "catalog_name_exact",
     "catalog_domain",
     "catalog_name_fuzzy",
+    WEBLINK_TIER,
     "weak_shared_token",
     "no_candidate",
 )
@@ -101,7 +121,37 @@ STRONG_TIERS = frozenset(
         "catalog_name_exact",
         "catalog_domain",
         "catalog_name_fuzzy",
+        WEBLINK_TIER,
     }
+)
+#: The two tiers the FTA link table can drain. A reporter in any other tier was
+#: already placed by a catalog and keeps that placement.
+UNMATCHED_TIERS = frozenset({"weak_shared_token", "no_candidate"})
+#: The FTA link table's own name on the page and in the snapshot.
+WEBLINK_SOURCE_LABEL = "fta-ntd-gtfs-weblinks"
+WEBLINK_SOURCE_NAME = "FTA NTD GTFS weblinks (Socrata dataset 2u7n-ub22)"
+
+# Copy shared by every surface that prints the range (/ntd/ and the home page).
+# Held here so the two can be tested equal rather than drifting apart.
+#: The home-page figure label for the range.
+NO_LINK_NO_MATCH_LABEL = (
+    "NTD reporters with no GTFS link reported to FTA and no feed found in an open catalog"
+)
+#: Why the range has two ends.
+RANGE_CAVEAT = (
+    "The low end counts a shared rare word in an agency name as a catalog match; "
+    "the high end does not. The gap between them is how wide a name-based join is, "
+    "and it is stated rather than averaged away."
+)
+#: What a reporter in the range is, and is not.
+ABSENCE_CAVEAT = (
+    "A reporter with no link and no catalog match is a limit of what these sources "
+    "can see, not a finding about that agency"
+)
+#: What a link in FTA's table is, and is not.
+FTA_LINK_CAVEAT = (
+    "A GTFS link in FTA's NTD data is self-reported by the agency and is not fetched "
+    "or validated by this project."
 )
 TRACKED_BY_US_TIERS = frozenset(
     {
@@ -111,6 +161,10 @@ TRACKED_BY_US_TIERS = frozenset(
         "registry_name_fuzzy",
     }
 )
+#: Strong tiers resting on a catalog other than our own registry. The FTA link
+#: table is a different kind of evidence (an agency's own pointer, not a catalog
+#: entry), so it is counted on its own row, never folded into this one.
+CATALOG_TIERS = STRONG_TIERS - TRACKED_BY_US_TIERS - {WEBLINK_TIER}
 
 # Two names match loosely when this much of their combined distinctive
 # vocabulary is shared. 0.6 keeps "Spokane Transit Authority" against "Spokane
@@ -321,8 +375,14 @@ def classify(
     registry: CatalogIndex,
     atlas_ntd_ids: frozenset[str],
     catalog: CatalogIndex,
+    weblink_ntd_ids: frozenset[str] = frozenset(),
 ) -> Match:
-    """Place one reporter in the strongest tier its evidence supports."""
+    """Place one reporter in the strongest tier its evidence supports.
+
+    `weblink_ntd_ids` is the set of NTD IDs that report a GTFS link to FTA. It is
+    read after every catalog tier and before the weak name tier, so it can only
+    move a reporter the catalogs did not place.
+    """
     keys = registry_by_ntd_id.get(reporter.ntd_id)
     if keys:
         return Match("registry_ntd_id", "registry:" + ",".join(sorted(keys)))
@@ -342,6 +402,8 @@ def classify(
     ):
         if found:
             return Match(tier, f"{catalog.label}:{found}")
+    if reporter.ntd_id in weblink_ntd_ids:
+        return Match(WEBLINK_TIER, WEBLINK_SOURCE_LABEL)
     for source in (registry, catalog):
         found = source.shared_token(reporter)
         if found:
@@ -379,6 +441,79 @@ def atlas_ntd_ids_with_a_feed(docs: list[dict[str, Any]]) -> frozenset[str]:
     return frozenset(found)
 
 
+def has_link(value: str) -> bool:
+    """A Weblink cell carries a link when it is not blank.
+
+    Deliberately no further test. The cell is what the agency told FTA; whether
+    it is a zip, a landing page, or an API endpoint, and whether it is live, is
+    not this module's business and nothing here fetches it.
+    """
+    return bool(value and value.strip())
+
+
+def weblink_ntd_ids(rows: list[dict[str, str]]) -> frozenset[str]:
+    """NTD IDs with at least one non-blank Weblink in FTA's NTD GTFS weblinks table.
+
+    Exact string match on the five-character NTD ID, no name matching. The rules
+    for the awkward rows are fixed here so a re-run cannot change them quietly:
+
+    * a Waived row that still carries a link counts as linked. The waiver excuses
+      the agency from the requirement; it does not erase a pointer the agency gave
+      FTA. (Two RY2024 reporters hang on this; the strict alternative would
+      raise the low end of the range from 35 to 37.)
+    * a row whose Certification Flag is false or blank counts too. The flag says
+      whether the agency certified its submission, not whether a link exists.
+    * a link to a page rather than a zip or a GTFS URL counts. The value is
+      whatever the agency typed.
+    * a blank link never counts, with or without a written justification: a
+      justification is an agency saying why it has no link, which is a stated
+      absence and stays one.
+
+    The table has no report-year column (Date Validated is 2025 or 2026), so the
+    IDs are joined against the RY2024 reporters on identity alone.
+    """
+    return frozenset(
+        row["NTD ID"].strip()
+        for row in rows
+        if row.get("NTD ID", "").strip() and has_link(row.get("Weblink", ""))
+    )
+
+
+def weblink_edge_cases(rows: list[dict[str, str]], ids: frozenset[str]) -> dict[str, int]:
+    """How many linked reporters rest on each awkward kind of row.
+
+    Informational: these counts are published beside the snapshot so a reader
+    can see what the rules in `weblink_ntd_ids` decided, and nothing branches on
+    them. Counted from the link text only; no link is opened.
+    """
+    by_id: dict[str, list[dict[str, str]]] = defaultdict(list)
+    for row in rows:
+        ntd_id = row.get("NTD ID", "").strip()
+        if ntd_id in ids and has_link(row.get("Weblink", "")):
+            by_id[ntd_id].append(row)
+
+    def is_true(value: str) -> bool:
+        return value.strip().lower() == "true"
+
+    def feed_like(link: str) -> bool:
+        lowered = link.strip().lower()
+        return urlsplit(lowered).path.endswith(".zip") or "gtfs" in lowered
+
+    return {
+        "linked_only_on_waived_rows": sum(
+            1 for linked in by_id.values() if all(is_true(r.get("Waived", "")) for r in linked)
+        ),
+        "linked_only_on_uncertified_rows": sum(
+            1
+            for linked in by_id.values()
+            if not any(is_true(r.get("Certification Flag", "")) for r in linked)
+        ),
+        "linked_only_to_a_page": sum(
+            1 for linked in by_id.values() if not any(feed_like(r["Weblink"]) for r in linked)
+        ),
+    }
+
+
 @dataclass(frozen=True)
 class Coverage:
     """The counts, with the weak tier kept separable on purpose."""
@@ -393,7 +528,11 @@ class Coverage:
 
     @property
     def discoverable_elsewhere(self) -> int:
-        return sum(self.by_tier.get(tier, 0) for tier in STRONG_TIERS - TRACKED_BY_US_TIERS)
+        return sum(self.by_tier.get(tier, 0) for tier in CATALOG_TIERS)
+
+    @property
+    def reported_to_fta(self) -> int:
+        return self.by_tier.get(WEBLINK_TIER, 0)
 
     @property
     def no_candidate_strict(self) -> int:
@@ -480,8 +619,20 @@ def published_reporter_coverage(path: Path | None = None) -> dict[str, Any] | No
     if not report_year or len(retrieved_utc) < len("YYYY-MM-DD"):
         return None
 
+    # Whether the FTA link table was read for this snapshot. A snapshot that
+    # counts reporters in the link tier without saying it read the table, or that
+    # says it did not read it and still counts some, contradicts itself, and
+    # publishes nothing. When the table was not read the page says so; it never
+    # quietly falls back to the older, wider range as though nothing were missing.
+    fta = payload.get("fta_weblinks")
+    fta = fta if isinstance(fta, dict) else {}
+    fta_read = fta.get("read") is True
+    in_link_tier = by_tier[WEBLINK_TIER]
+    if (in_link_tier > 0 and not fta_read) or (fta_read and not fta.get("retrieved")):
+        return None
+
     tracked = sum(by_tier[tier] for tier in TRACKED_BY_US_TIERS)
-    elsewhere = sum(by_tier[tier] for tier in STRONG_TIERS - TRACKED_BY_US_TIERS)
+    elsewhere = sum(by_tier[tier] for tier in CATALOG_TIERS)
     return {
         "unit": REPORTER_UNIT,
         "report_year": report_year,
@@ -489,14 +640,125 @@ def published_reporter_coverage(path: Path | None = None) -> dict[str, Any] | No
         "obligated_reporters": obligated,
         "tracked_by_registry": tracked,
         "discoverable_elsewhere": elsewhere,
+        # Reporters whose agency told FTA where its feed is, and that no catalog
+        # placed. Self-reported: not fetched, not validated, not scored.
+        "fta_link_reported": in_link_tier,
+        "fta_links_read": fta_read,
+        "fta_links_retrieved": str(fta.get("retrieved") or "") if fta_read else "",
         # The two ends of the same honest range: the low end counts a shared
-        # rare word as a match, the high end does not. The distance between them
-        # is the width of a name-based join, and it is wide.
+        # rare word as a catalog match, the high end does not. The distance
+        # between them is the width of a name-based join, and it is wide. Each
+        # end is a reporter with no link reported to FTA AND no catalog match
+        # when the link table was read, and with no catalog match alone when it
+        # was not (`fta_links_read` says which).
         "no_discoverable_feed_low": by_tier["no_candidate"],
         "no_discoverable_feed_high": obligated - sum(by_tier[tier] for tier in STRONG_TIERS),
         "needs_human_review": by_tier["weak_shared_token"],
         "by_tier": dict(by_tier),
     }
+
+
+def rebase_on_weblinks(
+    rows: list[dict[str, str]],
+    linked_ids: frozenset[str] | None,
+) -> list[dict[str, str]]:
+    """Re-place reporters from the committed per-reporter rows, offline.
+
+    `rows` are the rows of `reporter-coverage-ry2024.csv`. Each carries
+    `tier_without_fta_link`, the tier the three catalogs gave it, so this can be
+    run in either direction without touching the network or the other four
+    sources: with `linked_ids` it moves unmatched reporters that report a link to
+    the link tier; with `None` it puts every reporter back where the catalogs
+    left it. Only a reporter the catalogs did not place (weak or no candidate)
+    can move, so no existing tier count changes.
+    """
+    out: list[dict[str, str]] = []
+    for row in rows:
+        base_tier = row.get("tier_without_fta_link") or row["match_tier"]
+        base_evidence = row.get("evidence_without_fta_link")
+        if base_evidence is None:
+            base_evidence = row["match_evidence"]
+        placed = dict(row, tier_without_fta_link=base_tier, evidence_without_fta_link=base_evidence)
+        if base_tier in UNMATCHED_TIERS and linked_ids is not None and row["ntd_id"] in linked_ids:
+            placed["match_tier"], placed["match_evidence"] = WEBLINK_TIER, WEBLINK_SOURCE_LABEL
+        else:
+            placed["match_tier"], placed["match_evidence"] = base_tier, base_evidence
+        out.append(placed)
+    return out
+
+
+def rebase_snapshot(
+    csv_rows: list[dict[str, str]],
+    snapshot: dict[str, Any],
+    weblink_rows: list[dict[str, str]] | None,
+    *,
+    weblink_meta: dict[str, Any] | None = None,
+) -> tuple[list[dict[str, str]], dict[str, Any]]:
+    """Recompute the committed snapshot with, or without, the FTA link table.
+
+    Offline: the other four sources are not read again, so their hashes and
+    counts stay exactly as committed. `weblink_rows` None means the table is
+    missing; the snapshot then records `fta_weblinks.read = false`, every tier
+    count goes back to what the three catalogs gave, and the page says the
+    source was not read.
+    """
+    linked = weblink_ntd_ids(weblink_rows) if weblink_rows is not None else None
+    rows = rebase_on_weblinks(csv_rows, linked)
+    counts = Counter(row["match_tier"] for row in rows)
+    by_tier = {tier: counts.get(tier, 0) for tier in TIER_ORDER}
+    obligated = len(rows)
+    strong = sum(by_tier[tier] for tier in STRONG_TIERS)
+    out = dict(snapshot)
+    out["obligated_reporters"] = obligated
+    out["by_tier"] = by_tier
+    out["tracked_by_registry"] = sum(by_tier[t] for t in TRACKED_BY_US_TIERS)
+    out["discoverable_elsewhere"] = sum(by_tier[t] for t in CATALOG_TIERS)
+    out["no_candidate_strict"] = obligated - strong
+    out["no_candidate_lenient"] = by_tier["no_candidate"]
+    unmatched = [r for r in rows if r["match_tier"] == "no_candidate"]
+    out["unmatched_by_state"] = dict(Counter(r["state"] for r in unmatched).most_common())
+    out["unmatched_by_reporter_type"] = dict(
+        Counter(r["reporter_type"] for r in unmatched).most_common()
+    )
+    out["unmatched_by_organization_type"] = dict(
+        Counter(r["organization_type"] for r in unmatched).most_common()
+    )
+    sources = [s for s in snapshot.get("sources", []) if s.get("name") != WEBLINK_SOURCE_NAME]
+    if weblink_rows is None or linked is None:
+        out["fta_weblinks"] = {"read": False}
+    else:
+        meta = dict(weblink_meta or {})
+        placed = frozenset(r["ntd_id"] for r in rows if r["match_tier"] == WEBLINK_TIER)
+        meta.update(
+            {
+                "read": True,
+                "rows": len(weblink_rows),
+                "distinct_ntd_ids": len(
+                    {r["NTD ID"].strip() for r in weblink_rows if r.get("NTD ID", "").strip()}
+                ),
+                "ntd_ids_with_a_link": len(linked),
+                "reporters_in_link_tier": len(placed),
+                "edge_cases_in_link_tier": weblink_edge_cases(weblink_rows, placed),
+                "has_report_year_column": False,
+                "rule_waived_row_with_a_link": "counted as linked",
+            }
+        )
+        out["fta_weblinks"] = meta
+        sources.append(
+            {
+                "name": WEBLINK_SOURCE_NAME,
+                "url": meta.get("url", ""),
+                "sha256": meta.get("sha256", ""),
+                "rows": len(weblink_rows),
+                "retrieved": meta.get("retrieved", ""),
+                "license": (
+                    "Public domain (US Government work); attribution: "
+                    "Federal Transit Administration"
+                ),
+            }
+        )
+    out["sources"] = sources
+    return rows, out
 
 
 def _is_count(value: object) -> bool:

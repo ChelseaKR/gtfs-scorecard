@@ -6,7 +6,14 @@ What is in this directory, where it came from, and what it may be used for.
 
 `reporter-coverage-ry2024.csv` — one row per NTD reporter that operated at least
 one fixed-route mode in Report Year 2024, with the match tier the inverted join
-placed it in and the evidence for that tier. 1,253 rows.
+placed it in and the evidence for that tier. 1,253 rows. Two columns,
+`tier_without_fta_link` and `evidence_without_fta_link`, keep the placement the
+three catalogs gave before FTA's link table was read, so the table can be
+withdrawn and every tier put back without refetching anything.
+
+`ntd-gtfs-weblinks-2026-10-23.csv` — FTA's NTD GTFS weblinks table, exactly as
+retrieved (1,530 rows; SHA-256 recorded in the JSON under `fta_weblinks` and
+below). It is the fifth source.
 
 `reporter-coverage-ry2024.json` — the counts, the tier breakdown, the source
 hashes, and the retrieval timestamp for the run that produced the CSV.
@@ -35,6 +42,57 @@ noticed.
 | FTA NTD Annual Data View, Service by Mode (Socrata dataset `4fir-qbim`) | 2026-08-15 | Public domain, US Government work. Attribution: Federal Transit Administration. |
 | Transitland Atlas, `main` branch tarball | 2026-08-15 | CC-BY 4.0, Interline Technologies and contributors. |
 | Mobility Database catalog, `storage.googleapis.com` copy of `sources.csv` | 2026-08-15 | mobilitydatabase.org terms; per-feed licences vary. |
+| FTA NTD GTFS weblinks (Socrata dataset `2u7n-ub22`), the GTFS link each agency reports to FTA | 2026-10-23 | Public domain, US Government work. Attribution: Federal Transit Administration. |
+
+## The fifth source: FTA's NTD GTFS weblinks
+
+Retrieved 2026-10-23 with one GET of
+`https://data.transportation.gov/api/views/2u7n-ub22/rows.csv?accessType=DOWNLOAD`
+(user agent `gtfs-scorecard/ntd-coverage`, the same as the other fetchers),
+after reading `https://data.transportation.gov/robots.txt` (crawl delay 1; the
+disallowed paths are `/browse`, `/page`, `/catalog` query filters and the OData
+endpoints, so the export path is allowed). 439,628 bytes, SHA-256
+`708b52905d28f70c80269c37a4260e6f2e17dd0297a92753a79235642f21ba64`; 1,530 rows
+(one per agency and mode), 1,209 distinct NTD IDs, 1,193 of them with a
+non-blank link. The same caution as above applies to the hash.
+
+**No link in the table is ever fetched.** The pipeline reads the cell text only.
+A link is whatever the agency typed: it is not opened, validated, scored, or
+checked for liveness, and the site says so wherever the number appears.
+
+**No report year.** The table has no report-year column; `Date Validated` is
+2025 or 2026. It is the current table, joined here by NTD ID against the
+Report Year 2024 reporters, so a reporter that left the program since 2024 or
+joined after it is only as visible as the two files make it.
+
+**The tier.** `ntd_weblink_ntd_id` is the last strong tier, after
+`catalog_name_fuzzy` and before `weak_shared_token`. Exact NTD ID string match
+(five characters, zero-padded, sometimes alphanumeric), no name matching. It is
+consulted only for a reporter none of the three catalogs placed, so the eight
+catalog tiers count exactly what they counted before; only the weak and
+no-candidate tiers drained, from 168 and 473 to 13 and 35, with 593 reporters
+(438 + 155) moved into the new tier.
+
+**Edge cases, fixed in `ntd_coverage.weblink_ntd_ids`:**
+
+- A Waived row that still carries a link counts as linked. A waiver excuses the
+  agency from the requirement; it does not erase a pointer it gave FTA. Two
+  reporters rest only on Waived rows. A stricter rule would drop them and make
+  the low end 37 instead of 35.
+- A row that is not certified (flag false or blank) counts. The flag says whether
+  the agency certified its submission, not whether a link exists. Three
+  reporters rest only on such rows.
+- A link to a page rather than a zip or a GTFS URL counts. Eleven reporters
+  have only such a link. One of those is a mail-tracking redirect URL.
+- A blank link never counts, with or without a written justification. A
+  justification is an agency saying why it has no link, a stated absence, and it
+  stays one.
+
+Run `uv run python scripts/ntd_reporter_coverage.py --offline` from `pipeline/`
+to recompute from the committed files with no network, and add `--no-weblinks`
+to see the snapshot as it reads when the table is missing: the tiers return to
+the three-catalog counts, `fta_weblinks.read` is false, and `/ntd/` says the
+link table was not read.
 
 The Mobility Database leg reads the `storage.googleapis.com` catalog that
 `scorecard discover` already reads on a weekly schedule. It does not read
@@ -66,7 +124,8 @@ in the same sentence as though they measured the same thing.
 
 ## What these files do not say
 
-A reporter in the `no_candidate` tier has no feed this run could find in three
-open catalogues. That is a statement about catalogue coverage. It is not a
+A reporter in the `no_candidate` tier has no GTFS link in FTA's table and no
+feed this run could find in three open catalogues. That is a statement about
+what those sources contain. It is not a
 finding that the agency publishes nothing, and it is not a compliance
 determination. Nobody is graded on it, and no score moves because of it.
