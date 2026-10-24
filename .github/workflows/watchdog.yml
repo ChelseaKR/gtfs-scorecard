@@ -72,20 +72,22 @@ jobs:
           fi
           age=$(( ( $(date -u +%s) - $(date -u -d "$updated" +%s) ) / 3600 ))
           echo "live deployment was produced by '$name' run $run_id, ${age}h ago ($updated)"
-          # Healthy steady-state redeploys roughly every 3h (Intraday's own
-          # cadence, refresh.yml). 9h tolerates three missed cycles in a row
-          # — enough margin that one slow run sharing the artifacts-publish
-          # concurrency lock with a Daily run doesn't page on its own — while
-          # still catching a real stall inside a working day, not after one.
-          if [ "$age" -gt 9 ]; then
-            echo "::error::The live site's deployed data is ${age}h old (>9h). Neither Daily nor Intraday has published successfully in that window."
+          # Healthy steady-state redeploys roughly every 6h: Intraday runs
+          # every 3h but redeploys the site on every other cycle (refresh.yml,
+          # "Decide whether this cycle redeploys the site"), plus the Daily.
+          # 14h tolerates one missed deploying cycle plus GitHub's schedule
+          # jitter, so one slow run sharing the artifacts-publish concurrency
+          # lock with a Daily run doesn't page on its own, while still catching
+          # a real stall inside a working day. It was 9h at a 3h deploy cadence.
+          if [ "$age" -gt 14 ]; then
+            echo "::error::The live site's deployed data is ${age}h old (>14h). Neither Daily nor Intraday has published successfully in that window."
             exit 1
           fi
 
       # The freshness check above tolerates one bad Daily run as long as
       # Intraday keeps deploying; this pages on the first Daily failure
       # specifically, so a red daily is known within six hours rather than
-      # only once nothing has published in 9h. `if: always()` so it still
+      # only once nothing has published in 14h. `if: always()` so it still
       # runs (and can still fail the job) even when the step above already
       # failed — previously this had no `if:`, and because the step above's
       # threshold had always already tripped by the time Watchdog got a

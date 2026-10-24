@@ -34,6 +34,8 @@ env:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    outputs:
+      deploy_site: ${{ steps.site-cycle.outputs.deploy }}
     # RELIABILITY (issues #297, #390): until #297 there was no bound short of
     # the platform's 360-minute default. #297 set 240 against an observed "~70
     # to ~137 minutes", a figure written once that the job then outgrew and
@@ -110,6 +112,28 @@ jobs:
       # steps after it.
       - name: Record job start time
         run: echo "job_started_epoch=$(date -u +%s)" >> "$GITHUB_ENV"
+
+      # COST: the site deploy below re-reads the published corpus from S3, and
+      # S3 egress to GitHub runners was most of this project's AWS bill. The
+      # refresh itself still runs and publishes to S3 every three hours, so
+      # the liveness commitment on /status/ and the S3 data are unchanged. Only
+      # the Pages rebuild skips every other cycle: cycles that start in the
+      # 00, 06, 12 and 18 UTC windows deploy, the 03, 09, 15 and 21 ones do
+      # not, so the site's data is at most about six hours behind S3 instead
+      # of three. A manual dispatch always deploys. Watchdog's staleness
+      # bound (watchdog.yml) is sized for this.
+      - name: Decide whether this cycle redeploys the site
+        id: site-cycle
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          hour=$((10#$(date -u +%H)))
+          if [ "$EVENT_NAME" != "schedule" ] || [ $(( (hour / 3) % 2 )) -eq 0 ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=site deploy skipped::This cycle publishes to S3 only; the next even cycle (00/06/12/18 UTC) redeploys the site."
+          fi
 
       - name: Authenticate to AWS
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
@@ -415,9 +439,11 @@ jobs:
             "s3://${ARTIFACTS_BUCKET}/cache/structure" --only-show-errors
 
   # Refreshes do not write to main, so deploy the newly published S3 state
-  # explicitly after the refresh.
+  # explicitly after the refresh, on every other cycle (see "Decide whether
+  # this cycle redeploys the site" above).
   deploy:
     needs: refresh
+    if: ${{ needs.refresh.outputs.deploy_site == 'true' }}
     permissions:
       contents: read
       pages: write
