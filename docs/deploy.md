@@ -313,10 +313,12 @@ credential never enters Actions.
 `pages.yml` also runs as the deploy job of the daily, intraday, and targeted
 data workflows. Its own push trigger ignores `data/rt-health/**`, so the
 three-hourly realtime observation commit does not add a redundant site build of
-its own; the observations go out with the next intraday refresh deploy, at most
-three hours later. The refresh and the realtime sampler both run every three
-hours, so an observation is never more than one sampling interval behind the
-site.
+its own; the observations go out with the next intraday refresh deploy. The
+refresh runs and publishes to S3 every three hours, but to cut S3 egress it
+redeploys the site only on every other cycle (those starting in the 00, 06, 12
+and 18 UTC windows; a manual dispatch always deploys), so the site can be up to
+about six hours behind S3. Watchdog's staleness check allows 14 hours for that
+reason.
 
 ### What each site build downloads from S3
 
