@@ -126,12 +126,13 @@ agencies:
     mdb_id: 908
     license_note: "License: https://www.partaonline.org/gtfs"
 
+  # Mobility Database mdb-922 is deprecated and redirects to tld-1717; the feed URL follows it (ADR 0069).
   - id: western-reserve-transit-authority
     name: Western Reserve Transit Authority
     subdivision_code: US-OH
     subdivision_name: Ohio
-    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/western-reserve-transit-authority.zip
-    mdb_id: 922
+    static_gtfs_url: https://myvalleystops.wrtaonline.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: tld-1717
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: athens-public-transit-1973

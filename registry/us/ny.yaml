@@ -70,12 +70,13 @@ agencies:
     mdb_id: 457
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-465 is deprecated and redirects to tld-401; the feed URL follows it (ADR 0069).
   - id: niagara-frontier-transportation-authority-nfta
     name: Niagara Frontier Transportation Authority (NFTA)
     subdivision_code: US-NY
     subdivision_name: New York
-    static_gtfs_url: http://www.nfta.com/metro/__googletransit/google_transit.zip
-    mdb_id: 465
+    static_gtfs_url: https://metro.nfta.com/__googletransit/google_transit.zip
+    mdb_id: tld-401
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: metropolitan-transit-authority-mta
@@ -604,13 +605,14 @@ agencies:
     mdb_id: 928
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1109 is deprecated and redirects to tld-3364; the feed URL follows it (ADR 0069).
   - id: roosevelt-island-operating-corporation-tramway-rioc-tramway
     name: Roosevelt Island Operating Corporation Tramway (RIOC Tramway)
     subdivision_code: US-NY
     subdivision_name: New York
-    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7707/gtfs.zip
-    mdb_id: 1109
-    license_note: "License: https://github.com/laidig/rioc-gtfs/blob/master/README.md"
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/rooseveltisland-ny-us/rooseveltisland-ny-us.zip
+    mdb_id: tld-3364
+    license_note: No stated data license in the source catalog; verify before publishing.
 
   - id: broome-county-transit-b-c-transit-2079
     name: Broome County Transit (B.C. Transit)

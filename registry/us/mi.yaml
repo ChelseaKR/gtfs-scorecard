@@ -129,12 +129,13 @@ agencies:
     mdb_id: 926
     license_note: "License: https://www.mtaflint.org/terms-of-use.html"
 
+  # Mobility Database mdb-2070 is deprecated and redirects to tld-674; the feed URL follows it (ADR 0069).
   - id: kalamazoo-metro-transit-2070
     name: Kalamazoo Metro Transit
     subdivision_code: US-MI
     subdivision_name: Michigan
-    static_gtfs_url: https://www.kmetro.com/wp-content/uploads/gtfs.zip
-    mdb_id: 2070
+    static_gtfs_url: https://trackmybus.kmetro.org/InfoPoint/GTFS-Zip.ashx
+    mdb_id: tld-674
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: university-of-michigan-transit-services-2072
