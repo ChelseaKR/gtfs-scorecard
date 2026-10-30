@@ -137,6 +137,18 @@ the declared public surface).
 
 ### Changed
 
+- **The intraday refresh runs once a day instead of every three hours**
+  (2026-10-30, ADR 0010). `refresh.yml` now fires at `23 1 * * *`, twelve
+  hours from the Daily scorecard, and redeploys the site on every run. Almost
+  all of the project's S3 egress was its own workflows reading the bucket, and
+  eight refresh cycles a day pushed the month past S3's free 100 GB; one cycle
+  a day keeps it under, which saves about $16/month. `REFRESH_STEP_HOURS` and
+  the standard-tier period are now 24, so every feed gets one direct liveness
+  check a day, and `/status/` publishes that. `UNREACHABLE_STREAK_CHECKS` goes
+  from 30 to 7 so "unreachable" still means roughly a week of failed checks.
+  Watchdog's deployed-data staleness bound moves from 14h to 28h (one missed
+  deploy plus jitter) and its duration check reads one refresh run instead of
+  three.
 - **The index can be stored compressed, and the history jobs keep a mirror.**
   `data/artifacts/index.json` carries every agency's full history (151,374,557
   bytes on 2026-10-22; 4,903,301 gzipped) and every refresh, deploy, collect and

@@ -59,10 +59,25 @@ def test_standard_feed_is_due_once_per_period() -> None:
     # Only the hours a run actually happens on count. Sweeping range(24) would
     # pass even if the cadence step and the bucket arithmetic disagreed.
     due_hours = [h for h in RUN_HOURS if is_due("some-agency", STANDARD, h)]
-    # Once every STANDARD_PERIOD hours: 24 / 6 = 4 times a day, evenly spaced.
+    # Once every STANDARD_PERIOD hours (once a day since 2026-10-30), evenly
+    # spaced: the gaps include the wrap from the last run hour to the next day.
     assert len(due_hours) == 24 // STANDARD_PERIOD
-    gaps = {b - a for a, b in itertools.pairwise(due_hours)}
+    wrapped = [*due_hours, due_hours[0] + 24]
+    gaps = {b - a for a, b in itertools.pairwise(wrapped)}
     assert gaps == {STANDARD_PERIOD}
+
+
+def test_the_six_hour_period_at_a_three_hour_step_still_spreads_the_long_tail() -> None:
+    # The arithmetic the daily cadence replaced, kept honest: the tiering still
+    # works if the refresh ever goes back to several cycles a day.
+    run_hours = list(range(0, 24, 3))
+    due_hours = [h for h in run_hours if is_due("some-agency", STANDARD, h, period=6, step=3)]
+    assert len(due_hours) == 4
+    assert {b - a for a, b in itertools.pairwise(due_hours)} == {6}
+    ids = [f"agency-{i}" for i in range(60)]
+    first_period = [sum(is_due(aid, STANDARD, h, period=6, step=3) for aid in ids) for h in (0, 3)]
+    assert sum(first_period) == len(ids)
+    assert max(first_period) < len(ids)
 
 
 def test_every_standard_feed_is_reached_at_the_configured_cadence() -> None:
@@ -80,32 +95,33 @@ def test_every_standard_feed_is_reached_at_the_configured_cadence() -> None:
     assert reached == set(ids)
 
 
-def test_standard_feeds_spread_across_buckets() -> None:
-    # Different ids land in different cycles rather than all checking at once.
+def test_standard_feeds_are_checked_exactly_once_per_period() -> None:
     ids = [f"agency-{i}" for i in range(60)]
     tiers = dict.fromkeys(ids, STANDARD)
     period_hours = [h for h in RUN_HOURS if h < STANDARD_PERIOD]
     due_per_cycle = [len(due_now(tiers, h)) for h in period_hours]
-    # Every standard feed is checked exactly once over a full period.
+    # Every standard feed is checked exactly once over a full period. With one
+    # cycle a day there is one bucket, so that cycle checks all of them; the
+    # spread across buckets is covered at the six-hour period above.
     assert sum(due_per_cycle) == len(ids)
-    # And the load is spread, not all in one cycle.
-    assert max(due_per_cycle) < len(ids)
 
 
 def test_hourly_cadence_keeps_the_previous_arithmetic() -> None:
     # `step=1` has to reduce to the old `hour % period == bucket` behavior, so
     # the change is a generalization rather than a different schedule.
-    assert cycles_per_period(STANDARD_PERIOD, 1) == STANDARD_PERIOD
-    hourly = [h for h in range(24) if is_due("some-agency", STANDARD, h, step=1)]
-    assert len(hourly) == 24 // STANDARD_PERIOD
-    assert {b - a for a, b in itertools.pairwise(hourly)} == {STANDARD_PERIOD}
+    assert cycles_per_period(6, 1) == 6
+    hourly = [h for h in range(24) if is_due("some-agency", STANDARD, h, period=6, step=1)]
+    assert len(hourly) == 24 // 6
+    assert {b - a for a, b in itertools.pairwise(hourly)} == {6}
 
 
 def test_cadence_slower_than_the_period_degrades_to_every_cycle() -> None:
     # Never divide down to zero buckets: a step wider than the period means
     # every standard feed is checked on every cycle, not on none of them.
-    assert cycles_per_period(STANDARD_PERIOD, 8) == 1
-    assert is_due("some-agency", STANDARD, 8, step=8) is True
+    assert cycles_per_period(6, 8) == 1
+    assert is_due("some-agency", STANDARD, 8, period=6, step=8) is True
+    # The daily cadence is this case's period-equals-step edge: one bucket.
+    assert cycles_per_period(STANDARD_PERIOD, REFRESH_STEP_HOURS) == 1
 
 
 def test_due_now_includes_all_priority_plus_due_standard() -> None:

@@ -30,9 +30,11 @@ from .metrics import expiry_status
 PRIORITY = "priority"
 STANDARD = "standard"
 
-# How many hours a standard feed waits between checks: one check per six-hour
-# period, whatever the refresh cadence is.
-STANDARD_PERIOD = 6
+# How many hours a standard feed waits between checks. It was one check per
+# six-hour period while the refresh ran every three hours. Since 2026-10-30 the
+# refresh runs once a day (to cut S3 egress), so the period is the day: every
+# standard feed is checked on every cycle, the same as a priority feed.
+STANDARD_PERIOD = 24
 
 # Hours between intraday refresh cycles. Must match the cron in
 # .github/workflows/refresh.yml; test_status_commitment.py cross-reads that file
@@ -43,7 +45,9 @@ STANDARD_PERIOD = 6
 # only while a run happened every hour: at a three-hour cadence the run hours are
 # 0, 3, 6, ... and `hour % 6` can only ever equal 0 or 3, so feeds in buckets
 # 1, 2, 4 and 5 would silently never come due again.
-REFRESH_STEP_HOURS = 3
+#
+# 24 since 2026-10-30: one refresh a day (refresh.yml `23 1 * * *`). It was 3.
+REFRESH_STEP_HOURS = 24
 
 
 def cadence_tier(artifact: dict[str, Any]) -> str:

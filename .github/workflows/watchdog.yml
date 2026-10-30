@@ -72,22 +72,22 @@ jobs:
           fi
           age=$(( ( $(date -u +%s) - $(date -u -d "$updated" +%s) ) / 3600 ))
           echo "live deployment was produced by '$name' run $run_id, ${age}h ago ($updated)"
-          # Healthy steady-state redeploys roughly every 6h: Intraday runs
-          # every 3h but redeploys the site on every other cycle (refresh.yml,
-          # "Decide whether this cycle redeploys the site"), plus the Daily.
-          # 14h tolerates one missed deploying cycle plus GitHub's schedule
-          # jitter, so one slow run sharing the artifacts-publish concurrency
-          # lock with a Daily run doesn't page on its own, while still catching
-          # a real stall inside a working day. It was 9h at a 3h deploy cadence.
-          if [ "$age" -gt 14 ]; then
-            echo "::error::The live site's deployed data is ${age}h old (>14h). Neither Daily nor Intraday has published successfully in that window."
+          # Healthy steady-state redeploys roughly every 12h: Intraday runs
+          # once a day at 01:23 UTC and the Daily at 13:23 UTC, and each one
+          # deploys. 28h tolerates one missed deploy (about 24h) plus run time
+          # and GitHub's schedule jitter, so one failed run doesn't page on its
+          # own; the Daily check below still pages on the first Daily failure.
+          # It was 9h at a 3h deploy cadence and 14h at a 6h one, until the
+          # refresh moved to once a day on 2026-10-30 to cut S3 egress.
+          if [ "$age" -gt 28 ]; then
+            echo "::error::The live site's deployed data is ${age}h old (>28h). Neither Daily nor Intraday has published successfully in that window."
             exit 1
           fi
 
       # The freshness check above tolerates one bad Daily run as long as
       # Intraday keeps deploying; this pages on the first Daily failure
       # specifically, so a red daily is known within six hours rather than
-      # only once nothing has published in 14h. `if: always()` so it still
+      # only once nothing has published in 28h. `if: always()` so it still
       # runs (and can still fail the job) even when the step above already
       # failed — previously this had no `if:`, and because the step above's
       # threshold had always already tripped by the time Watchdog got a
@@ -161,8 +161,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           # workflow|job|timeout-minutes|completed runs to read. Refresh fires
-          # every 3 hours and this step every 6, so it reads 3 runs to see
-          # every one.
+          # once a day and this step every 6 hours, so 1 run sees every one.
           #
           # `score` is the Daily's matrix: its jobs are named `score (<ids>)`, so
           # a row names the prefix and the step measures the longest shard of
@@ -172,7 +171,7 @@ jobs:
           # slowest shard ran 53 and 52 of its 55 minutes. Daily fires once a day
           # and this step four times, so it reads 2 runs.
           BOUNDED_JOBS: |
-            refresh.yml|refresh|175|3
+            refresh.yml|refresh|175|1
             scorecard.yml|collect|90|2
             scorecard.yml|score|55|2
         run: |

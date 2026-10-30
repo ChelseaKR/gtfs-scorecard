@@ -28,7 +28,7 @@ import datetime as dt
 from typing import Any
 
 from . import DATA_ATTRIBUTION, DATA_LICENSE
-from .cadence import REFRESH_STEP_HOURS, STANDARD_PERIOD
+from .cadence import REFRESH_STEP_HOURS, STANDARD_PERIOD, cycles_per_period
 from .metrics import STALE_FEED_DAYS, UNREACHABLE_STREAK_CHECKS
 
 # The two workflows this commitment describes (ADR 0010). Kept as plain
@@ -36,7 +36,22 @@ from .metrics import STALE_FEED_DAYS, UNREACHABLE_STREAK_CHECKS
 # deliberate edit here too rather than a silent drift -- the CI check in
 # test_status_commitment.py cross-reads the workflow files to catch that drift.
 DAILY_FULL_SCORE_CRON = "23 13 * * *"  # .github/workflows/scorecard.yml
-INTRADAY_REFRESH_CRON = f"23 */{REFRESH_STEP_HOURS} * * *"  # .github/workflows/refresh.yml
+# Once a day at 01:23 UTC, twelve hours from the daily full score, since
+# 2026-10-30 (it was every three hours). test_status_commitment.py checks that
+# the hours this fires on are REFRESH_STEP_HOURS apart.
+INTRADAY_REFRESH_CRON = "23 1 * * *"  # .github/workflows/refresh.yml
+
+
+def _standard_cadence() -> str:
+    """The standard tier's cadence sentence. With one refresh cycle per period
+    (the daily cadence since 2026-10-30) there is nothing to spread, so the
+    sentence does not claim a per-feed spread that no longer happens."""
+    if cycles_per_period() > 1:
+        return (
+            f"one direct liveness check in each {STANDARD_PERIOD}-hour period, on a "
+            "stable per-feed schedule that spreads requests across the period"
+        )
+    return f"one direct liveness check in each {STANDARD_PERIOD}-hour period"
 
 
 def cadence_commitment() -> list[dict[str, Any]]:
@@ -56,9 +71,7 @@ def cadence_commitment() -> list[dict[str, Any]]:
         {
             "tier": "standard",
             "applies_to": "every other tracked feed",
-            "cadence": f"one direct liveness check in each {STANDARD_PERIOD}-hour "
-            "period, on a stable per-feed schedule that spreads requests across "
-            "the period",
+            "cadence": _standard_cadence(),
             "schedule_cron": INTRADAY_REFRESH_CRON,
         },
         {
@@ -86,7 +99,7 @@ def degradation_policy() -> dict[str, Any]:
             "which changes how it is described but not whether it is served.",
             "A configured feed URL is labeled 'unreachable' after "
             f"{UNREACHABLE_STREAK_CHECKS} consecutive direct checks fail (roughly "
-            "a week at standard cadence). This is separate from an expired "
+            "a week at one check a day). This is separate from an expired "
             "calendar.",
             "These observations do not guarantee an agency's GTFS host will stay "
             "online. The status page records what the pipeline observed and when.",

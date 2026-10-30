@@ -163,6 +163,38 @@ requests at once than the serial version sent it, which is one.
 - A feed the rescore defers to its time budget has its liveness record put back
   as it was before the sweep, so the next check still reads it as changed.
 
+## Intraday interval (revised again, 2026-10-30)
+
+The refresh now runs once a day, at 01:23 UTC (`23 1 * * *`), twelve hours
+from the Daily scorecard. The reason is cost again. A read of one day of S3
+access logs (2026-10-29) found almost all of the bucket's egress was this
+project's own workflows: about 0.4 GB per refresh cycle plus each cycle's site
+build, eight cycles a day. That pushed the month past S3's free 100 GB of
+egress and was about $16 of a $28 monthly bill for a product with no revenue.
+One cycle a day keeps the month under the free allowance.
+
+What changed:
+
+- **Both tiers: one direct check a day.** `REFRESH_STEP_HOURS` and
+  `STANDARD_PERIOD` are both 24, so there is one bucket and every feed comes
+  due on every cycle. Worst-case detection latency for an outage or a lapse
+  inside the danger window goes from three hours to a day. The Consequences
+  section above promised "a few hours"; that is no longer true, and `/status/`
+  publishes the daily cadence instead. The daily full score is still the
+  correctness floor.
+- **`UNREACHABLE_STREAK_CHECKS` is 7, down from 30**, so "unreachable" still
+  means roughly a week of failed checks rather than a month. On the first run
+  after the change, a feed that had already failed 7 to 29 checks in a row
+  (about two to seven days at the old cadence) is labeled unreachable at once.
+- **Every refresh redeploys the site.** The every-other-cycle rule from
+  2026-10-23 is gone. Realtime observations reach the site at the next refresh
+  or Daily deploy, so up to about twelve hours after sampling.
+- **Watchdog:** the deployed-data staleness bound is 28 hours (one missed
+  deploy plus jitter), and the duration check reads one refresh run.
+
+Going back is a cron edit plus the two constants; the tests read the cron and
+check that its fire hours are `REFRESH_STEP_HOURS` apart.
+
 ## Not yet
 
 Active service-window realtime sampling (timing a capture to when buses are
