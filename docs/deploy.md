@@ -262,7 +262,7 @@ Actions; this is the inventory an operator should know exists:
 | Workflow | Cadence | What it does |
 | --- | --- | --- |
 | `scorecard.yml` | daily | The full sharded re-score, commit, deploy, optional S3 mirror and SES digest. |
-| `refresh.yml` | every 3 h | Cheap intraday tier: change/down detection by conditional GET, no validator (ADR 0010). |
+| `refresh.yml` | daily (01:23 UTC) | Cheap intraday tier: change/down detection by conditional GET, no validator (ADR 0010). |
 | `targeted-score.yml` | manual | Activates up to 25 reviewed registry agencies against the authoritative S3 corpus, then deploys. |
 | `rt-monitor.yml` | every 3 h | Short realtime sampling burst across agencies into `data/rt-health` (ADR 0012). |
 | `rt-archive.yml` | manual | Bounded high-resolution realtime polling session for one agency (ADR 0012). |
@@ -313,12 +313,12 @@ credential never enters Actions.
 `pages.yml` also runs as the deploy job of the daily, intraday, and targeted
 data workflows. Its own push trigger ignores `data/rt-health/**`, so the
 three-hourly realtime observation commit does not add a redundant site build of
-its own; the observations go out with the next intraday refresh deploy. The
-refresh runs and publishes to S3 every three hours, but to cut S3 egress it
-redeploys the site only on every other cycle (those starting in the 00, 06, 12
-and 18 UTC windows; a manual dispatch always deploys), so the site can be up to
-about six hours behind S3. Watchdog's staleness check allows 14 hours for that
-reason.
+its own; the observations go out with the next refresh or Daily deploy. To cut
+S3 egress, the refresh runs once a day at 01:23 UTC (it ran every three hours
+until 2026-10-30) and redeploys the site on every run, and the Daily deploys
+at about 13:23 UTC, so the site is redeployed about every twelve hours.
+Watchdog's staleness check allows 28 hours, which tolerates one missed deploy
+plus schedule jitter.
 
 ### What each site build downloads from S3
 

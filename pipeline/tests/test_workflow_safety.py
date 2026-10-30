@@ -404,21 +404,19 @@ def test_dataset_release_packages_only_a_validated_canonical_deployment() -> Non
     assert 'and .object.type == "commit"' in workflow
     assert "and .object.sha == $target" in workflow
 
-    # The 15:23 intraday deploy normally occurs before the 17:47 monthly cut.
-    # Scheduled releases therefore consume the selected Daily run's exact Pages
-    # artifact instead of expecting that run to remain the mutable live deploy.
+    # Scheduled releases consume the selected Daily run's exact Pages artifact
+    # instead of expecting that run to remain the mutable live deploy. Until
+    # 2026-10-30 a 15:23 intraday deploy normally replaced it before the 17:47
+    # monthly cut. The refresh now fires once a day at 01:23, before the Daily,
+    # but a delayed, queued or manual refresh can still deploy in between, so
+    # the rule stands.
     release_cron = re.search(r'cron: "(\d+) (\d+) 1 \* \*"', workflow)
-    refresh_cron = re.search(r'cron: "(\d+) \*/(\d+) \* \* \*"', refresh)
+    refresh_cron = re.search(r'cron: "(\d+) (\d+) \* \* \*"', refresh)
     assert release_cron is not None and refresh_cron is not None
     release_minute = int(release_cron.group(2)) * 60 + int(release_cron.group(1))
-    refresh_minute = int(refresh_cron.group(1))
-    refresh_step = int(refresh_cron.group(2))
-    prior_refreshes = [
-        hour * 60 + refresh_minute
-        for hour in range(0, 24, refresh_step)
-        if hour * 60 + refresh_minute < release_minute
-    ]
-    assert max(prior_refreshes) == 15 * 60 + 23
+    refresh_minute = int(refresh_cron.group(2)) * 60 + int(refresh_cron.group(1))
+    assert refresh_minute == 1 * 60 + 23
+    assert refresh_minute < release_minute
     scheduled_source = workflow[
         workflow.index('if [ "$SOURCE_MODE" = scheduled-daily ]') : workflow.index(
             "else\n            # Manual cuts retain latest-production semantics"
@@ -910,7 +908,7 @@ def _rescore_step() -> str:
 
 
 def test_the_intraday_refresh_has_a_floor_under_its_rescore_loop() -> None:
-    """`refresh.yml` deploys roughly nine times a day and turned every
+    """`refresh.yml` deployed roughly nine times a day and turned every
     per-feed failure into an `echo`. Nothing counted them, so a cycle in which
     every changed feed failed to re-score still ran reindex, rollups,
     render-site, the S3 publish and the Pages deploy, and reported success.
@@ -1170,6 +1168,21 @@ INTRADAY_REFRESH_TIGHTEST_OBSERVED_GAP_MINUTES = 114
 DAILY_COLLECT_OBSERVED_RUNTIME_CEILING_MINUTES = 57
 
 
+def _refresh_cadence_hours(workflow: str) -> int:
+    """Hours between scheduled refresh fires, from its one cron line.
+
+    Accepts every-N-hours (`M */N * * *`, the shape until 2026-10-30) and
+    once-a-day (`M H * * *`, the shape since), and nothing else, so a schedule
+    this cannot read fails here instead of being skipped.
+    """
+    every_n = re.search(r'- cron: "\d+ \*/(\d+) \* \* \*"', workflow)
+    if every_n:
+        return int(every_n.group(1))
+    daily = re.search(r'- cron: "\d+ \d+ \* \* \*"', workflow)
+    assert daily, "refresh.yml declares neither an every-N-hours nor a once-a-day cron"
+    return 24
+
+
 def _job_block(workflow: str, job: str) -> str:
     """One top-level job's text, from its key to the next job's key."""
     start = workflow.index(f"\n  {job}:\n") + 1
@@ -1199,9 +1212,7 @@ def test_the_intraday_refresh_bound_sits_between_its_runtime_and_its_cadence() -
     to be faster or the cron longer.
     """
     workflow = _workflow("refresh.yml")
-    every_n_hours = re.search(r'- cron: "\d+ \*/(\d+) \* \* \*"', workflow)
-    assert every_n_hours, "refresh.yml no longer declares an every-N-hours cron"
-    cadence_minutes = int(every_n_hours.group(1)) * 60
+    cadence_minutes = _refresh_cadence_hours(workflow) * 60
     timeout_minutes = _job_timeout(workflow, "refresh")
 
     assert timeout_minutes > INTRADAY_REFRESH_OBSERVED_RUNTIME_CEILING_MINUTES, (
@@ -1284,13 +1295,13 @@ def test_the_watchdog_measures_publish_jobs_against_the_bounds_they_declare() ->
             "the bound that workflow declares"
         )
 
-    # Refresh runs every three hours and the watchdog every six, so reading fewer
-    # than two runs would skip every other refresh.
-    refresh_cron = re.search(r'- cron: "\d+ \*/(\d+) ', _workflow("refresh.yml"))
+    # The watchdog must read enough refresh runs to see every one between two of
+    # its own fires. Refresh runs once a day (every three hours until
+    # 2026-10-30) and the watchdog every six hours.
     watch_cron = re.search(r'- cron: "\d+ \*/(\d+) \* \* \*" # every', watchdog)
-    assert refresh_cron, "refresh.yml no longer declares an every-N-hours cron"
     assert watch_cron, "watchdog.yml no longer declares its every-N-hours cron"
-    refresh_hours, watch_hours = int(refresh_cron.group(1)), int(watch_cron.group(1))
+    refresh_hours = _refresh_cadence_hours(_workflow("refresh.yml"))
+    watch_hours = int(watch_cron.group(1))
     assert declared[("refresh.yml", "refresh")][1] * refresh_hours >= watch_hours
 
     assert "if: ${{ always() }}" in step

@@ -311,16 +311,18 @@ def expiry_status(days_until_expiry: int | None) -> str:
     return "stale"
 
 
-# 30 consecutive failed liveness checks (liveness.py) is long enough that "the
+# 7 consecutive failed liveness checks (liveness.py) is long enough that "the
 # server had a bad day" stops being the likely explanation, while staying clear
 # of an ordinary blip -- an outage, a lapsed certificate -- that recovers within
-# a few checks. Deliberately a check *count*, not a calendar duration: a stale
-# feed is "standard" cadence tier (cadence.py), checked a few times a day, not
-# once, so "30 failures" is roughly a week, not a month -- and the exact
-# elapsed time depends on cadence.py's tiering, which this module does not
-# import and should not assume. Callers should describe this as a streak of
-# checks, not translate it into a specific number of days.
-UNREACHABLE_STREAK_CHECKS = 30
+# a few checks. Deliberately a check *count*, not a calendar duration, and the
+# exact elapsed time depends on cadence.py's tiering, which this module does
+# not import and should not assume. Callers should describe this as a streak
+# of checks, not translate it into a specific number of days.
+#
+# It was 30 while the refresh checked standard feeds four times a day, which
+# was roughly a week. The refresh has run once a day since 2026-10-30, so 7
+# keeps it at roughly a week instead of letting it become a month.
+UNREACHABLE_STREAK_CHECKS = 7
 
 
 def operating_signal(status: str, consecutive_failures: int) -> str:
