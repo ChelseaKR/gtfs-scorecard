@@ -137,6 +137,18 @@ the declared public surface).
 
 ### Changed
 
+- **The intraday refresh runs once a day instead of every three hours**
+  (2026-10-30, ADR 0010). `refresh.yml` now fires at `23 1 * * *`, twelve
+  hours from the Daily scorecard, and redeploys the site on every run. Almost
+  all of the project's S3 egress was its own workflows reading the bucket, and
+  eight refresh cycles a day pushed the month past S3's free 100 GB; one cycle
+  a day keeps it under, which saves about $16/month. `REFRESH_STEP_HOURS` and
+  the standard-tier period are now 24, so every feed gets one direct liveness
+  check a day, and `/status/` publishes that. `UNREACHABLE_STREAK_CHECKS` goes
+  from 30 to 7 so "unreachable" still means roughly a week of failed checks.
+  Watchdog's deployed-data staleness bound moves from 14h to 28h (one missed
+  deploy plus jitter) and its duration check reads one refresh run instead of
+  three.
 - **The index can be stored compressed, and the history jobs keep a mirror.**
   `data/artifacts/index.json` carries every agency's full history (151,374,557
   bytes on 2026-10-22; 4,903,301 gzipped) and every refresh, deploy, collect and
@@ -196,6 +208,22 @@ the declared public surface).
   above the footer.
 
 ### Security
+
+- **Container images clear two fixable HIGH CVEs that failed the Trivy
+  scan on 2026-10-30.** `libbrotli` CVE-2026-111497 (out-of-bounds write in
+  the Brotli decoder, fixed in `1.1.0-1.amzn2023.0.2`): `AL2023_REPO_GUID` in
+  both Dockerfiles moves from `9abd7b42...c240343` to the current snapshot
+  on Amazon's mirror list, `c5eb6613...a009e57f60`, whose repodata was
+  checked to serve the fixed build (the old snapshot stops at `0.1`). Guava
+  CVE-2026-102554 (GHSA-xxph-c9ww-hj94, heap exhaustion when
+  `CompactHashMap`/`CompactHashSet`/`MapMakerInternalMap` are Java-
+  deserialized) is in the shaded gtfs-validator 8.0.1 jar, and no
+  MobilityData release carries the fixed Guava 33.7.2, so it joins the
+  time-bounded exceptions in `.trivyignore.yaml` (expires 2027-01-04) with a
+  measured `code_not_reachable` entry in `vex.json`: no `org.mobilitydata`
+  class references `ObjectInputStream`, and a `-verbose:class` run of the
+  validator loads none of the three classes. A new test pins that entry to
+  its measurement.
 
 - **Published feed URLs no longer carry credentials.** An artifact's
   `fetch.final_url` and `feed.static_url` were published exactly as fetched.

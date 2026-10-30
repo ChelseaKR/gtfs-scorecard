@@ -43,3 +43,9 @@ vulnerabilities:
   - id: CVE-2026-75140
     statement: "jsoup is only referenced by flexmark's HTML-to-Markdown and PDF converters, which nothing in the validator calls; measured, see vex.json."
     expired_at: 2027-01-04
+  # Added 2026-10-30 (Guava 31.0.1-jre shaded in the same 8.0.1 jar; fixed in
+  # Guava 33.7.2, which no MobilityData release ships yet). The flaw needs Java
+  # native deserialization of attacker bytes; nothing in the validator does that.
+  - id: CVE-2026-102554
+    statement: "Guava collections are never Java-deserialized from feed input; no org.mobilitydata class references ObjectInputStream; measured, see vex.json."
+    expired_at: 2027-01-04

@@ -70,8 +70,8 @@
         <strong>2</strong> current feed records.</p>
         <dl>
           <dt>Checking clean</dt><dd><strong>2</strong> (latest direct check succeeded)</dd>
-          <dt>Recent check failure</dt><dd><strong>0</strong> (1&ndash;29 consecutive direct checks failed)</dd>
-          <dt>Flagged unreachable</dt><dd><strong>0</strong> (30 or more consecutive direct checks failed)</dd>
+          <dt>Recent check failure</dt><dd><strong>0</strong> (1&ndash;6 consecutive direct checks failed)</dd>
+          <dt>Flagged unreachable</dt><dd><strong>0</strong> (7 or more consecutive direct checks failed)</dd>
         </dl>
         <p>Currently checking clean: <strong>100.0%</strong> of tracked feed records.</p>
         <p>The latest direct checks range from
@@ -87,11 +87,11 @@
     scheduled once daily for every registered feed. The latest-run section below records what
     that daily work completed.</p>
     <div class="table-wrap"><table><thead><tr><th scope="col">Check</th><th scope="col">Cadence</th>
-    <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>one direct liveness check every 3 hours</td><td>feeds with measured realtime data, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>one direct liveness check in each 6-hour period, on a stable per-feed schedule that spreads requests across the period</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>one full validation each day</td><td>every registered feed</td></tr></tbody></table></div></section>
+    <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>one direct liveness check every 24 hours</td><td>feeds with measured realtime data, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>one direct liveness check in each 24-hour period</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>one full validation each day</td><td>every registered feed</td></tr></tbody></table></div></section>
 
     <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">When a check fails</h3>
     <p>The scorecard keeps the last successful evidence available and makes the degraded state visible:</p>
-    <ul><li>If a fetch fails, the last successful scorecard remains available. The pipeline recalculates only its calendar-based freshness and expiry fields. It never rewrites an older snapshot.</li><li>A feed whose calendar has been past its expiry date for more than 365 days is labeled &#x27;stale&#x27; rather than &#x27;lapsed&#x27;, which changes how it is described but not whether it is served.</li><li>A configured feed URL is labeled &#x27;unreachable&#x27; after 30 consecutive direct checks fail (roughly a week at standard cadence). This is separate from an expired calendar.</li><li>These observations do not guarantee an agency&#x27;s GTFS host will stay online. The status page records what the pipeline observed and when.</li></ul></section>
+    <ul><li>If a fetch fails, the last successful scorecard remains available. The pipeline recalculates only its calendar-based freshness and expiry fields. It never rewrites an older snapshot.</li><li>A feed whose calendar has been past its expiry date for more than 365 days is labeled &#x27;stale&#x27; rather than &#x27;lapsed&#x27;, which changes how it is described but not whether it is served.</li><li>A configured feed URL is labeled &#x27;unreachable&#x27; after 7 consecutive direct checks fail (roughly a week at one check a day). This is separate from an expired calendar.</li><li>These observations do not guarantee an agency&#x27;s GTFS host will stay online. The status page records what the pipeline observed and when.</li></ul></section>
 
     <p class="fineprint">This section is generated from the same liveness state used by the
     intraday refresh. It reports only observations the pipeline recorded.</p>
