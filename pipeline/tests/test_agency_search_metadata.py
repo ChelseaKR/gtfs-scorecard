@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import replace
 from html import unescape
 from pathlib import Path
 from typing import Any
@@ -20,9 +21,11 @@ from typing import Any
 import pytest
 
 from scorecard_pipeline.render_site import (
+    _SEARCH_INTENT_COPY,
     _agency_name_forms,
     _agency_seo_metadata,
     _agency_short_name,
+    _apply_search_intent,
     _derived_page_title,
     _ellipsize_words,
     _plan_agency_seo_metadata,
@@ -341,3 +344,93 @@ def test_every_published_record_gets_bounded_unique_metadata() -> None:
     assert all(m.title.startswith(m.identity) for m in planned.values())
     # A grade never reaches a title (agency names such as "Belgrade" aside).
     assert not any(re.search(r"\bgrade\b", m.title, re.I) for m in planned.values())
+
+
+# --- hand-written copy for pages chosen from Search Console queries --------
+
+
+@pytest.mark.parametrize("agency_id", sorted(_SEARCH_INTENT_COPY))
+@pytest.mark.parametrize("facts", [("C", "100.0", "2026-10-02"), ("F", "5.0", "2026-10-02"), None])
+def test_search_intent_copy_fits_and_carries_the_pages_grade(
+    agency_id: str, facts: tuple[str, str, str] | None
+) -> None:
+    generated = _agency_seo_metadata("Placeholder Name", grade_facts=facts)
+    meta = _apply_search_intent(agency_id, generated, facts)
+    # Every entry must actually apply: copy that silently falls back would
+    # leave the page on its old title while this table claims otherwise.
+    assert meta.title != generated.title
+    assert 15 <= len(meta.title) <= 60
+    assert 50 <= len(meta.description) <= 155
+    assert meta.title.startswith(meta.identity)
+    assert not re.search(r"\bgrade\b", meta.title, re.I)
+    if facts is None:
+        assert "grade" not in meta.description.lower()
+    else:
+        assert f"grade {facts[0]}, {facts[1]} of 100, checked {facts[2]}" in meta.description
+    # Only the search copy changes; the Dataset name stays the page's own.
+    assert meta.dataset_name == generated.dataset_name
+
+
+def test_search_intent_copy_names_jgp_nis_in_latin_letters() -> None:
+    # 90 days of queries for this page were "jgp nis" and its variants; the
+    # generated title was Cyrillic only and earned no clicks at position 10.
+    facts = ("F", "56.6", "2026-10-30")
+    meta = _apply_search_intent(
+        "jgp-nis", _agency_seo_metadata("Јавни градски превоз Ниш", grade_facts=facts), facts
+    )
+    assert meta.title == "JGP Niš (Јавни градски превоз Ниш) GTFS feed quality report"
+    assert "Јавни градски превоз Ниш" in meta.title
+
+
+def test_agency_without_search_intent_copy_is_untouched() -> None:
+    generated = _agency_seo_metadata("Demo Transit", location_label="Oregon")
+    assert _apply_search_intent("demo", generated, None) is generated
+
+
+def test_search_intent_copy_that_cannot_fit_falls_back(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Negative control: an over-long entry must fall back to the generated
+    # metadata rather than ship an over-budget title or description.
+    from scorecard_pipeline import render_site
+
+    original = render_site._SEARCH_INTENT_COPY["caltrain"]
+    generated = _agency_seo_metadata("Caltrain", location_label="California")
+    for broken in (
+        replace(original, suffix=" " + "x" * 60),
+        replace(original, lead="y" * 160),
+    ):
+        monkeypatch.setitem(render_site._SEARCH_INTENT_COPY, "caltrain", broken)
+        assert _apply_search_intent("caltrain", generated, None) is generated
+
+
+def test_search_intent_copy_that_collides_falls_back_to_unique_metadata() -> None:
+    from scorecard_pipeline.config import AGENCIES
+
+    # A second record whose generated title is exactly the hand-written one.
+    records = [
+        {"id": "jgp-nis", "name": "Јавни градски превоз Ниш"},
+        {"id": "jgp-latin", "name": "JGP Niš (Јавни градски превоз Ниш)"},
+    ]
+    artifacts = {r["id"]: _artifact() for r in records}
+    copy = _SEARCH_INTENT_COPY["jgp-nis"]
+    hand_written = f"{copy.identity}{copy.suffix}"
+    alone = _plan_agency_seo_metadata(records[1:], {"jgp-latin": _artifact()}, AGENCIES)
+    assert alone["jgp-latin"].title == hand_written  # the collision is real
+    planned = _plan_agency_seo_metadata(records, artifacts, AGENCIES)
+    titles = [m.title.casefold() for m in planned.values()]
+    assert len(set(titles)) == len(titles)
+    assert planned["jgp-nis"].title != hand_written
+
+
+def test_search_intent_copy_reaches_the_planned_corpus() -> None:
+    from scorecard_pipeline.config import AGENCIES
+
+    records = [
+        {"id": "jgp-nis", "name": "Јавни градски превоз Ниш"},
+        {"id": "demo", "name": "Demo"},
+    ]
+    artifacts = {r["id"]: _artifact() for r in records}
+    planned = _plan_agency_seo_metadata(records, artifacts, AGENCIES)
+    assert planned["jgp-nis"].title.startswith("JGP Niš")
+    assert "grade C, 74.0 of 100, checked 2026-10-02" in planned["jgp-nis"].description
+    clearance = planned["jgp-nis"].clearance_title
+    assert clearance == "JGP Niš (Јавни градски превоз Ниш) GTFS clearance log"
