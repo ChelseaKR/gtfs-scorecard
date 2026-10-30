@@ -22,12 +22,13 @@ agencies:
     mdb_id: 183
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-184 is deprecated and redirects to tld-235; the feed URL follows it (ADR 0069).
   - id: metropolitan-tulsa-transit-authority-mtta
     name: Metropolitan Tulsa Transit Authority (MTTA)
     subdivision_code: US-OK
     subdivision_name: Oklahoma
-    static_gtfs_url: http://gtfs.tulsatransit.org/google_transit.zip
-    mdb_id: 184
+    static_gtfs_url: https://tulsa.rideralerts.com/InfoPoint/GTFS-Zip.ashx
+    mdb_id: tld-235
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: embark-2062

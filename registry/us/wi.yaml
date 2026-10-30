@@ -11,12 +11,13 @@ agencies:
     mdb_id: 208
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-392 is deprecated and redirects to tld-77; the feed URL follows it (ADR 0069).
   - id: beloit-transit
     name: Beloit Transit
     subdivision_code: US-WI
     subdivision_name: Wisconsin
-    static_gtfs_url: https://data.trilliumtransit.com/gtfs/beloittransit-wi-us/beloittransit-wi-us.zip
-    mdb_id: 392
+    static_gtfs_url: https://passio3.com/beloit/passioTransit/gtfs/google_transit.zip
+    mdb_id: tld-77
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: janesville-transit-system
