@@ -197,6 +197,22 @@ the declared public surface).
 
 ### Security
 
+- **Container images clear two fixable HIGH CVEs that failed the Trivy
+  scan on 2026-10-30.** `libbrotli` CVE-2026-111497 (out-of-bounds write in
+  the Brotli decoder, fixed in `1.1.0-1.amzn2023.0.2`): `AL2023_REPO_GUID` in
+  both Dockerfiles moves from `9abd7b42...c240343` to the current snapshot
+  on Amazon's mirror list, `c5eb6613...a009e57f60`, whose repodata was
+  checked to serve the fixed build (the old snapshot stops at `0.1`). Guava
+  CVE-2026-102554 (GHSA-xxph-c9ww-hj94, heap exhaustion when
+  `CompactHashMap`/`CompactHashSet`/`MapMakerInternalMap` are Java-
+  deserialized) is in the shaded gtfs-validator 8.0.1 jar, and no
+  MobilityData release carries the fixed Guava 33.7.2, so it joins the
+  time-bounded exceptions in `.trivyignore.yaml` (expires 2027-01-04) with a
+  measured `code_not_reachable` entry in `vex.json`: no `org.mobilitydata`
+  class references `ObjectInputStream`, and a `-verbose:class` run of the
+  validator loads none of the three classes. A new test pins that entry to
+  its measurement.
+
 - **Published feed URLs no longer carry credentials.** An artifact's
   `fetch.final_url` and `feed.static_url` were published exactly as fetched.
   When a feed redirects to a presigned object in someone else's bucket, the
