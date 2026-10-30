@@ -109,3 +109,23 @@ def test_jsoup_exception_names_the_measurement_that_backs_it() -> None:
     assert "org.jsoup.parser.XmlTreeBuilder" in analysis["detail"]
     assert "-verbose:class" in analysis["detail"]
     assert "0 org.jsoup" in analysis["detail"]
+
+
+def test_guava_exception_names_the_measurement_that_backs_it() -> None:
+    """CVE-2026-102554 is a code_not_reachable claim, so it cites its measurement.
+
+    The advisory is against Java native deserialization of three Guava
+    collections. The VEX detail has to name them, the constant-pool scan that
+    found no validator class touching ObjectInputStream, and the class-load
+    run that found none of the three loaded on the scoring path.
+    """
+    vex = json.loads((REPOSITORY_ROOT / "vex.json").read_text())
+    by_id = {item["id"]: item for item in vex["vulnerabilities"]}
+    analysis = by_id["CVE-2026-102554"]["analysis"]
+    assert analysis["justification"] == "code_not_reachable"
+    detail = analysis["detail"]
+    for cls in ("CompactHashMap", "CompactHashSet", "MapMakerInternalMap"):
+        assert f"0 {cls}" in detail
+    assert "ObjectInputStream" in detail
+    assert "-verbose:class" in detail
+    assert "test_validator_is_never_handed_a_url" in detail
