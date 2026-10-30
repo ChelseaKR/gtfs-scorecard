@@ -3232,6 +3232,122 @@ def _metadata_collision_components(
     return [group for group in groups.values() if len(group) > 1]
 
 
+@dataclass(frozen=True)
+class SearchIntentCopy:
+    """Hand-written search copy for one agency page, chosen from real queries.
+
+    ``identity`` + ``suffix`` is the title. ``lead`` opens the description and
+    ``tail`` closes it; the page's own dated grade goes between them exactly
+    as ``_agency_seo_metadata`` writes it, or is left out when the page has
+    none. Every word must be something the agency page itself shows.
+    """
+
+    identity: str
+    suffix: str
+    lead: str
+    tail: str
+
+
+#: Search Console, 90 days to 2026-10-29: these pages ranked between 3 and 15
+#: with almost no clicks, and the queries that reached them name something
+#: the generated copy did not. JGP Niš is searched in Latin letters ("jgp
+#: nis") while its title was Cyrillic only. The others are searched as
+#: "<agency> gtfs", sometimes with "download", "official", or the feed's own
+#: URL: people looking for the feed itself, which every agency page links as
+#: its source feed. A few also fix a doubled word the generator produced
+#: ("FlixBus (Norway) (Norway)", "national GTFS GTFS") or a name cut mid-way.
+#: A record missing from the corpus is ignored, and copy that does not fit
+#: the length budget or collides with another page falls back to the
+#: generated metadata (see ``_apply_search_intent``).
+_SEARCH_INTENT_COPY: dict[str, SearchIntentCopy] = {
+    "jgp-nis": SearchIntentCopy(
+        "JGP Niš (Јавни градски превоз Ниш)",
+        " GTFS feed quality report",
+        "JGP Niš (the Niš city network, Serbia) GTFS feed",
+        "See the source feed, service dates and fixes.",
+    ),
+    "lpp-ljubljana": SearchIntentCopy(
+        "LPP Ljubljana",
+        " GTFS feed: download link and quality report",
+        "Ljubljanski potniški promet (LPP), Ljubljana, Slovenia, GTFS feed",
+        "See the feed download link and fixes.",
+    ),
+    "caltrain": SearchIntentCopy(
+        "Caltrain",
+        " GTFS feed: source URL, realtime access, quality",
+        "Caltrain (California) GTFS feed",
+        "See the source feed URL, realtime access, service dates and fixes.",
+    ),
+    "amtrak": SearchIntentCopy(
+        "Amtrak",
+        " GTFS feed: source URL and quality report",
+        "Amtrak GTFS feed",
+        "See the source feed URL, service dates, validator findings and fixes.",
+    ),
+    "metra-2854": SearchIntentCopy(
+        "Metra (Illinois)",
+        " GTFS feed: source URL and quality report",
+        "Metra (Illinois) GTFS feed",
+        "See the source feed URL, validator findings and fixes.",
+    ),
+    "israel-mot-national": SearchIntentCopy(
+        "Israel national",
+        " GTFS feed: source URL and quality report",
+        "Israel Ministry of Transport national GTFS feed",
+        "See the source feed URL, validator findings and fixes.",
+    ),
+    "flixbus-norway": SearchIntentCopy(
+        "FlixBus (Norway)",
+        " GTFS feed: source URL and quality report",
+        "FlixBus (Norway) GTFS feed",
+        "See the source feed URL, validator findings and fixes.",
+    ),
+    "fr-pan-81653": SearchIntentCopy(
+        "Trenitalia France",
+        " GTFS feed: source URL and quality report",
+        "Réseau national Trenitalia France GTFS feed",
+        "See the source feed URL, validator findings and fixes.",
+    ),
+    "mwasalat-oman": SearchIntentCopy(
+        "Mwasalat (Oman National Transport Company)",
+        " GTFS feed quality",
+        "Mwasalat (Oman National Transport Company) GTFS feed",
+        "See the source feed URL, service dates and fixes.",
+    ),
+}
+
+
+def _apply_search_intent(
+    agency_id: str,
+    metadata: AgencySeoMetadata,
+    grade_facts: tuple[str, str, str] | None,
+) -> AgencySeoMetadata:
+    """Swap in the hand-written copy for ``agency_id`` when it fits the budget.
+
+    The grade clause is the same one the generated description carries, so a
+    result never states a grade the page does not. Copy that cannot fit is
+    dropped, not cut: the generated metadata is always a safe fallback.
+    """
+    copy = _SEARCH_INTENT_COPY.get(agency_id)
+    if copy is None:
+        return metadata
+    title = f"{copy.identity}{copy.suffix}"
+    if not 15 <= len(title) <= _TITLE_MAX:
+        return metadata
+    if grade_facts is not None:
+        grade, score, checked = grade_facts
+        candidates = [
+            f"{copy.lead}: grade {grade}, {score} of 100, checked {checked}. {copy.tail}",
+            f"{copy.lead}: grade {grade}, {score} of 100, checked {checked}.",
+        ]
+    else:
+        candidates = [f"{copy.lead} quality report. {copy.tail}"]
+    description = next((d for d in candidates if 50 <= len(d) <= _DESC_MAX), "")
+    if not description:
+        return metadata
+    return replace(metadata, title=title, description=description, identity=copy.identity)
+
+
 def _plan_agency_seo_metadata(
     records: list[dict[str, Any]],
     artifacts_by_id: dict[str, dict[str, Any]],
@@ -3242,13 +3358,18 @@ def _plan_agency_seo_metadata(
     record_by_id = {str(record["id"]): record for record in records}
     for agency_id, record in record_by_id.items():
         artifact = artifacts_by_id[agency_id]
-        planned[agency_id] = _agency_seo_metadata(
-            str(record.get("name") or agency_id),
-            location_label=_location_label(record),
-            rt_measured=(
-                artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
+        grade_facts = _seo_grade_facts(artifact)
+        planned[agency_id] = _apply_search_intent(
+            agency_id,
+            _agency_seo_metadata(
+                str(record.get("name") or agency_id),
+                location_label=_location_label(record),
+                rt_measured=(
+                    artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
+                ),
+                grade_facts=grade_facts,
             ),
-            grade_facts=_seo_grade_facts(artifact),
+            grade_facts,
         )
 
     for group in _metadata_collision_components(planned):
