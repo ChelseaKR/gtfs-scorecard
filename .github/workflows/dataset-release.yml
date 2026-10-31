@@ -9,10 +9,10 @@ name: Dataset release
 
 on:
   schedule:
-    # Monthly, after the 13:23 UTC daily scoring window. The 15:23 intraday
-    # deployment may already have replaced the live site, so scheduled cuts
-    # consume the successful Daily run's exact Pages artifact by run id rather
-    # than racing the mutable production URL.
+    # Monthly, after the 13:23 UTC daily scoring window. A code push or a
+    # hand-run intraday refresh may already have replaced the live site, so
+    # scheduled cuts consume the successful Daily run's exact Pages artifact by
+    # run id rather than racing the mutable production URL.
     - cron: "47 17 1 * *"
     # RELIABILITY (2026-09-13): a monthly job gets one attempt a year at each
     # month, and it spent 2026-09's. Run 33553673342 (2026-09-01) failed in

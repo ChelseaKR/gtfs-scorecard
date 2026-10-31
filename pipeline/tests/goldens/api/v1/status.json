@@ -5,14 +5,14 @@
     "tiers": [
       {
         "applies_to": "feeds with measured realtime data, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)",
-        "cadence": "one direct liveness check every 24 hours",
-        "schedule_cron": "23 1 * * *",
+        "cadence": "one direct liveness check each day",
+        "schedule_cron": "23 13 * * *",
         "tier": "priority"
       },
       {
         "applies_to": "every other tracked feed",
-        "cadence": "one direct liveness check in each 24-hour period",
-        "schedule_cron": "23 1 * * *",
+        "cadence": "one direct liveness check each day",
+        "schedule_cron": "23 13 * * *",
         "tier": "standard"
       },
       {

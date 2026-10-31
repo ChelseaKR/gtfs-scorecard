@@ -139,7 +139,7 @@ CHECKS_COLUMNS: Final[tuple[Column, ...]] = (
     Column(
         "recompute_kind",
         "VARCHAR",
-        "freshness when this row is an intraday sweep that re-read only the calendar dates "
+        "freshness when this row is a freshness sweep that re-read only the calendar dates "
         "and carried the other categories forward; null for a full score.",
     ),
     Column(
@@ -736,8 +736,8 @@ def render_dictionary() -> str:
         f"{SCHEMA_VERSION} and earlier. Two tables, joined on agency_id and snapshot_date.",
         "",
         "A null means the artifact did not record the value. It never means zero, and it",
-        "never means a license is permissive. A row with recompute_kind = freshness is an",
-        "intraday sweep: only the calendar dates were re-read that day, and the other",
+        "never means a license is permissive. A row with recompute_kind = freshness is a",
+        "freshness sweep: only the calendar dates were re-read that day, and the other",
         "category scores are the previous full score's, carried forward.",
         "",
         "Grades are comparable only within one scoring_profile_id, validator_version,",

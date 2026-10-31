@@ -2,8 +2,9 @@ name: Realtime monitor
 
 # Longitudinal GTFS-Realtime health (docs/expansion.md Phase B, ADR 0012). On a
 # cron, take a short sampling burst of every agency's realtime feeds and append
-# one uptime/freshness observation per agency to data/rt-health. The daily and
-# intraday renders read that record and show realtime reliability on each page.
+# one uptime/freshness observation per agency to data/rt-health. The daily
+# render (and a hand-run intraday one) reads that record and shows realtime
+# reliability on each page.
 #
 # This is the serverless tier: a cron cannot poll on the spec's 30-60s cadence,
 # so each run samples a small burst and the record accumulates coverage across

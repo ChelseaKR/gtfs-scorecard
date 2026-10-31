@@ -278,10 +278,84 @@ jobs:
           retention-days: 1
           if-no-files-found: warn
 
+  # The direct liveness check (ADR 0010), moved here from the Intraday refresh
+  # when that job came off the schedule on 2026-10-31. A conditional GET of
+  # every configured feed URL with no validator, so an unchanged feed answers
+  # an empty 304. It keeps data/liveness.json current: the failure streaks
+  # behind "unreachable", each agency page's "checked for changes" line, and
+  # the liveness record on /status/. Without it that state would stop at the
+  # last refresh and keep saying what it saw then.
+  #
+  # It runs beside the score shards, not inside collect, so it adds nothing to
+  # collect's bound: the full sweep took 10 minutes on 2026-10-31 (Intraday
+  # refresh run 41155219748, ~2,500 feeds, 16 lanes) against shards that take
+  # 30 to 50. collect waits for it so the deploy reads today's state, and runs
+  # whether it succeeded or not (`!cancelled()`). It reads and writes one small
+  # object, so it is outside `artifacts-publish`; a hand-run Intraday refresh
+  # that overlaps it also writes that object, and the later write wins.
+  liveness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write # read and publish data/liveness.json through AWS OIDC
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+        with:
+          enable-cache: true
+          python-version: "3.12"
+      - name: Authenticate to AWS
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+      # The previous state carries each feed's validators (ETag, Last-Modified)
+      # and failure streak. A missing object (a new bucket) falls back to the
+      # copy in the checkout; any other read error fails the step, because
+      # checking against an old baseline would rewrite every streak from it.
+      - name: Hydrate the liveness state
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          if err=$(aws s3api head-object --bucket "$ARTIFACTS_BUCKET" \
+            --key data/liveness.json 2>&1 > /dev/null); then
+            aws s3 cp "s3://${ARTIFACTS_BUCKET}/data/liveness.json" \
+              data/liveness.json --only-show-errors
+          elif grep -q '(404)' <<< "$err"; then
+            echo "::notice title=liveness::no data/liveness.json in the bucket yet; checking against the copy in the checkout"
+          else
+            echo "::error::could not read data/liveness.json: $err"
+            exit 1
+          fi
+      # Same sweep as the Intraday refresh's "Detect changed and unreachable
+      # feeds", over every feed instead of a due subset: hosts side by side,
+      # each host's feeds one at a time, so no agency's server has two of these
+      # requests in flight.
+      - name: Check every feed URL
+        working-directory: pipeline
+        run: uv run scorecard liveness --apply --workers 16
+      - name: Publish the liveness state
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          aws s3 cp data/liveness.json \
+            "s3://${ARTIFACTS_BUCKET}/data/liveness.json" \
+            --cache-control "max-age=300" --only-show-errors
+
   collect:
     # `plan` is here for its shard_count output, the denominator the shortfall
     # check and the run-health merge both measure against (issue #297).
-    needs: [plan, score]
+    # `liveness` is here so the deploy after collect reads today's liveness
+    # state; its failure does not hold collect back (`!cancelled()` below).
+    needs: [plan, score, liveness]
     # RELIABILITY (issue #297): `needs: score` alone defaults to `if: success()`,
     # so one dead shard (e.g. a runner killed validating a large feed) skipped
     # collect and deploy entirely and dropped the whole day's publish, even
@@ -301,10 +375,12 @@ jobs:
     #
     # The daily cadence is not the ceiling here: consecutive fires were never
     # less than about 20 hours apart. The shared `artifacts-publish` slot is.
-    # Intraday refresh fires into the same serial group as little as 114.2
-    # minutes apart, so 90 keeps a collect that runs to its bound shorter than
-    # the tightest refresh gap. One collect can then make at most one refresh
-    # wait, and never a second whose arrival would evict the first.
+    # Intraday refresh fired into the same serial group as little as 114.2
+    # minutes apart, so 90 kept a collect that runs to its bound shorter than
+    # the tightest refresh gap. One collect could then make at most one refresh
+    # wait, and never a second whose arrival would evict the first. The
+    # refresh has run only by hand since 2026-10-31, so that ceiling is now
+    # about not stacking two manual runs behind collect.
     timeout-minutes: 90
     concurrency:
       group: artifacts-publish
@@ -470,6 +546,21 @@ jobs:
             jq -r '.degraded_reasons[]? | "::warning title=pipeline run degraded::" + .' \
               ../data/artifacts/run/latest.json
           fi
+      # The freshness sweep (ADR 0010), moved here from the Intraday refresh
+      # when that job came off the schedule on 2026-10-31. A feed that did not
+      # score today (its fetch failed, or its shard died) keeps its last good
+      # record, and until now the refresh re-dated that record's expiry
+      # countdown from the calendar data on hand. Without this its countdown
+      # would stay at the day it last scored. `needs_sweep` (sweep.py) skips
+      # every feed already scored today, so this touches only the ones the
+      # shards missed. No network: the whole-corpus sweep took 68 seconds on
+      # 2026-10-31 (Intraday refresh run 41155219748). The budget and step
+      # timeout are backstops; a feed past the budget keeps its last record,
+      # is named in the log, and is found again tomorrow.
+      - name: Refresh expiry for feeds today's scoring did not reach
+        working-directory: pipeline
+        timeout-minutes: 15
+        run: uv run scorecard freshness-sweep --apply --budget-seconds 600
       - name: Rebuild index and rollups
         working-directory: pipeline
         run: |

@@ -5277,7 +5277,7 @@ def _rt_health_section(agency_id: str) -> str:
 
     The window names the date it **ends**, and that is the point of it. This
     read "over the last N days", which is a claim about now, computed from a
-    span that need not end now: the page is rebuilt on the intraday cadence
+    span that need not end now: the page is rebuilt on the deploy cadence
     whether or not the monitor recorded anything, so a monitor that stops
     leaves every agency page saying "the last N days" about a window that
     closed whenever the last observation landed. It is not hypothetical --
@@ -8064,7 +8064,7 @@ def _status_commitment_section(doc: dict[str, Any]) -> str:
     else:
         record_section = (
             "<p>No direct liveness state has been recorded yet on this deployment "
-            "(the intraday refresh has not run). This section fills in once it has.</p>"
+            "(the daily liveness check has not run). This section fills in once it has.</p>"
         )
 
     policy_items = "".join(f"<li>{esc(s)}</li>" for s in policy["statements"])
@@ -8078,9 +8078,9 @@ def _status_commitment_section(doc: dict[str, Any]) -> str:
     {record_section}</section>
 
     <section aria-labelledby="cadence-h"><h3 class="section-title" id="cadence-h">Scheduled checks</h3>
-    <p>Each feed belongs to one of two direct-liveness tiers. A separate full validation is
-    scheduled once daily for every registered feed. The latest-run section below records what
-    that daily work completed.</p>
+    <p>Each feed belongs to one of two direct-liveness tiers, and both are checked once a day.
+    A separate full validation is scheduled once daily for every registered feed. The
+    latest-run section below records what that daily work completed.</p>
     <div class="table-wrap"><table><thead><tr><th scope="col">Check</th><th scope="col">Cadence</th>
     <th scope="col">Applies to</th></tr></thead><tbody>{tier_rows}</tbody></table></div></section>
 
@@ -8088,8 +8088,8 @@ def _status_commitment_section(doc: dict[str, Any]) -> str:
     <p>The scorecard keeps the last successful evidence available and makes the degraded state visible:</p>
     <ul>{policy_items}</ul></section>
 
-    <p class="fineprint">This section is generated from the same liveness state used by the
-    intraday refresh. It reports only observations the pipeline recorded.</p>"""
+    <p class="fineprint">This section is generated from the liveness state the daily check
+    keeps. It reports only observations the pipeline recorded.</p>"""
 
 
 def _methodology_versions_section() -> str:
@@ -8569,9 +8569,9 @@ def _states_by_agency() -> dict[str, str]:
 
 
 def _load_liveness() -> dict[str, dict[str, Any]]:
-    """The intraday refresh's per-feed change-detection state, keyed by agency id.
-    Missing or malformed file degrades to empty, so the site renders fine before
-    the first refresh has run."""
+    """The daily liveness check's per-feed change-detection state, keyed by agency
+    id. Missing or malformed file degrades to empty, so the site renders fine
+    before the first check has run."""
     path = _repo_root() / "data" / "liveness.json"
     try:
         data = json.loads(path.read_text())
@@ -13216,7 +13216,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
 
     # The consumer-facing freshness/uptime commitment (EXP-10): machine-readable
     # status.json, extending FIX-11's internal run-summary outward. Built from
-    # the same liveness state the intraday refresh keeps, so it renders (with
+    # the same liveness state the daily liveness check keeps, so it renders (with
     # an honest empty record) even before the first refresh has ever run. The
     # human-readable page is written later, once the run summary and catalog
     # (FIX-11's half of /status/) are also ready -- see `_render_status`.
@@ -13303,7 +13303,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         str(aid): (entry or {}).get("history") or []
         for aid, entry in (index.get("agencies") or {}).items()
     }
-    # Per-feed change-detection freshness from the intraday refresh; loaded once,
+    # Per-feed change-detection freshness from the daily liveness check; loaded once,
     # early, so both the directory's expired-feed split and each agency page
     # (below) read the same state. Keep every directory document bounded: the
     # production corpus is large enough that one giant HTML list delays first

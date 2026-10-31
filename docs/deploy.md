@@ -261,8 +261,8 @@ Actions; this is the inventory an operator should know exists:
 
 | Workflow | Cadence | What it does |
 | --- | --- | --- |
-| `scorecard.yml` | daily | The full sharded re-score, commit, deploy, optional S3 mirror and SES digest. |
-| `refresh.yml` | daily (01:23 UTC) | Cheap intraday tier: change/down detection by conditional GET, no validator (ADR 0010). |
+| `scorecard.yml` | daily | The full sharded re-score, the daily direct liveness check and freshness sweep, commit, deploy, optional S3 mirror and SES digest. |
+| `refresh.yml` | manual | Cheap intraday tier: change/down detection by conditional GET and re-score of changed feeds, no full validation (ADR 0010). Off the schedule since 2026-10-31. |
 | `targeted-score.yml` | manual | Activates up to 25 reviewed registry agencies against the authoritative S3 corpus, then deploys. |
 | `rt-monitor.yml` | every 3 h | Short realtime sampling burst across agencies into `data/rt-health` (ADR 0012). |
 | `rt-archive.yml` | manual | Bounded high-resolution realtime polling session for one agency (ADR 0012). |
@@ -313,12 +313,12 @@ credential never enters Actions.
 `pages.yml` also runs as the deploy job of the daily, intraday, and targeted
 data workflows. Its own push trigger ignores `data/rt-health/**`, so the
 three-hourly realtime observation commit does not add a redundant site build of
-its own; the observations go out with the next refresh or Daily deploy. To cut
-S3 egress, the refresh runs once a day at 01:23 UTC (it ran every three hours
-until 2026-10-30) and redeploys the site on every run, and the Daily deploys
-at about 13:23 UTC, so the site is redeployed about every twelve hours.
-Watchdog's staleness check allows 28 hours, which tolerates one missed deploy
-plus schedule jitter.
+its own; the observations go out with the next Daily deploy or code push. To
+cut S3 egress, the refresh has run only by hand since 2026-10-31 (it ran every
+three hours until 2026-10-30, then once a day at 01:23 UTC), so the Daily,
+which fires at 13:23 UTC, is the one scheduled deploy a day. Watchdog's
+staleness check allows 30 hours: Daily runs finished 23.0 to 25.1 hours apart
+from 2026-10-22 to 2026-10-31, and a failed Daily is paged on its own.
 
 ### What each site build downloads from S3
 

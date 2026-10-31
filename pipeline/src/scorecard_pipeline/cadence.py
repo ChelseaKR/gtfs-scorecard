@@ -18,6 +18,11 @@ stable bucket from its id so the load spreads evenly across cycles instead of
 hammering every host at once.
 
 Pure and testable: the live check still happens in liveness.py.
+
+Since 2026-10-31 the intraday refresh runs only by hand, and the scheduled
+liveness check is the Daily scorecard's `liveness` job, which checks every feed
+once a day without a due list. The tiers here decide only what a hand-run
+refresh checks, and with both periods at 24 hours that is every feed.
 """
 
 from __future__ import annotations
@@ -36,9 +41,8 @@ STANDARD = "standard"
 # standard feed is checked on every cycle, the same as a priority feed.
 STANDARD_PERIOD = 24
 
-# Hours between intraday refresh cycles. Must match the cron in
-# .github/workflows/refresh.yml; test_status_commitment.py cross-reads that file
-# and fails if the two drift.
+# Hours between intraday refresh cycles. It had to match the cron in
+# .github/workflows/refresh.yml while that workflow had one.
 #
 # This has to be known here, not inferred from the clock, because the due-list
 # math is keyed to the cycle a run belongs to. `hour % STANDARD_PERIOD` worked
@@ -47,6 +51,8 @@ STANDARD_PERIOD = 24
 # 1, 2, 4 and 5 would silently never come due again.
 #
 # 24 since 2026-10-30: one refresh a day (refresh.yml `23 1 * * *`). It was 3.
+# Since 2026-10-31 the refresh has no cron and runs by hand at any hour; 24
+# makes `cycles_per_period` 1, so every feed is due on whatever hour it runs.
 REFRESH_STEP_HOURS = 24
 
 

@@ -5,11 +5,11 @@ on:
     branches: [main]
     # `rt-monitor.yml` pushes a data-only observation commit every three hours
     # (ADR 0012). Each push used to trigger a whole extra site build, which
-    # re-hydrates the published corpus from S3 for data the `refresh.yml` deploy
+    # re-hydrates the published corpus from S3 for data the next data deploy
     # republishes anyway. Ignoring the path drops eight redundant builds a day;
-    # the observations still reach the site at the next refresh or Daily
-    # deploy (about every twelve hours since the refresh went daily on
-    # 2026-10-30).
+    # the observations still reach the site at the next Daily deploy (once a
+    # day since the Intraday refresh came off the schedule on 2026-10-31), or
+    # sooner with a code push.
     paths-ignore:
       - "data/rt-health/**"
   workflow_call:
@@ -74,8 +74,8 @@ jobs:
           # Every other workflow in this repo that calls setup-uv enables its
           # cache (ci.yml, e2e.yml, a11y.yml, ...); this one was the one
           # holdout, paying a full dependency resolve on every deploy — code
-          # pushes, the intraday refresh, and the daily scorecard
-          # run alike.
+          # pushes, the daily scorecard, and a hand-run intraday refresh
+          # alike.
           enable-cache: true
           python-version: "3.12"
       - name: Install the pipeline
@@ -132,7 +132,7 @@ jobs:
           # The per-agency half of this set (latest.json, the badges and
           # conformance files, today's and yesterday's dated snapshots) is
           # ~400 MB that barely moves between builds, and this workflow runs on
-          # every intraday refresh and every code push. It is kept in the
+          # every Daily deploy and every code push. It is kept in the
           # Actions cache and refreshed with `--exact-timestamps --delete`, so
           # only objects S3 changed are transferred; the overlay script then
           # puts the mirror over the working tree. All of it is public data.
@@ -176,7 +176,7 @@ jobs:
       # and ~380 MB, against ~190 MB for everything else in the bounded set
       # above. It only changes when an agency publishes new shapes, yet every
       # site build re-downloaded all of it, and this workflow runs on each
-      # intraday refresh as well as on push. Keep a runner-side mirror in the
+      # Daily deploy as well as on push. Keep a runner-side mirror in the
       # Actions cache instead and let `aws s3 sync` fetch just the objects S3
       # has modified since the mirror was taken. `sync` transfers an object when
       # its size differs or its S3 last-modified is newer than the local copy,
@@ -232,8 +232,8 @@ jobs:
           path: data/artifacts/*/geometry.geojson
           key: route-geometry-v1-${{ github.run_id }}-${{ github.run_attempt }}
       # The syncs above are a plain read of a store that two other workflows
-      # write non-atomically. `refresh.yml` (daily, 01:23 UTC) and
-      # `scorecard.yml` (daily) publish under the `artifacts-publish`
+      # write non-atomically. `scorecard.yml` (daily) and `refresh.yml`
+      # (by hand only, since 2026-10-31) publish under the `artifacts-publish`
       # concurrency group; this workflow is in the `pages` group, so nothing
       # serializes a deploy against a publish in flight. Both publishers commit
       # in two phases — every changed agency's latest.json first, then

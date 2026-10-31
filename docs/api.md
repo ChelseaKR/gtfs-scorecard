@@ -427,7 +427,8 @@ a share. A consumer should read `null` as "not known here", never as zero.
 
 `not_joined_here` means the step that wrote the record does not read that
 input. It does not mean the data does not exist. Per-agency records are written
-in the daily score shards and the intraday refresh. The ridership snapshot is
+in the daily score shards, the daily freshness sweep, and a hand-run intraday
+refresh. The ridership snapshot is
 fetched later in the daily run, and the need overlays are built by their own
 workflows, so every United States and Canadian record states those two as
 `not_joined_here`. Absent on artifacts published before schema 1.19.
