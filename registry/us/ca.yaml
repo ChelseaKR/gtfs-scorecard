@@ -62,7 +62,7 @@ agencies:
     name: Altamont Corridor Express
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://transitfeeds.com/p/altamont-corridor-express/823/latest/download
+    static_gtfs_url: https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/altamont-corridor-express/823/20231227/gtfs.zip
     mdb_id: 1133
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -291,7 +291,7 @@ agencies:
     name: Blue & Gold Fleet
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://transitfeeds.com/p/blue-gold-fleet/824/latest/download
+    static_gtfs_url: https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/blue-gold-fleet/824/20240104/gtfs.zip
     mdb_id: 1178
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -462,13 +462,14 @@ agencies:
       vehicle_positions: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/position_updates.pb
       service_alerts: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/alerts.pb
 
+  # Mobility Database mdb-877 is deprecated and redirects to mdb-3099; the feed URL follows it (ADR 0069).
   - id: city-of-tracy-tracer
     name: City of Tracy (TRACER)
     organization_id: city-of-tracy
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://data.trilliumtransit.com/gtfs/tracy-ca-us/tracy-ca-us.zip
-    mdb_id: 877
+    static_gtfs_url: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/gtfs.zip
+    mdb_id: 3099
     license_note: No stated data license in the Mobility Database; verify before publishing.
     rt_urls:
       trip_updates: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/trip_updates.pb
@@ -862,7 +863,7 @@ agencies:
     organization_id: city-of-glendale
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://transitfeeds.com/p/glendale-beeline/917/latest/download
+    static_gtfs_url: https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/glendale-beeline/917/20210901/gtfs.zip
     mdb_id: 1280
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -2489,7 +2490,7 @@ agencies:
     name: Tri Delta Transit
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://transitfeeds.com/p/tri-delta-transit/1148/latest/download
+    static_gtfs_url: https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/tri-delta-transit/1148/20200206/gtfs.zip
     mdb_id: 1323
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

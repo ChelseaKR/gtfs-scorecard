@@ -3,12 +3,13 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-321 is deprecated and redirects to tld-5899; the feed URL follows it (ADR 0069).
   - id: lakeland-area-mass-transit
     name: Lakeland Area Mass Transit
     subdivision_code: US-FL
     subdivision_name: Florida
-    static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=313A0
-    mdb_id: 321
+    static_gtfs_url: https://passio3.com/citrusconn/passioTransit/gtfs/google_transit.zip
+    mdb_id: tld-5899
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: key-west-transit
@@ -87,12 +88,13 @@ agencies:
     mdb_id: 329
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-330 is deprecated and redirects to mdb-3534; the feed URL follows it (ADR 0069).
   - id: broward-county-transit
     name: Broward County Transit
     subdivision_code: US-FL
     subdivision_name: Florida
-    static_gtfs_url: https://www.broward.org/bct/documents/google_transit.zip
-    mdb_id: 330
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/acd9791dc1fd49a8aaeaab261dd61b89/data
+    mdb_id: 3534
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: miami-dade-transit
@@ -301,7 +303,7 @@ agencies:
     name: Sanford Trolley
     subdivision_code: US-FL
     subdivision_name: Florida
-    static_gtfs_url: https://transitfeeds.com/p/sanford-trolley/947/latest/download
+    static_gtfs_url: https://openmobilitydata-data.s3.us-west-1.amazonaws.com/public/feeds/sanford-trolley/947/20210322/gtfs.zip
     mdb_id: 1157
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -341,7 +343,7 @@ agencies:
     name: Breeze Transit
     subdivision_code: US-FL
     subdivision_name: Florida
-    static_gtfs_url: https://breezerider.tripsparkhost.com/gtfs/Static/google_transit.zip
+    static_gtfs_url: https://breezerider.tripsparkhost.com/gtfs/2024Winter%20R02/google_transit.zip
     mdb_id: 2260
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

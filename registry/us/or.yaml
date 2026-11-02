@@ -195,12 +195,13 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: "License: https://oregon-gtfs.trilliumtransit.com"
 
+  # Mobility Database mdb-138 is deprecated and redirects to tld-170; the feed URL follows it (ADR 0069).
   - id: cascades-east-transit-cet
     name: Cascades East Transit (CET)
     subdivision_code: US-OR
     subdivision_name: Oregon
-    static_gtfs_url: https://oregon-gtfs.com/gtfs_data/cascadeseast-or-us/cascadeseast-or-us.zip
-    mdb_id: 138
+    static_gtfs_url: https://passio3.com/cet/passioTransit/gtfs/google_transit.zip
+    mdb_id: tld-170
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
