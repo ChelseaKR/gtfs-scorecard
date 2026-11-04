@@ -137,6 +137,14 @@ the declared public surface).
 
 ### Changed
 
+- **The Daily collect job lists the artifact archive once instead of five or
+  six times.** Each recursive copy under `data/artifacts/` lists all of its
+  roughly 332,000 keys (0.11 GB of S3 egress), whatever the filters. The
+  hydrate step made one copy for `latest.json`, one per authoritative date (four
+  on 2026-10-31) and one sync for rollup state. It now makes one copy for all of
+  them, syncs `rollups/` from its own prefix and looks up `coverage-baseline.json`
+  by its exact key. The files downloaded are the same.
+
 - **The intraday refresh runs once a day instead of every three hours**
   (2026-10-30, ADR 0010). `refresh.yml` now fires at `23 1 * * *`, twelve
   hours from the Daily scorecard, and redeploys the site on every run. Almost

@@ -158,6 +158,25 @@ def test_daily_collect_hydrates_current_before_overlaying_shards() -> None:
     assert "index.json proves" in text
 
 
+def test_daily_collect_hydrate_lists_the_artifact_archive_once() -> None:
+    # Any recursive copy or sync rooted at data/artifacts/ lists every dated
+    # key (about 332,000 on 2026-10-31) however narrow its filters, and that
+    # listing is billed S3 egress. The hydrate step needs one such listing.
+    text = (WORKFLOWS / "scorecard.yml").read_text()
+    hydrate = text[
+        text.index("Hydrate the authoritative current corpus and compact history") : text.index(
+            "Gather shard artifacts"
+        )
+    ]
+    root = '"s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts'
+
+    assert hydrate.count(root) == 1
+    assert 'dated_includes+=(--include "*/${authoritative_date}.json")' in hydrate
+    assert '"${dated_includes[@]}"' in hydrate
+    assert '"s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/rollups"' in hydrate
+    assert '--prefix "$baseline_key"' in hydrate
+
+
 def test_watchdog_accepts_a_successful_manual_daily_recovery() -> None:
     text = (WORKFLOWS / "watchdog.yml").read_text()
     step = text[text.index("The most recent daily run did not fail") :]

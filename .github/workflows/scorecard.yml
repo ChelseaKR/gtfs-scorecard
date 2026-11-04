@@ -336,26 +336,48 @@ jobs:
           # even when lifecycle retention removed its dated object, so it cannot
           # roll current back to the older cutover files in the checkout.
           scripts/s3-index.sh get "${{ vars.ARTIFACTS_BUCKET }}" data/artifacts/index.json
-          aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
-            --recursive --exclude "*" --include "*/latest.json" --only-show-errors
           # index.json is the public commit pointer. A failed intraday run can
           # upload a newer latest.json before it reaches the final index write,
           # so hydrate the dated snapshots the index actually names as well.
           # Reindex can then ignore any ahead-of-index latest safely and retain
           # the last committed artifact instead of falling back to checkout.
-          jq -r '.agencies[].history[-1].date // empty' data/artifacts/index.json \
-            | sort -u | while IFS= read -r authoritative_date; do
+          #
+          # COST: every recursive copy under data/artifacts/ lists the whole
+          # dated archive (about 332,000 keys, 0.11 GB of listing XML out of
+          # S3), whatever its filters. One copy per authoritative date plus
+          # one for latest.json listed it five or six times a day (S3 access
+          # logs, 2026-10-31), so all of them are one copy now. The key sets
+          # never overlap, so the files downloaded are the same.
+          authoritative_dates=$(jq -r '.agencies[].history[-1].date // empty' \
+            data/artifacts/index.json | sort -u)
+          dated_includes=()
+          if [ -n "$authoritative_dates" ]; then
+            while IFS= read -r authoritative_date; do
               if ! [[ "$authoritative_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
                 echo "::error::Invalid authoritative artifact date: $authoritative_date"
                 exit 1
               fi
-              aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
-                --recursive --exclude "*" \
-                --include "*/${authoritative_date}.json" --only-show-errors
-            done
-          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
-            --exclude "*" --include "rollups/*.state.json" \
-            --include "coverage-baseline.json" --only-show-errors
+              dated_includes+=(--include "*/${authoritative_date}.json")
+            done <<< "$authoritative_dates"
+          fi
+          aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
+            --recursive --exclude "*" --include "*/latest.json" \
+            "${dated_includes[@]}" --only-show-errors
+          # rollups/ is its own prefix, so sync it directly instead of listing
+          # the whole archive again to find it.
+          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/rollups" \
+            data/artifacts/rollups --exclude "*" --include "*.state.json" \
+            --only-show-errors
+          # coverage-baseline.json is one key. Look up exactly that key, so a
+          # missing baseline stays missing, as it did under the old sync.
+          baseline_key="data/artifacts/coverage-baseline.json"
+          found_baseline=$(aws s3api list-objects-v2 \
+            --bucket "${{ vars.ARTIFACTS_BUCKET }}" --prefix "$baseline_key" \
+            --max-items 1 --query 'Contents[0].Key' --output text)
+          if [ "$found_baseline" = "$baseline_key" ]; then
+            aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/${baseline_key}" \
+              data/artifacts/coverage-baseline.json --only-show-errors
+          fi
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" data/artifacts \
             --only-show-errors
       - name: Gather shard artifacts
