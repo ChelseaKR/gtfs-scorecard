@@ -437,9 +437,15 @@
     });
   }
 
+  // The finding rides in the fragment, not the query string, so every link
+  // counts toward the clean agency page (ADR 0074). The page still reads an
+  // old ?finding= link.
   function findingHref(path, code, anchor) {
     if (!/^[A-Za-z0-9_-]+$/.test(code || "")) return path;
-    return path + "?finding=" + encodeURIComponent(code) + "#" + (anchor || "finding-handoff");
+    var at = anchor && anchor !== "finding-handoff" && /^[A-Za-z0-9_-]+$/.test(anchor)
+      ? "&at=" + encodeURIComponent(anchor)
+      : "";
+    return path + "#finding=" + encodeURIComponent(code) + at;
   }
 
   function updateContextLinks() {

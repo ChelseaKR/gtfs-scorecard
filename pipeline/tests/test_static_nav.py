@@ -308,7 +308,7 @@ def test_landing_uses_a_real_interactive_scorecard_instead_of_a_fictional_dashbo
     script = (_REPO / "web" / "src" / "landing-scorecard.js").read_text()
 
     assert 'id="live-scorecard"' in html
-    assert 'src="/src/landing-scorecard.js?v=20260723-coverage"' in html
+    assert 'src="/src/landing-scorecard.js?v=20261105-fragment"' in html
     assert "Latest published scorecard" in html
     assert 'role="group" aria-label="Home pilots"' in html
     assert "measured category sets can differ" in html
