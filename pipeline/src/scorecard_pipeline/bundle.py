@@ -55,6 +55,7 @@ from .report import (
     _validate_accent,
     generate_report,
 )
+from .score import grade_qualifier
 
 MAX_AGENCIES = 100
 MAX_PROGRAM_NAME = 120
@@ -390,7 +391,9 @@ def build_bundle(
         # included (it is the published scorecard), but the manifest and the
         # README say so, with the copy's dates, rather than listing it as if
         # it described the agency's feed today.
-        caveat = mirror_copy_caveat(_load_inputs(agency_id)[0])
+        artifact = _load_inputs(agency_id)[0]
+        caveat = mirror_copy_caveat(artifact)
+        qualifier = grade_qualifier(artifact)
         rows.append(
             {
                 "id": agency_id,
@@ -398,6 +401,9 @@ def build_bundle(
                 "detail": caveat,
                 "file": f"reports/{target.name}",
                 **({"source": SOURCE_MIRROR} if caveat else {}),
+                # The report itself prints it beside the grade; the manifest
+                # says so too, so a buyer's index never lists it as full.
+                **({"grade_qualifier": qualifier} if qualifier else {}),
             }
         )
 

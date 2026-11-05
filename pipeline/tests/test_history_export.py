@@ -396,6 +396,7 @@ def test_golden_rows_for_the_fixture(repo: Path) -> None:
         "validator_version": "8.0.1",
         "reader_archive_profile": "raw-v1",
         "grade": "C",
+        "grade_qualifier": None,
         "score": 74.4,
         "correctness": 90.0,
         "freshness": 36.7,

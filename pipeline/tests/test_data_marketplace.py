@@ -388,7 +388,7 @@ def test_a_check_row_carries_the_redacted_urls() -> None:
     row = check_row("alpha", artifact, agency=None, finding_count=0)
     assert row["feed_static_url"] == f"https://x.example/f?apiKey={REDACTED}"
     assert "abc" not in row["fetch_final_url"] and "X-Amz-Credential" in row["fetch_final_url"]
-    assert TABLES_VERSION == "1.1"
+    assert TABLES_VERSION == "1.2"
 
 
 def test_the_csv_dictionary_is_the_export_column_list_and_is_committed() -> None:

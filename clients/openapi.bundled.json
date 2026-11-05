@@ -1403,6 +1403,13 @@
                   "F"
                 ]
               },
+              "grade_qualifier": {
+                "type": "string",
+                "enum": [
+                  "partial: freshness not measured"
+                ],
+                "description": "Present only when the grade is partial: freshness was not measured because an expired Mobility Database mirror copy was held out of the grade (rubric 1.5). The letter is still published and must be shown with this qualifier."
+              },
               "margin_to_next_band": {
                 "type": [
                   "number",
@@ -2598,6 +2605,17 @@
               "F"
             ]
           },
+          "grade_qualifier": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "partial: freshness not measured",
+              null
+            ],
+            "description": "null for a full grade; \"partial: freshness not measured\" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier."
+          },
           "score": {
             "type": "number",
             "minimum": 0,
@@ -3231,6 +3249,17 @@
                     "D",
                     "F"
                   ]
+                },
+                "grade_qualifier": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "partial: freshness not measured",
+                    null
+                  ],
+                  "description": "null for a full grade; \"partial: freshness not measured\" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier."
                 },
                 "score": {
                   "type": "number"
@@ -4227,6 +4256,17 @@
                     "D",
                     "F"
                   ]
+                },
+                "grade_qualifier": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "partial: freshness not measured",
+                    null
+                  ],
+                  "description": "null for a full grade; \"partial: freshness not measured\" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier."
                 },
                 "snapshot_date": {
                   "type": "string"

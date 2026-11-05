@@ -113,7 +113,7 @@ from .rule_links import (
     RuleLink,
     rule_link_for,
 )
-from .score import letter_grade, published_score
+from .score import grade_qualifier, letter_grade, published_score, qualified_grade
 from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
     _SOCIAL_IMAGE_HEIGHT,
     _SOCIAL_IMAGE_URL,
@@ -1626,8 +1626,9 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             else "First scorecard for this agency"
         )
 
+    qualifier = grade_qualifier(artifact)
     reel = (
-        f'<div class="reel" role="img" aria-label="Overall grade {esc(g)}" '
+        f'<div class="reel" role="img" aria-label="Overall grade {esc(qualified_grade(g, qualifier))}" '
         f'style="--flap-end: calc(var(--reel-h) * -{idx})">'
         '<div class="reel-strip"><span>F</span><span>D</span><span>C</span><span>B</span><span>A</span></div></div>'
     )
@@ -1648,10 +1649,33 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         f"{mode_html}"
         f'<div class="grade-block">{reel}'
         f'<div class="score-block"><div><span class="score-big">{o["score"]}</span><span class="score-of"> / 100</span></div>'
+        f"{_grade_qualifier_html(qualifier)}"
         f'<p class="score-trend">{trend}</p>{_peer_context(peer_record)}'
         f'<div class="chips">{"".join(chips)}</div></div></div>'
         "</div></div>"
     )
+
+
+def _grade_qualifier_html(qualifier: str | None) -> str:
+    """The partial-grade mark under the score, or "" for a full grade.
+
+    Rubric 1.5 keeps the letter when freshness was not measured, but never
+    shows it bare: the words sit beside the score, not in a tooltip.
+    """
+    if not qualifier:
+        return ""
+    return f'<p class="score-qualifier"><strong>{esc(qualifier.capitalize())}.</strong></p>'
+
+
+def _partial_suffix(qualifier: object) -> str:
+    """`` · partial: freshness not measured`` for a list row, or ""."""
+    return f" · {esc(qualifier)}" if isinstance(qualifier, str) and qualifier else ""
+
+
+def _brief_partial_html(artifact: dict[str, Any]) -> str:
+    """`` &middot; partial: freshness not measured`` after a brief's grade line, or ""."""
+    qualifier = grade_qualifier(artifact)
+    return f" &middot; {esc(qualifier)}" if qualifier else ""
 
 
 def _mirror_caveat_html(artifact: dict[str, Any], css_class: str) -> str:
@@ -1949,7 +1973,10 @@ def _citation_reference(
     sha = str((artifact.get("feed") or {}).get("sha256", "") or "")
     sha_note = f", feed sha256 {sha[:12]}…" if sha else ""
     overall = artifact.get("overall") or {}
-    grade_note = f"grade {overall.get('grade', '—')} ({overall.get('score', '—')}/100)"
+    grade_note = (
+        f"grade {qualified_grade(overall.get('grade', '—'), grade_qualifier(artifact))} "
+        f"({overall.get('score', '—')}/100)"
+    )
     return (
         f"GTFS Scorecard. ({year}). {agency_name} GTFS feed-quality record, "
         f"dated {date} ({grade_note}, rubric v{rubric}, gtfs-validator "
@@ -1973,7 +2000,8 @@ def _citation_bibtex(
     note = (
         f"Checked {date}; rubric v{rubric}; gtfs-validator {validator}; "
         f"reader archive profile {reader_profile}; "
-        f"grade {overall.get('grade', '—')} ({overall.get('score', '—')}/100)"
+        f"grade {qualified_grade(overall.get('grade', '—'), grade_qualifier(artifact))} "
+        f"({overall.get('score', '—')}/100)"
     )
     return (
         f"@misc{{{key},\n"
@@ -3085,7 +3113,9 @@ def _seo_grade_facts(artifact: dict[str, Any] | None) -> tuple[str, str, str] | 
         return None
     if not (isinstance(checked, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", checked)):
         return None
-    return grade, str(score), checked
+    # A partial grade (rubric 1.5) carries its qualifier into the snippet too,
+    # so a search result never states it as a full grade.
+    return qualified_grade(grade, grade_qualifier(artifact)), str(score), checked
 
 
 def _agency_title(
@@ -4563,7 +4593,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     <header class="brief-head">
       <p class="brief-kicker">Call-prep brief &middot; checked {esc(str(artifact.get("snapshot_date", "")))}</p>
       <h1 class="brief-title">{esc(agency_name)}</h1>
-      <p class="brief-grade">Grade {esc(str(overall["grade"]))} &middot; {esc(str(overall["score"]))} / 100</p>
+      <p class="brief-grade">Grade {esc(str(overall["grade"]))} &middot; {esc(str(overall["score"]))} / 100{_brief_partial_html(artifact)}</p>
       <p class="brief-trend">{_brief_trend_line(history)}</p>{_mirror_caveat_html(artifact, "brief-trend")}
       <p class="brief-forcall">For this call: lead with the grade and the three fixes below, then
         {call_prompt}. Each fix is framed as a next step,
@@ -4593,7 +4623,8 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     body = "\n".join(line.rstrip() for line in body.splitlines())
     scope_detail = "NTD readiness" if country.upper() == "US" else "guidance"
     desc = (
-        f"Call-prep brief for {agency_name}: grade {overall['grade']}, top fixes, "
+        f"Call-prep brief for {agency_name}: grade "
+        f"{qualified_grade(overall['grade'], grade_qualifier(artifact))}, top fixes, "
         f"{scope_detail}, and key feed facts on one page."
     )
     title = f"{agency_name} call-prep brief — GTFS Scorecard"
@@ -4685,7 +4716,7 @@ def _render_board_page(
     <header class="brief-head">
       <p class="brief-kicker">Board packet &middot; transit data quality &middot; checked {esc(str(artifact.get("snapshot_date", "")))}</p>
       <h1 class="brief-title">{esc(agency_name)}</h1>
-      <p class="brief-grade">Grade {esc(str(overall["grade"]))} &middot; {esc(str(overall["score"]))} / 100</p>
+      <p class="brief-grade">Grade {esc(str(overall["grade"]))} &middot; {esc(str(overall["score"]))} / 100{_brief_partial_html(artifact)}</p>
       <p class="brief-trend">{_brief_trend_line(history)}</p>{_mirror_caveat_html(artifact, "brief-trend")}
     </header>
     <section aria-labelledby="board-what-h">
@@ -4712,7 +4743,8 @@ def _render_board_page(
       validator {esc(str(artifact.get("validator_version", "—")))}.</p>
     </div>"""
     desc = (
-        f"Board-packet one-pager for {agency_name}: grade {overall['grade']}, progress "
+        f"Board-packet one-pager for {agency_name}: grade "
+        f"{qualified_grade(overall['grade'], grade_qualifier(artifact))}, progress "
         "this period, and the next asks, on one printable page."
     )
     title = f"{agency_name} board one-pager — GTFS Scorecard"
@@ -5836,7 +5868,8 @@ def _index_card(aid: str, a: dict[str, Any], note: str = "", *, fixlog: bool = F
         f'<li class="agency-card"><span class="grade-chip {_grade_class(last["grade"])}">'
         f'{esc(last["grade"])}<span class="visually-hidden"> grade</span></span>'
         f'<div><h3><a href="/agency/{esc(aid)}/"><bdi>{esc(a["name"])}</bdi></a></h3>'
-        f'<p class="meta">Overall {last["score"]} out of 100 · '
+        f'<p class="meta">Overall {last["score"]} out of 100'
+        f"{_partial_suffix(last.get('grade_qualifier'))} · "
         f"checked {esc(last['date'])}</p>{extra}{op}{log}</div></li>"
     )
 
@@ -6599,7 +6632,7 @@ def _full_member_rows(members: list[dict[str, Any]]) -> str:
             f'<li class="program-row"><span class="grade-chip {_grade_class(m["grade"])}">'
             f'{esc(m["grade"])}<span class="visually-hidden"> grade</span></span>'
             f'<div><h3><a href="/agency/{esc(m["id"])}/">{esc(m["name"])}</a>{attn}</h3>'
-            f'<p class="meta">{m["score"]} out of 100 · checked {esc(m["snapshot_date"])}'
+            f'<p class="meta">{m["score"]} out of 100{_partial_suffix(m.get("grade_qualifier"))} · checked {esc(m["snapshot_date"])}'
             f"{handoff_link}</p>"
             "</div></li>"
         )
@@ -6958,7 +6991,7 @@ def _rollup_member_row(m: dict[str, Any], note: str, compact: bool = False) -> s
         f'{esc(m["grade"])}<span class="visually-hidden"> grade</span></span>'
         f'<div><h3><a href="/agency/{esc(m["id"])}/">{esc(m["name"])}</a> '
         f'<span class="pill-warn">{esc(note)}</span></h3>'
-        f'<p class="meta">{m["score"]} out of 100 · checked {esc(m["snapshot_date"])}'
+        f'<p class="meta">{m["score"]} out of 100{_partial_suffix(m.get("grade_qualifier"))} · checked {esc(m["snapshot_date"])}'
         f"{handoff_link}</p>"
         "</div></li>"
     )
@@ -9149,6 +9182,8 @@ def _map_feature(
         return None
     overall = artifact.get("overall", {})
     grade = str(overall.get("grade", "?"))
+    qualifier = grade_qualifier(artifact)
+    partial = {"grade_qualifier": qualifier} if qualifier else {}
     name = str(artifact.get("agency", {}).get("name", agency_id))
     # Flexible (demand-responsive) service, as detected by flex.py and recorded
     # under categories.completeness.details.flex in the artifact.
@@ -9168,6 +9203,9 @@ def _map_feature(
             "subdivision_code": subdivision_code or "",
             "subdivision_name": subdivision_name or state or "",
             "has_flex": has_flex,
+            # Only on a partial grade, so the national feature file does not
+            # grow a null on every point.
+            **partial,
             # The grade letter is drawn as the marker's label so grade is never
             # carried by color alone (WCAG 1.4.1); color only reinforces it.
             "color": _MAP_GRADE_COLOR.get(grade, "#5a5a5a"),
@@ -9215,7 +9253,8 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
             {
                 "id": str(p.get("id", "")),
                 "name": str(p.get("name", "")),
-                "grade": str(p.get("grade", "?")),
+                "grade": qualified_grade(p.get("grade", "?"), p.get("grade_qualifier")),
+                "letter": str(p.get("grade", "?")),
                 "state": str(p.get("state", "") or ""),
                 "country": str(p.get("country", "") or ""),
                 "subdivision_code": str(p.get("subdivision_code", "") or ""),
@@ -9234,7 +9273,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
     # Do not duplicate that identifier in a data attribute: at full coverage,
     # repeated row metadata has a measurable first-paint cost.
     table_rows = "".join(
-        f'<tr data-grade="{esc(r["grade"])}" '
+        f'<tr data-grade="{esc(r["letter"])}" '
         f'data-state="{esc(r["state"])}" '
         f'data-country="{esc(r["country"])}" '
         f'data-subdivision="{esc(r["subdivision_code"])}" '
@@ -13417,6 +13456,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             "id": agency_id,
             "name": artifact["agency"]["name"],
             "grade": overall["grade"],
+            "grade_qualifier": grade_qualifier(artifact),
             "score": overall["score"],
             "correctness": (categories.get("correctness") or {}).get("score"),
             "freshness": (categories.get("freshness") or {}).get("score"),

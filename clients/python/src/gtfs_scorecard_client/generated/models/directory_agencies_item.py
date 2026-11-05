@@ -9,6 +9,15 @@ from typing_extensions import Self
 
 from ..models.directory_agencies_item_google_gate import DirectoryAgenciesItemGoogleGate
 from ..models.directory_agencies_item_grade import DirectoryAgenciesItemGrade
+from ..models.directory_agencies_item_grade_qualifier_type_1 import (
+    DirectoryAgenciesItemGradeQualifierType1,
+)
+from ..models.directory_agencies_item_grade_qualifier_type_2_type_1 import (
+    DirectoryAgenciesItemGradeQualifierType2Type1,
+)
+from ..models.directory_agencies_item_grade_qualifier_type_3_type_1 import (
+    DirectoryAgenciesItemGradeQualifierType3Type1,
+)
 from ..models.directory_agencies_item_ntd_ready_type_1 import (
     DirectoryAgenciesItemNtdReadyType1,
 )
@@ -37,6 +46,9 @@ class DirectoryAgenciesItem:
         state (str | Unset):
         subdivision_code (str | Unset):
         subdivision_name (str | Unset):
+        grade_qualifier (DirectoryAgenciesItemGradeQualifierType1 | DirectoryAgenciesItemGradeQualifierType2Type1 |
+            DirectoryAgenciesItemGradeQualifierType3Type1 | None | Unset): null for a full grade; "partial: freshness not
+            measured" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier.
         comparison_eligible (bool | Unset): Whether this row belongs to the comparison cohort documented in
             summary.comparison.
         correctness (float | None | Unset):
@@ -84,6 +96,13 @@ class DirectoryAgenciesItem:
     state: str | Unset = UNSET
     subdivision_code: str | Unset = UNSET
     subdivision_name: str | Unset = UNSET
+    grade_qualifier: (
+        DirectoryAgenciesItemGradeQualifierType1
+        | DirectoryAgenciesItemGradeQualifierType2Type1
+        | DirectoryAgenciesItemGradeQualifierType3Type1
+        | None
+        | Unset
+    ) = UNSET
     comparison_eligible: bool | Unset = UNSET
     correctness: float | None | Unset = UNSET
     freshness: float | None | Unset = UNSET
@@ -137,6 +156,22 @@ class DirectoryAgenciesItem:
         subdivision_code = self.subdivision_code
 
         subdivision_name = self.subdivision_name
+
+        grade_qualifier: None | str | Unset
+        if isinstance(self.grade_qualifier, Unset):
+            grade_qualifier = UNSET
+        elif (
+            isinstance(self.grade_qualifier, DirectoryAgenciesItemGradeQualifierType1)
+            or isinstance(
+                self.grade_qualifier, DirectoryAgenciesItemGradeQualifierType2Type1
+            )
+            or isinstance(
+                self.grade_qualifier, DirectoryAgenciesItemGradeQualifierType3Type1
+            )
+        ):
+            grade_qualifier = self.grade_qualifier.value
+        else:
+            grade_qualifier = self.grade_qualifier
 
         comparison_eligible = self.comparison_eligible
 
@@ -321,6 +356,8 @@ class DirectoryAgenciesItem:
             field_dict["subdivision_code"] = subdivision_code
         if subdivision_name is not UNSET:
             field_dict["subdivision_name"] = subdivision_name
+        if grade_qualifier is not UNSET:
+            field_dict["grade_qualifier"] = grade_qualifier
         if comparison_eligible is not UNSET:
             field_dict["comparison_eligible"] = comparison_eligible
         if correctness is not UNSET:
@@ -404,6 +441,58 @@ class DirectoryAgenciesItem:
         subdivision_code = _d.pop("subdivision_code", UNSET)
 
         subdivision_name = _d.pop("subdivision_name", UNSET)
+
+        def _parse_grade_qualifier(
+            data: object,
+        ) -> (
+            DirectoryAgenciesItemGradeQualifierType1
+            | DirectoryAgenciesItemGradeQualifierType2Type1
+            | DirectoryAgenciesItemGradeQualifierType3Type1
+            | None
+            | Unset
+        ):
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                grade_qualifier_type_1 = DirectoryAgenciesItemGradeQualifierType1(data)
+
+                return grade_qualifier_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                grade_qualifier_type_2_type_1 = (
+                    DirectoryAgenciesItemGradeQualifierType2Type1(data)
+                )
+
+                return grade_qualifier_type_2_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                grade_qualifier_type_3_type_1 = (
+                    DirectoryAgenciesItemGradeQualifierType3Type1(data)
+                )
+
+                return grade_qualifier_type_3_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(
+                DirectoryAgenciesItemGradeQualifierType1
+                | DirectoryAgenciesItemGradeQualifierType2Type1
+                | DirectoryAgenciesItemGradeQualifierType3Type1
+                | None
+                | Unset,
+                data,
+            )
+
+        grade_qualifier = _parse_grade_qualifier(_d.pop("grade_qualifier", UNSET))
 
         comparison_eligible = _d.pop("comparison_eligible", UNSET)
 
@@ -701,6 +790,7 @@ class DirectoryAgenciesItem:
             state=state,
             subdivision_code=subdivision_code,
             subdivision_name=subdivision_name,
+            grade_qualifier=grade_qualifier,
             comparison_eligible=comparison_eligible,
             correctness=correctness,
             freshness=freshness,

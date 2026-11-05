@@ -10,6 +10,7 @@ scorecard hasn't computed.
 from __future__ import annotations
 
 import datetime as dt
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -69,6 +70,45 @@ def published_overall(score: float) -> dict[str, Any]:
     }
 
 
+#: The words every surface prints beside a letter grade whose freshness was
+#: not measured (rubric 1.5). The letter is still the one the measured
+#: categories earn, but it describes less of the feed than a full grade does,
+#: so it is never shown bare: not on the agency page, the board one-pager, the
+#: paid report, the badges, or a row of the API, dataset, or CSV exports.
+PARTIAL_FRESHNESS_QUALIFIER = "partial: freshness not measured"
+
+
+def grade_qualifier(artifact: object) -> str | None:
+    """The qualifier a published grade must carry, or None for a full grade.
+
+    Read from the artifact itself, so a surface built from an older artifact
+    (one published before ``overall.grade_qualifier`` existed) still says so:
+    a freshness category that is present but not measured -- today only an
+    expired Mobility Database mirror copy held out of the grade
+    (hold_mirror_freshness) -- makes the grade partial. Unmeasured freshness
+    is never turned into a value here; the qualifier is the whole answer.
+    """
+    if not isinstance(artifact, Mapping):
+        return None
+    overall = artifact.get("overall")
+    if not isinstance(overall, Mapping) or not overall.get("grade"):
+        return None
+    stated = overall.get("grade_qualifier")
+    if isinstance(stated, str) and stated:
+        return stated
+    categories = artifact.get("categories")
+    fresh = categories.get("freshness") if isinstance(categories, Mapping) else None
+    if isinstance(fresh, Mapping) and fresh.get("status") not in (None, "measured"):
+        return PARTIAL_FRESHNESS_QUALIFIER
+    return None
+
+
+def qualified_grade(grade: object, qualifier: object) -> str:
+    """``"C"`` or ``"C (partial: freshness not measured)"``: the one display form."""
+    text = str(grade)
+    return f"{text} ({qualifier})" if isinstance(qualifier, str) and qualifier else text
+
+
 # A dated, plain-language log of methodology versions, newest first. Surfaced on
 # the public "how to read" page and in scoring.json so a reader can tell a score
 # change apart from a rule change and see exactly when each rubric version took
@@ -84,6 +124,23 @@ def published_overall(score: float) -> dict[str, Any]:
 # national effect ships with the change (canary.py, docs/rubric.md "Governed
 # upgrades").
 METHODOLOGY_CHANGELOG: list[dict[str, str]] = [
+    {
+        "rubric_version": "1.5",
+        "effective_date": "2026-11-05",
+        "summary": (
+            "When the feed URL on file cannot be downloaded and the Mobility "
+            "Database mirror copy scored instead has already ended, freshness is "
+            "no longer graded from that copy's dates. It is shown as not measured "
+            "and left out of the grade, the same way unmeasured realtime is, and "
+            "the failed download becomes the first fix. The letter grade is kept, "
+            'but it is marked "partial: freshness not measured" everywhere it '
+            "appears: agency pages, board reports, badges, and the API, dataset, "
+            "and CSV exports (overall.grade_qualifier and a grade_qualifier "
+            "column). Unmeasured freshness is never shown as 0 or as fresh. "
+            "Mirror copies that are still current, and every feed downloaded from "
+            "its own URL, are graded as before."
+        ),
+    },
     {
         "rubric_version": "1.4",
         "effective_date": "2026-10-01",
@@ -234,6 +291,11 @@ class Scorecard:
                     "weight": weight,
                     "summary": "Not scored yet. Nothing here counts against the grade.",
                 }
+        overall = published_overall(self.overall_score)
+        if "freshness" in self.held:
+            # Kept beside the letter, not folded into it, so overall.grade stays
+            # one of A-F for every consumer and the qualifier is never dropped.
+            overall["grade_qualifier"] = PARTIAL_FRESHNESS_QUALIFIER
         return {
             # score, grade, and the two margins all come out of published_overall,
             # so the letter is always the letter the printed score earns. The
@@ -241,7 +303,7 @@ class Scorecard:
             # so a near-boundary grade reads as "a B, 0.4 points from an A" rather
             # than a verdict; margin_to_next_band is null for an A, which has no
             # higher band.
-            "overall": published_overall(self.overall_score),
+            "overall": overall,
             "categories": cats,
             "top_fixes": [{**f.to_json(), "rank": i + 1} for i, f in enumerate(self.top_fixes)],
         }

@@ -51,7 +51,7 @@ from .fetch import FetchResult
 from .fixlog import diff_receipts, load_fixlog_candidates, merge_receipts, reconcile_receipts
 from .identity import resolve_published_agency_name
 from .metrics import expiry_status, resolve_service_horizon_status
-from .score import Scorecard
+from .score import Scorecard, grade_qualifier
 from .site_shell import CATEGORY_LABELS
 from .url_redaction import redact_url_text
 
@@ -491,10 +491,14 @@ def _write_badge(agency_dir: Path, artifact: dict[str, Any]) -> None:
     days = fresh_details.get("days_until_expiry")
     grade = str(overall["grade"])
     status = expiry_status(days)
-    svg = render_badge(grade, float(overall["score"]), expiry_status=status)
+    qualifier = grade_qualifier(artifact)
+    svg = render_badge(grade, float(overall["score"]), expiry_status=status, qualifier=qualifier)
     _write_atomic(agency_dir / "badge.svg", svg)
 
     message = f"{grade} {overall['score']}"
+    if qualifier:
+        # A partial grade is never shown bare, on a badge least of all.
+        message += f" · {qualifier}"
     if status in ("lapsed", "stale"):
         message += " · feed expired"
     elif status == "expiring_soon":
@@ -574,6 +578,10 @@ def _history_entry(artifact: dict[str, Any]) -> dict[str, Any]:
         "date": artifact["snapshot_date"],
         "score": derived["score"],
         "grade": derived["grade"],
+        # None for a full grade; "partial: freshness not measured" when the
+        # artifact's freshness was held out (rubric 1.5). Directory cards, the
+        # dataset, and the API rows all read it from here.
+        "grade_qualifier": grade_qualifier(artifact),
         "rubric_version": artifact.get("rubric_version"),
         "scoring_profile_id": profile.get("id"),
         "scoring_profile_rubric_version": profile.get("rubric_version"),

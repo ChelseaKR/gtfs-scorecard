@@ -33,6 +33,7 @@
     "date": {"type": "string", "format": "date", "description": "The snapshot date the run scored the feed under."},
     "score": {"type": "number", "minimum": 0, "maximum": 100},
     "grade": {"enum": ["A", "B", "C", "D", "F"]},
+    "grade_qualifier": {"type": ["string", "null"], "enum": ["partial: freshness not measured", null], "description": "null for a full grade; \"partial: freshness not measured\" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier."},
     "rubric_version": {"type": ["string", "null"]},
     "scoring_profile_id": {"type": ["string", "null"]},
     "scoring_profile_rubric_version": {"type": ["string", "null"]},

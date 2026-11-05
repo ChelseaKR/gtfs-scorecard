@@ -137,6 +137,21 @@ the declared public surface).
 
 ### Changed
 
+- **Rubric 1.5: a grade whose freshness was not measured is marked partial.**
+  When the feed URL on file fails and the Mobility Database mirror copy scored
+  instead has already ended, freshness is held out of the grade (see Fixed).
+  The letter is kept, but it is now marked "partial: freshness not measured"
+  everywhere it appears: the agency page, board one-pager, call brief, paid
+  board report and bundle, both badges, search snippets, directory and program
+  lists, the map table, citations, the MCP tools, and the API, dataset, CSV,
+  parquet, and history exports (`overall.grade_qualifier` and a
+  `grade_qualifier` column, `null` or empty for a full grade). Unmeasured
+  freshness is never shown as 0 or as fresh. `RUBRIC_VERSION` is `1.5`, the
+  artifact schema is `1.20`, flat exports are `1.7` (`1.8` with
+  `license_notice`), and history tables are `1.2`. The bump rebuilds every
+  unchanged feed's artifact once, and the national trend restarts at 1.5 for
+  any record that cannot be rescored.
+
 - **The Daily collect job lists the artifact archive once instead of five or
   six times.** Each recursive copy under `data/artifacts/` lists all of its
   roughly 332,000 keys (0.11 GB of S3 egress), whatever the filters. The
