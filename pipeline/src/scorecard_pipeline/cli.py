@@ -3556,6 +3556,27 @@ def _liveness_targets(
     return targets
 
 
+def _drop_robots_refused(
+    targets: list[tuple[str, str, LivenessRecord | None]],
+    results: dict[str, tuple[LivenessRecord, str]],
+    state: dict[str, LivenessRecord],
+    refused_label: str,
+) -> tuple[list[tuple[str, str, LivenessRecord | None]], list[str]]:
+    """Split out the feeds robots.txt kept the sweep from requesting.
+
+    Not requested, so not a check: no "checked for changes" time, no failure
+    streak, and no old record carried forward to claim one. The scoring run
+    records the refusal as "not fetched" with its reason, and that is what the
+    page says.
+    """
+    refused = [aid for aid, _url, _prev in targets if results[aid][1] == refused_label]
+    for agency_id in refused:
+        state.pop(agency_id, None)
+        print(f"robots_refused\t{agency_id}")
+    kept = [target for target in targets if target[0] not in set(refused)]
+    return kept, refused
+
+
 def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     from .config import repo_root
     from .liveness import (
@@ -3594,17 +3615,9 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         # ADR 0070: robots.txt first, the same rule the scoring fetch follows.
         allowed=lambda url: checker.check(url).allowed,
     )
-    refused: list[str] = []
+    targets, refused = _drop_robots_refused(targets, results, state, ROBOTS_REFUSED)
     for agency_id, _url, prev in targets:
         record, classification = results[agency_id]
-        if classification == ROBOTS_REFUSED:
-            # Not requested, so not a check: no "checked for changes" time, no
-            # failure streak, and no old record carried forward to claim one.
-            # The scoring run records the refusal as "not fetched" with its
-            # reason, and that is what the page says.
-            state.pop(agency_id, None)
-            refused.append(agency_id)
-            continue
         if recovered(prev, classification):
             recovered_ids.append(agency_id)
         state[agency_id] = record
@@ -3621,8 +3634,6 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         print(f"unreachable\t{agency_id}\tstatus={rec.status} fails={rec.consecutive_failures}")
     for agency_id in recovered_ids:
         print(f"recovered\t{agency_id}")
-    for agency_id in refused:
-        print(f"robots_refused\t{agency_id}")
 
     if args.changed_out:
         # One id per line for the refresh workflow to re-score; changed feeds
