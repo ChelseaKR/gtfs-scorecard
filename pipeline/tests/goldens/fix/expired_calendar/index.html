@@ -86,32 +86,75 @@ remaining service window is current is a quick look.</p>
   "use strict";
   var safeCode = /^[A-Za-z0-9_-]+$/;
   var safeAgency = /^[A-Za-z0-9_-]+$/;
-  var params = new URL(window.location.href).searchParams;
-  var requested = params.get("finding") || "";
+  // The finding rides in the fragment (#finding=<code>). Older links carry it
+  // in the query string instead, and they still work (ADR 0074).
+  function readParams() {
+    var query = new URL(window.location.href).searchParams;
+    var hash = new URLSearchParams((window.location.hash || "").replace(/^#/, ""));
+    var fromHash = hash.get("finding") || "";
+    return {
+      fromHash: Boolean(fromHash),
+      finding: fromHash || query.get("finding") || "",
+      agency: hash.get("agency") || query.get("agency") || "",
+      at: hash.get("at") || ""
+    };
+  }
+  var params = readParams();
+  var requested = params.finding;
   if (!safeCode.test(requested)) requested = "";
 
-  document.querySelectorAll("[data-finding-handoff]").forEach(function (handoff) {
-    var panels = Array.from(handoff.querySelectorAll("[data-finding-panel]"));
-    if (!panels.length) return;
-    var selected = panels.some(function (panel) {
-      return panel.getAttribute("data-finding-panel") === requested;
-    }) ? requested : panels[0].getAttribute("data-finding-panel");
-    panels.forEach(function (panel) {
-      panel.hidden = panel.getAttribute("data-finding-panel") !== selected;
+  function applySelection() {
+    document.querySelectorAll("[data-finding-handoff]").forEach(function (handoff) {
+      var panels = Array.from(handoff.querySelectorAll("[data-finding-panel]"));
+      if (!panels.length) return;
+      var selected = panels.some(function (panel) {
+        return panel.getAttribute("data-finding-panel") === requested;
+      }) ? requested : panels[0].getAttribute("data-finding-panel");
+      panels.forEach(function (panel) {
+        panel.hidden = panel.getAttribute("data-finding-panel") !== selected;
+      });
+      handoff.querySelectorAll("[data-finding-choice]").forEach(function (choice) {
+        if (choice.getAttribute("data-finding-choice") === selected) {
+          choice.setAttribute("aria-current", "true");
+        } else {
+          choice.removeAttribute("aria-current");
+        }
+      });
+      document.querySelectorAll("[data-finding-card]").forEach(function (card) {
+        card.classList.toggle(
+          "finding-selected",
+          card.getAttribute("data-finding-card") === selected
+        );
+      });
     });
-    handoff.querySelectorAll("[data-finding-choice]").forEach(function (choice) {
-      if (choice.getAttribute("data-finding-choice") === selected) {
-        choice.setAttribute("aria-current", "true");
-      } else {
-        choice.removeAttribute("aria-current");
-      }
+  }
+
+  function scrollToRequested() {
+    if (!params.fromHash) return;
+    var target = safeCode.test(params.at) ? params.at : "finding-handoff";
+    var el = document.getElementById(target);
+    if (el && el.scrollIntoView) el.scrollIntoView();
+  }
+
+  applySelection();
+  if (document.readyState === "loading") {
+    // Cards and the history section sit below this script: select and
+    // scroll again once they exist.
+    document.addEventListener("DOMContentLoaded", function () {
+      applySelection();
+      scrollToRequested();
     });
-    document.querySelectorAll("[data-finding-card]").forEach(function (card) {
-      card.classList.toggle(
-        "finding-selected",
-        card.getAttribute("data-finding-card") === selected
-      );
-    });
+  } else {
+    scrollToRequested();
+  }
+  window.addEventListener("hashchange", function () {
+    var next = readParams();
+    // A plain in-page anchor (#trend-h) keeps the current selection.
+    if (!next.fromHash) return;
+    params = next;
+    requested = safeCode.test(params.finding) ? params.finding : "";
+    applySelection();
+    scrollToRequested();
   });
 
   document.querySelectorAll("[data-handoff-copy]").forEach(function (button) {
@@ -134,20 +177,20 @@ remaining service window is current is a quick look.</p>
   });
 
   document.querySelectorAll("[data-fix-context]").forEach(function (context) {
-    var agency = params.get("agency") || "";
+    var agency = params.agency;
     var code = context.getAttribute("data-fix-context") || "";
     if (!safeAgency.test(agency) || !safeCode.test(code)) return;
     context.hidden = false;
     var agencyLabel = context.querySelector("[data-context-agency]");
     if (agencyLabel) agencyLabel.textContent = agency;
     var base = "/agency/" + encodeURIComponent(agency) + "/";
-    var finding = "?finding=" + encodeURIComponent(code);
+    var finding = "#finding=" + encodeURIComponent(code);
     context.querySelectorAll("[data-context-target]").forEach(function (link) {
       var target = link.getAttribute("data-context-target");
-      if (target === "scorecard") link.href = base + finding + "#finding-handoff";
-      if (target === "brief") link.href = base + "brief/" + finding + "#finding-handoff";
-      if (target === "board") link.href = base + "board/" + finding + "#finding-handoff";
-      if (target === "history") link.href = base + finding + "#trend-h";
+      if (target === "scorecard") link.href = base + finding;
+      if (target === "brief") link.href = base + "brief/" + finding;
+      if (target === "board") link.href = base + "board/" + finding;
+      if (target === "history") link.href = base + finding + "&at=trend-h";
     });
   });
 }());

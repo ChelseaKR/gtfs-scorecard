@@ -44,7 +44,8 @@ def _query_finding_hrefs(html: str) -> list[str]:
 
 def _artifact(agency_id: str) -> dict[str, Any]:
     path = _FIXTURE / "data" / "artifacts" / agency_id / "latest.json"
-    return json.loads(path.read_text())
+    artifact: dict[str, Any] = json.loads(path.read_text())
+    return artifact
 
 
 def _member(agency_id: str, grade: str = "B") -> dict[str, Any]:
@@ -116,9 +117,7 @@ def test_no_rendered_surface_links_a_query_finding(agency_id: str) -> None:
     code = _artifact(agency_id)["top_fixes"][0]["code"]
     for name, html in surfaces.items():
         assert _query_finding_hrefs(html) == [], name
-        assert "?finding=" not in html.replace(
-            'query.get("finding")', ""
-        ), f"{name} still prints a query-form finding URL"
+        assert "?finding=" not in html, f"{name} still prints a query-form finding URL"
     for name in ("agency", "brief", "board"):
         html = surfaces[name]
         assert f'href="/agency/{agency_id}/brief/#finding={code}"' in html, name
@@ -166,7 +165,7 @@ def test_published_goldens_carry_no_query_finding_links() -> None:
     }
     assert offenders == {}
     # Not vacuous: the goldens do carry finding links, in the fragment form.
-    assert any('#finding=' in page.read_text() for page in pages)
+    assert any("#finding=" in page.read_text() for page in pages)
 
 
 def test_page_script_reads_the_fragment_and_still_accepts_old_query_links() -> None:

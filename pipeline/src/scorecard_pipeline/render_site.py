@@ -263,8 +263,8 @@ _FINDING_CONTEXT_SCRIPT = """<script>
   "use strict";
   var safeCode = /^[A-Za-z0-9_-]+$/;
   var safeAgency = /^[A-Za-z0-9_-]+$/;
-  // The finding rides in the fragment (#finding=<code>); old links carry it in
-  // the query string (?finding=<code>) and still work (ADR 0074).
+  // The finding rides in the fragment (#finding=<code>). Older links carry it
+  // in the query string instead, and they still work (ADR 0074).
   function readParams() {
     var query = new URL(window.location.href).searchParams;
     var hash = new URLSearchParams((window.location.hash || "").replace(/^#/, ""));
