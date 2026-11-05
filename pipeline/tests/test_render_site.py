@@ -2040,7 +2040,7 @@ def test_selected_finding_survives_agency_brief_board_and_fix_guide(
     finally:
         render_site.FIX_CODES_WITH_PAGES.discard(code)
 
-    expected = f"?finding={code}#finding-handoff"
+    expected = f"#finding={code}"
     for html in (agency_html, brief_html, board_html):
         assert 'id="finding-handoff"' in html
         assert f'data-finding-panel="{code}"' in html
@@ -7042,6 +7042,7 @@ def test_large_rollup_lists_each_agency_once_under_grade_headings() -> None:
     # One link per agency, no handoff links, no per-row heading or hidden chip.
     assert len(re.findall(r'href="/agency/agency\d+/"', html)) == count
     assert "?finding=" not in html
+    assert "#finding=" not in html
     assert "Open next finding" not in html
     assert "program-row" not in html
     assert "checked 2026-06-12" not in html
@@ -7060,7 +7061,8 @@ def test_small_rollup_keeps_the_full_rows_and_handoff_links() -> None:
 
     assert html.count('class="program-row"') == 12
     assert "Open next finding" in html
-    assert "?finding=stop_times_future_date#finding-handoff" in html
+    assert 'href="/agency/agency0/#finding=stop_times_future_date"' in html
+    assert "?finding=" not in html
     assert "members-grade-" not in html
 
 
@@ -7089,5 +7091,5 @@ def test_compact_rollup_negative_control_threshold_sabotage_is_detected(
     monkeypatch.setattr(render_site, "COMPACT_ROLLUP_MIN_MEMBERS", 10**6)
     assert render_site._is_large_rollup(rollup) is False  # the sabotage applied
     html = render_site._render_rollup(rollup)
-    assert "?finding=" in html
+    assert "#finding=" in html
     assert "program-row" in html
