@@ -482,6 +482,30 @@ jobs:
             lhci-*.log
           if-no-files-found: warn
           retention-days: 14
+      # IndexNow (ADR 0073): pick the sitemap URLs that are new or whose
+      # lastmod moved, comparing this build's sitemap.xml with the live one,
+      # which is still the previous deploy here. A lastmod is a date the
+      # page's content changed, never the build clock (ADR 0067), so a build
+      # with no content change selects nothing. Runs after every gate above,
+      # so only a site that passed them is compared. Selection only: nothing
+      # is sent here. indexnow.py exits 0 on any problem and prints a notice,
+      # so it never blocks the deploy. The key file comes from web/ and is
+      # public by design.
+      - name: Pick the pages to announce to IndexNow
+        working-directory: pipeline
+        run: >-
+          uv run python -m scorecard_pipeline.indexnow select
+          --site-dir ../_site
+          --base-url https://gtfsscorecard.org
+          --kind sitemap --file sitemap.xml --missing-is-empty
+          --out "$RUNNER_TEMP/indexnow-urls.json"
+      - name: Keep the IndexNow list for the job after the deploy
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: indexnow-urls
+          path: ${{ runner.temp }}/indexnow-urls.json
+          retention-days: 1
+          if-no-files-found: warn
       # RELIABILITY: this upload is the last thing between a finished render and
       # a published site, and it fails on the platform rather than on anything
       # in this repository. Run 34245244731 (2026-09-08, an Intraday refresh
@@ -714,3 +738,31 @@ jobs:
             cat "$smoke_dir/deployment.headers" 2>/dev/null || echo "(nothing readable)"
           } >&2
           exit 1
+
+  # Tell IndexNow which pages are new or changed, only after the deploy and
+  # the production smoke check succeeded (either failing skips this job).
+  # Never fails the run: indexnow.py exits 0 on any problem and prints a
+  # notice, and the sitemap still gets the pages crawled. No AWS role, no
+  # secret, read-only. https://www.indexnow.org/documentation
+  indexnow:
+    needs: production-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: pipeline/src/scorecard_pipeline/indexnow.py
+          sparse-checkout-cone-mode: false
+      - name: Fetch the list the build selected
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: indexnow-urls
+          path: ${{ runner.temp }}/indexnow
+      - name: Announce the new and changed pages to IndexNow
+        shell: bash
+        run: >-
+          python3 pipeline/src/scorecard_pipeline/indexnow.py submit
+          --list "$RUNNER_TEMP/indexnow/indexnow-urls.json"

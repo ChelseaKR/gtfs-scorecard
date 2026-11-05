@@ -29,6 +29,12 @@ the declared public surface).
 
 ### Added
 
+- **New and changed pages are announced to IndexNow after each deploy**
+  ([ADR 0073](docs/decisions/0073-indexnow-after-deploy.md)). The Deploy site
+  workflow compares the new sitemap with the live one and sends only the URLs
+  that are new or whose `lastmod` moved, after the production smoke check
+  passes. A deploy with no content change sends nothing. The IndexNow key file
+  at the site root is public by design.
 - **Sitemap `lastmod` for clearance logs, directory pages and NTD pages.** The
   1,183 sitemap URLs that carried none now get one derived from the data the page
   shows: a clearance log takes its newest `cleared` date, an `/agencies/` page the
