@@ -29,6 +29,7 @@ from typing import Any
 from xml.sax.saxutils import escape
 
 from .badge import _FALLBACK_COLOR, _GRADE_COLOR
+from .sweep import last_fetched_date
 
 #: A record last checked more than this many days before the render shows no
 #: score. The pipeline checks every published feed daily, so two weeks without
@@ -70,7 +71,11 @@ def badge_state(agency_name: str, artifact: dict[str, Any] | None, today: dt.dat
     say when the feed was last read.
     """
     record = artifact if isinstance(artifact, dict) else {}
-    checked_raw = record.get("snapshot_date")
+    # The day the feed was last downloaded, not the record's date: a freshness
+    # sweep re-dates the record daily without downloading anything, so keying
+    # the two-week guard on snapshot_date meant it could never fire for a
+    # feed the sweep kept reaching (sweep.last_fetched_date).
+    checked_raw = last_fetched_date(record)
     checked = checked_raw if isinstance(checked_raw, str) and _DATE.match(checked_raw) else None
     overall = record.get("overall")
     grade = overall.get("grade") if isinstance(overall, dict) else None

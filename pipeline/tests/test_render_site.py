@@ -5439,6 +5439,32 @@ def test_board_hero_names_source_provenance_without_assuming_agency_ownership(
     assert "agency's own" not in html
 
 
+def test_board_hero_says_checked_on_the_last_download_not_the_sweep_date() -> None:
+    """2026-11-05: ABQ RIDE's page said "checked 2026-11-05" over a 2026-10-19 download.
+
+    The freshness sweep sets snapshot_date to the day it recomputed expiry; it
+    downloads nothing, so "checked" must name recompute.feed_fetched_date.
+    """
+    swept = {
+        "overall": {"grade": "B", "score": 85},
+        "snapshot_date": "2026-11-05",
+        "recompute": {
+            "kind": "freshness",
+            "as_of": "2026-11-05",
+            "feed_fetched_date": "2026-10-19",
+        },
+        "categories": {},
+        "feed": {},
+    }
+    html = _board_hero("Demo Transit", "demo", swept, [])
+    assert "checked 2026-10-19" in html
+    assert "checked 2026-11-05" not in html
+    # Control: a full score is checked on its own date.
+    full = {**swept, "snapshot_date": "2026-10-19"}
+    del full["recompute"]
+    assert "checked 2026-10-19" in _board_hero("Demo Transit", "demo", full, [])
+
+
 def test_confidence_section_empty_for_pre_1_5_artifacts() -> None:
     # Artifacts published before schema 1.5 carry no confidence block; the page
     # must render exactly as it did before the feature.

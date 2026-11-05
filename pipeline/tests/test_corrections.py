@@ -231,11 +231,30 @@ def test_the_withdrawal_still_lifts_when_the_same_bytes_are_finally_read(
     assert withdrawn_now(parse_corrections(ONE_ENTRY).withdrawn, tmp_path) == ()
 
 
-def test_a_different_feed_still_supersedes_the_withdrawal(tmp_path: Path) -> None:
-    """Different bytes are a different feed, whatever they score."""
+def test_a_different_feed_with_service_in_it_supersedes_the_withdrawal() -> None:
+    """Different bytes that were read are a different feed, whatever they score."""
     entry = parse_corrections(ONE_ENTRY).withdrawn["santa-clarita-transit"]
-    other_bytes = _artifact(date="2026-09-10", sha="a" * 64)
+    other_bytes = _artifact(date="2026-09-10", sha="a" * 64, stops=12, trips=40, grade="D")
     assert corrections.suppresses_current(entry, other_bytes) is False
+
+
+def test_different_bytes_that_are_just_as_empty_stay_withdrawn(tmp_path: Path) -> None:
+    """Boxcar, measured on the served store on 2026-11-05.
+
+    The entry withdraws the 2026-08-07 C. A 2026-09-02 download with a new hash
+    and still 0 stops and 0 trips was published as B 83.9 and re-stamped by the
+    sweep, because the old rule read any new hash as a new measurement.
+    """
+    entry = parse_corrections(ONE_ENTRY).withdrawn["santa-clarita-transit"]
+    empty_again = _artifact(date="2026-09-13", sha="b" * 64, grade="B")
+    assert corrections.suppresses_current(entry, empty_again) is True
+    agency_dir = tmp_path / "santa-clarita-transit"
+    agency_dir.mkdir()
+    (agency_dir / "2026-07-16.json").write_text(json.dumps(_artifact()))
+    (agency_dir / "latest.json").write_text(json.dumps(empty_again))
+    assert withdrawn_now(parse_corrections(ONE_ENTRY).withdrawn, tmp_path) == (
+        "santa-clarita-transit",
+    )
 
 
 def test_reconcile_removes_a_withdrawn_agency_current_pointers(tmp_path: Path) -> None:
@@ -333,9 +352,13 @@ def test_a_withdrawal_that_does_not_reach_what_is_published_is_a_problem(
 
     problems = correction_problems(parse_corrections(ONE_ENTRY), tmp_path)
 
+    # A letter over an empty archive under a withdrawn id is the withdrawn
+    # grade with a fresher stamp, whatever its hash (suppresses_current), so
+    # the gate names it as still published.
     assert len(problems) == 1
-    assert "does not reach what is published" in problems[0]
+    assert "still publishes a grade" in problems[0]
     assert "santa-clarita-transit" in problems[0]
+    assert "(F, 2026-08-10; the entry names F, 2026-07-16)" in problems[0]
 
 
 def test_a_withdrawal_whose_record_is_gone_is_not_a_problem(tmp_path: Path) -> None:
@@ -508,7 +531,7 @@ def test_the_sacrt_entry_names_the_published_mirror_record(tmp_path: Path) -> No
     (agency_dir / "2026-10-02.json").write_text(json.dumps(SACRT_PUBLISHED_2026_10_02))
     (agency_dir / "latest.json").write_text(json.dumps(SACRT_PUBLISHED_2026_10_02))
     assert withdrawn_now(record.withdrawn, tmp_path) == ("sacramento-regional-transit-sacrt",)
-    assert any("still publishes the grade" in p for p in correction_problems(record, tmp_path))
+    assert any("still publishes a grade" in p for p in correction_problems(record, tmp_path))
 
     own_feed = {
         **SACRT_PUBLISHED_2026_10_02,
@@ -569,3 +592,99 @@ def test_the_corrections_page_renders_with_nothing_withdrawn() -> None:
 
     html = _render_corrections([])
     assert "No published grade has been withdrawn" in html
+
+
+# --- the gate, asked of the store about to be served --------------------------
+
+
+def _served_tree(root: Path, artifacts: dict[str, dict[str, Any]]) -> Path:
+    tree = root / "data" / "artifacts"
+    for agency_id, artifact in artifacts.items():
+        (tree / agency_id).mkdir(parents=True, exist_ok=True)
+        (tree / agency_id / "latest.json").write_text(json.dumps(artifact))
+    return tree
+
+
+def _gate(root: Path, *extra: str) -> int:
+    from scorecard_pipeline import cli
+
+    (root / "agencies.yaml").write_text(
+        "agencies:\n  - id: healthy\n    name: Healthy\n"
+        "    static_gtfs_url: https://feeds.example.org/healthy.zip\n"
+    )
+    return cli.main(["corrections-check", *extra])
+
+
+def test_the_publish_gate_fails_on_a_served_withdrawn_grade_with_a_new_hash(
+    isolated_repo_root: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Boxcar on 2026-11-05: withdrawn, yet served as B 83.9 from different empty bytes.
+
+    The pytest ratchet only ever read the git checkout, which stopped tracking
+    the served store on 2026-09-12, so nothing in a publish job could see it.
+    """
+    isolated_repo_root.mkdir(parents=True)
+    (isolated_repo_root / "corrections.yaml").write_text(ONE_ENTRY)
+    _served_tree(
+        isolated_repo_root,
+        {
+            "santa-clarita-transit": _artifact(date="2026-09-13", sha="b" * 64, grade="B"),
+            "healthy": _artifact("healthy", stops=40, trips=90, grade="A"),
+        },
+    )
+    assert _gate(isolated_repo_root) == 1
+    out = capsys.readouterr().out
+    assert "::error title=corrections::santa-clarita-transit still publishes a grade" in out
+
+
+def test_the_publish_gate_fails_on_an_uncorrected_empty_grade(
+    isolated_repo_root: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    isolated_repo_root.mkdir(parents=True)
+    (isolated_repo_root / "corrections.yaml").write_text(ONE_ENTRY)
+    tree = _served_tree(
+        isolated_repo_root,
+        {"fr-pan-14652": _artifact("fr-pan-14652", date="2026-09-13", grade="D")},
+    )
+    (tree / "santa-clarita-transit").mkdir()
+    assert _gate(isolated_repo_root) == 1
+    assert "fr-pan-14652" in capsys.readouterr().out
+
+
+def test_control_the_publish_gate_passes_a_clean_served_store(isolated_repo_root: Path) -> None:
+    isolated_repo_root.mkdir(parents=True)
+    (isolated_repo_root / "corrections.yaml").write_text(ONE_ENTRY)
+    tree = _served_tree(
+        isolated_repo_root,
+        {
+            "santa-clarita-transit": _artifact(date="2026-09-10", stops=364, trips=898, grade="C"),
+            "healthy": _artifact("healthy", stops=40, trips=90, grade="A"),
+        },
+    )
+    assert _gate(isolated_repo_root, "--root", str(tree), "--min-current", "2") == 0
+
+
+def test_the_publish_gate_refuses_to_pass_over_an_unhydrated_tree(
+    isolated_repo_root: Path,
+) -> None:
+    """A gate that reads nothing passes everything. The floor makes that a failure."""
+    isolated_repo_root.mkdir(parents=True)
+    (isolated_repo_root / "corrections.yaml").write_text(ONE_ENTRY)
+    _served_tree(isolated_repo_root, {"healthy": _artifact("healthy", stops=40, trips=90)})
+    assert _gate(isolated_repo_root, "--min-current", "1000") == 1
+    assert _gate(isolated_repo_root, "--min-current", "1") == 1  # entry dir missing
+
+
+def test_both_publish_workflows_run_the_gate_after_reindex_and_before_any_write() -> None:
+    import yaml
+
+    for name, job in (("scorecard.yml", "collect"), ("refresh.yml", "refresh")):
+        steps = yaml.safe_load((REPO_ROOT / ".github" / "workflows" / name).read_text())["jobs"][
+            job
+        ]["steps"]
+        names = [str(step.get("name", "")) for step in steps]
+        gate = names.index("Check corrections against the store about to be served")
+        assert names.index("Rebuild index and rollups") < gate, name
+        first_write = min(i for i, n in enumerate(names) if n.startswith("Publish"))
+        assert gate < first_write, name
+        assert "--min-current 1000" in steps[gate]["run"]

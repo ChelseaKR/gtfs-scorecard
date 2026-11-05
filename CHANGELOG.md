@@ -263,6 +263,25 @@ the declared public surface).
 
 ### Fixed
 
+- **Grades over empty archives are withdrawn, and the corrections gate now reads
+  the served store.** Three served scorecards graded archives with 0 stops and 0
+  trips: `boxcar` (B 83.9), `fr-pan-14652` (D 69.3) and `mdv-mitteldeutscher`
+  (F 31.3). Boxcar's withdrawal named an older hash, and any new hash counted as
+  a new measurement; now a letter over an empty archive never lifts a withdrawal.
+  The other two get `corrections.yaml` entries. `scorecard corrections-check`
+  runs in both publish jobs after hydration and reindex and before any S3 write,
+  so a served copy that contradicts the file stops the publish. The pytest
+  ratchet only ever read the git checkout, frozen since 2026-09-12.
+- **"Checked" names the last download, not the sweep's date.** The freshness
+  sweep re-dates a record every day without downloading anything. Agency pages,
+  briefs, board packets, citations, search snippets and the not-fetched note now
+  print `recompute.feed_fetched_date`, and the embeddable badge's 14-day guard
+  keys on it. Before: ABQ RIDE said "checked 2026-11-05" over a 2026-10-19
+  download.
+- **The daily liveness sweep reads robots.txt first** (ADR 0070 section 2). A
+  refused feed URL gets no request, no "checked for changes" time and no failure
+  streak; the scoring run still records it as not fetched, with its reason.
+
 - **`/ntd/` no longer reports a limit of the catalogs read as a count.** The
   reporter join matched 1,253 Report Year 2024 reporters against three catalogs
   and printed "473 to 641 have no feed discoverable in any open catalog", without

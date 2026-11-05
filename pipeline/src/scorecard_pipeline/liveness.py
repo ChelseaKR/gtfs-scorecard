@@ -42,6 +42,9 @@ USER_AGENT = ROBOTS_USER_AGENT
 UNCHANGED = "unchanged"
 CHANGED = "changed"
 UNREACHABLE = "unreachable"
+#: Not requested at all: the host's robots.txt refuses the feed URL, or could
+#: not be read (ADR 0070). Our own choice, so never an outage and never a check.
+ROBOTS_REFUSED = "robots_refused"
 
 
 @dataclass
@@ -216,6 +219,7 @@ def check_feeds(
     *,
     workers: int = 1,
     timeout: float = 30.0,
+    allowed: Callable[[str], bool] | None = None,
 ) -> dict[str, tuple[LivenessRecord, str]]:
     """Check many feeds, side by side across hosts and one at a time within one.
 
@@ -230,6 +234,13 @@ def check_feeds(
     The longest groups start first, since the largest host (505 feeds on
     2026-09-18) is the floor under the whole sweep's duration. ``workers=1``
     is a plain serial sweep.
+
+    ``allowed`` is the robots.txt gate (ADR 0070 section 2: robots.txt is read
+    before any feed request). A URL it refuses is not requested at all and
+    comes back as ``ROBOTS_REFUSED`` with an empty record, which the caller
+    must not store as a check. It runs inside the host's lane, so a host's
+    rules file is read by the same single worker that would have requested
+    its feeds, and never alongside them.
     """
     if workers < 1:
         raise ValueError(f"workers must be at least 1, got {workers}")
@@ -243,7 +254,13 @@ def check_feeds(
     ) -> list[tuple[str, tuple[LivenessRecord, str]]]:
         # Looked up at call time, so a test that replaces the module's
         # check_feed replaces it here too.
-        return [(aid, check_feed(url, prev, timeout=timeout)) for aid, url, prev in lane]
+        out: list[tuple[str, tuple[LivenessRecord, str]]] = []
+        for aid, url, prev in lane:
+            if allowed is not None and not allowed(url):
+                out.append((aid, (LivenessRecord(url=url), ROBOTS_REFUSED)))
+                continue
+            out.append((aid, check_feed(url, prev, timeout=timeout)))
+        return out
 
     results: dict[str, tuple[LivenessRecord, str]] = {}
     with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="liveness") as pool:

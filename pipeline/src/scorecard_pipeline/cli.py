@@ -3560,12 +3560,14 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
     from .config import repo_root
     from .liveness import (
         CHANGED,
+        ROBOTS_REFUSED,
         UNREACHABLE,
         check_feeds,
         load_state,
         recovered,
         save_state,
     )
+    from .robots_policy import shared_checker
 
     state_path = repo_root() / "data" / "liveness.json"
     state = load_state(state_path)
@@ -3584,9 +3586,25 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         only = {line.strip() for line in Path(args.only).read_text().splitlines() if line.strip()}
 
     targets = _liveness_targets(state, only, tally)
-    results = check_feeds(targets, workers=args.workers, timeout=args.timeout)
+    checker = shared_checker()
+    results = check_feeds(
+        targets,
+        workers=args.workers,
+        timeout=args.timeout,
+        # ADR 0070: robots.txt first, the same rule the scoring fetch follows.
+        allowed=lambda url: checker.check(url).allowed,
+    )
+    refused: list[str] = []
     for agency_id, _url, prev in targets:
         record, classification = results[agency_id]
+        if classification == ROBOTS_REFUSED:
+            # Not requested, so not a check: no "checked for changes" time, no
+            # failure streak, and no old record carried forward to claim one.
+            # The scoring run records the refusal as "not fetched" with its
+            # reason, and that is what the page says.
+            state.pop(agency_id, None)
+            refused.append(agency_id)
+            continue
         if recovered(prev, classification):
             recovered_ids.append(agency_id)
         state[agency_id] = record
@@ -3603,6 +3621,8 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         print(f"unreachable\t{agency_id}\tstatus={rec.status} fails={rec.consecutive_failures}")
     for agency_id in recovered_ids:
         print(f"recovered\t{agency_id}")
+    for agency_id in refused:
+        print(f"robots_refused\t{agency_id}")
 
     if args.changed_out:
         # One id per line for the refresh workflow to re-score; changed feeds
@@ -3616,12 +3636,13 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         log.info("Wrote liveness state for %d feeds.", len(state))
     log.info(
         "Liveness: %d changed, %d unreachable, %d recovered, %d unchanged, "
-        "%d credentialed not checked.%s",
+        "%d credentialed not checked, %d not requested (robots.txt).%s",
         len(changed),
         len(unreachable),
         len(recovered_ids),
         tally.get("unchanged", 0),
         tally.get("credentialed_skipped", 0),
+        len(refused),
         "" if args.apply else " Report only; re-run with --apply to persist state.",
     )
     return 0
@@ -4143,6 +4164,46 @@ def _cmd_campaign(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
     else:
         print(output, end="")
     return 0
+
+
+def _cmd_corrections_check(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Refuse to publish while the store about to be served contradicts corrections.yaml.
+
+    The same three checks the corrections ratchet runs in pytest, asked of the
+    tree a publish job is about to upload: hydrated from the served object
+    store and rebuilt by reindex, rather than the git checkout of
+    data/artifacts, which stopped tracking what is served on 2026-09-12. Run in
+    the checkout only, those checks passed while ``boxcar``, ``fr-pan-14652``
+    and ``mdv-mitteldeutscher`` were served with letters over archives holding
+    0 stops and 0 trips.
+    """
+    from .config import artifacts_dir, repo_root
+    from .corrections import CorrectionsError, correction_problems, read_corrections
+
+    root = Path(args.root) if args.root else artifacts_dir()
+    try:
+        record = read_corrections(repo_root())
+    except CorrectionsError as exc:
+        log.error("%s", exc)
+        return 1
+    current = sum(1 for _ in root.glob("*/latest.json")) if root.is_dir() else 0
+    if current < args.min_current:
+        # A check over an empty or half-hydrated tree passes by reading nothing.
+        log.error(
+            "corrections check read %d current scorecard(s) under %s, fewer than the "
+            "%d it needs to mean anything; was the store hydrated?",
+            current,
+            root,
+            args.min_current,
+        )
+        return 1
+    problems = correction_problems(record, root)
+    for problem in problems:
+        print(f"::error title=corrections::{problem}")
+    log.info(
+        "corrections check: %d current scorecard(s) read, %d problem(s)", current, len(problems)
+    )
+    return 1 if problems else 0
 
 
 def _cmd_reindex(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
@@ -5155,6 +5216,19 @@ def main(argv: list[str] | None = None) -> int:
     )
     campaign.add_argument("--out", help="write the campaign here instead of stdout")
     sub.add_parser("reindex", help="rebuild index.json from artifacts on disk")
+    corrections_check = sub.add_parser(
+        "corrections-check",
+        help="fail when the artifacts about to be published contradict corrections.yaml",
+    )
+    corrections_check.add_argument(
+        "--root", help="artifact tree to check (default: the configured artifacts dir)"
+    )
+    corrections_check.add_argument(
+        "--min-current",
+        type=int,
+        default=1,
+        help="fail unless at least this many latest.json files were read (default: 1)",
+    )
     backfill = sub.add_parser(
         "backfill-index-history",
         help="restore index.json rows from a local mirror of the stored dated records",
@@ -5583,6 +5657,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "rollups": _cmd_rollups,
         "campaign": _cmd_campaign,
         "reindex": _cmd_reindex,
+        "corrections-check": _cmd_corrections_check,
         "backfill-index-history": _cmd_backfill_index_history,
         "rescore-history": _cmd_rescore_history,
         "render-site": _cmd_render_site,

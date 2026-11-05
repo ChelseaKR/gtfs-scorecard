@@ -321,6 +321,17 @@ jobs:
           uv run scorecard rollups
           uv run scorecard render-site
 
+      # The corrections gate, asked of the tree this job is about to upload:
+      # hydrated from the served store and rebuilt by reindex just above, not
+      # the git checkout of data/artifacts. A withdrawn grade still served, or a
+      # letter over an archive with 0 stops and 0 trips that corrections.yaml
+      # says nothing about, stops the publish (corrections.correction_problems).
+      # The floor keeps it from passing over an unhydrated tree.
+      - name: Check corrections against the store about to be served
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        working-directory: pipeline
+        run: uv run scorecard corrections-check --min-current 1000
+
       # Feed checks and re-scoring can run longer than the default one-hour
       # OIDC session. Renew immediately before the first public write so a
       # healthy refresh cannot fail at publication with ExpiredToken.

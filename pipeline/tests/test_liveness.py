@@ -17,6 +17,7 @@ from scorecard_pipeline import cli
 from scorecard_pipeline import liveness as liveness_module
 from scorecard_pipeline.liveness import (
     CHANGED,
+    ROBOTS_REFUSED,
     UNCHANGED,
     UNREACHABLE,
     LivenessRecord,
@@ -354,3 +355,71 @@ def test_the_sweep_command_checks_side_by_side_and_writes_a_baseline(
     assert changed.read_text().splitlines() == [f"feed-{n}" for n in range(4)]
     after = load_state(isolated_repo_root / "data" / "liveness.json")
     assert after["feed-0"].sha256 == "https://host-0.example/0.zip"
+
+
+def test_a_url_robots_refuses_is_never_requested(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake = _InstrumentedCheck(seconds=0.0)
+    monkeypatch.setattr(liveness_module, "check_feed", fake)
+    targets = _targets(hosts=2, per_host=2)
+
+    results = check_feeds(targets, workers=4, allowed=lambda url: "host-1." not in url)
+
+    assert set(fake.live) == {"host-0.example"}
+    assert {aid: cls for aid, (_, cls) in results.items()} == {
+        "h0-f0": CHANGED,
+        "h0-f1": CHANGED,
+        "h1-f0": ROBOTS_REFUSED,
+        "h1-f1": ROBOTS_REFUSED,
+    }
+    # Nothing was requested, so nothing claims a check happened.
+    assert results["h1-f0"][0].checked_at is None
+
+
+def test_the_sweep_command_reads_robots_before_any_feed_request(
+    isolated_repo_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """ADR 0070 section 2, for the daily liveness sweep too (2026-11-05 audit).
+
+    The sweep used to send a conditional GET to every feed URL, including the
+    ~400 a day whose hosts' robots.txt refuse automated requests, and pages
+    then said "Checked for changes 83 minutes ago" beside "robots.txt asks
+    automated tools not to request it".
+    """
+    from scorecard_pipeline.robots_policy import (
+        RobotsChecker,
+        RobotsResponse,
+        reset_shared_checker,
+    )
+
+    isolated_repo_root.mkdir(parents=True)
+    (isolated_repo_root / "agencies.yaml").write_text(
+        "agencies:\n"
+        + "".join(
+            f"  - id: feed-{n}\n    name: Feed {n}\n"
+            f"    static_gtfs_url: https://host-{n % 2}.example/{n}.zip\n"
+            for n in range(4)
+        )
+    )
+    # A record from before the rule, which must not be carried forward as a check.
+    before = {
+        "feed-1": LivenessRecord(
+            url="https://host-1.example/1.zip", sha256="old", checked_at="2026-11-04T00:00:00+00:00"
+        )
+    }
+    save_state(isolated_repo_root / "data" / "liveness.json", before)
+
+    def rules(url: str) -> RobotsResponse:
+        body = "User-agent: *\nDisallow: /\n" if "host-1." in url else ""
+        return RobotsResponse(200, url, "text/plain", body)
+
+    reset_shared_checker(RobotsChecker(get=rules))
+    fake = _InstrumentedCheck(seconds=0.0)
+    monkeypatch.setattr(liveness_module, "check_feed", fake)
+    changed = tmp_path / "changed.txt"
+
+    assert cli.main(["liveness", "--apply", "--changed-out", str(changed)]) == 0
+
+    assert set(fake.live) == {"host-0.example"}
+    assert changed.read_text().splitlines() == ["feed-0", "feed-2"]
+    after = load_state(isolated_repo_root / "data" / "liveness.json")
+    assert sorted(after) == ["feed-0", "feed-2"]

@@ -344,16 +344,23 @@ def suppresses_current(correction: Correction | None, artifact: Mapping[str, Any
     measurement. Two things count as one, and the second is why this is not
     just :meth:`Correction.withdraws`:
 
-    * the newest artifact is not the withdrawn record at all -- different bytes,
-      so the feed changed and was read afresh; or
+    * the newest artifact is not the withdrawn record at all -- different bytes
+      with stops and trips in them, so the feed changed and was read afresh; or
     * it carries the same bytes but was actually read, which is what the reader
       fix for a wrapped archive (#353) produces: the same ``feed_sha256``, a
       later date, and stops and trips this time.
 
-    What does not count is the same unread bytes re-scored under a later date.
-    ``withdraws`` alone treated that as new, and it is not: nothing was read
-    either time, so the second letter is the first fabrication with a fresher
-    stamp on it. Measured on the published store on 2026-09-13, that is how
+    What does not count is a grade over an archive with no stops and no trips,
+    whatever bytes it came from. The same unread bytes re-scored under a later
+    date are the plainest case: ``withdraws`` alone treated that as new, and it
+    is not: nothing was read either time, so the second letter is the first
+    fabrication with a fresher stamp on it. Different bytes that are just as
+    empty are no better. Measured on the served store on 2026-11-05, ``boxcar``
+    published B 83.9 from a 2026-09-02 download whose hash differs from the
+    withdrawn 2026-08-07 record, over 0 stops and 0 trips; the old rule read the
+    new hash as a new measurement and let the letter through.
+
+    Measured on the published store on 2026-09-13, that is how
     ``beloit-transit`` (F 37.8) and ``massachusetts-area-express-max`` (F 31.3)
     were still publicly graded a week after this file withdrew them -- each one
     re-scored on 2026-08-10 from the very bytes the entry beside it names, at
@@ -363,9 +370,7 @@ def suppresses_current(correction: Correction | None, artifact: Mapping[str, Any
         return False
     if correction.withdraws(artifact):
         return True
-    feed = artifact.get("feed")
-    sha = str(feed.get("sha256", "")) if isinstance(feed, Mapping) else ""
-    return sha == correction.feed_sha256 and grades_a_feed_with_nothing_in_it(artifact)
+    return grades_a_feed_with_nothing_in_it(artifact)
 
 
 def _newest_artifact(agency_dir: Path) -> dict[str, Any] | None:
@@ -449,13 +454,18 @@ def correction_problems(record: CorrectionsRecord, artifact_root: Path) -> list[
                 artifact = json.loads(current.read_text())
             except (OSError, ValueError):
                 continue
-            if entry.withdraws(artifact):
+            # suppresses_current, not withdraws: a newer letter over an empty
+            # archive is the same withdrawn grade with a fresher stamp, so it
+            # must not be served either.
+            if suppresses_current(entry, artifact):
+                overall = artifact.get("overall") if isinstance(artifact, Mapping) else None
+                shown = overall.get("grade") if isinstance(overall, Mapping) else "?"
                 problems.append(
-                    f"{agency_id} still publishes the grade {CORRECTIONS_FILENAME} "
-                    f"withdraws ({entry.grade}, {entry.snapshot_date}). Run "
-                    "`scorecard reindex` so the withdrawal takes effect."
+                    f"{agency_id} still publishes a grade {CORRECTIONS_FILENAME} "
+                    f"withdraws ({shown}, {artifact.get('snapshot_date')}; the entry names "
+                    f"{entry.grade}, {entry.snapshot_date}). Run `scorecard reindex` so "
+                    "the withdrawal takes effect."
                 )
-    problems.extend(_withdrawals_that_miss_what_is_published(record, artifact_root))
     problems.extend(_uncorrected(record, artifact_root))
     return sorted(problems)
 
@@ -477,52 +487,6 @@ def grades_a_feed_with_nothing_in_it(artifact: Mapping[str, Any]) -> bool:
     if not isinstance(details, Mapping):
         return False
     return details.get("stops") == 0 and details.get("trips") == 0 and "grade" in overall
-
-
-def _withdrawals_that_miss_what_is_published(
-    record: CorrectionsRecord, artifact_root: Path
-) -> Iterable[str]:
-    """Withdrawn ids whose *published* grade the entry does not reach.
-
-    The check above asks whether the withdrawn record is still published. This
-    asks the question that gap leaves open: an id can be withdrawn, its entry
-    can name a record that is genuinely gone, and the scorecard standing in its
-    place can still be a letter over an archive with no stops and no trips.
-
-    That combination reads as handled from every angle and is not. ``_uncorrected``
-    skips the id because the file covers it; the withdrawn-record check passes
-    because the published artifact is not the one named. Both were true of
-    ``beloit-transit`` and ``massachusetts-area-express-max`` for the week after
-    they were withdrawn: each was re-scored on a later date from the same unread
-    bytes, so the entry no longer matched, and each stayed publicly graded F.
-
-    An id under ``not_yet_corrected`` is deliberately still publishing, with a
-    stated reason, so it is the withdrawn list this walks and not ``covers``.
-    """
-    import json
-
-    problems = []
-    for agency_id, entry in sorted(record.withdrawn.items()):
-        path = artifact_root / agency_id / "latest.json"
-        if not path.is_file():
-            continue
-        try:
-            artifact = json.loads(path.read_text())
-        except (OSError, ValueError):
-            continue
-        if not grades_a_feed_with_nothing_in_it(artifact):
-            continue
-        if suppresses_current(entry, artifact):
-            continue
-        published = artifact.get("overall") if isinstance(artifact, Mapping) else None
-        grade = published.get("grade") if isinstance(published, Mapping) else "?"
-        problems.append(
-            f"{agency_id} is withdrawn in {CORRECTIONS_FILENAME}, but the scorecard "
-            f"published for it now grades a feed with no stops and no trips "
-            f"({grade}, {artifact.get('snapshot_date')}) and is not the record the "
-            "entry names. The withdrawal does not reach what is published."
-        )
-    return problems
 
 
 def _uncorrected(record: CorrectionsRecord, artifact_root: Path) -> Iterable[str]:

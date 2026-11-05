@@ -203,6 +203,20 @@ def test_status_and_agency_pages_say_why_a_feed_was_not_fetched() -> None:
     assert "2026-10-01" in note
     assert _not_fetched_note(None, {}) == ""
     assert _not_fetched_note("publisher down", {}) == ""
+    # A freshness sweep re-dates the record without downloading anything, so
+    # the note names the last download, never the sweep's date (ABQ RIDE said
+    # "measured on 2026-11-05" over a 2026-10-19 download).
+    swept = {
+        "snapshot_date": "2026-11-05",
+        "recompute": {
+            "kind": "freshness",
+            "as_of": "2026-11-05",
+            "feed_fetched_date": "2026-10-19",
+        },
+    }
+    swept_note = _not_fetched_note("not fetched: robots disallows", swept)
+    assert "measured on 2026-10-19" in swept_note
+    assert "2026-11-05" not in swept_note
 
     outcomes = [
         AgencyOutcome("kept", "scored"),

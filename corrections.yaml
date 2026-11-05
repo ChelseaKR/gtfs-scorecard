@@ -126,6 +126,13 @@ corrections:
       this exact archive shape so the claim cannot go stale again unnoticed.
       Boxcar is in the registry and keeps its 23 dated artifacts, so a run that
       reads a real feed here supersedes this withdrawal on its own.
+      Added 2026-11-05: a later download, on 2026-09-02, had a different hash
+      (35d51f630ca9) and the same 5,544 bytes, still with 0 stops and 0 trips.
+      It was published as B (83.9) and re-dated by the freshness sweep to
+      2026-09-13, because this file then treated any new hash as a new
+      measurement. That B is withdrawn under this entry too: a letter over an
+      archive with no stops and no trips is not a measurement, whatever bytes
+      it came from.
 
   - agency_id: catalina-express
     agency_name: Catalina Express
@@ -196,6 +203,27 @@ corrections:
       source URL returns 404 as of 2026-09-05, so the archive could not be
       re-read. This record is not in the registry, so its scorecard is
       withdrawn.
+
+  - agency_id: fr-pan-14652
+    agency_name: Navettes Bagnères-de-Bigorre - La Mongie
+    snapshot_date: "2026-09-13"
+    feed_sha256: fcbf1182730aa64ff7b45f36af11d3bf2d069e4604c2f06d7d72d8d5923edf86
+    grade: D
+    score: 69.3
+    cause: no_schedule_tables
+    outcome: not_measured
+    evidence: >-
+      Re-fetched from the feed URL on file on 2026-11-05 (HTTP 200, 2,253
+      bytes, served by zenbus.net): stops.txt, routes.txt, trips.txt,
+      stop_times.txt, calendar.txt, calendar_dates.txt, shapes.txt and
+      frequencies.txt each hold a header row and nothing else. Only agency.txt
+      and feed_info.txt have a data row. The published record was scored from
+      a download of the same size on 2026-09-01 (sha256 fcbf1182730a), and it
+      records 0 stops and 0 trips. The archive describes no service, so the D
+      (69.3) published for it measured nothing. Its date of 2026-09-13 came
+      from the freshness sweep re-dating that record, not from a new download.
+      This feed is in the registry, so a run that reads a real feed here
+      supersedes this withdrawal on its own.
 
   - agency_id: high-desert-point
     agency_name: High Desert Point
@@ -323,6 +351,26 @@ corrections:
       The same 192-byte archive as massachusetts-area-express-max, published a
       second time under a catalog-derived id. Not in the registry, so its
       scorecard is withdrawn.
+
+  - agency_id: mdv-mitteldeutscher
+    agency_name: Mitteldeutscher Verkehrsverbund (MDV)
+    snapshot_date: "2026-09-01"
+    feed_sha256: 0aa3a0eefce8c26cc23a1b30358a3dd5bc345f38a3c6cfbbffbea592887862e6
+    grade: F
+    score: 31.3
+    cause: no_schedule_tables
+    outcome: not_measured
+    evidence: >-
+      On 2026-09-01 the feed URL on file returned an HTTP error, and the scorer
+      graded the Mobility Database's hosted copy instead (1,295 bytes, sha256
+      0aa3a0eefce8). The published record itself counts 0 stops and 0 trips in
+      that copy, so the F (31.3) measured an archive with no service in it. The
+      same URL answered 404 on 2026-11-05. The hosted copy was not downloaded
+      again, because that host's robots.txt asks automated tools not to. MDV's
+      last grade from a feed that was actually read was a D (64.2) on
+      2026-08-07, over 7,621 stops. That describes MDV's earlier feed, not its
+      current one, so nothing is shown in its place. MDV is in the registry, so
+      a run that reads a real feed here supersedes this withdrawal on its own.
 
   - agency_id: miami-dade-transit-331
     agency_name: Miami-Dade Transit

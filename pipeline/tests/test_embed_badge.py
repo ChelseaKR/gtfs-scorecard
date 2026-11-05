@@ -176,8 +176,36 @@ def test_render_writes_a_badge_beside_each_agency_page(
     web = root / "web"
     latest = json.loads((root / "data" / "artifacts" / "unitrans" / "latest.json").read_text())
     svg = (web / "agency" / "unitrans" / "badge.svg").read_text()
-    assert f"checked {latest['snapshot_date']}" in badge_sentence(
+    from scorecard_pipeline.sweep import last_fetched_date
+
+    # The day the feed was last downloaded; a swept record's own date is not that.
+    assert f"checked {last_fetched_date(latest)}" in badge_sentence(
         badge_state(latest["agency"]["name"], latest, now.date())
     )
     assert svg == render_named_badge(badge_state(latest["agency"]["name"], latest, now.date()))
     assert "badge.svg" not in (web / "sitemap.xml").read_text()
+
+
+def test_a_swept_record_is_aged_by_its_last_download_not_its_sweep_date() -> None:
+    """The freshness sweep re-dates a record every day without downloading it.
+
+    Keyed on snapshot_date, the two-week guard could never fire for a feed the
+    sweep kept reaching, so a copy nobody had read in a month kept its letter.
+    """
+    old_copy = _artifact(
+        snapshot_date="2026-10-02",
+        recompute={"kind": "freshness", "as_of": "2026-10-02", "feed_fetched_date": "2026-09-01"},
+    )
+    state = badge_state("Demo Transit", old_copy, TODAY)
+    assert not state.current
+    assert "Last checked 2026-09-01" in " ".join(_texts(render_named_badge(state)))
+
+    # Control: the same sweep over a copy downloaded three days ago is current,
+    # and says when it was downloaded, not when it was swept.
+    recent = _artifact(
+        snapshot_date="2026-10-02",
+        recompute={"kind": "freshness", "as_of": "2026-10-02", "feed_fetched_date": "2026-09-29"},
+    )
+    state = badge_state("Demo Transit", recent, TODAY)
+    assert state.current
+    assert state.checked == "2026-09-29"

@@ -136,6 +136,7 @@ from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
     esc,
     sync_static_navs,
 )
+from .sweep import last_fetched_date
 from .timemachine import Event, grade_story, history_events
 from .timemachine import finding_codes as _finding_codes
 from .tool_profiles import detect_tool
@@ -1641,7 +1642,7 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     )
     return (
         '<div class="board-hero" id="report-overview"><div class="board-inner">'
-        f'<p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked {esc(artifact["snapshot_date"])}</p>'
+        f'<p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked {esc(_checked_date(artifact))}</p>'
         f'<h1 class="board-title"><bdi>{esc(agency_name)}</bdi></h1>'
         f'<p class="board-sub">{esc(feed_source_lede(_artifact_source_provenance(artifact), _artifact_fetch_source(artifact)))}</p>'
         f"{mode_html}"
@@ -1725,6 +1726,18 @@ def _liveness_note(record: dict[str, Any] | None, now: dt.datetime | None = None
     return f'<p class="monitoring-note">{esc("; ".join(parts))}.</p>'
 
 
+def _checked_date(artifact: dict[str, Any]) -> str:
+    """The day this record's feed was last downloaded, for every "checked" claim.
+
+    ``snapshot_date`` names the record, and a freshness sweep sets it to the
+    day it recomputed expiry without downloading anything. Printed as
+    "checked", that turned every swept copy into one checked today: on
+    2026-11-05 ABQ RIDE's page said "checked 2026-11-05" over a feed last
+    downloaded on 2026-10-19. Empty when no date is recorded, never a guess.
+    """
+    return last_fetched_date(artifact) or ""
+
+
 _NOT_FETCHED_COPY = {
     "not fetched: robots disallows": (
         "The latest run did not download this feed: the host's robots.txt asks "
@@ -1748,7 +1761,9 @@ def _not_fetched_note(reason: str | None, artifact: dict[str, Any]) -> str:
     copy = _NOT_FETCHED_COPY.get(reason)
     if copy is None:
         return ""
-    date = str(artifact.get("snapshot_date") or "")
+    # The day the feed was last downloaded, not the day a freshness sweep last
+    # re-dated the record: a sweep downloads nothing (sweep.last_fetched_date).
+    date = _checked_date(artifact)
     since = f" The grade shown was measured on {date}." if date else ""
     return f'<p class="monitoring-note">{esc(copy + since)}</p>'
 
@@ -1964,7 +1979,7 @@ def _citation_bibtex(
     overall = artifact.get("overall") or {}
     key = f"gtfsscorecard-{agency_id}-{date}".replace(":", "")
     note = (
-        f"Checked {date}; rubric v{rubric}; gtfs-validator {validator}; "
+        f"Checked {_checked_date(artifact) or date}; rubric v{rubric}; gtfs-validator {validator}; "
         f"reader archive profile {reader_profile}; "
         f"grade {overall.get('grade', '—')} ({overall.get('score', '—')}/100)"
     )
@@ -3069,7 +3084,7 @@ def _seo_grade_facts(artifact: dict[str, Any] | None) -> tuple[str, str, str] | 
         return None
     grade = overall.get("grade")
     score = overall.get("score")
-    checked = artifact.get("snapshot_date")
+    checked = last_fetched_date(artifact)
     if not (isinstance(grade, str) and grade in {"A", "B", "C", "D", "F"}):
         return None
     if isinstance(score, bool) or not isinstance(score, (int, float)):
@@ -4471,7 +4486,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     feed = artifact.get("feed", {})
     facts = [
         f"<dt>Feed URL</dt><dd>{esc(str(feed.get('static_url', '')))}</dd>",
-        f"<dt>Last checked</dt><dd>{esc(str(artifact.get('snapshot_date', '')))}</dd>",
+        f"<dt>Last checked</dt><dd>{esc(_checked_date(artifact))}</dd>",
         f"<dt>Service window</dt><dd>{expiry}</dd>",
     ]
     if fresh.get("feed_version"):
@@ -4554,7 +4569,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     body = f"""    <div class="brief brief-call">
     <p class="brief-nav no-print"><a href="/agency/{esc(agency_id)}/">&larr; Back to the full scorecard</a></p>
     <header class="brief-head">
-      <p class="brief-kicker">Call-prep brief &middot; checked {esc(str(artifact.get("snapshot_date", "")))}</p>
+      <p class="brief-kicker">Call-prep brief &middot; checked {esc(_checked_date(artifact))}</p>
       <h1 class="brief-title">{esc(agency_name)}</h1>
       <p class="brief-grade">Grade {esc(str(overall["grade"]))} &middot; {esc(str(overall["score"]))} / 100</p>
       <p class="brief-trend">{_brief_trend_line(history)}</p>
@@ -4672,7 +4687,7 @@ def _render_board_page(
     body = f"""    <div class="brief brief-board">
     <p class="brief-nav no-print"><a href="/agency/{esc(agency_id)}/">&larr; Back to the full scorecard</a></p>
     <header class="brief-head">
-      <p class="brief-kicker">Board packet &middot; transit data quality &middot; checked {esc(str(artifact.get("snapshot_date", "")))}</p>
+      <p class="brief-kicker">Board packet &middot; transit data quality &middot; checked {esc(_checked_date(artifact))}</p>
       <h1 class="brief-title">{esc(agency_name)}</h1>
       <p class="brief-grade">Grade {esc(str(overall["grade"]))} &middot; {esc(str(overall["score"]))} / 100</p>
       <p class="brief-trend">{_brief_trend_line(history)}</p>
