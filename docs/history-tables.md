@@ -175,7 +175,7 @@ and the tables' numbers are the ones on the public site.
 
 - A category the check did not measure is null, never zero. An agency with no
   realtime feed has a null `realtime`.
-- A row with `recompute_kind = freshness` is an intraday sweep: only the
+- A row with `recompute_kind = freshness` is a freshness sweep: only the
   calendar dates were re-read that day, and the other category scores are the
   previous full score's, carried forward. `feed_fetched_date` says when the
   scored bytes were actually downloaded.

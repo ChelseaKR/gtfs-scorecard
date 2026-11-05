@@ -144,7 +144,19 @@ the declared public surface).
   on 2026-10-31) and one sync for rollup state. It now makes one copy for all of
   them, syncs `rollups/` from its own prefix and looks up `coverage-baseline.json`
   by its exact key. The files downloaded are the same.
-
+- **The intraday refresh no longer runs on a schedule** (2026-10-31, ADR
+  0010). `refresh.yml` keeps `workflow_dispatch` and has no cron, so the Daily
+  scorecard is the one scheduled data run and deploy a day. On 2026-10-31 the
+  refresh and its deploy read about 1.2 GB from S3 and rewrote almost every
+  `latest.json` twelve hours before the Daily did; the cost audit puts the
+  saving at about $4.50/month. The refresh's two unique jobs move into the
+  Daily: a new `liveness` job checks every feed URL beside the score shards and
+  publishes `data/liveness.json`, and collect runs the freshness sweep for
+  feeds the day's scoring missed. `/status/` and `api/v1/status.json` now name
+  the Daily's cron for both liveness tiers ("one direct liveness check each
+  day"). Watchdog's deployed-data staleness bound moves from 28h to 30h and its
+  duration check no longer reads the refresh. The fetcher page, `docs/deploy.md`
+  and the history-table docs say the same.
 - **The intraday refresh runs once a day instead of every three hours**
   (2026-10-30, ADR 0010). `refresh.yml` now fires at `23 1 * * *`, twelve
   hours from the Daily scorecard, and redeploys the site on every run. Almost

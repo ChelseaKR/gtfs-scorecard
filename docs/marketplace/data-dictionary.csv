@@ -8,7 +8,7 @@ checks,mdb_id,VARCHAR,Mobility Database id from the registry; null when none is 
 checks,ntd_id,VARCHAR,FTA National Transit Database reporter id from the registry; null when none.
 checks,snapshot_date,DATE,The date of this check (the dated artifact's name).
 checks,generated_at,VARCHAR,"When the artifact was written, ISO 8601 with offset."
-checks,recompute_kind,VARCHAR,freshness when this row is an intraday sweep that re-read only the calendar dates and carried the other categories forward; null for a full score.
+checks,recompute_kind,VARCHAR,freshness when this row is a freshness sweep that re-read only the calendar dates and carried the other categories forward; null for a full score.
 checks,feed_fetched_date,DATE,The date the scored bytes were downloaded; earlier than snapshot_date on a sweep row.
 checks,artifact_schema_version,VARCHAR,The per-agency artifact schema the row was read from.
 checks,rubric_version,VARCHAR,Rubric version the check was scored under.

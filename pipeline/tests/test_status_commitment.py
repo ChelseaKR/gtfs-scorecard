@@ -6,13 +6,9 @@ import datetime as dt
 import re
 from pathlib import Path
 
-import pytest
-
-from scorecard_pipeline.cadence import REFRESH_STEP_HOURS
 from scorecard_pipeline.metrics import STALE_FEED_DAYS, UNREACHABLE_STREAK_CHECKS
 from scorecard_pipeline.status_commitment import (
     DAILY_FULL_SCORE_CRON,
-    INTRADAY_REFRESH_CRON,
     build_status_commitment,
     cadence_commitment,
     degradation_policy,
@@ -57,28 +53,46 @@ def test_published_crons_match_the_workflows_they_name() -> None:
     statement about how often the pipeline runs. Nothing else in the suite
     catches that, because every other assertion here is about the shape of the
     document rather than its content.
+
+    Since 2026-10-31 the Intraday refresh runs only by hand, so it declares no
+    cron and no tier may name one from it: every tier runs on the Daily.
     """
-    assert _workflow_crons("refresh.yml") == [INTRADAY_REFRESH_CRON]
+    assert _workflow_crons("refresh.yml") == []
     assert _workflow_crons("scorecard.yml") == [DAILY_FULL_SCORE_CRON]
+    assert {t["schedule_cron"] for t in cadence_commitment()} == {DAILY_FULL_SCORE_CRON}
 
 
-def _cron_hours(cron: str) -> list[int]:
-    """The UTC hours a daily-repeating cron fires on (`*/N`, `H` or `H,H`)."""
-    minute, hour, day, month, weekday = cron.split()
-    assert minute.isdigit() and (day, month, weekday) == ("*", "*", "*"), cron
-    if hour.startswith("*/"):
-        return list(range(0, 24, int(hour[2:])))
-    return sorted(int(h) for h in hour.split(","))
+def _daily_job(name: str) -> str:
+    """One top-level job of scorecard.yml, from its key to the next job's key."""
+    text = (WORKFLOWS / "scorecard.yml").read_text()
+    start = text.index(f"\n  {name}:\n") + 1
+    following = re.search(r"^  [a-z][a-z0-9_-]*:$", text[start + 1 :], re.MULTILINE)
+    return text[start : start + 1 + following.start()] if following else text[start:]
 
 
-def test_refresh_cron_matches_the_cadence_step_the_due_list_uses() -> None:
-    """The due-list arithmetic in cadence.py assumes runs land REFRESH_STEP_HOURS
-    apart. If the cron said something else, standard feeds in the buckets those
-    hours never reach would silently stop being checked at all. Since
-    2026-10-30 the step is 24: one fire a day."""
-    hours = _cron_hours(INTRADAY_REFRESH_CRON)
-    gaps = {b - a for a, b in zip(hours, [*hours[1:], hours[0] + 24], strict=True)}
-    assert gaps == {REFRESH_STEP_HOURS}
+def test_the_daily_run_checks_every_feed_and_publishes_the_liveness_state() -> None:
+    """What makes "one direct liveness check each day" true.
+
+    The liveness tiers name the Daily's cron, so the Daily has to do the check:
+    over every feed (no `--only` due subset), persisted (`--apply`), and written
+    back to the object the deploy and the next day's check read. Without the
+    publish the check would run and its result would be thrown away, and
+    /status/ would keep reporting the last state the Intraday refresh saved.
+    """
+    job = _daily_job("liveness")
+    commands = [line.split("#", 1)[0] for line in job.splitlines()]
+    check = [line for line in commands if "scorecard liveness" in line]
+    assert len(check) == 1
+    assert "--apply" in check[0]
+    assert "--only" not in check[0]
+    publish = job[job.index("- name: Publish the liveness state") :]
+    upload = re.sub(r"\s*\\\n\s*", " ", publish)
+    assert 'aws s3 cp data/liveness.json "s3://${ARTIFACTS_BUCKET}/data/liveness.json"' in upload
+    # The deploy after collect reads data/liveness.json from S3, so collect
+    # waits for this job, and still runs when it fails.
+    collect = _daily_job("collect")
+    assert "needs: [plan, score, liveness]" in collect
+    assert "if: ${{ !cancelled() }}" in collect
 
 
 def test_degradation_policy_uses_the_real_code_thresholds() -> None:
@@ -132,15 +146,13 @@ def test_build_status_commitment_assembles_every_section() -> None:
     assert doc["degradation_policy"]["statements"]
 
 
-def test_standard_cadence_names_the_spread_only_when_there_is_one(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """One cycle per period (the daily cadence) has no per-feed spread to claim;
-    several cycles per period do, and the sentence says so."""
-    from scorecard_pipeline import status_commitment
-
-    daily = {t["tier"]: t for t in cadence_commitment()}["standard"]["cadence"]
-    assert "spreads" not in daily
-    monkeypatch.setattr(status_commitment, "cycles_per_period", lambda: 2)
-    spread = {t["tier"]: t for t in cadence_commitment()}["standard"]["cadence"]
-    assert "spreads requests across the period" in spread
+def test_both_liveness_tiers_promise_one_check_a_day_and_nothing_more() -> None:
+    """Every feed is checked once a day by the Daily, whatever its tier. A
+    cadence sentence that named hours or a spread across a period would be
+    describing the Intraday refresh, which no longer runs on a schedule."""
+    tiers = {t["tier"]: t for t in cadence_commitment()}
+    for name in ("priority", "standard"):
+        cadence = tiers[name]["cadence"]
+        assert cadence == "one direct liveness check each day"
+        assert "hour" not in cadence
+        assert "spread" not in cadence

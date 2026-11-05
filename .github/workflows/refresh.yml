@@ -1,29 +1,24 @@
 name: Intraday refresh
 
-# The cheap half of the two-tier cadence (ADR 0010). The daily "Daily scorecard"
-# job re-validates every feed; this job runs once a day too, twelve hours
-# apart from it (it ran every three hours until 2026-10-30, and the name is
-# kept because other workflows and the watchdog look it up), and does only the
-# cheap work: detect which feeds changed or went down (a conditional GET, no validator),
-# re-score just those, and refresh every feed's expiry countdown from the calendar
-# data already on hand. Cost stays flat as the registry grows because the Java
-# validator only runs on the handful of feeds that actually changed.
+# The cheap half of the two-tier cadence (ADR 0010), now run by hand only. The
+# daily "Daily scorecard" job re-validates every feed; this job does only the
+# cheap work: detect which feeds changed or went down (a conditional GET, no
+# validator), re-score just those, and refresh every feed's expiry countdown
+# from the calendar data already on hand. The name is kept because other
+# workflows and the watchdog look it up.
+#
+# It has no schedule since 2026-10-31 (ADR 0010, "Intraday refresh taken off
+# the schedule"). It ran every three hours until 2026-10-30 and once a day at
+# 01:23 UTC until 2026-10-31. Each run re-read about 1.2 GB from S3 and wrote
+# about 9,800 objects, about $4.50 a month, to repeat work the Daily does
+# twelve hours later. The two duties that only this job did moved into the
+# Daily scorecard: its `liveness` job runs the direct liveness check over every
+# feed and publishes data/liveness.json, and its collect job runs the freshness
+# sweep for any feed the day's scoring did not reach. Run this by hand to
+# re-check and re-score between Daily runs; with REFRESH_STEP_HOURS at 24
+# (cadence.py) every feed is due on any run, whatever the hour.
 
 on:
-  schedule:
-    # Once a day at 01:23 UTC, twelve hours from the Daily (13:23 UTC). It was
-    # every three hours until 2026-10-30. Almost all of this project's S3
-    # egress was its own workflows reading the bucket, eight refresh cycles a
-    # day each re-reading about 0.4 GB, so one cycle a day keeps the month
-    # under S3's free 100 GB of egress (about $16/month saved). With one cycle
-    # a day the cadence tiers (ADR 0010) both come due on every cycle.
-    #
-    # This interval must stay in step with `REFRESH_STEP_HOURS` in
-    # pipeline/src/scorecard_pipeline/cadence.py, which the due-list arithmetic
-    # depends on, and with `INTRADAY_REFRESH_CRON` in status_commitment.py,
-    # which is published verbatim on /status/ and in api/v1/status.json.
-    # `test_status_commitment.py` reads this file and fails if they drift.
-    - cron: "23 1 * * *"
   workflow_dispatch:
 
 permissions:
@@ -50,8 +45,9 @@ jobs:
     # 0010).
     #
     # 175 sits above every one of those runs. It was also chosen to sit below
-    # the 180-minute cron of the time; the cron is now daily, so that ceiling
-    # no longer binds, and the bound is unchanged because the runtime is.
+    # the 180-minute cron of the time; the job went daily on 2026-10-30 and
+    # manual-only on 2026-10-31, so that ceiling no longer binds, and the
+    # bound is unchanged because the runtime is.
     # A bound above the cadence cannot mean "this run has lost its
     # schedule": by the time it fires the next cycle has already started, and
     # `artifacts-publish` is serial with `cancel-in-progress: false`, so a third
@@ -61,13 +57,14 @@ jobs:
     # scheduled fires unevenly, and consecutive fires in the same window were as
     # little as 114.2 minutes apart (median 181.3, longest 226.5) at the old
     # three-hour cron. This catches a wedged runner (a runner killed
-    # validating a large feed, as in #297). The daily cron (2026-10-30) is the
-    # "longer cron" that removes the compressed-gap problem.
+    # validating a large feed, as in #297). With no schedule (2026-10-31) there
+    # are no compressed gaps left to catch.
     #
-    # This number is now read. Watchdog's "No scheduled publish job is running
-    # up against its own bound" compares each run's duration with it, and
-    # pipeline/tests/test_workflow_safety.py holds it between the measured
-    # runtime and the cadence.
+    # Watchdog's "No scheduled publish job is running up against its own
+    # bound" read this number while the job was scheduled; it stopped on
+    # 2026-10-31, because a manual run is watched by whoever started it.
+    # pipeline/tests/test_workflow_safety.py still holds it above the measured
+    # runtime.
     #
     # Re-measured 2026-09-18, when that check failed on run 35316236534 (160
     # of 175 minutes), and answered by trimming the work rather than moving
@@ -420,9 +417,9 @@ jobs:
             "s3://${ARTIFACTS_BUCKET}/cache/structure" --only-show-errors
 
   # Refreshes do not write to main, so deploy the newly published S3 state
-  # explicitly after the refresh. Every cycle deploys: from 2026-10-23 (#552) to
+  # explicitly after the refresh. Every run deploys: from 2026-10-23 (#552) to
   # 2026-10-30, while the refresh ran every three hours, only every other
-  # cycle did, to cut S3 egress. One refresh a day cuts it further.
+  # cycle did, to cut S3 egress.
   deploy:
     needs: refresh
     permissions:

@@ -195,6 +195,65 @@ What changed:
 Going back is a cron edit plus the two constants; the tests read the cron and
 check that its fire hours are `REFRESH_STEP_HOURS` apart.
 
+## Intraday refresh taken off the schedule (2026-10-31)
+
+Decided by the owner on 2026-10-31: the 01:23 UTC refresh stops, and the Daily
+scorecard is the only scheduled data run. `refresh.yml` keeps
+`workflow_dispatch`, so it can still be run by hand.
+
+The reason is cost. The S3 access logs for 2026-10-31, the first full day of
+the once-a-day refresh, put the refresh and its site deploy at about 1.2 GB of
+the day's 4.1 GB of S3 egress, and the refresh rewrote almost every agency's
+`latest.json` (9,861 PUTs) twelve hours before the Daily rewrote them again.
+The cost audit (2026-10-31) estimates dropping it saves about $4.50 a month.
+The November bill is the check on that number.
+
+The refresh did two jobs nothing else did, and both moved into the Daily
+instead of stopping:
+
+- **The direct liveness check.** A new `liveness` job in `scorecard.yml` runs
+  `scorecard liveness --apply` over every feed (no due list) beside the score
+  shards and publishes `data/liveness.json`. `collect` waits for it, so the
+  deploy reads that day's state, and runs whether or not it succeeded. Without
+  it the failure streaks behind "unreachable", the "checked for changes" line
+  on agency pages, and the liveness record on `/status/` would have stopped at
+  the refresh's last run and kept reporting it. The full sweep took 10 minutes
+  on 2026-10-31 (run 41155219748); the shards take 30 to 50.
+- **The freshness sweep.** `collect` now runs `scorecard freshness-sweep
+  --apply` before reindex. `needs_sweep` skips every feed already scored that
+  day, so it re-dates the expiry countdown only for feeds whose fetch failed or
+  whose shard was lost. Without it those feeds would keep the countdown of the
+  day they last scored. The whole-corpus sweep took 68 seconds on 2026-10-31.
+
+What changes for readers:
+
+- **One observation a day instead of two.** Both liveness tiers get one check a
+  day, now at the Daily's time (`23 13 * * *`), and `/status/` and
+  `api/v1/status.json` publish that cron. A feed that changes or goes down just
+  after the Daily waits up to a day to be seen, where it waited up to about
+  twelve hours. The liveness check runs within the same hour as the full fetch,
+  so the two no longer cover different times of day.
+- **The site redeploys once a day** from the Daily, plus on code pushes.
+  Realtime observations reach the site at the next Daily deploy, up to about a
+  day after sampling.
+- `UNREACHABLE_STREAK_CHECKS` stays 7: still one check a day, so still roughly
+  a week.
+
+Monitoring:
+
+- Watchdog's deployed-data staleness bound is 30 hours. From 2026-10-22 to
+  2026-10-31 Daily runs finished 23.0 to 25.1 hours apart, so 28 hours left
+  too little room for a late schedule; a missed Daily is still paged on its
+  first failure by the next step.
+- The refresh left Watchdog's duration check. With no schedule, the check
+  would re-read the last hand-started run every six hours, however old.
+
+`cadence.py` keeps the tiers and `REFRESH_STEP_HOURS = 24` for a hand-run
+refresh, which therefore checks every feed whatever hour it starts. Going back
+is restoring the cron in `refresh.yml`, the refresh's row in Watchdog's
+duration check, and the two tiers' `schedule_cron` in `status_commitment.py`;
+the Daily's liveness job can stay either way.
+
 ## Not yet
 
 Active service-window realtime sampling (timing a capture to when buses are
