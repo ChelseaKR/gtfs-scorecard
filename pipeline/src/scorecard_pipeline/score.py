@@ -83,10 +83,13 @@ def grade_qualifier(artifact: object) -> str | None:
 
     Read from the artifact itself, so a surface built from an older artifact
     (one published before ``overall.grade_qualifier`` existed) still says so:
-    a freshness category that is present but not measured -- today only an
-    expired Mobility Database mirror copy held out of the grade
-    (hold_mirror_freshness) -- makes the grade partial. Unmeasured freshness
-    is never turned into a value here; the qualifier is the whole answer.
+    a freshness category that is present but not measured makes the grade
+    partial, whatever the reason -- an expired Mobility Database mirror copy
+    held out of the grade (hold_mirror_freshness), or a feed whose calendar
+    could not be read. This is the same rule ``Scorecard.to_json`` uses to
+    write ``overall.grade_qualifier``, so the artifact and every surface built
+    from it agree. Unmeasured freshness is never turned into a value here; the
+    qualifier is the whole answer.
     """
     if not isinstance(artifact, Mapping):
         return None
@@ -136,7 +139,9 @@ METHODOLOGY_CHANGELOG: list[dict[str, str]] = [
             'but it is marked "partial: freshness not measured" everywhere it '
             "appears: agency pages, board reports, badges, and the API, dataset, "
             "and CSV exports (overall.grade_qualifier and a grade_qualifier "
-            "column). Unmeasured freshness is never shown as 0 or as fresh. "
+            "column). The same mark goes on any grade whose freshness was not "
+            "measured for another reason, such as a calendar that could not be "
+            "read. Unmeasured freshness is never shown as 0 or as fresh. "
             "Mirror copies that are still current, and every feed downloaded from "
             "its own URL, are graded as before."
         ),
@@ -292,9 +297,12 @@ class Scorecard:
                     "summary": "Not scored yet. Nothing here counts against the grade.",
                 }
         overall = published_overall(self.overall_score)
-        if "freshness" in self.held:
-            # Kept beside the letter, not folded into it, so overall.grade stays
-            # one of A-F for every consumer and the qualifier is never dropped.
+        if "freshness" not in self.categories:
+            # One rule with grade_qualifier(): freshness not measured, for any
+            # reason (held out from an expired mirror copy, or no readable
+            # calendar), makes the grade partial on every surface, this one
+            # included. Kept beside the letter, not folded into it, so
+            # overall.grade stays one of A-F and the qualifier is never dropped.
             overall["grade_qualifier"] = PARTIAL_FRESHNESS_QUALIFIER
         return {
             # score, grade, and the two margins all come out of published_overall,

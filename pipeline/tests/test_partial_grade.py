@@ -153,6 +153,25 @@ def test_a_full_grade_carries_no_qualifier() -> None:
     assert grade_qualifier(_full_artifact()) is None
 
 
+def test_the_artifact_and_every_surface_use_one_qualifier_rule() -> None:
+    # Review finding 2: a feed with stops and trips but no readable calendar
+    # has no freshness category. Surfaces built through grade_qualifier() said
+    # "partial", while the artifact's own overall carried a bare letter.
+    card = build_scorecard(
+        [
+            CategoryResult(name="correctness", score=90.0, summary=""),
+            CategoryResult(name="completeness", score=60.0, summary=""),
+        ]
+    ).to_json()
+    assert card["categories"]["freshness"]["status"] == "not_yet_measured"
+    assert card["overall"]["grade_qualifier"] == LABEL
+    artifact = {"overall": card["overall"], "categories": card["categories"]}
+    stripped = {**artifact, "overall": {**card["overall"]}}
+    del stripped["overall"]["grade_qualifier"]
+    # The stated qualifier and the derived one agree.
+    assert grade_qualifier(artifact) == grade_qualifier(stripped) == LABEL
+
+
 def test_the_qualifier_is_derived_for_an_artifact_that_does_not_state_it() -> None:
     legacy = _artifact()
     del legacy["overall"]["grade_qualifier"]

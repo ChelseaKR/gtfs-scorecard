@@ -196,11 +196,16 @@ def test_the_bundle_manifest_flags_a_mirror_scored_report(
         assert "scored from a Mobility Database mirror copy" in archive.read("README.txt").decode()
 
 
-def test_the_freshness_sweep_does_not_count_down_a_mirror_copy() -> None:
+def test_the_freshness_sweep_keeps_counting_down_a_mirror_copy() -> None:
+    # A measured mirror copy is reswept like an origin fetch, so its countdown
+    # never freezes (tests/test_sweep.py pins the hold once it goes negative).
     artifact = _mirror_artifact(status="measured", details={"last_service_date": "2026-12-01"})
-    assert not can_resweep(artifact)
+    assert can_resweep(artifact)
     artifact["fetch"] = {"source": "origin"}
     assert can_resweep(artifact)
+    # A copy whose freshness is already held is not measured: nothing to resweep.
+    held = _mirror_artifact(status="not_yet_measured", reason="mirror_copy_expired")
+    assert not can_resweep(held)
 
 
 def test_a_lead_fix_never_pushes_the_list_past_three() -> None:

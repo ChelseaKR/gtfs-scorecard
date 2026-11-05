@@ -153,10 +153,13 @@ Changelog:
 
 - `1.20` adds `overall.grade_qualifier` under rubric 1.5. It is present only
   when the grade is partial, and its one value today is
-  `"partial: freshness not measured"`: the feed URL on file could not be
-  downloaded and the Mobility Database mirror copy scored instead had already
-  ended, so freshness was held out of the grade rather than scored from that
-  copy's dates. The letter is still published, but it describes less of the
+  `"partial: freshness not measured"`. The rule is one rule on every surface:
+  the qualifier is present whenever the `freshness` category is not measured,
+  whatever the reason. Usually the feed URL on file could not be downloaded
+  and the Mobility Database mirror copy scored instead had already ended, so
+  freshness was held out of the grade rather than scored from that copy's
+  dates. It is also present when the feed's calendar could not be read. The
+  letter is still published, but it describes less of the
   feed than a full grade, so show it with the qualifier. The same value rides
   as `grade_qualifier` on index history points, `catalog.json` and
   `directory.json` rows, rollup members, the MCP search rows, and the flat

@@ -214,8 +214,9 @@ mirror copy whose service is still current is graded normally. Every page and
 board report scored from a mirror copy says so and prints the copy's service
 dates.
 
-**Partial grades (rubric 1.5).** A grade whose freshness was held out this way
-keeps its letter, computed from the categories that were measured, but it is
+**Partial grades (rubric 1.5).** A grade whose freshness was held out this way,
+or was not measured for any other reason (for example, a calendar that could
+not be read), keeps its letter, computed from the categories that were measured, but it is
 never shown bare. Every surface that prints the grade marks it "partial:
 freshness not measured": agency pages, board one-pagers, call briefs, the paid
 board report and bundle, both badges, search snippets, directory, program, and

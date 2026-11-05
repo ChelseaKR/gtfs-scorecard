@@ -290,7 +290,11 @@ the declared public surface).
   brief, paid board report, and bundle manifest name the copy and its service
   dates. CDTA, Grand Valley Transit, and Blacksburg Transit now use the https
   form of their feed URLs, and SacRT uses its portal's apps.sacrt.com URL,
-  each checked on 2026-11-05.
+  each checked on 2026-11-05. The freshness sweep keeps counting a current
+  mirror copy down between full runs, and once that copy's service ends the
+  sweep holds freshness out the same way, so the grade turns partial instead
+  of reading as current. Every surface, the artifact's own `overall` included,
+  marks a grade partial on one rule: freshness not measured, for any reason.
 - **`/ntd/` no longer reports a limit of the catalogs read as a count.** The
   reporter join matched 1,253 Report Year 2024 reporters against three catalogs
   and printed "473 to 641 have no feed discoverable in any open catalog", without
