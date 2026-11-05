@@ -56,7 +56,7 @@ from .directory import build_directory
 from .embed_badge import HEIGHT as BADGE_HEIGHT
 from .embed_badge import WIDTH as BADGE_WIDTH
 from .embed_badge import BadgeState, badge_sentence, badge_state, render_named_badge
-from .feed_provenance import feed_source_lede
+from .feed_provenance import feed_source_lede, mirror_copy_caveat
 from .feeddiff import FeedDiff, diff_artifacts
 from .findings_national import agency_findings, plain_language_coverage
 from .fixlog import load_fixlog
@@ -1644,6 +1644,7 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         f'<p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked {esc(artifact["snapshot_date"])}</p>'
         f'<h1 class="board-title"><bdi>{esc(agency_name)}</bdi></h1>'
         f'<p class="board-sub">{esc(feed_source_lede(_artifact_source_provenance(artifact), _artifact_fetch_source(artifact)))}</p>'
+        f"{_mirror_caveat_html(artifact, 'board-sub')}"
         f"{mode_html}"
         f'<div class="grade-block">{reel}'
         f'<div class="score-block"><div><span class="score-big">{o["score"]}</span><span class="score-of"> / 100</span></div>'
@@ -1651,6 +1652,12 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         f'<div class="chips">{"".join(chips)}</div></div></div>'
         "</div></div>"
     )
+
+
+def _mirror_caveat_html(artifact: dict[str, Any], css_class: str) -> str:
+    """The mirror-copy sentence as one paragraph, or "" for an origin fetch."""
+    caveat = mirror_copy_caveat(artifact)
+    return f'<p class="{css_class}">{esc(caveat)}</p>' if caveat else ""
 
 
 def _realtime_unmeasured_label(category: dict[str, Any]) -> str:
@@ -4557,7 +4564,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
       <p class="brief-kicker">Call-prep brief &middot; checked {esc(str(artifact.get("snapshot_date", "")))}</p>
       <h1 class="brief-title">{esc(agency_name)}</h1>
       <p class="brief-grade">Grade {esc(str(overall["grade"]))} &middot; {esc(str(overall["score"]))} / 100</p>
-      <p class="brief-trend">{_brief_trend_line(history)}</p>
+      <p class="brief-trend">{_brief_trend_line(history)}</p>{_mirror_caveat_html(artifact, "brief-trend")}
       <p class="brief-forcall">For this call: lead with the grade and the three fixes below, then
         {call_prompt}. Each fix is framed as a next step,
         not a failure.</p>
@@ -4636,6 +4643,10 @@ def _render_board_page(
     else:
         progress_html = (
             "<p>No newly cleared items this period. The score and trend above "
+            "reflect the mirror copy described above, which may not match the "
+            "feed the agency publishes today.</p>"
+            if mirror_copy_caveat(artifact)
+            else "<p>No newly cleared items this period. The score and trend above "
             "reflect where the feed stands today.</p>"
         )
 
@@ -4675,7 +4686,7 @@ def _render_board_page(
       <p class="brief-kicker">Board packet &middot; transit data quality &middot; checked {esc(str(artifact.get("snapshot_date", "")))}</p>
       <h1 class="brief-title">{esc(agency_name)}</h1>
       <p class="brief-grade">Grade {esc(str(overall["grade"]))} &middot; {esc(str(overall["score"]))} / 100</p>
-      <p class="brief-trend">{_brief_trend_line(history)}</p>
+      <p class="brief-trend">{_brief_trend_line(history)}</p>{_mirror_caveat_html(artifact, "brief-trend")}
     </header>
     <section aria-labelledby="board-what-h">
       <h2 id="board-what-h">What this grade measures</h2>

@@ -10,7 +10,7 @@ scorecard hasn't computed.
 from __future__ import annotations
 
 import datetime as dt
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from .metrics import CategoryResult, Finding
@@ -208,6 +208,10 @@ class Scorecard:
     grade: str
     categories: dict[str, CategoryResult]
     top_fixes: list[Finding]
+    #: Categories that were read but deliberately not graded, keyed by name,
+    #: each with the plain-language reason shown in place of a score (see
+    #: hold_mirror_freshness). Empty for almost every feed.
+    held: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def to_json(self) -> dict[str, Any]:
         cats: dict[str, Any] = {}
@@ -216,6 +220,13 @@ class Scorecard:
                 payload = self.categories[name].to_json()
                 payload["weight"] = weight
                 cats[name] = payload
+            elif name in self.held:
+                cats[name] = {
+                    "name": name,
+                    "status": "not_yet_measured",
+                    "weight": weight,
+                    **self.held[name],
+                }
             else:
                 cats[name] = {
                     "name": name,
@@ -364,9 +375,126 @@ def score_feed_content(
     return measured
 
 
-def build_scorecard(categories: list[CategoryResult]) -> Scorecard:
+#: The lead fix when the configured feed URL failed and an expired Mobility
+#: Database mirror copy was scored instead (hold_mirror_freshness).
+FEED_DOWNLOAD_FAILED = "scorecard_feed_download_failed"
+
+#: Plain words for the exception class fetch.py records as ``origin_error``.
+_ORIGIN_ERROR_WORDS = {
+    "SSLError": "its HTTPS certificate was not accepted",
+    "HTTPError": "the server answered with an error instead of the file",
+    "ConnectTimeout": "the server did not answer in time",
+    "ReadTimeout": "the server stopped sending data before the file finished",
+    "Timeout": "the server did not answer in time",
+    "ConnectionError": "the connection to the server failed",
+    "ChunkedEncodingError": "the download was cut off partway through",
+    "ContentDecodingError": "the download was cut off partway through",
+    "UnresolvableHostError": "its host name does not resolve",
+    "TooManyRedirects": "the address redirects in a loop",
+}
+
+
+def hold_mirror_freshness(
+    categories: list[CategoryResult],
+    *,
+    fetch_source: str,
+    configured_url: str,
+    origin_error: str | None,
+) -> tuple[list[CategoryResult], dict[str, dict[str, Any]], Finding] | None:
+    """Stop grading a mirror copy's lapsed calendar as the agency's own.
+
+    When the configured URL fails, fetch.py scores the Mobility Database's
+    hosted copy instead. That copy is whatever the catalog last cached,
+    sometimes years old, so "service ended 670 days ago" describes the copy,
+    not the feed the agency publishes today. Grading it as freshness 0 put an
+    F on current feeds (SacRT, Grand Valley Transit) and led with "re-export
+    your calendar" for agencies whose calendars were fine. Absence is not a
+    value: freshness of the current feed is unknown, so it is held out of the
+    grade the way unmeasured realtime is, and the one thing we do know --
+    the feed could not be downloaded -- becomes the first fix.
+
+    Returns None (nothing to change) unless the bytes came from the mirror
+    and that copy's service has already ended. A mirror copy that is still
+    current is graded normally; its dates still describe live service.
+    Otherwise returns the categories without freshness, the held freshness
+    entry, and the lead fix.
+    """
+    if fetch_source != "mirror":
+        return None
+    fresh = next((c for c in categories if c.name == "freshness"), None)
+    if fresh is None:
+        return None
+    days = fresh.details.get("days_until_expiry")
+    if not isinstance(days, int) or days >= 0:
+        return None
+    start = fresh.details.get("feed_start_date")
+    end = fresh.details.get("effective_expiry_date") or fresh.details.get("last_service_date")
+    ended = f" ended its service on {end}" if end else "'s service has ended"
+    held = {
+        "reason": "mirror_copy_expired",
+        "summary": (
+            "Not graded. The feed URL on file could not be downloaded, and the "
+            f"Mobility Database mirror copy scored instead{ended}. That date "
+            "describes the copy, not the feed the agency publishes today, so it "
+            "does not count against the grade."
+        ),
+        # The copy's dates under their own key, never days_until_expiry: an
+        # expiry countdown here would be counted as the agency's lapse again.
+        "mirror_copy": {"service_start": start, "service_end": end},
+    }
+    from urllib.parse import urlsplit
+
+    words = _ORIGIN_ERROR_WORDS.get(origin_error or "", "the download failed")
+    host = urlsplit(configured_url).hostname or configured_url
+    timeout = origin_error in {"ConnectTimeout", "ReadTimeout", "Timeout", "ConnectionError"}
+    lead = Finding(
+        code=FEED_DOWNLOAD_FAILED,
+        severity="ERROR",
+        count=1,
+        what=f"The feed URL on file, {configured_url}, could not be downloaded: {words}.",
+        why=(
+            "Trip planners download the feed from that address too. The grade here "
+            f"was measured on an older Mobility Database copy whose service ended {end}, "
+            "so freshness is not graded until the current feed can be downloaded."
+            if end
+            else "Trip planners download the feed from that address too. The grade here "
+            "was measured on an older Mobility Database copy, so freshness is not "
+            "graded until the current feed can be downloaded."
+        ),
+        fix=(
+            f"Renew or repair the HTTPS certificate on {host}, so apps can download "
+            "the feed without a certificate error."
+            if origin_error == "SSLError"
+            else f"Restore the {host} address, or publish the new feed address so apps "
+            "and this scorecard can find the feed."
+            if origin_error == "UnresolvableHostError"
+            else f"Check that {configured_url} still serves your current feed. If the "
+            "feed moved, publish the new address."
+            if origin_error == "HTTPError"
+            else f"Make sure {configured_url} answers requests from outside your "
+            "network. Some firewalls block the cloud servers that trip planners "
+            "download from."
+            if timeout
+            else f"Make sure {configured_url} serves your current feed to anyone who requests it."
+        ),
+        effort="Usually a server or hosting setting, not a change to the feed itself.",
+        deduction=0.0,
+    )
+    return [c for c in categories if c.name != "freshness"], {"freshness": held}, lead
+
+
+def build_scorecard(
+    categories: list[CategoryResult],
+    *,
+    held: dict[str, dict[str, Any]] | None = None,
+    lead_fix: Finding | None = None,
+) -> Scorecard:
     """Weight measured categories into an overall 0-100 score and pick the
-    three highest-impact fixes (most rider-affecting first)."""
+    three highest-impact fixes (most rider-affecting first).
+
+    ``held`` and ``lead_fix`` come from :func:`hold_mirror_freshness`: a held
+    category is shown with its reason and never weighted, and the lead fix is
+    ranked first ahead of the scored findings."""
     if len({c.name for c in categories}) != len(categories):
         raise ValueError("duplicate category name in scorecard input")
     measured = {c.name: c for c in categories}
@@ -380,11 +508,36 @@ def build_scorecard(categories: list[CategoryResult]) -> Scorecard:
     # zero-deduction note (e.g. an informational finding) is never surfaced as
     # something to fix first.
     all_findings = [f for c in measured.values() for f in c.findings if f.deduction > 0]
-    top = sorted(all_findings, key=_fix_priority)[:3]
+    lead = [lead_fix] if lead_fix is not None else []
+    top = lead + sorted(all_findings, key=_fix_priority)[: 3 - len(lead)]
 
     return Scorecard(
         overall_score=overall,
         grade=str(published_overall(overall)["grade"]),
         categories=measured,
         top_fixes=top,
+        held=dict(held or {}),
     )
+
+
+def build_scorecard_for_fetch(
+    categories: list[CategoryResult],
+    *,
+    fetch_source: str,
+    configured_url: str,
+    origin_error: str | None,
+) -> Scorecard:
+    """build_scorecard, with an expired mirror copy's freshness held out.
+
+    The one entry point for every caller that knows how the bytes were
+    fetched (the daily run and reproduction), so they cannot disagree."""
+    hold = hold_mirror_freshness(
+        categories,
+        fetch_source=fetch_source,
+        configured_url=configured_url,
+        origin_error=origin_error,
+    )
+    if hold is None:
+        return build_scorecard(categories)
+    kept, held, lead = hold
+    return build_scorecard(kept, held=held, lead_fix=lead)

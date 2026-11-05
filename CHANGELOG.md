@@ -263,6 +263,19 @@ the declared public surface).
 
 ### Fixed
 
+- **Padded CSV headers no longer hide columns.** Metra writes `service_id, monday`
+  (comma-space) and Renfe pads every line with trailing spaces, so lookups such
+  as `end_date` and `wheelchair_boarding` missed columns that were there. Metra
+  read as F 37.7 with "no service end date" and 0% wheelchair data. Column names
+  are now stripped of whitespace and byte-order marks when a table is read.
+- **An expired Mobility Database mirror copy is no longer graded as the
+  agency's lapse.** When the feed URL on file fails and the copy scored instead
+  has already ended, freshness is held out of the grade as not measured, the
+  failed download leads the fixes, and the agency page, board one-pager, call
+  brief, paid board report, and bundle manifest name the copy and its service
+  dates. CDTA, Grand Valley Transit, and Blacksburg Transit now use the https
+  form of their feed URLs, and SacRT uses its portal's apps.sacrt.com URL,
+  each checked on 2026-11-05.
 - **`/ntd/` no longer reports a limit of the catalogs read as a count.** The
   reporter join matched 1,253 Report Year 2024 reporters against three catalogs
   and printed "473 to 641 have no feed discoverable in any open catalog", without

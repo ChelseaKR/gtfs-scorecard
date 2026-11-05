@@ -3261,6 +3261,38 @@ function feedSourceLede(artifact) {
   return "Based on the feed source on file; publisher ownership is not verified";
 }
 
+/** An ISO date string, or null for anything else.
+ *  @param {any} value */
+function isoDateOrNull(value) {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
+}
+
+/** The mirror-copy sentence, matching feed_provenance.mirror_copy_caveat;
+ *  "" unless the scored bytes came from the Mobility Database mirror.
+ *  @param {any} artifact */
+function mirrorCopyCaveat(artifact) {
+  const fetchSource = artifact?.confidence?.fetch_source || artifact?.fetch?.source || "unknown";
+  if (fetchSource !== "mirror") return "";
+  const fresh = artifact?.categories?.freshness || {};
+  const held = fresh.mirror_copy;
+  const details = fresh.details || {};
+  const start = isoDateOrNull(held ? held.service_start : details.feed_start_date);
+  const end = isoDateOrNull(
+    held
+      ? held.service_end
+      : details.effective_expiry_date || details.last_service_date || details.feed_end_date,
+  );
+  const lead =
+    "Scored from a Mobility Database mirror copy, because the feed URL on file could not be downloaded.";
+  const dates =
+    start && end
+      ? ` Service dates in that copy run ${start} to ${end}.`
+      : end
+        ? ` Service dates in that copy end ${end}.`
+        : " Service dates in that copy could not be read.";
+  return `${lead}${dates} It may not match the feed the agency publishes today.`;
+}
+
 /** @param {string} name @param {any} artifact @param {any[]} history @param {any} [dirRecord] */
 function boardHero(name, artifact, history, dirRecord) {
   const o = artifact.overall;
@@ -3270,6 +3302,7 @@ function boardHero(name, artifact, history, dirRecord) {
       <p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status · checked ${formatDate(artifact.snapshot_date)}</p>
       <h1 class="board-title"><bdi>${esc(name)}</bdi></h1>
       <p class="board-sub">${esc(feedSourceLede(artifact))}</p>
+      ${mirrorCopyCaveat(artifact) ? `<p class="board-sub">${esc(mirrorCopyCaveat(artifact))}</p>` : ""}
       ${mode ? `<p class="board-mode"><span>Service mode</span> ${esc(mode)}</p>` : ""}
       <div class="grade-block">
         ${gradeReel(o.grade)}

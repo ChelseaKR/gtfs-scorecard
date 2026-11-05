@@ -12,7 +12,7 @@ import datetime as dt
 import io
 import logging
 import zipfile
-from collections.abc import Generator
+from collections.abc import Generator, Iterable
 from dataclasses import dataclass
 
 log = logging.getLogger(__name__)
@@ -92,7 +92,33 @@ def _read_table(zf: zipfile.ZipFile, name: str) -> list[dict[str, str]]:
     # reader downstream writes row.get("col", "").strip() -- a default that
     # only fires when the key is absent, not when it is present and None.
     # One short trips.txt row was enough to crash scoring outright.
-    return list(csv.DictReader(io.StringIO(text), restval=""))
+    return list(_gtfs_dict_reader(io.StringIO(text)))
+
+
+def _normalize_header(name: str) -> str:
+    """One GTFS column name with stray padding and byte-order marks removed.
+
+    GTFS field names are fixed ASCII identifiers, so whitespace or a BOM
+    around one is never part of the name. Exporters still emit both: Metra
+    writes ``service_id, monday, ...`` (comma-space) and Renfe pads every
+    line with trailing spaces, which made ``row.get("end_date")`` miss a
+    column that was there and scored a current feed as having no end date.
+    """
+    return name.replace("\ufeff", "").strip()
+
+
+def _gtfs_dict_reader(text: Iterable[str]) -> csv.DictReader[str]:
+    """A ``DictReader`` over one GTFS table with normalized column names.
+
+    ``skipinitialspace`` lets a quoted value that follows a comma-space
+    separator (``, "Union Station"``) parse as a quoted value instead of
+    a literal with quote marks in it. Values are otherwise left as read;
+    every consumer already strips them.
+    """
+    reader = csv.DictReader(text, restval="", skipinitialspace=True)
+    if reader.fieldnames is not None:
+        reader.fieldnames = [_normalize_header(f) for f in reader.fieldnames]
+    return reader
 
 
 def read_tables(gtfs_zip_path: str, names: list[str]) -> dict[str, list[dict[str, str]]]:
@@ -174,7 +200,7 @@ def iter_table_rows(
                 newline="",
             ) as text,
         ):
-            yield from csv.DictReader(text, restval="")
+            yield from _gtfs_dict_reader(text)
 
 
 def read_agency_ids(gtfs_zip_path: str) -> list[str]:

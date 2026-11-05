@@ -62,7 +62,8 @@ from .publish import build_artifact, publish
 from .rt import capture_window, realtime, scheduled_trip_ids_at
 from .rt_drift import compute_drift, vehicle_plausibility
 from .s3_publish import DEFAULT_PUBLISH_WORKERS, MAX_PUBLISH_WORKERS
-from .score import build_scorecard, score_feed_content
+from .score import build_scorecard, build_scorecard_for_fetch, score_feed_content
+from .url_redaction import redact_url_text
 from .validate import (
     ValidationReport,
     country_scoped_output_dir,
@@ -274,7 +275,14 @@ def run_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                 rt_interval=rt_interval,
             )
         )
-    scorecard = build_scorecard(cats)
+    # An expired Mobility Database mirror copy is not the agency's calendar, so
+    # its freshness is held out and the failed download leads (score.py).
+    scorecard = build_scorecard_for_fetch(
+        cats,
+        fetch_source=fetched.source,
+        configured_url=redact_url_text(agency.static_gtfs_url),
+        origin_error=fetched.origin_error,
+    )
     # Derive generated_at from the snapshot date (not wall-clock) so re-running a
     # given date reproduces the artifact byte-for-byte (publish.py contract).
     generated_at = dt.datetime.combine(fetched.fetched_date, dt.time(), dt.UTC)

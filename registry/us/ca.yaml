@@ -1848,24 +1848,29 @@ agencies:
   # serves a January 2025 file whose service ended 2025-04-05. So mdb-2137 is
   # the retired alias, and the weekly sync cannot re-apply the catalog redirect
   # because its target is no longer a canonical record.
+  #
+  # Checked 2026-11-05: iportal.sacrt.com's certificate is still expired, so
+  # every run since 2026-09-20 scored a 2024 mirror copy. The transit data
+  # portal links apps.sacrt.com/gtfs/srtd/google_transit.zip, which has a valid
+  # certificate and serves the same bytes as iportal (SEP26, service through
+  # 2027-01-02), so the record now points there.
   - id: sacramento-regional-transit-sacrt
     ntd_id: "90019"
     name: Sacramento Regional Transit (SacRT)
     organization_id: sacramento-regional-transit-district
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://iportal.sacrt.com/GTFS/SRTD/google_transit.zip
+    static_gtfs_url: https://apps.sacrt.com/gtfs/srtd/google_transit.zip
     mdb_id: 1296
     license_note: >-
       Sacramento Regional Transit District (SacRT) transit data portal grants
       non-exclusive rights to use, reproduce, and redistribute the data:
       https://www.sacrt.com/transit-data-portal/
     operating_note: >-
-      Checked 2026-10-01: the security certificate on iportal.sacrt.com, which
-      serves this feed, expired on 2026-09-20, so a download that checks
-      certificates fails until SacRT renews it. The scorecard keeps checking
-      certificates; while the check fails, the run records the failure and the
-      artifact names any mirror copy it scored instead.
+      Checked 2026-11-05: the certificate on iportal.sacrt.com is still expired.
+      SacRT's transit data portal links apps.sacrt.com/gtfs/srtd/, which has a
+      valid certificate and serves the same bytes, so the record tracks that
+      host.
     rt_urls:
       trip_updates: https://bustime.sacrt.com/gtfsrt/trips
       vehicle_positions: https://bustime.sacrt.com/gtfsrt/vehicles

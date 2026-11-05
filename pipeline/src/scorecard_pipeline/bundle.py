@@ -44,9 +44,17 @@ from typing import Any
 
 from .agencies import ID_PATTERN
 from .config import AGENCIES
+from .feed_provenance import mirror_copy_caveat
 from .net import UnsafeURLError, validate_public_url
 from .notify import Email
-from .report import DEFAULT_ACCENT, Brand, ReportError, _validate_accent, generate_report
+from .report import (
+    DEFAULT_ACCENT,
+    Brand,
+    ReportError,
+    _load_inputs,
+    _validate_accent,
+    generate_report,
+)
 
 MAX_AGENCIES = 100
 MAX_PROGRAM_NAME = 120
@@ -221,6 +229,8 @@ STATUS_UNKNOWN = "unknown_id"
 STATUS_RETIRED = "retired"
 STATUS_NOT_PUBLISHED = "not_published"
 STATUS_INCLUDED = "included"
+#: The ``source`` an included row carries when its grade came from a mirror copy.
+SOURCE_MIRROR = "scored_from_mirror"
 
 _STATUS_DETAIL = {
     STATUS_UNKNOWN: "not a tracked scorecard id; check the id on gtfsscorecard.org/agencies/",
@@ -318,6 +328,10 @@ def _readme(request: BundleRequest, manifest: dict[str, Any]) -> str:
     if skipped:
         lines.append("Not included:")
         lines.extend(f"  {a['id']}: {a['detail']}" for a in skipped)
+    mirrored = [a for a in manifest["agencies"] if a.get("source") == SOURCE_MIRROR]
+    if mirrored:
+        lines.append("Included, but scored from a Mobility Database mirror copy:")
+        lines.extend(f"  {a['id']}: {a['detail']}" for a in mirrored)
     lines += [
         "",
         "Every number comes from the agency's published scorecard at",
@@ -372,12 +386,18 @@ def build_bundle(
                 }
             )
             continue
+        # A report graded from a Mobility Database mirror copy is still
+        # included (it is the published scorecard), but the manifest and the
+        # README say so, with the copy's dates, rather than listing it as if
+        # it described the agency's feed today.
+        caveat = mirror_copy_caveat(_load_inputs(agency_id)[0])
         rows.append(
             {
                 "id": agency_id,
                 "status": STATUS_INCLUDED,
-                "detail": "",
+                "detail": caveat,
                 "file": f"reports/{target.name}",
+                **({"source": SOURCE_MIRROR} if caveat else {}),
             }
         )
 
@@ -446,6 +466,10 @@ def delivery_email(
     if skipped:
         lines += ["", "Not included:"]
         lines += [f"  {a['id']}: {a['detail']}" for a in skipped]
+    mirrored = [a for a in manifest["agencies"] if a.get("source") == SOURCE_MIRROR]
+    if mirrored:
+        lines += ["", "Included, but scored from a Mobility Database mirror copy:"]
+        lines += [f"  {a['id']}: {a['detail']}" for a in mirrored]
     if request.cadence == "monthly":
         lines += [
             "",

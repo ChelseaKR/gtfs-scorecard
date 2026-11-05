@@ -202,6 +202,18 @@ change grades across the corpus, so neither is taken by an ordinary fix. A
 change here goes through the governed rubric path below with a canary impact
 report. Until then the curve stays as written.
 
+**Mirror copies.** When the feed URL on file cannot be downloaded, the daily
+run scores the Mobility Database's hosted copy instead. That copy can be months
+or years old, so its expired calendar says nothing about the feed the agency
+publishes today. When a mirror copy's service has already ended, freshness is
+not graded: it is shown as not measured, with the copy's service dates, and it
+does not count against the grade, the same way unmeasured realtime is handled.
+The first fix becomes the failed download itself (`scorecard_feed_download_failed`),
+worded for the error the run saw, for example an expired HTTPS certificate. A
+mirror copy whose service is still current is graded normally. Every page and
+board report scored from a mirror copy says so and prints the copy's service
+dates.
+
 An effective end date more than ten calendar years after the check is reported
 as unusually distant. Ten years is a conservative review threshold chosen to
 leave ordinary multi-year planning alone while surfacing sentinel-like dates

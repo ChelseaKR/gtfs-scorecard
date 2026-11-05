@@ -106,7 +106,15 @@ def can_resweep(artifact: dict[str, Any]) -> bool:
 
     A feed with no readable expiry (the `scorecard_no_expiry_date` case) stores
     no dates, so there is nothing to recompute and a full re-score is the only
-    way its freshness changes."""
+    way its freshness changes.
+
+    False too for a Mobility Database mirror copy. Its dates describe the copy,
+    not the agency's current feed, so counting them down here would turn a
+    copy's lapse into the agency's "re-export your calendar" fix, which the
+    full run deliberately does not do (score.hold_mirror_freshness)."""
+    fetch = artifact.get("fetch")
+    if isinstance(fetch, dict) and fetch.get("source") == "mirror":
+        return False
     fresh = artifact.get("categories", {}).get("freshness", {})
     if fresh.get("status") != "measured":
         return False
