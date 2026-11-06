@@ -3,6 +3,10 @@
 from .instance import BASE_URL as _BASE_URL
 from .instance import SITE_NAME as _SITE_NAME
 
+# 1.20: additive overall.grade_qualifier ("partial: freshness not measured")
+# when an expired mirror copy's freshness is held out of the grade (rubric 1.5),
+# carried on index history, catalog and directory rows, rollup members, and
+# the flat exports as grade_qualifier, so a partial letter is never shown bare.
 # 1.19: additive consequence block on every category finding and top fix:
 # network reach computed from the artifact, plus annual rider-trips and
 # served-area need as values or explicit absences. The per-agency writer
@@ -56,7 +60,7 @@ from .instance import SITE_NAME as _SITE_NAME
 # reproducible, joinable to the Mobility Database, and reusable.
 # 1.3: additive freshness fields exposed to consumers (days_until_expiry in
 # index history, expiry_status in the catalog and rollup members).
-SCHEMA_VERSION = "1.19"
+SCHEMA_VERSION = "1.20"
 
 # The license the public scorecard data is offered under. Carried on the catalog
 # and directory documents so a consumer (OSS project, consultant, researcher)
@@ -69,7 +73,7 @@ DATA_ATTRIBUTION = (
 
 # Bump when the rubric (weights, deductions, grade bands, or what is measured)
 # changes, so a trend can tell a feed change apart from a methodology change.
-RUBRIC_VERSION = "1.4"
+RUBRIC_VERSION = "1.5"
 
 # Stable identity for the scoring contract. This is deliberately distinct from
 # SCHEMA_VERSION: adding an API field must not imply a methodology change.

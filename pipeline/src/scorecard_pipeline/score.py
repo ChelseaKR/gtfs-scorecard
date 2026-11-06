@@ -10,7 +10,8 @@ scorecard hasn't computed.
 from __future__ import annotations
 
 import datetime as dt
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from typing import Any
 
 from .metrics import CategoryResult, Finding
@@ -69,6 +70,48 @@ def published_overall(score: float) -> dict[str, Any]:
     }
 
 
+#: The words every surface prints beside a letter grade whose freshness was
+#: not measured (rubric 1.5). The letter is still the one the measured
+#: categories earn, but it describes less of the feed than a full grade does,
+#: so it is never shown bare: not on the agency page, the board one-pager, the
+#: paid report, the badges, or a row of the API, dataset, or CSV exports.
+PARTIAL_FRESHNESS_QUALIFIER = "partial: freshness not measured"
+
+
+def grade_qualifier(artifact: object) -> str | None:
+    """The qualifier a published grade must carry, or None for a full grade.
+
+    Read from the artifact itself, so a surface built from an older artifact
+    (one published before ``overall.grade_qualifier`` existed) still says so:
+    a freshness category that is present but not measured makes the grade
+    partial, whatever the reason -- an expired Mobility Database mirror copy
+    held out of the grade (hold_mirror_freshness), or a feed whose calendar
+    could not be read. This is the same rule ``Scorecard.to_json`` uses to
+    write ``overall.grade_qualifier``, so the artifact and every surface built
+    from it agree. Unmeasured freshness is never turned into a value here; the
+    qualifier is the whole answer.
+    """
+    if not isinstance(artifact, Mapping):
+        return None
+    overall = artifact.get("overall")
+    if not isinstance(overall, Mapping) or not overall.get("grade"):
+        return None
+    stated = overall.get("grade_qualifier")
+    if isinstance(stated, str) and stated:
+        return stated
+    categories = artifact.get("categories")
+    fresh = categories.get("freshness") if isinstance(categories, Mapping) else None
+    if isinstance(fresh, Mapping) and fresh.get("status") not in (None, "measured"):
+        return PARTIAL_FRESHNESS_QUALIFIER
+    return None
+
+
+def qualified_grade(grade: object, qualifier: object) -> str:
+    """``"C"`` or ``"C (partial: freshness not measured)"``: the one display form."""
+    text = str(grade)
+    return f"{text} ({qualifier})" if isinstance(qualifier, str) and qualifier else text
+
+
 # A dated, plain-language log of methodology versions, newest first. Surfaced on
 # the public "how to read" page and in scoring.json so a reader can tell a score
 # change apart from a rule change and see exactly when each rubric version took
@@ -84,6 +127,25 @@ def published_overall(score: float) -> dict[str, Any]:
 # national effect ships with the change (canary.py, docs/rubric.md "Governed
 # upgrades").
 METHODOLOGY_CHANGELOG: list[dict[str, str]] = [
+    {
+        "rubric_version": "1.5",
+        "effective_date": "2026-11-05",
+        "summary": (
+            "When the feed URL on file cannot be downloaded and the Mobility "
+            "Database mirror copy scored instead has already ended, freshness is "
+            "no longer graded from that copy's dates. It is shown as not measured "
+            "and left out of the grade, the same way unmeasured realtime is, and "
+            "the failed download becomes the first fix. The letter grade is kept, "
+            'but it is marked "partial: freshness not measured" everywhere it '
+            "appears: agency pages, board reports, badges, and the API, dataset, "
+            "and CSV exports (overall.grade_qualifier and a grade_qualifier "
+            "column). The same mark goes on any grade whose freshness was not "
+            "measured for another reason, such as a calendar that could not be "
+            "read. Unmeasured freshness is never shown as 0 or as fresh. "
+            "Mirror copies that are still current, and every feed downloaded from "
+            "its own URL, are graded as before."
+        ),
+    },
     {
         "rubric_version": "1.4",
         "effective_date": "2026-10-01",
@@ -208,6 +270,10 @@ class Scorecard:
     grade: str
     categories: dict[str, CategoryResult]
     top_fixes: list[Finding]
+    #: Categories that were read but deliberately not graded, keyed by name,
+    #: each with the plain-language reason shown in place of a score (see
+    #: hold_mirror_freshness). Empty for almost every feed.
+    held: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def to_json(self) -> dict[str, Any]:
         cats: dict[str, Any] = {}
@@ -216,6 +282,13 @@ class Scorecard:
                 payload = self.categories[name].to_json()
                 payload["weight"] = weight
                 cats[name] = payload
+            elif name in self.held:
+                cats[name] = {
+                    "name": name,
+                    "status": "not_yet_measured",
+                    "weight": weight,
+                    **self.held[name],
+                }
             else:
                 cats[name] = {
                     "name": name,
@@ -223,6 +296,14 @@ class Scorecard:
                     "weight": weight,
                     "summary": "Not scored yet. Nothing here counts against the grade.",
                 }
+        overall = published_overall(self.overall_score)
+        if "freshness" not in self.categories:
+            # One rule with grade_qualifier(): freshness not measured, for any
+            # reason (held out from an expired mirror copy, or no readable
+            # calendar), makes the grade partial on every surface, this one
+            # included. Kept beside the letter, not folded into it, so
+            # overall.grade stays one of A-F and the qualifier is never dropped.
+            overall["grade_qualifier"] = PARTIAL_FRESHNESS_QUALIFIER
         return {
             # score, grade, and the two margins all come out of published_overall,
             # so the letter is always the letter the printed score earns. The
@@ -230,7 +311,7 @@ class Scorecard:
             # so a near-boundary grade reads as "a B, 0.4 points from an A" rather
             # than a verdict; margin_to_next_band is null for an A, which has no
             # higher band.
-            "overall": published_overall(self.overall_score),
+            "overall": overall,
             "categories": cats,
             "top_fixes": [{**f.to_json(), "rank": i + 1} for i, f in enumerate(self.top_fixes)],
         }
@@ -364,9 +445,126 @@ def score_feed_content(
     return measured
 
 
-def build_scorecard(categories: list[CategoryResult]) -> Scorecard:
+#: The lead fix when the configured feed URL failed and an expired Mobility
+#: Database mirror copy was scored instead (hold_mirror_freshness).
+FEED_DOWNLOAD_FAILED = "scorecard_feed_download_failed"
+
+#: Plain words for the exception class fetch.py records as ``origin_error``.
+_ORIGIN_ERROR_WORDS = {
+    "SSLError": "its HTTPS certificate was not accepted",
+    "HTTPError": "the server answered with an error instead of the file",
+    "ConnectTimeout": "the server did not answer in time",
+    "ReadTimeout": "the server stopped sending data before the file finished",
+    "Timeout": "the server did not answer in time",
+    "ConnectionError": "the connection to the server failed",
+    "ChunkedEncodingError": "the download was cut off partway through",
+    "ContentDecodingError": "the download was cut off partway through",
+    "UnresolvableHostError": "its host name does not resolve",
+    "TooManyRedirects": "the address redirects in a loop",
+}
+
+
+def hold_mirror_freshness(
+    categories: list[CategoryResult],
+    *,
+    fetch_source: str,
+    configured_url: str,
+    origin_error: str | None,
+) -> tuple[list[CategoryResult], dict[str, dict[str, Any]], Finding] | None:
+    """Stop grading a mirror copy's lapsed calendar as the agency's own.
+
+    When the configured URL fails, fetch.py scores the Mobility Database's
+    hosted copy instead. That copy is whatever the catalog last cached,
+    sometimes years old, so "service ended 670 days ago" describes the copy,
+    not the feed the agency publishes today. Grading it as freshness 0 put an
+    F on current feeds (SacRT, Grand Valley Transit) and led with "re-export
+    your calendar" for agencies whose calendars were fine. Absence is not a
+    value: freshness of the current feed is unknown, so it is held out of the
+    grade the way unmeasured realtime is, and the one thing we do know --
+    the feed could not be downloaded -- becomes the first fix.
+
+    Returns None (nothing to change) unless the bytes came from the mirror
+    and that copy's service has already ended. A mirror copy that is still
+    current is graded normally; its dates still describe live service.
+    Otherwise returns the categories without freshness, the held freshness
+    entry, and the lead fix.
+    """
+    if fetch_source != "mirror":
+        return None
+    fresh = next((c for c in categories if c.name == "freshness"), None)
+    if fresh is None:
+        return None
+    days = fresh.details.get("days_until_expiry")
+    if not isinstance(days, int) or days >= 0:
+        return None
+    start = fresh.details.get("feed_start_date")
+    end = fresh.details.get("effective_expiry_date") or fresh.details.get("last_service_date")
+    ended = f" ended its service on {end}" if end else "'s service has ended"
+    held = {
+        "reason": "mirror_copy_expired",
+        "summary": (
+            "Not graded. The feed URL on file could not be downloaded, and the "
+            f"Mobility Database mirror copy scored instead{ended}. That date "
+            "describes the copy, not the feed the agency publishes today, so it "
+            "does not count against the grade."
+        ),
+        # The copy's dates under their own key, never days_until_expiry: an
+        # expiry countdown here would be counted as the agency's lapse again.
+        "mirror_copy": {"service_start": start, "service_end": end},
+    }
+    from urllib.parse import urlsplit
+
+    words = _ORIGIN_ERROR_WORDS.get(origin_error or "", "the download failed")
+    host = urlsplit(configured_url).hostname or configured_url
+    timeout = origin_error in {"ConnectTimeout", "ReadTimeout", "Timeout", "ConnectionError"}
+    lead = Finding(
+        code=FEED_DOWNLOAD_FAILED,
+        severity="ERROR",
+        count=1,
+        what=f"The feed URL on file, {configured_url}, could not be downloaded: {words}.",
+        why=(
+            "Trip planners download the feed from that address too. The grade here "
+            f"was measured on an older Mobility Database copy whose service ended {end}, "
+            "so freshness is not graded until the current feed can be downloaded."
+            if end
+            else "Trip planners download the feed from that address too. The grade here "
+            "was measured on an older Mobility Database copy, so freshness is not "
+            "graded until the current feed can be downloaded."
+        ),
+        fix=(
+            f"Renew or repair the HTTPS certificate on {host}, so apps can download "
+            "the feed without a certificate error."
+            if origin_error == "SSLError"
+            else f"Restore the {host} address, or publish the new feed address so apps "
+            "and this scorecard can find the feed."
+            if origin_error == "UnresolvableHostError"
+            else f"Check that {configured_url} still serves your current feed. If the "
+            "feed moved, publish the new address."
+            if origin_error == "HTTPError"
+            else f"Make sure {configured_url} answers requests from outside your "
+            "network. Some firewalls block the cloud servers that trip planners "
+            "download from."
+            if timeout
+            else f"Make sure {configured_url} serves your current feed to anyone who requests it."
+        ),
+        effort="Usually a server or hosting setting, not a change to the feed itself.",
+        deduction=0.0,
+    )
+    return [c for c in categories if c.name != "freshness"], {"freshness": held}, lead
+
+
+def build_scorecard(
+    categories: list[CategoryResult],
+    *,
+    held: dict[str, dict[str, Any]] | None = None,
+    lead_fix: Finding | None = None,
+) -> Scorecard:
     """Weight measured categories into an overall 0-100 score and pick the
-    three highest-impact fixes (most rider-affecting first)."""
+    three highest-impact fixes (most rider-affecting first).
+
+    ``held`` and ``lead_fix`` come from :func:`hold_mirror_freshness`: a held
+    category is shown with its reason and never weighted, and the lead fix is
+    ranked first ahead of the scored findings."""
     if len({c.name for c in categories}) != len(categories):
         raise ValueError("duplicate category name in scorecard input")
     measured = {c.name: c for c in categories}
@@ -380,11 +578,36 @@ def build_scorecard(categories: list[CategoryResult]) -> Scorecard:
     # zero-deduction note (e.g. an informational finding) is never surfaced as
     # something to fix first.
     all_findings = [f for c in measured.values() for f in c.findings if f.deduction > 0]
-    top = sorted(all_findings, key=_fix_priority)[:3]
+    lead = [lead_fix] if lead_fix is not None else []
+    top = lead + sorted(all_findings, key=_fix_priority)[: 3 - len(lead)]
 
     return Scorecard(
         overall_score=overall,
         grade=str(published_overall(overall)["grade"]),
         categories=measured,
         top_fixes=top,
+        held=dict(held or {}),
     )
+
+
+def build_scorecard_for_fetch(
+    categories: list[CategoryResult],
+    *,
+    fetch_source: str,
+    configured_url: str,
+    origin_error: str | None,
+) -> Scorecard:
+    """build_scorecard, with an expired mirror copy's freshness held out.
+
+    The one entry point for every caller that knows how the bytes were
+    fetched (the daily run and reproduction), so they cannot disagree."""
+    hold = hold_mirror_freshness(
+        categories,
+        fetch_source=fetch_source,
+        configured_url=configured_url,
+        origin_error=origin_error,
+    )
+    if hold is None:
+        return build_scorecard(categories)
+    kept, held, lead = hold
+    return build_scorecard(kept, held=held, lead_fix=lead)

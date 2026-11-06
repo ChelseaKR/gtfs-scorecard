@@ -973,6 +973,11 @@ export interface components {
                 score: number;
                 /** @enum {string} */
                 grade: "A" | "B" | "C" | "D" | "F";
+                /**
+                 * @description Present only when the grade is partial: freshness was not measured because an expired Mobility Database mirror copy was held out of the grade (rubric 1.5). The letter is still published and must be shown with this qualifier.
+                 * @enum {string}
+                 */
+                grade_qualifier?: "partial: freshness not measured";
                 margin_to_next_band?: number | null;
                 margin_to_lower_band?: number | null;
             };
@@ -1252,6 +1257,11 @@ export interface components {
             subdivision_name?: string;
             /** @enum {string} */
             grade: "A" | "B" | "C" | "D" | "F";
+            /**
+             * @description null for a full grade; "partial: freshness not measured" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier.
+             * @enum {string|null}
+             */
+            grade_qualifier?: "partial: freshness not measured" | null;
             score: number;
             /** @description Whether this row belongs to the current producer-, category-, and identity-safe comparison cohort. */
             comparison_eligible?: boolean;
@@ -1417,6 +1427,11 @@ export interface components {
                 subdivision_name?: string;
                 /** @enum {string} */
                 grade: "A" | "B" | "C" | "D" | "F";
+                /**
+                 * @description null for a full grade; "partial: freshness not measured" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier.
+                 * @enum {string|null}
+                 */
+                grade_qualifier?: "partial: freshness not measured" | null;
                 score: number;
                 /** @description Whether this row belongs to the comparison cohort documented in summary.comparison. */
                 comparison_eligible?: boolean;
@@ -1642,6 +1657,11 @@ export interface components {
                 score: number;
                 /** @enum {unknown} */
                 grade: "A" | "B" | "C" | "D" | "F";
+                /**
+                 * @description null for a full grade; "partial: freshness not measured" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier.
+                 * @enum {string|null}
+                 */
+                grade_qualifier?: "partial: freshness not measured" | null;
                 snapshot_date: string;
                 needs_attention: boolean;
                 attention_reason: string | null;

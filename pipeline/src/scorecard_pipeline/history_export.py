@@ -63,12 +63,13 @@ from .identity import resolve_published_agency_name
 from .license_notice import notice_for_agency
 from .metrics import expiry_status, resolve_service_horizon_status
 from .publish import registered_agency_dirs
-from .score import published_overall
+from .score import grade_qualifier, published_overall
 
 #: The shape of the export, independent of the artifact schema it reads. 1.1
 #: (2026-10-11): credential-like query values in the two URL columns are
-#: replaced with ``REDACTED`` (``redact_url``).
-TABLES_VERSION: Final = "1.1"
+#: replaced with ``REDACTED`` (``redact_url``). 1.2 (2026-11-05): a
+#: ``grade_qualifier`` column after ``grade`` marks a partial grade (rubric 1.5).
+TABLES_VERSION: Final = "1.2"
 PRODUCT_NAME: Final = "GTFS Scorecard history tables"
 SOURCE_URL: Final = "https://gtfsscorecard.org"
 EXCLUSIONS_FILENAME: Final = "history-export-exclusions.yaml"
@@ -162,6 +163,11 @@ CHECKS_COLUMNS: Final[tuple[Column, ...]] = (
         "How the archive was read: raw-v1 or flat-single-root-v1.",
     ),
     Column("grade", "VARCHAR", "Letter grade derived from score, as the public trend derives it."),
+    Column(
+        "grade_qualifier",
+        "VARCHAR",
+        "'partial: freshness not measured' when freshness was held out; null for a full grade.",
+    ),
     Column("score", "DOUBLE", "Overall score, 0 to 100."),
     Column("correctness", "DOUBLE", "Correctness category score; null when not measured."),
     Column("freshness", "DOUBLE", "Freshness category score; null when not measured."),
@@ -610,6 +616,7 @@ def check_row(
         "validator_version": _text_or_none(artifact.get("validator_version")),
         "reader_archive_profile": reader_archive_profile(dict(artifact)),
         "grade": overall["grade"],
+        "grade_qualifier": grade_qualifier(artifact),
         "score": overall["score"],
         "correctness": measured.get("correctness"),
         "freshness": measured.get("freshness"),

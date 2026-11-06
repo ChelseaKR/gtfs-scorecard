@@ -8,7 +8,7 @@ sync with this page; every metric's docstring links back here.
 ## Sources the rubric maps to
 
 This is a project-authored scoring profile, identified in artifacts as
-`gtfs-scorecard-1.4`. Its weights, deductions, thresholds, grade bands, and fix
+`gtfs-scorecard-1.5`. Its weights, deductions, thresholds, grade bands, and fix
 ranking are GTFS Scorecard choices. California guidance informed those choices
 and is the normative quality bar for California agencies; it is not worldwide
 authority. A score outside California is a feed-quality assessment under this
@@ -39,7 +39,7 @@ it. The validator owns specification and best-practice notices as GTFS evolves.
 The scorecard consumes those notice codes for correctness and links users back
 to their canonical rule documentation.
 
-This project owns the separate `gtfs-scorecard-1.4` policy layer: category
+This project owns the separate `gtfs-scorecard-1.5` policy layer: category
 weights, deductions, thresholds, grade bands, fix ordering, freshness and
 rider-facing completeness measures, and optional realtime observations. Those
 choices are versioned and inspectable, but they are not presented as an
@@ -201,6 +201,32 @@ label it as the California rule when it is applied outside California. Both
 change grades across the corpus, so neither is taken by an ordinary fix. A
 change here goes through the governed rubric path below with a canary impact
 report. Until then the curve stays as written.
+
+**Mirror copies.** When the feed URL on file cannot be downloaded, the daily
+run scores the Mobility Database's hosted copy instead. That copy can be months
+or years old, so its expired calendar says nothing about the feed the agency
+publishes today. When a mirror copy's service has already ended, freshness is
+not graded: it is shown as not measured, with the copy's service dates, and it
+does not count against the grade, the same way unmeasured realtime is handled.
+The first fix becomes the failed download itself (`scorecard_feed_download_failed`),
+worded for the error the run saw, for example an expired HTTPS certificate. A
+mirror copy whose service is still current is graded normally. Every page and
+board report scored from a mirror copy says so and prints the copy's service
+dates.
+
+**Partial grades (rubric 1.5).** A grade whose freshness was held out this way,
+or was not measured for any other reason (for example, a calendar that could
+not be read), keeps its letter, computed from the categories that were measured, but it is
+never shown bare. Every surface that prints the grade marks it "partial:
+freshness not measured": agency pages, board one-pagers, call briefs, the paid
+board report and bundle, both badges, search snippets, directory, program, and
+map lists, citations, the MCP tools, and the API, dataset, CSV, parquet, and
+history exports. Machine-readable surfaces carry it as `overall.grade_qualifier`
+on the artifact and as a `grade_qualifier` field or column on flat rows, `null`
+or empty for a full grade. Unmeasured freshness is never published as a number
+or as "fresh": the freshness score is absent and `days_until_expiry` is null.
+A partial grade is left out of cross-feed comparisons, which require measured
+freshness.
 
 An effective end date more than ten calendar years after the check is reported
 as unusually distant. Ten years is a conservative review threshold chosen to
@@ -417,17 +443,24 @@ also names the date behind an expiry: when `feed_info` ends before a calendar
 that runs on, the expiry finding says so and asks for the one-field correction.
 That change moves no score ([ADR 0061](decisions/0061-feed-end-date-before-calendar.md)).
 
-The rubric itself is versioned: the current `RUBRIC_VERSION` is `1.4`
+Rubric 1.5 stops grading an expired Mobility Database mirror copy's calendar
+as the agency's own lapse, and marks the resulting grade "partial: freshness
+not measured" wherever it appears (see Mirror copies and Partial grades under
+Freshness). It changes no weight, deduction, or band. On the 2026-11-05 corpus,
+99 published grades came from expired mirror copies; those records rescore on
+the next run.
+
+The rubric itself is versioned: the current `RUBRIC_VERSION` is `1.5`
 (`pipeline/src/scorecard_pipeline/__init__.py`), stamped on every artifact,
 and the dated `METHODOLOGY_CHANGELOG` in `score.py` records what each version
 changed, so a trend reader can tell a feed change apart from a methodology
 change.
 
 Every artifact also carries a `scoring_profile` block with the stable profile
-identifier `gtfs-scorecard-1.4`, the rubric version, and this provenance boundary.
+identifier `gtfs-scorecard-1.5`, the rubric version, and this provenance boundary.
 The profile metadata is additive: it does not recalculate, rename, or move the
 overall score, category scores, grade, or top fixes. Jurisdiction overlays are
 not implemented by this contract.
 
-Last verified: 2026-10-01 (guidelines v4.0, validator v8.0.1, rubric v1.4) ·
+Last verified: 2026-11-05 (guidelines v4.0, validator v8.0.1, rubric v1.5) ·
 Recheck cadence: before each phase and before the rubric is cited publicly.

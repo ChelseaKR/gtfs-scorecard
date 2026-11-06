@@ -8,6 +8,15 @@ from typing_extensions import Self
 
 from ..models.rollup_members_item_expiry_status import RollupMembersItemExpiryStatus
 from ..models.rollup_members_item_grade import RollupMembersItemGrade
+from ..models.rollup_members_item_grade_qualifier_type_1 import (
+    RollupMembersItemGradeQualifierType1,
+)
+from ..models.rollup_members_item_grade_qualifier_type_2_type_1 import (
+    RollupMembersItemGradeQualifierType2Type1,
+)
+from ..models.rollup_members_item_grade_qualifier_type_3_type_1 import (
+    RollupMembersItemGradeQualifierType3Type1,
+)
 from ..models.rollup_members_item_shapes_status_type_1 import (
     RollupMembersItemShapesStatusType1,
 )
@@ -30,6 +39,9 @@ class RollupMembersItem:
         days_until_expiry (int | None):
         expiry_status (RollupMembersItemExpiryStatus):
         top_fix (None | str):
+        grade_qualifier (None | RollupMembersItemGradeQualifierType1 | RollupMembersItemGradeQualifierType2Type1 |
+            RollupMembersItemGradeQualifierType3Type1 | Unset): null for a full grade; "partial: freshness not measured"
+            when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier.
         top_fix_code (None | str | Unset): Finding code for the member's highest-priority fix, used to preserve evidence
             context when opening its scorecard.
         shapes_status (None | RollupMembersItemShapesStatusType1 | Unset):
@@ -46,6 +58,13 @@ class RollupMembersItem:
     days_until_expiry: int | None
     expiry_status: RollupMembersItemExpiryStatus
     top_fix: None | str
+    grade_qualifier: (
+        None
+        | RollupMembersItemGradeQualifierType1
+        | RollupMembersItemGradeQualifierType2Type1
+        | RollupMembersItemGradeQualifierType3Type1
+        | Unset
+    ) = UNSET
     top_fix_code: None | str | Unset = UNSET
     shapes_status: None | RollupMembersItemShapesStatusType1 | Unset = UNSET
     annual_trips: int | None | Unset = UNSET
@@ -73,6 +92,22 @@ class RollupMembersItem:
 
         top_fix: None | str
         top_fix = self.top_fix
+
+        grade_qualifier: None | str | Unset
+        if isinstance(self.grade_qualifier, Unset):
+            grade_qualifier = UNSET
+        elif (
+            isinstance(self.grade_qualifier, RollupMembersItemGradeQualifierType1)
+            or isinstance(
+                self.grade_qualifier, RollupMembersItemGradeQualifierType2Type1
+            )
+            or isinstance(
+                self.grade_qualifier, RollupMembersItemGradeQualifierType3Type1
+            )
+        ):
+            grade_qualifier = self.grade_qualifier.value
+        else:
+            grade_qualifier = self.grade_qualifier
 
         top_fix_code: None | str | Unset
         if isinstance(self.top_fix_code, Unset):
@@ -110,6 +145,8 @@ class RollupMembersItem:
                 "top_fix": top_fix,
             }
         )
+        if grade_qualifier is not UNSET:
+            field_dict["grade_qualifier"] = grade_qualifier
         if top_fix_code is not UNSET:
             field_dict["top_fix_code"] = top_fix_code
         if shapes_status is not UNSET:
@@ -156,6 +193,58 @@ class RollupMembersItem:
             return cast(None | str, data)
 
         top_fix = _parse_top_fix(_d.pop("top_fix"))
+
+        def _parse_grade_qualifier(
+            data: object,
+        ) -> (
+            None
+            | RollupMembersItemGradeQualifierType1
+            | RollupMembersItemGradeQualifierType2Type1
+            | RollupMembersItemGradeQualifierType3Type1
+            | Unset
+        ):
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                grade_qualifier_type_1 = RollupMembersItemGradeQualifierType1(data)
+
+                return grade_qualifier_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                grade_qualifier_type_2_type_1 = (
+                    RollupMembersItemGradeQualifierType2Type1(data)
+                )
+
+                return grade_qualifier_type_2_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            try:
+                if not isinstance(data, str):
+                    raise TypeError()
+                grade_qualifier_type_3_type_1 = (
+                    RollupMembersItemGradeQualifierType3Type1(data)
+                )
+
+                return grade_qualifier_type_3_type_1
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(
+                None
+                | RollupMembersItemGradeQualifierType1
+                | RollupMembersItemGradeQualifierType2Type1
+                | RollupMembersItemGradeQualifierType3Type1
+                | Unset,
+                data,
+            )
+
+        grade_qualifier = _parse_grade_qualifier(_d.pop("grade_qualifier", UNSET))
 
         def _parse_top_fix_code(data: object) -> None | str | Unset:
             if data is None:
@@ -205,6 +294,7 @@ class RollupMembersItem:
             days_until_expiry=days_until_expiry,
             expiry_status=expiry_status,
             top_fix=top_fix,
+            grade_qualifier=grade_qualifier,
             top_fix_code=top_fix_code,
             shapes_status=shapes_status,
             annual_trips=annual_trips,

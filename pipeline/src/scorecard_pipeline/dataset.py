@@ -12,7 +12,7 @@ The functions here are pure over the index dict the rest of the pipeline already
 produces, so the artifact is reproducible and safe to re-run:
 
     {"agencies": {id: {"name", "history": [
-        {"date", "grade", "score", "rubric_version", "scoring_profile_id",
+        {"date", "grade", "grade_qualifier", "score", "rubric_version", "scoring_profile_id",
          "scoring_profile_rubric_version", "validator_version",
          "reader_archive_profile", "feed_sha256",
          "categories": {...}, "days_until_expiry", "service_horizon_status"}, ...
@@ -54,6 +54,7 @@ COLUMNS: tuple[str, ...] = (
     "name",
     "date",
     "grade",
+    "grade_qualifier",
     "score",
     "rubric_version",
     "scoring_profile_id",
@@ -77,10 +78,11 @@ COLUMNS: tuple[str, ...] = (
 #
 # Flat export versions: 1.3 added reader_archive_profile; 1.4 was 1.3 plus
 # license_notice; 1.5 adds expiry_status after service_horizon_status; 1.6 is
-# 1.5 plus license_notice. The version alone therefore names the column set.
+# 1.5 plus license_notice; 1.7 adds grade_qualifier after grade (rubric 1.5);
+# 1.8 is 1.7 plus license_notice. The version alone therefore names the column set.
 NOTICE_COLUMN = "license_notice"
-SCHEMA_VERSION_BASE = "1.5"
-SCHEMA_VERSION_WITH_NOTICE = "1.6"
+SCHEMA_VERSION_BASE = "1.7"
+SCHEMA_VERSION_WITH_NOTICE = "1.8"
 
 # The grades the rubric can assign, in order. Fixing the set means the
 # distribution always reports every grade, including the ones at zero, so a
@@ -104,6 +106,9 @@ def _row_for_agency(agency_id: str, entry: dict[str, Any]) -> dict[str, Any] | N
         "name": entry.get("name", agency_id),
         "date": latest.get("date"),
         "grade": latest.get("grade"),
+        # "partial: freshness not measured" beside a letter whose freshness was
+        # held out (rubric 1.5); None for a full grade, never a stand-in value.
+        "grade_qualifier": latest.get("grade_qualifier") or None,
         "score": latest.get("score"),
         "rubric_version": latest.get("rubric_version"),
         "scoring_profile_id": latest.get("scoring_profile_id"),

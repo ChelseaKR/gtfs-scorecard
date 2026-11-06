@@ -276,6 +276,11 @@
             "F"
           ]
         },
+        "grade_qualifier": {
+          "type": "string",
+          "enum": ["partial: freshness not measured"],
+          "description": "Present only when the grade is partial: freshness was not measured because an expired Mobility Database mirror copy was held out of the grade (rubric 1.5). The letter is still published and must be shown with this qualifier."
+        },
         "margin_to_next_band": {
           "type": [
             "number",

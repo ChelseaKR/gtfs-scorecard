@@ -17,6 +17,7 @@ checks,scoring_profile_rubric_version,VARCHAR,The profile's own rubric version.
 checks,validator_version,VARCHAR,MobilityData gtfs-validator release used.
 checks,reader_archive_profile,VARCHAR,How the archive was read: raw-v1 or flat-single-root-v1.
 checks,grade,VARCHAR,"Letter grade derived from score, as the public trend derives it."
+checks,grade_qualifier,VARCHAR,'partial: freshness not measured' when freshness was held out; null for a full grade.
 checks,score,DOUBLE,"Overall score, 0 to 100."
 checks,correctness,DOUBLE,Correctness category score; null when not measured.
 checks,freshness,DOUBLE,Freshness category score; null when not measured.

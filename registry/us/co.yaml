@@ -7,7 +7,11 @@ agencies:
     name: Grand Valley Transit
     subdivision_code: US-CO
     subdivision_name: Colorado
-    static_gtfs_url: http://emap.mesacounty.us/datadownload/Google_Transit_Feed/google_transit.zip
+    static_gtfs_url: https://emap.mesacounty.us/datadownload/Google_Transit_Feed/google_transit.zip
+    operating_note: >-
+      Checked 2026-11-05: the http address on emap.mesacounty.us failed, so runs
+      scored an expired Mobility Database copy. Over https the same path serves
+      the current feed (Last-Modified 2026-10-13, service through 2027-10-12).
     mdb_id: 161
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

@@ -1,5 +1,5 @@
 {
-  "rubric_version": "1.4",
+  "rubric_version": "1.5",
   "overall": "Weighted average of the measured categories. The weights of any unmeasured category are renormalized, so an agency is never punished for a category it does not have (for example, realtime).",
   "category_weights": {
     "correctness": 0.35,
@@ -54,6 +54,11 @@
   },
   "source": "Scored on top of the MobilityData gtfs-validator. Full methodology with citations: docs/rubric.md.",
   "changelog": [
+    {
+      "rubric_version": "1.5",
+      "effective_date": "2026-11-05",
+      "summary": "When the feed URL on file cannot be downloaded and the Mobility Database mirror copy scored instead has already ended, freshness is no longer graded from that copy's dates. It is shown as not measured and left out of the grade, the same way unmeasured realtime is, and the failed download becomes the first fix. The letter grade is kept, but it is marked \"partial: freshness not measured\" everywhere it appears: agency pages, board reports, badges, and the API, dataset, and CSV exports (overall.grade_qualifier and a grade_qualifier column). The same mark goes on any grade whose freshness was not measured for another reason, such as a calendar that could not be read. Unmeasured freshness is never shown as 0 or as fresh. Mirror copies that are still current, and every feed downloaded from its own URL, are graded as before."
+    },
     {
       "rubric_version": "1.4",
       "effective_date": "2026-10-01",

@@ -75,6 +75,11 @@
             "F"
           ]
         },
+        "grade_qualifier": {
+          "type": ["string", "null"],
+          "enum": ["partial: freshness not measured", null],
+          "description": "null for a full grade; \"partial: freshness not measured\" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier."
+        },
         "score": {
           "type": "number",
           "minimum": 0,

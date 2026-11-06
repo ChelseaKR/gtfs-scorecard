@@ -37,6 +37,8 @@ import yaml
 
 from .comparisons import same_producer_contract
 from .config import artifacts_dir
+from .feed_provenance import mirror_copy_caveat
+from .score import grade_qualifier, qualified_grade
 from .site_shell import ANALYTICS_OPT_OUT_HTML, BASE_URL, CATEGORY_LABELS, CATEGORY_ORDER, esc
 
 # The rubric documents the report cites in its methodology footer.
@@ -150,7 +152,7 @@ def _history_rows(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
             {
                 "date": str(point.get("date", "")),
                 "score": point.get("score"),
-                "grade": str(point.get("grade", "")),
+                "grade": qualified_grade(point.get("grade", ""), point.get("grade_qualifier")),
                 "change": change,
             }
         )
@@ -269,7 +271,13 @@ def build_report_data(
             "name": str(artifact.get("agency", {}).get("name", "")),
         },
         "checked": str(artifact.get("snapshot_date", "")),
+        # The same mirror sentence the agency page prints: a packet must not
+        # present a mirror copy's grade as a read of today's feed. "" otherwise.
+        "source_caveat": mirror_copy_caveat(artifact),
         "grade": str(overall.get("grade", "")),
+        # "partial: freshness not measured" (rubric 1.5) or "": a paid packet
+        # never shows a partial letter as a full one.
+        "grade_qualifier": grade_qualifier(artifact) or "",
         "score": overall.get("score"),
         "trend_line": _brief_trend_line(hist),
         "categories": _category_rows(artifact),
@@ -399,6 +407,18 @@ def _categories_html(rows: list[dict[str, Any]]) -> str:
         '<th scope="col">Where this feed stands</th></tr></thead>'
         f"<tbody>{''.join(body)}</tbody></table>"
     )
+
+
+def _qualifier_html(qualifier: str) -> str:
+    """`` &middot; partial: freshness not measured`` after the grade, or ""."""
+    return f" &middot; {esc(qualifier)}" if qualifier else ""
+
+
+def _caveat_html(caveat: str) -> str:
+    """The mirror-copy caveat as a header line; "" keeps origin reports unchanged."""
+    if not caveat:
+        return ""
+    return f'\n      <p class="trend-line source-caveat">{esc(caveat)}</p>'
 
 
 def _fixes_html(fixes: list[dict[str, Any]]) -> str:
@@ -587,8 +607,8 @@ def render_report(
     {_prepared_by_html(brand)}<header>
       <p class="kicker">Transit data quality report &middot; checked {esc(data["checked"])}{chip}</p>
       <h1>{esc(name)}</h1>
-      <p class="grade-line">Grade {esc(grade)} &middot; {esc(str(score))} out of 100</p>
-      <p class="trend-line">{esc(data["trend_line"])}</p>
+      <p class="grade-line">Grade {esc(grade)} &middot; {esc(str(score))} out of 100{_qualifier_html(data.get("grade_qualifier", ""))}</p>
+      <p class="trend-line">{esc(data["trend_line"])}</p>{_caveat_html(data.get("source_caveat", ""))}
     </header>
     <section aria-labelledby="what-h">
       <h2 id="what-h">What this grade measures</h2>

@@ -38,6 +38,7 @@ from .metrics import expiry_status
 from .ntd import _RANK, assess_shapes_readiness
 from .publish import _write_json, registered_agency_dirs
 from .ridership import annual_trips_for, duplicate_ntd_reporter_ids, normalize_ntd_id
+from .score import grade_qualifier
 
 log = logging.getLogger(__name__)
 
@@ -309,6 +310,7 @@ def build_rollup(
                 "name": member_name,
                 "score": overall["score"],
                 "grade": overall["grade"],
+                "grade_qualifier": grade_qualifier(latest),
                 "snapshot_date": latest["snapshot_date"],
                 "needs_attention": agency_id in attention,
                 "attention_reason": attention.get(agency_id),
