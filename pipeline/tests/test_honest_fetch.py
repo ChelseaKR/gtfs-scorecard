@@ -113,9 +113,9 @@ def test_a_failed_origin_reads_no_mirror_and_no_catalog(
 
     assert requested == [ORIGIN]
     assert robots_reads == ["https://origin.example.org/robots.txt"]
+    hosts = {urlsplit(url).hostname or "" for url in requested + robots_reads}
     assert not any(
-        (urlsplit(url).hostname or "").endswith("mobilitydatabase.org")
-        for url in requested + robots_reads
+        host == "mobilitydatabase.org" or host.endswith(".mobilitydatabase.org") for host in hosts
     )
 
 
