@@ -111,13 +111,14 @@ agencies:
     mdb_id: 2060
     license_note: "License: https://www.ridemetro.org/about/news-media/digital-assets"
 
+  # Mobility Database mdb-2348 is deprecated and redirects to tld-217; the feed URL follows it (ADR 0069).
   - id: via-metropolitan-transit-via-2348
     ntd_id: "60011"
     name: VIA Metropolitan Transit (VIA)
     subdivision_code: US-TX
     subdivision_name: Texas
-    static_gtfs_url: https://www.viainfo.net/BusService/google_transit.zip
-    mdb_id: 2348
+    static_gtfs_url: http://www.viainfo.net/BusService/google_transit.zip
+    mdb_id: tld-217
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: ez-rider
@@ -128,16 +129,17 @@ agencies:
     mdb_id: 2634
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-3202 is deprecated and redirects to mdb-3419; the feed URL follows it (ADR 0069).
   - id: el-paso-transportation-authority
     name: El Paso Transportation Authority
     subdivision_code: US-TX
     subdivision_name: Texas
-    static_gtfs_url: https://data.peaktransit.com/staticgtfs/193/gtfs.zip
-    mdb_id: 3202
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11511/GTFS_EPCT.zip
+    mdb_id: 3419
     rt_urls:
       trip_updates: https://data.peaktransit.com/gtfsrt/193/TripUpdate.pb
       vehicle_positions: https://data.peaktransit.com/gtfsrt/193/VehiclePosition.pb
-    license_note: No stated data license in the Mobility Database; verify before publishing.
+    license_note: "License: https://etaelpaso.gov/privacy-policy/"
 
   - id: dallas-host-committee
     name: Dallas Host Committee
