@@ -29,6 +29,12 @@ the declared public surface).
 
 ### Added
 
+- **New and changed pages are announced to IndexNow after each deploy**
+  ([ADR 0073](docs/decisions/0073-indexnow-after-deploy.md)). The Deploy site
+  workflow compares the new sitemap with the live one and sends only the URLs
+  that are new or whose `lastmod` moved, after the production smoke check
+  passes. A deploy with no content change sends nothing. The IndexNow key file
+  at the site root is public by design.
 - **Sitemap `lastmod` for clearance logs, directory pages and NTD pages.** The
   1,183 sitemap URLs that carried none now get one derived from the data the page
   shows: a clearance log takes its newest `cleared` date, an `/agencies/` page the
@@ -136,6 +142,21 @@ the declared public surface).
   the same rule.
 
 ### Changed
+
+- **Rubric 1.5: a grade whose freshness was not measured is marked partial.**
+  When the feed URL on file failed and a Mobility Database mirror copy was
+  scored instead, freshness is held out of the grade (see Fixed).
+  The letter is kept, but it is now marked "partial: freshness not measured"
+  everywhere it appears: the agency page, board one-pager, call brief, paid
+  board report and bundle, both badges, search snippets, directory and program
+  lists, the map table, citations, the MCP tools, and the API, dataset, CSV,
+  parquet, and history exports (`overall.grade_qualifier` and a
+  `grade_qualifier` column, `null` or empty for a full grade). Unmeasured
+  freshness is never shown as 0 or as fresh. `RUBRIC_VERSION` is `1.5`, the
+  artifact schema is `1.20`, flat exports are `1.7` (`1.8` with
+  `license_notice`), and history tables are `1.2`. The bump rebuilds every
+  unchanged feed's artifact once, and the national trend restarts at 1.5 for
+  any record that cannot be rescored.
 
 - **No more mirror copies, and one honest User-Agent on every request
   (ADR 0075).** When a feed's own URL fails, the feed is now "couldn't
@@ -278,6 +299,24 @@ the declared public surface).
 
 ### Fixed
 
+- **Padded CSV headers no longer hide columns.** Metra writes `service_id, monday`
+  (comma-space) and Renfe pads every line with trailing spaces, so lookups such
+  as `end_date` and `wheelchair_boarding` missed columns that were there. Metra
+  read as F 37.7 with "no service end date" and 0% wheelchair data. Column names
+  are now stripped of whitespace and byte-order marks when a table is read.
+- **An expired Mobility Database mirror copy is no longer graded as the
+  agency's lapse.** When the feed URL on file fails and the copy scored instead
+  has already ended, freshness is held out of the grade as not measured, the
+  failed download leads the fixes, and the agency page, board one-pager, call
+  brief, paid board report, and bundle manifest name the copy and its service
+  dates. CDTA, Grand Valley Transit, and Blacksburg Transit now use the https
+  form of their feed URLs, and SacRT uses its portal's apps.sacrt.com URL,
+  each checked on 2026-11-05. The freshness sweep holds any published mirror
+  copy's freshness out the same way, current, lapsed or with no readable end
+  date (ADR 0075), so the grade turns partial instead of reading as current;
+  the held category's `reason` and `mirror_copy` dates are now in the artifact
+  schema. Every surface, the artifact's own `overall` included,
+  marks a grade partial on one rule: freshness not measured, for any reason.
 - **`/ntd/` no longer reports a limit of the catalogs read as a count.** The
   reporter join matched 1,253 Report Year 2024 reporters against three catalogs
   and printed "473 to 641 have no feed discoverable in any open catalog", without

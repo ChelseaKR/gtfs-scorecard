@@ -28,7 +28,7 @@ from typing import Any
 from .corrections import grades_a_feed_with_nothing_in_it
 from .gtfs import FeedDates
 from .metrics import CategoryResult, Finding, freshness
-from .score import CATEGORY_WEIGHTS, build_scorecard
+from .score import CATEGORY_WEIGHTS, build_scorecard, hold_mirror_freshness
 
 
 def _date(value: str | None) -> dt.date | None:
@@ -101,14 +101,6 @@ def _feed_dates(details: dict[str, Any]) -> FeedDates:
     )
 
 
-#: What a held freshness category says in place of a score (ADR 0075).
-MIRROR_FRESHNESS_SUMMARY = (
-    "Not measured. The feed URL on file could not be downloaded, so the agency's "
-    "current service dates are unknown. The last score used a Mobility Database "
-    "mirror copy, which is no longer read. Nothing here counts against the grade."
-)
-
-
 def is_mirror_copy(artifact: dict[str, Any]) -> bool:
     """True when the artifact's bytes came from the Mobility Database mirror."""
     fetch = artifact.get("fetch")
@@ -120,7 +112,15 @@ def can_resweep(artifact: dict[str, Any]) -> bool:
 
     A feed with no readable expiry (the `scorecard_no_expiry_date` case) stores
     no dates, so there is nothing to recompute and a full re-score is the only
-    way its freshness changes."""
+    way its freshness changes.
+
+    A Mobility Database mirror copy is always reswept, dates or not, because
+    :func:`resweep` does not recompute it: it holds freshness out the way
+    score.hold_mirror_freshness does (ADR 0075), so the grade turns partial
+    rather than counting the copy's calendar, current or lapsed, as the
+    agency's. Skipping it froze the copy's countdown at the last full score, a
+    stale number standing in for "not re-measured". A copy whose freshness is
+    already held is not measured, so it is not reswept again."""
     fresh = artifact.get("categories", {}).get("freshness", {})
     if fresh.get("status") != "measured":
         return False
@@ -195,36 +195,54 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
     # calendar is not the agency's, and nothing fetches mirrors any more, so
     # its freshness is not measured: held out of the grade, never a value.
     hold_freshness = is_mirror_copy(artifact)
+    has_dates = bool(details.get("feed_end_date") or details.get("last_service_date"))
     new_fresh = None
-    if not hold_freshness:
+    if not hold_freshness or has_dates:
+        # For a mirror copy this only dates the copy for the held entry's words
+        # (lapsed or not); it is never graded.
         new_fresh = freshness(_feed_dates(details), today, service_type)
+    if new_fresh is None and not hold_freshness:  # pragma: no cover
         # `_feed_dates` rebuilds from a published artifact whose freshness was
         # measured, so the date tables were there and freshness re-measures.
         # The guard keeps the sweep from silently rewriting a category into
-        # nothing.
-        if new_fresh is None:  # pragma: no cover - a measured category cannot unmeasure
-            raise ValueError("re-scoring a measured freshness category produced no measurement")
+        # nothing; a measured category cannot unmeasure.
+        raise ValueError("re-scoring a measured freshness category produced no measurement")
     measured: list[CategoryResult] = []
     for name, cat in cats.items():
         if cat.get("status") != "measured":
             continue
         if name == "freshness":
-            if new_fresh is not None:
-                measured.append(new_fresh)
+            # A mirror copy with no readable end date is not recomputed; its
+            # stored category is carried only so hold_mirror_freshness can hold
+            # it out below.
+            measured.append(new_fresh if new_fresh is not None else _category_from_json(cat))
             continue
         measured.append(_category_from_json(cat))
-    card = build_scorecard(measured).to_json()
 
     new_cats = {name: dict(cat) for name, cat in cats.items()}
+    # A mirror copy is held out exactly as the full run holds one
+    # (score.build_scorecard_for_fetch): freshness becomes "not graded", the
+    # failed download leads the fixes, and the grade is partial. Counting the
+    # copy down, past zero or not, would grade its calendar as the agency's.
+    hold = None
     if hold_freshness:
-        new_cats["freshness"] = {
-            "name": "freshness",
-            "status": "not_yet_measured",
-            "weight": CATEGORY_WEIGHTS["freshness"],
-            "summary": MIRROR_FRESHNESS_SUMMARY,
-        }
-    elif new_fresh is not None:
+        fetch = artifact.get("fetch") or {}
+        feed = artifact.get("feed")
+        hold = hold_mirror_freshness(
+            measured,
+            fetch_source="mirror",
+            configured_url=str((feed or {}).get("static_url") or ""),
+            origin_error=fetch.get("origin_error"),
+        )
+    if hold is not None:
+        kept, held, lead = hold
+        card = build_scorecard(kept, held=held, lead_fix=lead).to_json()
+        new_cats["freshness"] = card["categories"]["freshness"]
+    elif new_fresh is not None and not hold_freshness:
+        card = build_scorecard(measured).to_json()
         new_cats["freshness"] = {**new_fresh.to_json(), "weight": CATEGORY_WEIGHTS["freshness"]}
+    else:  # pragma: no cover - a measured mirror copy always has a freshness to hold
+        raise ValueError("a mirror copy's measured freshness could not be held")
 
     new_artifact = dict(artifact)
     new_artifact["categories"] = new_cats
@@ -253,7 +271,8 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
         "old_score": old.get("score"),
         "new_score": card["overall"]["score"],
         "old_days": details.get("days_until_expiry"),
-        # None once freshness is held: not measured, so absent, never a number.
+        # None once a mirror copy's freshness is held: the countdown is not
+        # measured, so it is reported as absent, never as a number.
         "new_days": (new_cats["freshness"].get("details") or {}).get("days_until_expiry"),
         "grade_changed": old.get("grade") != card["overall"]["grade"],
     }

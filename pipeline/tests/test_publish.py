@@ -880,7 +880,9 @@ def test_reindex_rederives_the_published_letter_without_rewriting_dated_history(
     assert latest["overall"]["margin_to_lower_band"] == 0.0
 
     badge = json.loads((dated.parent / "badge.json").read_text())
-    assert badge["message"] == "B 80.0"
+    # make_artifact scores correctness only, so freshness is present but not
+    # measured and the grade is honestly partial (rubric 1.5).
+    assert badge["message"] == "B 80.0 · partial: freshness not measured"
     assert badge["color"] == "green"
     assert "B 80" in (dated.parent / "badge.svg").read_text()
 

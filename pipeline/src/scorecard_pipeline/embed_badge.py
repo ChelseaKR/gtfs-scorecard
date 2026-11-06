@@ -29,6 +29,7 @@ from typing import Any
 from xml.sax.saxutils import escape
 
 from .badge import _FALLBACK_COLOR, _GRADE_COLOR
+from .score import grade_qualifier
 
 #: A record last checked more than this many days before the render shows no
 #: score. The pipeline checks every published feed daily, so two weeks without
@@ -55,6 +56,9 @@ class BadgeState:
     grade: str | None
     score: str | None
     checked: str | None
+    #: "partial: freshness not measured" when the grade is partial (rubric
+    #: 1.5), so the badge never draws a partial grade as a full one.
+    qualifier: str | None = None
 
     @property
     def current(self) -> bool:
@@ -88,14 +92,15 @@ def badge_state(agency_name: str, artifact: dict[str, Any] | None, today: dt.dat
         valid = 0 <= age <= CURRENT_DAYS
     if not valid:
         return BadgeState(agency_name, None, None, checked)
-    return BadgeState(agency_name, str(grade), str(score), checked)
+    return BadgeState(agency_name, str(grade), str(score), checked, grade_qualifier(record))
 
 
 def badge_sentence(state: BadgeState) -> str:
     """The whole badge as one sentence, for its title and aria-label."""
     if state.current:
+        partial = f" ({state.qualifier})" if state.qualifier else ""
         return (
-            f"{state.agency_name}: GTFS feed quality grade {state.grade}, "
+            f"{state.agency_name}: GTFS feed quality grade {state.grade}{partial}, "
             f"{state.score} of 100, checked {state.checked}. GTFS Scorecard."
         )
     last = f" Last checked {state.checked}." if state.checked else ""
@@ -134,6 +139,12 @@ def render_named_badge(state: BadgeState) -> str:
         )
         line2 = f"GTFS feed score {escape(str(state.score))} of 100"
         line3 = f"Checked {escape(str(state.checked))} · gtfsscorecard.org"
+        if state.qualifier:
+            # A partial grade gives its third line to the qualifier, so it fits
+            # the fixed width; the check date moves up beside the score and the
+            # domain stays in the title and aria-label.
+            line2 = f"Score {escape(str(state.score))} of 100 · {escape(str(state.checked))}"
+            line3 = escape(state.qualifier.capitalize())
     else:
         stripe = _FALLBACK_COLOR
         letter = ""

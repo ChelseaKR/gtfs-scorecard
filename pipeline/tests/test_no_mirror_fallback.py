@@ -11,7 +11,7 @@ from typing import Any
 import pytest
 
 from scorecard_pipeline.robots_policy import RobotsChecker, RobotsResponse, reset_shared_checker
-from scorecard_pipeline.sweep import MIRROR_FRESHNESS_SUMMARY, can_resweep, needs_sweep, resweep
+from scorecard_pipeline.sweep import can_resweep, needs_sweep, resweep
 
 TODAY = dt.date(2026, 11, 5)
 SCHEMA = Path(__file__).resolve().parents[2] / "web" / "schemas" / "artifact.schema.json"
@@ -24,6 +24,7 @@ def _artifact(source: str, *, days: int, fresh_score: float) -> dict[str, Any]:
         "snapshot_date": "2026-11-04",
         "overall": {"score": 0.0, "grade": "F"},
         "top_fixes": [],
+        "feed": {"static_url": "https://x.example/g.zip", "reachable": False},
         "fetch": {"source": source, "final_url": "https://x.example/g.zip", "user_agent": "u"},
         "categories": {
             "correctness": {
@@ -73,12 +74,15 @@ def test_a_mirror_copy_has_its_freshness_held_never_a_value(days: int) -> None:
     new, summary = resweep(artifact, TODAY)
 
     fresh = new["categories"]["freshness"]
-    assert fresh == {
-        "name": "freshness",
-        "status": "not_yet_measured",
-        "weight": 0.20,
-        "summary": MIRROR_FRESHNESS_SUMMARY,
-    }
+    # Held the way score.hold_mirror_freshness holds it, current copy or lapsed:
+    # no score and no countdown, only the copy's own dates under their own key.
+    assert fresh["status"] == "not_yet_measured"
+    assert fresh["reason"] == ("mirror_copy_expired" if days < 0 else "mirror_copy")
+    assert "score" not in fresh and "details" not in fresh
+    last = (dt.date(2026, 11, 4) + dt.timedelta(days=days)).isoformat()
+    assert fresh["mirror_copy"]["service_end"] == last
+    assert new["overall"]["grade_qualifier"] == "partial: freshness not measured"
+    assert new["top_fixes"][0]["code"] == "scorecard_feed_download_failed"
     # The grade is over correctness and completeness alone: (90*.35+70*.25)/.6
     assert new["overall"]["score"] == pytest.approx(81.7, abs=0.05)
     assert summary["new_days"] is None

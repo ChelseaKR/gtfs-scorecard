@@ -58,13 +58,23 @@ def _segment_width(text: str) -> int:
     return round(len(text) * _CHAR_PX + 2 * _PAD)
 
 
-def render_badge(grade: str, score: float | None = None, expiry_status: str | None = None) -> str:
+def render_badge(
+    grade: str,
+    score: float | None = None,
+    expiry_status: str | None = None,
+    qualifier: str | None = None,
+) -> str:
     """Return an SVG badge string for a grade.
 
     When a score is given it is shown alongside the letter (e.g. "B 84"), which
     is the form most useful on an agency's own page. When expiry_status marks a
     feed as expired or expiring, a colored status segment is appended so the
-    feed's health reads at a glance, not only its grade.
+    feed's health reads at a glance, not only its grade. A ``qualifier``
+    ("partial: freshness not measured", rubric 1.5) takes the status segment
+    in neutral gray, so a partial grade is never drawn as a full one. The
+    expiry statuses come from the freshness category, which a partial grade
+    did not measure, so the two do not occur together; if they ever did, the
+    segment names both.
     """
     grade = (grade or "?").upper()
     value = grade if score is None else f"{grade} {round(score)}"
@@ -73,6 +83,9 @@ def render_badge(grade: str, score: float | None = None, expiry_status: str | No
     status = (expiry_status or "").lower()
     status_text = _STATUS_LABEL.get(status)
     status_color = _STATUS_COLOR.get(status, _FALLBACK_COLOR)
+    if qualifier:
+        status_text = f"{status_text}; {qualifier}" if status_text else qualifier
+        status_color = _FALLBACK_COLOR
 
     left_w = _segment_width(_LABEL)
     mid_w = _segment_width(value)

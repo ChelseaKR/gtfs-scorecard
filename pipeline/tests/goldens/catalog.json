@@ -12,6 +12,7 @@
       "freshness": 100.0,
       "google_gate": "pass",
       "grade": "C",
+      "grade_qualifier": null,
       "id": "barrie-transit",
       "mdb_id": "3",
       "name": "Barrie Transit (Ontario)",
@@ -48,6 +49,7 @@
       "freshness": 100.0,
       "google_gate": "pass",
       "grade": "B",
+      "grade_qualifier": null,
       "id": "unitrans",
       "mdb_id": "",
       "name": "Unitrans (ASUCD / City of Davis)",
@@ -82,6 +84,7 @@
       "freshness": 85.0,
       "google_gate": "pass",
       "grade": "B",
+      "grade_qualifier": null,
       "id": "yolobus",
       "mdb_id": "",
       "name": "Yolobus (Yolo County Transportation District)",
@@ -111,6 +114,6 @@
   "rubric_versions": [
     "1.1"
   ],
-  "schema_version": "1.19",
+  "schema_version": "1.20",
   "source": "https://gtfsscorecard.org"
 }

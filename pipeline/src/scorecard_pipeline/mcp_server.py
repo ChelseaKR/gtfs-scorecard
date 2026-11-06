@@ -40,6 +40,7 @@ from .metrics import (
     resolve_service_horizon_status,
 )
 from .ntd import presented_readiness as presented_ntd_readiness
+from .score import grade_qualifier
 from .user_agent import USER_AGENT
 
 PROTOCOL_VERSION = "2025-06-18"
@@ -144,6 +145,7 @@ def search_agencies(
             "id": r.get("id"),
             "name": r.get("name"),
             "grade": r.get("grade"),
+            "grade_qualifier": r.get("grade_qualifier"),
             "score": r.get("score"),
             "state": r.get("state"),
             "country": _country(r),
@@ -210,6 +212,9 @@ def get_scorecard(fetch: Fetch, agency_id: str) -> dict[str, Any]:
         "agency": art.get("agency"),
         "snapshot_date": art.get("snapshot_date"),
         "overall": art.get("overall"),
+        # "partial: freshness not measured" beside a partial letter (rubric
+        # 1.5), so an assistant never repeats it as a full grade; else None.
+        "grade_qualifier": grade_qualifier(art),
         "categories": categories,
         "top_fixes": art.get("top_fixes"),
         "findings": findings,
@@ -315,6 +320,7 @@ def get_history(
             {
                 "date": point.get("date"),
                 "grade": point.get("grade"),
+                "grade_qualifier": point.get("grade_qualifier"),
                 "score": point.get("score"),
                 "categories": point.get("categories"),
                 "days_until_expiry": point.get("days_until_expiry"),
@@ -472,6 +478,7 @@ def get_rollup(fetch: Fetch, rollup_id: str) -> dict[str, Any]:
                 "id": m.get("id"),
                 "name": m.get("name"),
                 "grade": m.get("grade"),
+                "grade_qualifier": m.get("grade_qualifier"),
                 "score": m.get("score"),
                 "expiry_status": m.get("expiry_status"),
                 "needs_attention": m.get("needs_attention"),

@@ -276,6 +276,11 @@
             "F"
           ]
         },
+        "grade_qualifier": {
+          "type": "string",
+          "enum": ["partial: freshness not measured"],
+          "description": "Present only when the grade is partial: freshness was not measured because an expired Mobility Database mirror copy was held out of the grade (rubric 1.5). The letter is still published and must be shown with this qualifier."
+        },
         "margin_to_next_band": {
           "type": [
             "number",
@@ -634,6 +639,37 @@
         },
         "summary": {
           "type": "string"
+        },
+        "reason": {
+          "description": "Why a not-measured category is held out of the grade. Set only on a held Mobility Database mirror copy's freshness (score.hold_mirror_freshness).",
+          "type": "string",
+          "enum": [
+            "mirror_copy",
+            "mirror_copy_expired"
+          ]
+        },
+        "mirror_copy": {
+          "description": "The held mirror copy's own service dates, never an expiry countdown. Either side is null when unknown.",
+          "type": "object",
+          "required": [
+            "service_start",
+            "service_end"
+          ],
+          "properties": {
+            "service_start": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "service_end": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
         },
         "score": {
           "type": "number",
