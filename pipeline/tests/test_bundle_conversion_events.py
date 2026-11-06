@@ -114,7 +114,16 @@ const context = vm.createContext({
 });
 vm.runInContext(source, context);
 
-setTimeout(function () {
+// Read the page once everything it started has finished. bundle-setup.js
+// hashes the order reference with Web Crypto, which runs off the main thread
+// and has no deadline: a fixed 100 ms timer read "nothing dispatched" on a
+// busy CI runner. "beforeExit" fires only when the event loop is empty, so
+// every promise and digest the page began has settled by then. The page
+// scripts get no timers in their context, so the loop always drains.
+let reported = false;
+process.on("beforeExit", function () {
+  if (reported) return;
+  reported = true;
   const links = [];
   function walk(el) {
     if (el.tagName === "a") links.push(el);
@@ -143,7 +152,7 @@ setTimeout(function () {
     } : null,
     cardPlans: links.map(function (a) { return a.getAttribute("data-measure-plan"); }),
   }));
-}, 100);
+});
 """
 
 _BUNDLE_IDS = ["plan-grid", "plan-notice", "plan-fineprint", "buy-box-price", "buy-box-cta"]
@@ -163,6 +172,7 @@ def _run(script: Path, case: dict[str, Any], tmp_path: Path) -> dict[str, Any]:
         capture_output=True,
         text=True,
         cwd=tmp_path,
+        timeout=60,
     )
     return json.loads(completed.stdout)  # type: ignore[no-any-return]
 
