@@ -46,11 +46,38 @@ Post = Callable[[str, Mapping[str, Any], Mapping[str, str]], Mapping[str, Any]]
 Get = Callable[[str, Mapping[str, str]], Any]
 
 
-class CatalogPausedError(RuntimeError):
-    """The API token is not configured, so the catalog was not read at all."""
+ROBOTS_PAUSED_MESSAGE = (
+    "Catalog update paused: api.mobilitydatabase.org does not serve a robots.txt that "
+    "allows automated access (its /robots.txt redirects to a sign-in page), so this "
+    "project does not call it (ADR 0075). Nothing was read and nothing changed. The "
+    "weekly update reads the storage.googleapis.com catalog export instead."
+)
 
-    def __init__(self) -> None:
-        super().__init__(PAUSED_MESSAGE)
+
+class CatalogPausedError(RuntimeError):
+    """The catalog was not read at all: no token, or the API host's robots.txt
+    does not allow automated access (ADR 0075)."""
+
+    def __init__(self, message: str = PAUSED_MESSAGE) -> None:
+        super().__init__(message)
+
+
+def require_api_robots_allowed() -> None:
+    """Raise ``CatalogPausedError`` unless the API host's robots.txt allows us.
+
+    ADR 0070 exempted the authenticated API from robots.txt. ADR 0075 removes
+    that exemption: the maintainer's rule is that the project reads Mobility
+    Database metadata only from a host whose robots.txt allows it. On
+    2026-11-05 ``api.mobilitydatabase.org/robots.txt`` answered 302 to a
+    sign-in page, which robots_policy treats as off-limits, so every call
+    here stops before a request.
+    """
+    from .robots_policy import RobotsRefusedError, shared_checker
+
+    try:
+        shared_checker().require(f"{API_BASE}/gtfs_feeds")
+    except RobotsRefusedError:
+        raise CatalogPausedError(ROBOTS_PAUSED_MESSAGE) from None
 
 
 def configured_token(environ: Mapping[str, str] | None = None) -> str:
@@ -182,7 +209,9 @@ def load_api_catalog(
     get: Get | None = None,
 ) -> list[CatalogFeed]:
     """The whole Schedule catalog from the API; raises ``CatalogPausedError``
-    before any request when the token is not configured."""
+    before any request when the token is not configured or the API host's
+    robots.txt does not allow automated access (ADR 0075)."""
     refresh = configured_token(environ)
+    require_api_robots_allowed()
     token = access_token(refresh, post=post)
     return catalog_feeds_from_api(fetch_gtfs_feeds(token, get=get))

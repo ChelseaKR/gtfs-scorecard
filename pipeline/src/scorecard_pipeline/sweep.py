@@ -101,6 +101,12 @@ def _feed_dates(details: dict[str, Any]) -> FeedDates:
     )
 
 
+def is_mirror_copy(artifact: dict[str, Any]) -> bool:
+    """True when the artifact's bytes came from the Mobility Database mirror."""
+    fetch = artifact.get("fetch")
+    return isinstance(fetch, dict) and fetch.get("source") == "mirror"
+
+
 def can_resweep(artifact: dict[str, Any]) -> bool:
     """True when freshness was scored from real dates we can recompute against.
 
@@ -108,18 +114,20 @@ def can_resweep(artifact: dict[str, Any]) -> bool:
     no dates, so there is nothing to recompute and a full re-score is the only
     way its freshness changes.
 
-    A Mobility Database mirror copy is reswept like any other measured feed, so
-    its "N more days" countdown keeps moving between full runs. Skipping it
-    froze the countdown at the last full score, and once the copy's service
-    ended the page still called it current: a stale number standing in for
-    "not re-measured". When a reswept mirror copy's countdown goes negative,
-    :func:`resweep` holds freshness out the way the full run does
-    (score.hold_mirror_freshness), so the grade turns partial rather than
-    counting the copy's lapse as the agency's. A copy whose freshness is
+    A Mobility Database mirror copy is always reswept, dates or not, because
+    :func:`resweep` does not recompute it: it holds freshness out the way
+    score.hold_mirror_freshness does (ADR 0075), so the grade turns partial
+    rather than counting the copy's calendar, current or lapsed, as the
+    agency's. Skipping it froze the copy's countdown at the last full score, a
+    stale number standing in for "not re-measured". A copy whose freshness is
     already held is not measured, so it is not reswept again."""
     fresh = artifact.get("categories", {}).get("freshness", {})
     if fresh.get("status") != "measured":
         return False
+    if is_mirror_copy(artifact):
+        # Held, not recomputed (ADR 0075), so dates are not needed: a mirror
+        # copy with no readable end date was scored 0, which is a value too.
+        return True
     details = fresh.get("details", {})
     return bool(details.get("feed_end_date") or details.get("last_service_date"))
 
@@ -182,41 +190,59 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
     details = fresh_json.get("details", {})
     service_type = details.get("service_type", "fixed")
 
-    new_fresh = freshness(_feed_dates(details), today, service_type)
-    # `_feed_dates` rebuilds from a published artifact whose freshness was
-    # measured, so the date tables were there and freshness re-measures. The
-    # guard keeps the sweep from silently rewriting a category into nothing.
-    if new_fresh is None:  # pragma: no cover - a measured category cannot unmeasure
+    # ADR 0075: a record last scored from a Mobility Database mirror copy was
+    # scored that way because its own URL could not be downloaded. The copy's
+    # calendar is not the agency's, and nothing fetches mirrors any more, so
+    # its freshness is not measured: held out of the grade, never a value.
+    hold_freshness = is_mirror_copy(artifact)
+    has_dates = bool(details.get("feed_end_date") or details.get("last_service_date"))
+    new_fresh = None
+    if not hold_freshness or has_dates:
+        # For a mirror copy this only dates the copy for the held entry's words
+        # (lapsed or not); it is never graded.
+        new_fresh = freshness(_feed_dates(details), today, service_type)
+    if new_fresh is None and not hold_freshness:  # pragma: no cover
+        # `_feed_dates` rebuilds from a published artifact whose freshness was
+        # measured, so the date tables were there and freshness re-measures.
+        # The guard keeps the sweep from silently rewriting a category into
+        # nothing; a measured category cannot unmeasure.
         raise ValueError("re-scoring a measured freshness category produced no measurement")
-
     measured: list[CategoryResult] = []
     for name, cat in cats.items():
         if cat.get("status") != "measured":
             continue
-        measured.append(new_fresh if name == "freshness" else _category_from_json(cat))
+        if name == "freshness":
+            # A mirror copy with no readable end date is not recomputed; its
+            # stored category is carried only so hold_mirror_freshness can hold
+            # it out below.
+            measured.append(new_fresh if new_fresh is not None else _category_from_json(cat))
+            continue
+        measured.append(_category_from_json(cat))
 
     new_cats = {name: dict(cat) for name, cat in cats.items()}
-    # A mirror copy whose service has now ended is held out exactly as the full
-    # run holds it (score.build_scorecard_for_fetch): freshness becomes "not
-    # graded", the failed download leads the fixes, and the grade is partial.
-    # Counting the copy down past zero would grade its lapse as the agency's.
-    fetch = artifact.get("fetch")
-    feed = artifact.get("feed")
+    # A mirror copy is held out exactly as the full run holds one
+    # (score.build_scorecard_for_fetch): freshness becomes "not graded", the
+    # failed download leads the fixes, and the grade is partial. Counting the
+    # copy down, past zero or not, would grade its calendar as the agency's.
     hold = None
-    if isinstance(fetch, dict) and fetch.get("source") == "mirror":
+    if hold_freshness:
+        fetch = artifact.get("fetch") or {}
+        feed = artifact.get("feed")
         hold = hold_mirror_freshness(
             measured,
             fetch_source="mirror",
             configured_url=str((feed or {}).get("static_url") or ""),
             origin_error=fetch.get("origin_error"),
         )
-    if hold is None:
-        card = build_scorecard(measured).to_json()
-        new_cats["freshness"] = {**new_fresh.to_json(), "weight": CATEGORY_WEIGHTS["freshness"]}
-    else:
+    if hold is not None:
         kept, held, lead = hold
         card = build_scorecard(kept, held=held, lead_fix=lead).to_json()
         new_cats["freshness"] = card["categories"]["freshness"]
+    elif new_fresh is not None and not hold_freshness:
+        card = build_scorecard(measured).to_json()
+        new_cats["freshness"] = {**new_fresh.to_json(), "weight": CATEGORY_WEIGHTS["freshness"]}
+    else:  # pragma: no cover - a measured mirror copy always has a freshness to hold
+        raise ValueError("a mirror copy's measured freshness could not be held")
 
     new_artifact = dict(artifact)
     new_artifact["categories"] = new_cats

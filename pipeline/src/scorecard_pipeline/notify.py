@@ -27,6 +27,7 @@ from .alerts import Digest, render_digest
 from .config import repo_root
 from .instance import BASE_URL
 from .portfolio_digest import PortfolioDigest, render_portfolio_digest
+from .user_agent import USER_AGENT
 
 log = logging.getLogger(__name__)
 
@@ -337,7 +338,13 @@ def send_webhooks(notifications: list[WebhookNotification], timeout: float = 10.
     for note in notifications:
         try:
             validate_public_url(note.url)
-            requests.post(note.url, json=note.payload, timeout=timeout, allow_redirects=False)
+            requests.post(
+                note.url,
+                json=note.payload,
+                headers={"User-Agent": USER_AGENT},
+                timeout=timeout,
+                allow_redirects=False,
+            )
         except (UnsafeURLError, requests.exceptions.RequestException):
             continue
         sent += 1

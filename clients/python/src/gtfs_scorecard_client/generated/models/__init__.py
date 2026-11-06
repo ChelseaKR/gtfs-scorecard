@@ -6,6 +6,8 @@ from .artifact_autofix import ArtifactAutofix
 from .artifact_categories import ArtifactCategories
 from .artifact_category import ArtifactCategory
 from .artifact_category_details import ArtifactCategoryDetails
+from .artifact_category_mirror_copy import ArtifactCategoryMirrorCopy
+from .artifact_category_reason import ArtifactCategoryReason
 from .artifact_category_status import ArtifactCategoryStatus
 from .artifact_confidence import ArtifactConfidence
 from .artifact_confidence_level import ArtifactConfidenceLevel
@@ -235,6 +237,8 @@ __all__ = (
     "ArtifactCategories",
     "ArtifactCategory",
     "ArtifactCategoryDetails",
+    "ArtifactCategoryMirrorCopy",
+    "ArtifactCategoryReason",
     "ArtifactCategoryStatus",
     "ArtifactConfidence",
     "ArtifactConfidenceLevel",

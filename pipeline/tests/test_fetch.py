@@ -1,4 +1,4 @@
-"""Tests for the feed fetcher's Mobility Database mirror fallback."""
+"""Tests for the feed fetcher: origin only, no mirror fallback (ADR 0075)."""
 
 from __future__ import annotations
 
@@ -19,7 +19,6 @@ from scorecard_pipeline.net import FetchTrace, UnresolvableHostError, UnsafeURLE
 ORIGIN = "https://origin.example.org/g.zip"
 ORIGIN_FINAL = "https://cdn.example.org/releases/current.zip"
 MIRROR = "https://storage.googleapis.com/storage/v1/b/mdb-latest/o/x.zip?alt=media"
-MIRROR_FINAL = "https://storage.googleapis.com/download/storage/v1/b/mdb-latest/o/x.zip"
 AGENCY = Agency(id="x", name="X Transit", static_gtfs_url=ORIGIN)
 
 
@@ -33,7 +32,7 @@ def _zip_bytes() -> bytes:
 def _fake_download(
     body: bytes, prov: fetchmod.FetchProvenance
 ) -> Callable[[Agency, Path, object], fetchmod.FetchProvenance]:
-    """A stand-in for _download_with_mirror_fallback: write ``body`` to the
+    """A stand-in for _download_from_origin: write ``body`` to the
     destination the fetcher chose, and report ``prov``. Mirrors the real
     contract (write to disk, return provenance) so fetch_static behaves
     identically whether the bytes came from the network or the mock."""
@@ -46,10 +45,10 @@ def _fake_download(
 
 
 def _invoke_download(agency: Agency, tmp_path: Path) -> tuple[bytes, fetchmod.FetchProvenance]:
-    """Call the real _download_with_mirror_fallback (standard tier) and read the
-    bytes it wrote back, so the mirror-fallback tests can assert on both."""
+    """Call the real _download_from_origin (standard tier) and read the
+    bytes it wrote back, so the tests can assert on both."""
     dest = tmp_path / "g.zip"
-    prov = fetchmod._download_with_mirror_fallback(agency, dest, None)
+    prov = fetchmod._download_from_origin(agency, dest, None)
     return dest.read_bytes(), prov
 
 
@@ -96,95 +95,59 @@ def test_origin_redirect_records_the_url_that_served_the_bytes(
     assert prov.final_url == ORIGIN_FINAL
 
 
-def test_falls_back_to_mirror_when_origin_times_out(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+def _http_error(status: int) -> requests.exceptions.HTTPError:
+    resp = requests.Response()
+    resp.status_code = status
+    return requests.exceptions.HTTPError(f"{status} blocked", response=resp)
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [
+        requests.exceptions.ConnectTimeout("origin firewalls our IP"),
+        UnresolvableHostError("cannot resolve host 'publisher.example.org'"),
+        _http_error(403),
+        _http_error(404),
+        requests.exceptions.SSLError("certificate has expired"),
+    ],
+    ids=["timeout", "dns", "403", "404", "tls"],
+)
+def test_a_failed_origin_is_the_answer_and_nothing_else_is_requested(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, failure: Exception
 ) -> None:
+    """ADR 0075: no mirror fallback. The origin's failure surfaces, so the run
+    records "couldn't download"; no other URL is asked for the feed."""
     seen: list[str] = []
 
     def fake_safe_get(url: str, **_: object) -> bytes:
         seen.append(url)
-        if url == ORIGIN:
-            raise requests.exceptions.ConnectTimeout("origin firewalls our IP")
-        return _zip_bytes()
+        raise failure
 
     monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
-    monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: MIRROR)
-    body, prov = _invoke_download(AGENCY, tmp_path)
-    assert zipfile.is_zipfile(io.BytesIO(body))
-    assert seen == [ORIGIN, MIRROR]
-    # The provenance states the mirror served the bytes, and why.
-    assert prov.source == "mirror"
-    assert prov.final_url == MIRROR
-    assert prov.origin_error == "ConnectTimeout"
+    with pytest.raises(type(failure)):
+        _invoke_download(AGENCY, tmp_path)
+    assert seen == [ORIGIN]
+    assert not (tmp_path / "g.zip").exists() or (tmp_path / "g.zip").stat().st_size == 0
 
 
-def test_falls_back_to_pinned_mirror_when_origin_dns_is_gone(
+def test_fetch_no_longer_consults_the_catalog(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    def fake_safe_get(url: str, **_: object) -> bytes:
-        if url == AGENCY.static_gtfs_url:
-            raise UnresolvableHostError("cannot resolve host 'publisher.example.org'")
-        assert url == MIRROR
-        return _zip_bytes()
+    """The fallback was the daily fetch's only catalog read; it is gone."""
+    from scorecard_pipeline import mobilitydb
 
-    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
-    monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: MIRROR)
+    def explode(**_: object) -> list[object]:
+        raise AssertionError("the daily fetch must not read the catalog")
 
-    _body, prov = _invoke_download(AGENCY, tmp_path)
-
-    assert prov.source == "mirror"
-    assert prov.final_url == MIRROR
-    assert prov.origin_error == "UnresolvableHostError"
-
-
-def test_mirror_redirect_records_the_url_that_served_the_bytes(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    def fake_safe_get(url: str, **kwargs: object) -> bytes:
-        if url == ORIGIN:
-            raise requests.exceptions.ConnectTimeout("origin firewalls our IP")
-        trace = kwargs["trace"]
-        assert isinstance(trace, FetchTrace)
-        trace.final_url = MIRROR_FINAL
-        trace.redirect_chain = (MIRROR, MIRROR_FINAL)
-        return _zip_bytes()
-
-    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
-    monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: MIRROR)
-
-    _body, prov = _invoke_download(AGENCY, tmp_path)
-
-    assert prov.source == "mirror"
-    assert prov.final_url == MIRROR_FINAL
-
-
-def test_mirror_fallback_on_origin_403_records_the_error(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    resp = requests.Response()
-    resp.status_code = 403
-
-    def fake_safe_get(url: str, **_: object) -> bytes:
-        if url == ORIGIN:
-            raise requests.exceptions.HTTPError("403 blocked", response=resp)
-        return _zip_bytes()
-
-    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
-    monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: MIRROR)
-    _body, prov = _invoke_download(AGENCY, tmp_path)
-    assert prov.source == "mirror"
-    assert prov.final_url == MIRROR
-    assert prov.origin_error == "HTTPError"
-
-
-def test_reraises_when_no_mirror_exists(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    def fake_safe_get(url: str, **_: object) -> bytes:
-        raise requests.exceptions.ConnectTimeout("blocked")
-
-    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
-    monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: None)
+    monkeypatch.setattr(mobilitydb, "load_catalog", explode)
+    monkeypatch.setattr(
+        fetchmod,
+        "safe_get",
+        lambda url, **_: (_ for _ in ()).throw(requests.exceptions.ConnectTimeout("down")),
+    )
     with pytest.raises(requests.exceptions.ConnectTimeout):
         _invoke_download(AGENCY, tmp_path)
+    assert not hasattr(mobilitydb, "hosted_mirror_url")
 
 
 def test_similar_language_provider_cannot_substitute_mirror_bytes(
@@ -255,21 +218,13 @@ def test_expired_certificate_does_not_score_a_deprecated_mirror(
     assert seen == [sacrt.static_gtfs_url]
 
 
-def test_unsafe_url_is_never_mirrored(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    mirror_calls = {"n": 0}
-
+def test_unsafe_url_is_a_hard_stop(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     def fake_safe_get(url: str, **_: object) -> bytes:
         raise UnsafeURLError("resolves to a private address")
 
-    def fake_mirror(*_a: object, **_k: object) -> str:
-        mirror_calls["n"] += 1
-        return MIRROR
-
     monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
-    monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", fake_mirror)
     with pytest.raises(UnsafeURLError):
         _invoke_download(AGENCY, tmp_path)
-    assert mirror_calls["n"] == 0  # an unsafe URL is a hard stop, not a fetch to route around
 
 
 # ----------------------------------------------------------- fetch_static
@@ -289,7 +244,7 @@ def test_fetch_static_reuses_an_existing_snapshot(monkeypatch: pytest.MonkeyPatc
     def explode(_agency: Agency, _dest: Path, _limits: object) -> fetchmod.FetchProvenance:
         raise AssertionError("must not re-download when a snapshot already exists")
 
-    monkeypatch.setattr(fetchmod, "_download_with_mirror_fallback", explode)
+    monkeypatch.setattr(fetchmod, "_download_from_origin", explode)
     result = fetchmod.fetch_static(AGENCY, DATE)
     assert result.reused is True
     assert result.path == dest
@@ -308,7 +263,7 @@ def test_fetch_static_downloads_and_records_the_snapshot(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        fetchmod, "_download_with_mirror_fallback", _fake_download(_zip_bytes(), ORIGIN_PROV)
+        fetchmod, "_download_from_origin", _fake_download(_zip_bytes(), ORIGIN_PROV)
     )
     result = fetchmod.fetch_static(AGENCY, DATE)
     assert result.reused is False
@@ -327,9 +282,7 @@ def test_fetch_static_preserves_wasco_raw_bytes_and_builds_deterministic_reader_
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     body = _wasco_shaped_zip_bytes()
-    monkeypatch.setattr(
-        fetchmod, "_download_with_mirror_fallback", _fake_download(body, ORIGIN_PROV)
-    )
+    monkeypatch.setattr(fetchmod, "_download_from_origin", _fake_download(body, ORIGIN_PROV))
 
     result = fetchmod.fetch_static(AGENCY, DATE)
 
@@ -400,7 +353,7 @@ def test_canonical_root_with_nested_extras_conservatively_stays_raw(tmp_path: Pa
 def test_fetch_static_rejects_a_non_zip_response(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
         fetchmod,
-        "_download_with_mirror_fallback",
+        "_download_from_origin",
         _fake_download(b"<html>404</html>", ORIGIN_PROV),
     )
     with pytest.raises(ValueError, match="not a zip"):
@@ -416,7 +369,7 @@ def test_fetch_static_rejects_an_oversized_archive_entry(
 ) -> None:
     monkeypatch.setattr(fetchmod, "MAX_GTFS_ENTRY_BYTES", 8)
     monkeypatch.setattr(
-        fetchmod, "_download_with_mirror_fallback", _fake_download(_zip_bytes(), ORIGIN_PROV)
+        fetchmod, "_download_from_origin", _fake_download(_zip_bytes(), ORIGIN_PROV)
     )
 
     with pytest.raises(ValueError, match=r"entry 'agency\.txt' expands"):
@@ -436,7 +389,7 @@ def test_fetch_static_rejects_an_extreme_compression_ratio(
     monkeypatch.setattr(fetchmod, "COMPRESSION_RATIO_MIN_BYTES", 1)
     monkeypatch.setattr(fetchmod, "MAX_GTFS_COMPRESSION_RATIO", 2)
     monkeypatch.setattr(
-        fetchmod, "_download_with_mirror_fallback", _fake_download(buf.getvalue(), ORIGIN_PROV)
+        fetchmod, "_download_from_origin", _fake_download(buf.getvalue(), ORIGIN_PROV)
     )
 
     with pytest.raises(ValueError, match="unsafe compression ratio"):
@@ -451,7 +404,7 @@ def test_reused_snapshot_reads_provenance_back_from_the_sidecar(
         source="mirror", final_url=MIRROR, max_attempts=1, origin_error="ConnectTimeout"
     )
     monkeypatch.setattr(
-        fetchmod, "_download_with_mirror_fallback", _fake_download(_zip_bytes(), mirror_prov)
+        fetchmod, "_download_from_origin", _fake_download(_zip_bytes(), mirror_prov)
     )
     fresh = fetchmod.fetch_static(AGENCY, DATE)
     assert fresh.source == "mirror"
@@ -463,7 +416,7 @@ def test_reused_snapshot_reads_provenance_back_from_the_sidecar(
     def explode(_agency: Agency, _dest: Path, _limits: object) -> fetchmod.FetchProvenance:
         raise AssertionError("must not re-download when a snapshot already exists")
 
-    monkeypatch.setattr(fetchmod, "_download_with_mirror_fallback", explode)
+    monkeypatch.setattr(fetchmod, "_download_from_origin", explode)
     reused = fetchmod.fetch_static(AGENCY, DATE)
     assert reused.reused is True
     assert reused.source == "mirror"
@@ -526,8 +479,8 @@ def test_large_feed_streams_the_download_standard_feed_buffers(
     monkeypatch.setattr(fetchmod, "safe_download", fake_download)
     monkeypatch.setattr(fetchmod, "safe_get", fake_get)
 
-    fetchmod._download_with_mirror_fallback(LARGE_AGENCY, tmp_path / "a.zip", fetchmod.LARGE_LIMITS)
-    fetchmod._download_with_mirror_fallback(AGENCY, tmp_path / "b.zip", None)
+    fetchmod._download_from_origin(LARGE_AGENCY, tmp_path / "a.zip", fetchmod.LARGE_LIMITS)
+    fetchmod._download_from_origin(AGENCY, tmp_path / "b.zip", None)
 
     # The large feed took the bounded-memory streaming path; the ordinary feed
     # kept the existing buffer-then-write path.
@@ -547,5 +500,5 @@ def test_large_feed_download_uses_the_raised_ceiling(
         return dest.stat().st_size
 
     monkeypatch.setattr(fetchmod, "safe_download", fake_download)
-    fetchmod._download_with_mirror_fallback(LARGE_AGENCY, tmp_path / "a.zip", fetchmod.LARGE_LIMITS)
+    fetchmod._download_from_origin(LARGE_AGENCY, tmp_path / "a.zip", fetchmod.LARGE_LIMITS)
     assert seen["max_bytes"] == fetchmod.LARGE_MAX_GTFS_DOWNLOAD_BYTES

@@ -259,7 +259,8 @@ def parse_acs(
 def _fetch_acs_rows(url: str) -> list[list[str]]:
     """Fetch one Census API query, returning its array-of-arrays.
 
-    Retries on transient/WAF failures and sends a descriptive User-Agent. The
+    Reads the host's robots.txt first, retries on transient/WAF failures, and
+    sends the scorecard's identifying User-Agent. The
     Census API requires a key: a keyless request 302-redirects to an HTML
     missing-key page, so a non-JSON response raises a clear error naming what
     came back rather than a bare JSONDecodeError.
@@ -267,9 +268,12 @@ def _fetch_acs_rows(url: str) -> list[list[str]]:
     import json
 
     from .net import safe_get
+    from .robots_policy import shared_checker
 
-    headers = {"User-Agent": "gtfs-scorecard/1.0 (equity overlay)"}
-    body = safe_get(url, headers=headers, timeout=60, retries=2).decode().strip()
+    # robots.txt first (ADR 0075); safe_get sends the scorecard's identifying
+    # User-Agent (user_agent.py).
+    shared_checker().require(url)
+    body = safe_get(url, timeout=60, retries=2).decode().strip()
     try:
         rows = json.loads(body)
     except ValueError as exc:

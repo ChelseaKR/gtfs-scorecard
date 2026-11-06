@@ -94,17 +94,26 @@ def test_an_expired_mirror_copy_is_not_graded_as_the_agencys_lapse(
     assert not any("export" in f["fix"].lower() for f in card["top_fixes"])
 
 
-def test_a_current_mirror_copy_and_any_origin_fetch_are_graded_as_before(
+def test_a_current_mirror_copy_is_held_too_and_any_origin_fetch_is_graded_as_before(
     make_gtfs_zip: Callable[..., Path],
 ) -> None:
     current = _categories(_feed(make_gtfs_zip, "20260801", "20270102"))
-    for source in ("mirror", "origin"):
-        assert (
-            build_scorecard_for_fetch(
-                current, fetch_source=source, configured_url=URL, origin_error=None
-            ).to_json()
-            == build_scorecard(current).to_json()
-        )
+    assert (
+        build_scorecard_for_fetch(
+            current, fetch_source="origin", configured_url=URL, origin_error=None
+        ).to_json()
+        == build_scorecard(current).to_json()
+    )
+    # A current copy's calendar is still the copy's, not the agency's (ADR 0075).
+    held = build_scorecard_for_fetch(
+        current, fetch_source="mirror", configured_url=URL, origin_error=None
+    ).to_json()
+    fresh = held["categories"]["freshness"]
+    assert fresh["status"] == "not_yet_measured"
+    assert fresh["reason"] == "mirror_copy"
+    assert fresh["mirror_copy"]["service_end"] == "2027-01-02"
+    assert "ended" not in fresh["summary"]
+    assert "ended" not in held["top_fixes"][0]["why"]
 
     expired = _categories(_feed(make_gtfs_zip, "20240818", "20250104"))
     assert (

@@ -206,17 +206,17 @@ def _freshness(
 ) -> tuple[CategoryResult | None, str]:
     if not _measured(cat):
         return None, "freshness_not_measured"
+    if mirror:
+        # score.hold_mirror_freshness: the current rubric does not grade a
+        # mirror copy's calendar, current, lapsed or unreadable (ADR 0075), so
+        # there is no full score to derive.
+        return None, "freshness_held_mirror_copy"
     details = cat.get("details") or {}
     if not (details.get("feed_end_date") or details.get("last_service_date")):
         return None, "freshness_no_stored_dates"
     fresh = freshness(_feed_dates(details), as_of, details.get("service_type", "fixed"))
     if fresh is None:
         return None, "freshness_unmeasurable"
-    days = fresh.details.get("days_until_expiry")
-    if mirror and isinstance(days, int) and days < 0:
-        # score.hold_mirror_freshness: the current rubric does not grade an
-        # expired mirror copy's calendar, so there is no full score to derive.
-        return None, "freshness_held_expired_mirror_copy"
     return fresh, ""
 
 

@@ -152,6 +152,7 @@ def build_tracts(geometry: dict[str, Polygon], acs: dict[str, EquityIndicators])
 def fetch_tract_geometry(state_fips: str) -> dict[str, Polygon]:
     """Fetch all tract polygons for a state from TIGERweb, paged. No key needed."""
     from .net import safe_get
+    from .robots_policy import shared_checker
 
     merged: dict[str, Any] = {"features": []}
     offset = 0
@@ -161,9 +162,8 @@ def fetch_tract_geometry(state_fips: str) -> dict[str, Polygon]:
             f"&returnGeometry=true&outSR=4326&f=geojson"
             f"&resultRecordCount={_TIGERWEB_PAGE}&resultOffset={offset}"
         )
-        body = safe_get(
-            url, headers={"User-Agent": "gtfs-scorecard/1.0 (equity)"}, timeout=90
-        ).decode()
+        shared_checker().require(url)  # robots.txt first (ADR 0075)
+        body = safe_get(url, timeout=90).decode()
         page = json.loads(body)
         feats = page.get("features") or []
         merged["features"].extend(feats)

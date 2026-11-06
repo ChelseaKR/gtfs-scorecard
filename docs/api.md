@@ -156,9 +156,10 @@ Changelog:
   `"partial: freshness not measured"`. The rule is one rule on every surface:
   the qualifier is present whenever the `freshness` category is not measured,
   whatever the reason. Usually the feed URL on file could not be downloaded
-  and the Mobility Database mirror copy scored instead had already ended, so
-  freshness was held out of the grade rather than scored from that copy's
-  dates. It is also present when the feed's calendar could not be read. The
+  and a Mobility Database mirror copy was scored instead, so freshness was
+  held out of the grade rather than scored from that copy's dates; the held
+  category then carries `reason` (`mirror_copy_expired` or `mirror_copy`) and
+  the copy's own dates as `mirror_copy`, never a countdown. It is also present when the feed's calendar could not be read. The
   letter is still published, but it describes less of the
   feed than a full grade, so show it with the qualifier. The same value rides
   as `grade_qualifier` on index history points, `catalog.json` and
@@ -315,7 +316,7 @@ Changelog:
                // distance to the grade-band edges: points up to the next letter's
                // floor (null for an A) and points above this band's own floor
                "margin_to_next_band": 5.9, "margin_to_lower_band": 4.1 },
-  "fetch": { "source": "origin",      // or "mirror" (MobilityData hosted copy); "unknown" for
+  "fetch": { "source": "origin",      // "mirror" only before 2026-11-05 (ADR 0075); "unknown" for
                                       // snapshots downloaded before provenance recording
                                       // (fetch policy itself: gtfsscorecard.org/fetcher/)
              "final_url": "...",      // the URL that actually served the graded bytes; a
@@ -323,7 +324,7 @@ Changelog:
                                       // presigned signature) reads REDACTED (ADR 0066)
              "user_agent": "...",     // the User-Agent presented to that server
              "max_attempts": 4,       // configured attempt ceiling; omitted when unknown
-             "origin_error": "...",  // exception that forced the mirror; only on mirror fetches
+             "origin_error": "...",  // exception that forced the mirror; only on older mirror fetches
              "auth": "env-ref",       // only when the feed URL needed a credential (registry
              "auth_kind": "header",   // fetch_auth): header, query, or basic. Never the
                                       // credential; final_url then carries no query string
@@ -378,14 +379,17 @@ otherwise the registry's tri-state `is_official` evidence determines the value,
 and absence stays unverified. A successful request is never ownership evidence.
 This field is required on schema 1.18 artifacts and absent on older snapshots.
 
-The `fetch` block states how the graded bytes were obtained. When an origin
-403s or times out, the pipeline scores the MobilityData hosted mirror instead
-of dropping the agency; `"source": "mirror"` makes that visible, since a mirror
-copy can lag what the agency republished. The mirror of a catalog record that
-MobilityData has marked deprecated is never used: that copy is no longer kept
-in step with the URL, so the run records the origin as unreachable and
-publishes no new grade. The block is additive within schema
-1.4 (consumers tolerate added fields, per the versioning rule above).
+The `fetch` block states how the graded bytes were obtained. Every fetch since
+2026-11-05 is `"source": "origin"`: when the feed URL on file fails, the run
+records the feed as unreachable and publishes no new grade (ADR 0075).
+`"mirror"` appears only on older artifacts scored from a MobilityData hosted
+copy. On those, the freshness sweep holds freshness out of the grade
+(`status: "not_yet_measured"`), since the copy's calendar is not the agency's;
+the remaining categories are graded as before. `user_agent` records what was
+sent: `gtfs-scorecard/<version> (+https://gtfsscorecard.org/fetcher/)` now, and
+a desktop Chrome string on artifacts last downloaded on or before 2026-10-19.
+The block is additive within schema 1.4 (consumers tolerate added fields, per
+the versioning rule above).
 
 The `confidence` block states how much of this grade the pipeline could
 measure this run, not a second grade on top of it: `level` is always a word
@@ -679,8 +683,8 @@ records with no consecutive failed direct check. The legacy
 not a historical request-success rate. Its denominator is the records that
 carry a direct-check result: a record with no failure count is reported under
 `not_measured` and left out of the share, rather than counted as clean. When no
-record carries one, the share is `null`. Direct liveness never uses a mirror,
-while the daily scoring run may use the Mobility Database mirror.
+record carries one, the share is `null`. Neither direct liveness nor the daily
+scoring run uses a mirror (ADR 0075).
 
 Per-agency detail stays the published artifact (`<agency>/latest.json`); the API
 does not duplicate it. Human-readable named changes and the corpus trend render

@@ -61,3 +61,39 @@ def offline_robots() -> Generator[None, None, None]:
     reset_shared_checker(RobotsChecker(get=lambda url: RobotsResponse(404, url, "", "")))
     yield
     reset_shared_checker(None)
+
+
+#: Every User-Agent value any test put on the wire, for tests/test_user_agent.py.
+WIRE_USER_AGENTS: list[str] = []
+
+
+@pytest.fixture(autouse=True)
+def no_browser_user_agent_on_the_wire(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Fail any test whose code sends a browser-like User-Agent (ADR 0075).
+
+    Patched at ``http.client.HTTPConnection.putheader``, the point both
+    ``requests`` (through urllib3) and ``urllib.request`` write headers to the
+    socket, so no client in the pipeline can get around it by building its own
+    session. Tests that stand up a local server therefore check every request
+    they make, not only the ones a test names.
+    """
+    import http.client
+
+    from scorecard_pipeline.user_agent import is_browser_like
+
+    original = http.client.HTTPConnection.putheader
+
+    def guarded(self: http.client.HTTPConnection, header: str | bytes, *values: object) -> None:
+        name = header.decode("latin-1") if isinstance(header, bytes) else str(header)
+        if name.lower() == "user-agent":
+            value = " ".join(
+                v.decode("latin-1") if isinstance(v, bytes) else str(v) for v in values
+            )
+            WIRE_USER_AGENTS.append(value)
+            if is_browser_like(value):
+                raise AssertionError(
+                    f"a request was sent with a browser-like User-Agent: {value!r}"
+                )
+        original(self, header, *values)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(http.client.HTTPConnection, "putheader", guarded)

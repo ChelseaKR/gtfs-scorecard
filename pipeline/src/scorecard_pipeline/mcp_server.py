@@ -41,6 +41,7 @@ from .metrics import (
 )
 from .ntd import presented_readiness as presented_ntd_readiness
 from .score import grade_qualifier
+from .user_agent import USER_AGENT
 
 PROTOCOL_VERSION = "2025-06-18"
 SERVER_INFO = {"name": "gtfs-scorecard", "version": "1.0.0"}
@@ -50,7 +51,7 @@ Fetch = Callable[[str], Any]
 
 def _http_fetch(url: str) -> Any:
     req = urllib.request.Request(  # noqa: S310 - our own site (_base_url()/env override), not attacker-controlled
-        url, headers={"User-Agent": "gtfs-scorecard-mcp"}
+        url, headers={"User-Agent": USER_AGENT}
     )
     with urllib.request.urlopen(req, timeout=20) as resp:  # noqa: S310 - our own site, not attacker-controlled
         return json.loads(resp.read().decode("utf-8"))

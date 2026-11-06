@@ -21,6 +21,8 @@ import urllib.parse
 from dataclasses import dataclass
 from typing import Any
 
+from .user_agent import USER_AGENT
+
 Point = tuple[float, float]  # (lon, lat)
 Place = Point | str
 
@@ -310,7 +312,9 @@ def _loopback_get(url: str, *, timeout: int) -> bytes:
         is_literal_loopback = False
     if parts.scheme not in {"http", "https"} or not (host == "localhost" or is_literal_loopback):
         raise ValueError("allow_loopback requires a localhost or loopback-IP OTP base URL")
-    response = requests.get(url, timeout=timeout, allow_redirects=False)
+    response = requests.get(
+        url, headers={"User-Agent": USER_AGENT}, timeout=timeout, allow_redirects=False
+    )
     try:
         response.raise_for_status()
         if response.is_redirect or response.is_permanent_redirect:

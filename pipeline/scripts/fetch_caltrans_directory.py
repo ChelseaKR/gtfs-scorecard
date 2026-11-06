@@ -33,7 +33,9 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUT = REPO_ROOT / "data" / "caltrans-report-directory.json"
 BASE = "https://reports.dds.dot.ca.gov"
-USER_AGENT = "gtfs-scorecard crosswalk refresh (monthly, one request per report)"
+# Names the scorecard and links to the fetcher page, like every automated
+# request the project makes (ADR 0075). Monthly, one request per report.
+USER_AGENT = "gtfs-scorecard crosswalk-refresh (+https://gtfsscorecard.org/fetcher/)"
 
 _MONTH_LINK = re.compile(r'href="(/gtfs_schedule/(\d{4})/(\d{2}))"')
 _ROW = re.compile(

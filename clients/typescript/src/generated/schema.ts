@@ -1102,6 +1102,16 @@ export interface components {
             status: "measured" | "not_yet_measured";
             weight: number;
             summary: string;
+            /**
+             * @description Why a not-measured category is held out of the grade. Set only on a held Mobility Database mirror copy's freshness (score.hold_mirror_freshness).
+             * @enum {string}
+             */
+            reason?: "mirror_copy" | "mirror_copy_expired";
+            /** @description The held mirror copy's own service dates, never an expiry countdown. Either side is null when unknown. */
+            mirror_copy?: {
+                service_start: string | null;
+                service_end: string | null;
+            };
             score?: number;
             findings?: components["schemas"]["ArtifactFinding"][];
             details?: Record<string, never>;

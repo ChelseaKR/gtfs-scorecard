@@ -203,18 +203,12 @@ def gates(monkeypatch: pytest.MonkeyPatch) -> Iterator[tuple[Gate, Gate]]:
 
 
 @pytest.fixture
-def mirror_calls(monkeypatch: pytest.MonkeyPatch, gates: tuple[Gate, Gate]) -> list[str]:
-    """Record every Mobility Database mirror lookup and answer with a mirror
-    that works, so a fallback cannot hide behind a failing mirror."""
+def mirror_calls(gates: tuple[Gate, Gate]) -> list[Any]:
+    """Every request that reached the second host. There is no mirror fallback
+    any more (ADR 0075), so the only way a fallback could hide is a request to
+    some other host; this is that host's live request log."""
     _publisher, elsewhere = gates
-    calls: list[str] = []
-
-    def hosted_mirror_url(agency_id: str, *_args: object, **_kwargs: object) -> str:
-        calls.append(agency_id)
-        return elsewhere.url("/open.zip")
-
-    monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", hosted_mirror_url)
-    return calls
+    return elsewhere.seen
 
 
 def _agency(url: str, kind: str = "header", name: str = "X-Api-Key", **extra: Any) -> Agency:
@@ -256,24 +250,22 @@ def test_missing_variable_is_unreachable_with_no_request_and_no_mirror(
     assert not _snapshot_dir().exists() or not any(_snapshot_dir().iterdir())
 
 
-def test_the_mirror_stub_is_live_so_its_silence_above_means_something(
-    gates: tuple[Gate, Gate], mirror_calls: list[str]
+def test_a_keyless_record_whose_origin_refuses_falls_back_to_nothing(
+    gates: tuple[Gate, Gate], mirror_calls: list[Any]
 ) -> None:
-    """Negative control for the test above. A keyless record whose origin
-    refuses does fall back to this very mirror stub, so "mirror_calls == []"
-    for the credentialed record is a real no-fallback result, not a stub that
-    could never have been called."""
+    """Negative control for the test above: the second host is live and would
+    answer, and a keyless record whose origin refuses still never reaches it.
+    Before ADR 0075 this record fell back to a mirror copy."""
     publisher, elsewhere = gates
     keyless = Agency(
         id="keyless", name="Keyless", static_gtfs_url=publisher.url("/header.zip"), mdb_id="m"
     )
 
-    result = fetchmod.fetch_static(keyless, DATE)
+    with pytest.raises(requests.exceptions.RequestException):
+        fetchmod.fetch_static(keyless, DATE)
 
-    assert mirror_calls == ["keyless"]
-    assert result.source == "mirror"
-    assert [s.path for s in elsewhere.seen] == ["/open.zip"]
-    assert result.auth_kind is None
+    assert publisher.seen, "the origin was asked"
+    assert mirror_calls == [] and elsewhere.seen == []
 
 
 @pytest.mark.parametrize("value", ["", "   ", "\n"])

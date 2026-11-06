@@ -50,8 +50,10 @@ LEGACY_MOBILITY_DATABASE_CATALOG_URL = (
     "https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media"
 )
 # ADR 0070: files.mobilitydatabase.org serves `Disallow: /` and is never read.
-# Manual proposals default to the storage.googleapis.com export, and the weekly
-# update reads the Mobility Database API (catalog_api.py).
+# Every catalog read, manual or weekly, uses the storage.googleapis.com export,
+# whose host serves no robots.txt rules (404, checked 2026-11-05). The API
+# (catalog_api.py) is not called: its robots.txt redirects to a sign-in page
+# (ADR 0075).
 DISALLOWED_CATALOG_HOSTS = frozenset({"files.mobilitydatabase.org"})
 DEFAULT_PROPOSAL_CATALOG_URL = LEGACY_MOBILITY_DATABASE_CATALOG_URL
 DEFAULT_CATALOG_URL = LEGACY_MOBILITY_DATABASE_CATALOG_URL
@@ -1020,13 +1022,16 @@ def fetch_catalog_bytes(url: str = DEFAULT_CATALOG_URL) -> bytes:
     """
     from urllib.parse import urlsplit
 
-    from .robots_policy import USER_AGENT
+    from .robots_policy import USER_AGENT, shared_checker
 
     if (urlsplit(url).hostname or "").lower() in DISALLOWED_CATALOG_HOSTS:
         raise ValueError(
             f"{urlsplit(url).hostname} disallows automated access in robots.txt and is not "
-            "read; use the Mobility Database API (--catalog api) or a local CSV"
+            "read; use the storage.googleapis.com export (the default) or a local CSV"
         )
+    # Any other catalog host is read only when its own robots.txt allows it
+    # (ADR 0075). RobotsRefusedError propagates before any request.
+    shared_checker().require(url)
     return safe_get(
         url, headers={"User-Agent": USER_AGENT}, timeout=60, max_bytes=128 * 1024 * 1024
     )
@@ -1043,68 +1048,15 @@ _catalog_cache: list[CatalogFeed] | None = None
 def load_catalog(*, force: bool = False) -> list[CatalogFeed]:
     """The parsed Mobility Database catalog, fetched once and memoized.
 
-    Used by the fetch fallback, which only consults it when an agency's origin
-    feed is unreachable, so the catalog download happens for the blocked
-    minority of feeds rather than on every run.
+    Read from the storage.googleapis.com export (``DEFAULT_CATALOG_URL``),
+    whose host serves no robots.txt rules (checked 2026-11-05: 404). The site
+    render uses it to fill in a state an agency's record does not carry. The
+    daily fetch no longer consults it: there is no mirror fallback (ADR 0075).
     """
     global _catalog_cache
     if _catalog_cache is None or force:
         _catalog_cache = parse_catalog(fetch_catalog())
     return _catalog_cache
-
-
-def hosted_mirror_url(
-    agency_id: str, agency_name: str, current_url: str, mdb_id: str = ""
-) -> str | None:
-    """MobilityData's hosted mirror (``urls.latest``) for an agency, if any.
-
-    The current mirror lives at ``files.mobilitydatabase.org``, reachable even
-    when the agency's own server firewalls datacenter IPs or sits behind a bot filter. Because
-    these bytes are scored and published as the agency's feed, the match is
-    deliberately stricter than discovery: only a pinned exact ``mdb_id`` or an
-    exact normalized current download URL may select a mirror. Names are never
-    an identity boundary.
-
-    A row the catalog has marked ``deprecated`` never supplies a mirror. The
-    catalog deprecates a record when another record replaces it, and the hosted
-    copy of the replaced record is no longer kept in step with the URL the
-    registry still fetches. SacRT showed the cost: the registry keeps mdb-1296's
-    iportal URL as canonical because it serves the current feed, so when that
-    host's certificate expired, the fallback scored mdb-1296's hosted copy, a
-    September 2024 export last refreshed on 2024-10-17, and published it as the
-    agency's feed. Grading a copy that old as today's feed blames the agency for
-    an expiry that is not theirs. With no mirror, the run records the origin as
-    unreachable instead.
-    """
-    try:
-        feeds = load_catalog()
-    except Exception:
-        return None
-    schedule = [
-        feed
-        for feed in feeds
-        if feed.data_type == "gtfs" and feed.hosted_url and feed.status != "deprecated"
-    ]
-
-    def current_mirror_url(feed: CatalogFeed) -> str:
-        """Upgrade legacy numeric mirror records to the current V2 endpoint."""
-        normalized = normalized_mdb_id(feed.mdb_id)
-        if re.fullmatch(r"mdb-[0-9]+", normalized):
-            return f"https://files.mobilitydatabase.org/{normalized}/latest.zip"
-        return feed.hosted_url
-
-    if mdb_id:
-        mdb_key = normalized_mdb_id(mdb_id)
-        for feed in schedule:
-            if normalized_mdb_id(feed.mdb_id) == mdb_key:
-                return current_mirror_url(feed)
-
-    current_key = _feed_url_key(current_url)
-    if current_key:
-        for feed in schedule:
-            if _feed_url_key(feed.direct_download) == current_key:
-                return current_mirror_url(feed)
-    return None
 
 
 # --- feed discovery: is a tracked feed's URL still the canonical one? ----------
