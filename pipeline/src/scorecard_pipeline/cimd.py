@@ -322,6 +322,7 @@ def fetch_cimd_das(bbox: tuple[float, float, float, float]) -> list[Disseminatio
     import urllib.parse
 
     from .net import safe_get
+    from .robots_policy import shared_checker
 
     xmin, ymin, xmax, ymax = bbox
     fields = "DAUID," + ",".join(_CIMD_QUINTILE_FIELDS.values())
@@ -342,11 +343,11 @@ def fetch_cimd_das(bbox: tuple[float, float, float, float]) -> list[Disseminatio
                 "f": "geojson",
             }
         )
-        body = safe_get(
-            f"{_CIMD_SERVICE}?{params}",
-            headers={"User-Agent": "gtfs-scorecard/1.0 (equity)"},
-            timeout=90,
-        ).decode()
+        url = f"{_CIMD_SERVICE}?{params}"
+        # robots.txt first, as for feeds (ADR 0075). On 2026-11-05 this host's
+        # rules said "User-agent: * / Disallow: /", so the refresh stops here.
+        shared_checker().require(url)
+        body = safe_get(url, timeout=90).decode()
         page = json.loads(body)
         feats = page.get("features") or []
         das.extend(parse_cimd_features(page))

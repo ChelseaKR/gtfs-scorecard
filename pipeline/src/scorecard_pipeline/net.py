@@ -31,6 +31,8 @@ from urllib.parse import urljoin, urlsplit
 
 import requests
 
+from .user_agent import with_identifying_user_agent
+
 # Ceiling for any single feed or jar download. Real GTFS feeds are well under
 # this; the cap exists to stop a hostile or misconfigured endpoint.
 MAX_DOWNLOAD_BYTES = 512 * 1024 * 1024
@@ -300,6 +302,9 @@ def _stream_guarded(
     without this check a publisher's redirect to a CDN, or to anywhere else,
     would receive the key.
     """
+    # Every request names the scorecard; a browser-like User-Agent is refused
+    # before anything is sent (user_agent.py, ADR 0075).
+    headers = with_identifying_user_agent(headers)
     session = requests.Session()
     current = url
     redirect_chain = [url]

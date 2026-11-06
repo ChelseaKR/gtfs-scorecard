@@ -54,7 +54,10 @@ import json
 import math
 import re
 from pathlib import Path
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
+
+# Names the scorecard and links to the fetcher page (ADR 0075).
+USER_AGENT = "gtfs-scorecard map-build (+https://gtfsscorecard.org/fetcher/)"
 
 SOURCE = (
     "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/"
@@ -399,7 +402,8 @@ def main() -> int:
     ap.add_argument("--countries", default=",".join(COUNTRIES))
     args = ap.parse_args()
 
-    with urlopen(args.source, timeout=120) as resp:  # noqa: S310 - fixed https source
+    request = Request(args.source, headers={"User-Agent": USER_AGENT})  # noqa: S310
+    with urlopen(request, timeout=120) as resp:  # noqa: S310 - fixed https source
         geojson = json.loads(resp.read().decode("utf-8"))
 
     by_country: dict[str, list[dict]] = {}

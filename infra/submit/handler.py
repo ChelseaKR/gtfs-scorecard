@@ -38,6 +38,8 @@ from scorecard_pipeline.submissions import build_submission
 API = "https://api.github.com"
 INTAKE_PATH = "registry/intake.yaml"
 IDS_URL = "https://gtfsscorecard.org/api/v1/ids.json"
+# Names the scorecard and links to the fetcher page (ADR 0075).
+SUBMIT_USER_AGENT = "gtfs-scorecard submit (+https://gtfsscorecard.org/fetcher/)"
 
 
 def _gh(method: str, path: str, token: str, payload: dict[str, Any] | None = None) -> Any:
@@ -45,7 +47,7 @@ def _gh(method: str, path: str, token: str, payload: dict[str, Any] | None = Non
     req = urllib.request.Request(f"{API}{path}", data=data, method=method)
     req.add_header("Authorization", f"Bearer {token}")
     req.add_header("Accept", "application/vnd.github+json")
-    req.add_header("User-Agent", "gtfs-scorecard-submit")
+    req.add_header("User-Agent", SUBMIT_USER_AGENT)
     with urllib.request.urlopen(req, timeout=20) as resp:  # noqa: S310 - fixed api.github.com
         return json.loads(resp.read().decode())
 
@@ -70,7 +72,7 @@ def _tracked_ids() -> set[str]:
     curated shard. The public identity endpoint supplies that complete set;
     human review remains the backstop if the read is unavailable or malformed.
     """
-    req = urllib.request.Request(IDS_URL, headers={"User-Agent": "gtfs-scorecard-submit"})
+    req = urllib.request.Request(IDS_URL, headers={"User-Agent": SUBMIT_USER_AGENT})
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:  # noqa: S310 - fixed project URL
             payload = json.loads(resp.read().decode())

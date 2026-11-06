@@ -137,6 +137,21 @@ the declared public surface).
 
 ### Changed
 
+- **No more mirror copies, and one honest User-Agent on every request
+  (ADR 0075).** When a feed's own URL fails, the feed is now "couldn't
+  download" and nothing is graded from a Mobility Database hosted copy. The
+  133 published grades that were scored from such a copy keep their
+  correctness and completeness, but their freshness is held out of the grade
+  as not measured, never 0 and never current. 81 letter grades change (35 F to
+  D, 21 F to C, 8 C to D, 7 D to F, and 10 others); the full list is in the ADR.
+  Every HTTP client now sends `gtfs-scorecard/<version>
+  (+https://gtfsscorecard.org/fetcher/)`: `net` fills it in and refuses a
+  browser-like or anonymous one, and the test suite fails any request written
+  with a browser string. The weekly catalog check reads the
+  storage.googleapis.com export instead of the Mobility Database API, whose
+  robots.txt redirects to a sign-in page, and every catalog and equity
+  overlay read now checks robots.txt first. The OTP QA feed download goes
+  through the pipeline's client instead of plain `curl`.
 - **The Daily collect job lists the artifact archive once instead of five or
   six times.** Each recursive copy under `data/artifacts/` lists all of its
   roughly 332,000 keys (0.11 GB of S3 egress), whatever the filters. The

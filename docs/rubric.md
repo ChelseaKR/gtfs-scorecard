@@ -190,6 +190,15 @@ Scoring:
 - Missing `feed_info` validity dates: minus 15, because without stated dates
   no app (and no scorecard) can warn the agency before riders notice.
 
+**Only the agency's own feed is dated.** Freshness is measured from a feed
+downloaded from the URL on file. When that URL cannot be downloaded, the feed
+is "couldn't download" and its freshness is not measured; nothing is scored
+from a copy held elsewhere. Grades scored before 2026-11-05 from a Mobility
+Database mirror copy have freshness held out of the grade (`not_yet_measured`,
+weight redistributed over the measured categories, as for unmeasured
+realtime), never scored as 0 or as current, until the feed's own URL answers
+again (ADR 0075).
+
 **Open policy question: one curve for every publisher.** The 60-day curve is
 anchored on the Caltrans 30-day rule and applies to every feed, everywhere.
 It measures runway, not habit. An agency that republishes every two weeks

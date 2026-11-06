@@ -2471,7 +2471,7 @@ Notes:
   change; always fetch the canonical `/media/gtfs/` URL.
 - A keyless mirror exists at the Mobility Database latest bucket
   (`us-california-unitrans-gtfs-82.zip`), refreshed by MobilityData rather
-  than the agency. Use only as a fallback.
+  than the agency. The pipeline no longer falls back to it (ADR 0075).
 - The prior UmoIQ endpoint record became stale when the public passenger system
   moved to Swiftly. Realtime scoring now requires a documented Swiftly endpoint
   and any required access terms. Until those are public, the category states

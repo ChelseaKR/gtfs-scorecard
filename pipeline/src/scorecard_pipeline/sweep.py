@@ -101,6 +101,20 @@ def _feed_dates(details: dict[str, Any]) -> FeedDates:
     )
 
 
+#: What a held freshness category says in place of a score (ADR 0075).
+MIRROR_FRESHNESS_SUMMARY = (
+    "Not measured. The feed URL on file could not be downloaded, so the agency's "
+    "current service dates are unknown. The last score used a Mobility Database "
+    "mirror copy, which is no longer read. Nothing here counts against the grade."
+)
+
+
+def is_mirror_copy(artifact: dict[str, Any]) -> bool:
+    """True when the artifact's bytes came from the Mobility Database mirror."""
+    fetch = artifact.get("fetch")
+    return isinstance(fetch, dict) and fetch.get("source") == "mirror"
+
+
 def can_resweep(artifact: dict[str, Any]) -> bool:
     """True when freshness was scored from real dates we can recompute against.
 
@@ -110,6 +124,10 @@ def can_resweep(artifact: dict[str, Any]) -> bool:
     fresh = artifact.get("categories", {}).get("freshness", {})
     if fresh.get("status") != "measured":
         return False
+    if is_mirror_copy(artifact):
+        # Held, not recomputed (ADR 0075), so dates are not needed: a mirror
+        # copy with no readable end date was scored 0, which is a value too.
+        return True
     details = fresh.get("details", {})
     return bool(details.get("feed_end_date") or details.get("last_service_date"))
 
@@ -172,22 +190,41 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
     details = fresh_json.get("details", {})
     service_type = details.get("service_type", "fixed")
 
-    new_fresh = freshness(_feed_dates(details), today, service_type)
-    # `_feed_dates` rebuilds from a published artifact whose freshness was
-    # measured, so the date tables were there and freshness re-measures. The
-    # guard keeps the sweep from silently rewriting a category into nothing.
-    if new_fresh is None:  # pragma: no cover - a measured category cannot unmeasure
-        raise ValueError("re-scoring a measured freshness category produced no measurement")
-
+    # ADR 0075: a record last scored from a Mobility Database mirror copy was
+    # scored that way because its own URL could not be downloaded. The copy's
+    # calendar is not the agency's, and nothing fetches mirrors any more, so
+    # its freshness is not measured: held out of the grade, never a value.
+    hold_freshness = is_mirror_copy(artifact)
+    new_fresh = None
+    if not hold_freshness:
+        new_fresh = freshness(_feed_dates(details), today, service_type)
+        # `_feed_dates` rebuilds from a published artifact whose freshness was
+        # measured, so the date tables were there and freshness re-measures.
+        # The guard keeps the sweep from silently rewriting a category into
+        # nothing.
+        if new_fresh is None:  # pragma: no cover - a measured category cannot unmeasure
+            raise ValueError("re-scoring a measured freshness category produced no measurement")
     measured: list[CategoryResult] = []
     for name, cat in cats.items():
         if cat.get("status") != "measured":
             continue
-        measured.append(new_fresh if name == "freshness" else _category_from_json(cat))
+        if name == "freshness":
+            if new_fresh is not None:
+                measured.append(new_fresh)
+            continue
+        measured.append(_category_from_json(cat))
     card = build_scorecard(measured).to_json()
 
     new_cats = {name: dict(cat) for name, cat in cats.items()}
-    new_cats["freshness"] = {**new_fresh.to_json(), "weight": CATEGORY_WEIGHTS["freshness"]}
+    if hold_freshness:
+        new_cats["freshness"] = {
+            "name": "freshness",
+            "status": "not_yet_measured",
+            "weight": CATEGORY_WEIGHTS["freshness"],
+            "summary": MIRROR_FRESHNESS_SUMMARY,
+        }
+    elif new_fresh is not None:
+        new_cats["freshness"] = {**new_fresh.to_json(), "weight": CATEGORY_WEIGHTS["freshness"]}
 
     new_artifact = dict(artifact)
     new_artifact["categories"] = new_cats
@@ -216,7 +253,8 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
         "old_score": old.get("score"),
         "new_score": card["overall"]["score"],
         "old_days": details.get("days_until_expiry"),
-        "new_days": new_cats["freshness"]["details"].get("days_until_expiry"),
+        # None once freshness is held: not measured, so absent, never a number.
+        "new_days": (new_cats["freshness"].get("details") or {}).get("days_until_expiry"),
         "grade_changed": old.get("grade") != card["overall"]["grade"],
     }
     return new_artifact, summary
