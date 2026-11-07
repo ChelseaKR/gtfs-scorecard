@@ -44,6 +44,19 @@ Publication remains additive for dated evidence. The one bounded exception is
 a retirement manifest produced from the curated registry: it expands agency
 ids into the fixed mutable public filenames and deletes only those exact keys.
 Arbitrary keys and date-shaped JSON can never enter that deletion path.
+
+Lifecycle tagging rides on the same write. The bucket's
+``expire-dated-artifacts`` rule (``infra/artifacts/main.tf``) matches only
+objects tagged ``artifact-class=dated``. The Daily scorecard used to apply that
+tag in a separate step, one ``PutObjectTagging`` call per file named
+``<dir>/<today>.json`` directly under the publish root (``find data/artifacts
+-mindepth 2 -maxdepth 2 -type f -name "${today}.json"``), about 2,500 calls a
+day. With ``dated_tag_date`` set, the publisher selects exactly that same set
+of files (:func:`is_dated_for`) and tags each one in its own ``PutObject``.
+A file in that set that is skipped as unchanged gets the same standalone
+tagging call the old step made, so every selected key still ends the run
+carrying the tag, as before. Without ``dated_tag_date`` nothing is tagged,
+which is what every other caller already relied on.
 """
 
 from __future__ import annotations
@@ -74,6 +87,11 @@ S3_READ_TIMEOUT_SECONDS = 60
 _HASH_CHUNK_BYTES = 1024 * 1024
 _MAX_DELETE_OBJECTS = 1000
 
+# The one tag the expire-dated-artifacts lifecycle rule filters on.
+DATED_TAG_KEY = "artifact-class"
+DATED_TAG_VALUE = "dated"
+_ISO_DATE = re.compile(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}\Z")
+
 # S3 reports the content MD5 as the ETag only for single-part, SSE-S3 objects.
 # Anything else (a multipart ETag such as "abc...-3") fails this and uploads.
 _CONTENT_MD5_ETAG = re.compile(r"\A[0-9a-f]{32}\Z")
@@ -98,6 +116,8 @@ class _S3Client(Protocol):
     """The small boto3 S3 surface this module needs (and tests can fake)."""
 
     def put_object(self, **kwargs: Any) -> dict[str, Any]: ...
+
+    def put_object_tagging(self, **kwargs: Any) -> dict[str, Any]: ...
 
     def delete_objects(self, **kwargs: Any) -> dict[str, Any]: ...
 
@@ -129,6 +149,7 @@ class PublishResult:
     skipped: int
     listed: int
     retired: int
+    tagged: int = 0
 
     @property
     def considered(self) -> int:
@@ -208,6 +229,26 @@ def local_files(root: Path, prefix: str, excludes: Sequence[str]) -> list[LocalF
     return found
 
 
+def validate_dated_tag_date(value: str) -> str:
+    """Accept only a ``YYYY-MM-DD`` date, the form dated artifact names use."""
+    if not _ISO_DATE.match(value):
+        raise PublishError(f"dated tag date must be YYYY-MM-DD, got {value!r}")
+    return value
+
+
+def is_dated_for(key_suffix: str, dated_tag_date: str) -> bool:
+    """Return whether a path relative to the publish root gets the dated tag.
+
+    This is the selection the Daily's old tagging step made with ``find
+    <root> -mindepth 2 -maxdepth 2 -type f -name "<date>.json"``: exactly one
+    directory below the root, and a file named for that one date. Deeper
+    files, files at the root, and files named for any other date are not
+    selected.
+    """
+    parts = key_suffix.split("/")
+    return len(parts) == 2 and parts[0] != "" and parts[1] == f"{dated_tag_date}.json"
+
+
 def remote_objects(client: _S3Client, bucket: str, prefix: str) -> dict[str, RemoteObject]:
     """List the destination prefix once into {key: size and ETag}."""
     index: dict[str, RemoteObject] = {}
@@ -255,6 +296,7 @@ def _put_object(
     bucket: str,
     local: LocalFile,
     cache_control: str | None,
+    tag_dated: bool = False,
 ) -> None:
     """Write one object with a single PutObject, so its ETag stays a content MD5."""
     extra: dict[str, Any] = {}
@@ -263,6 +305,10 @@ def _put_object(
     guessed = content_type(local.path)
     if guessed:
         extra["ContentType"] = guessed
+    if tag_dated:
+        # The same single tag the standalone put-object-tagging call set. The
+        # tag set it writes replaces any other, as that call's did.
+        extra["Tagging"] = f"{DATED_TAG_KEY}={DATED_TAG_VALUE}"
     try:
         with local.path.open("rb") as body:
             client.put_object(Bucket=bucket, Key=local.key, Body=body, **extra)
@@ -276,13 +322,31 @@ def _upload_all(
     uploads: Sequence[LocalFile],
     cache_control: str | None,
     workers: int,
+    dated_keys: Collection[str] = (),
 ) -> None:
     """Upload every changed file, failing the whole publish on the first error."""
     if not uploads:
         return
     with ThreadPoolExecutor(max_workers=max(1, min(workers, MAX_PUBLISH_WORKERS))) as pool:
         # list() drains the lazy map so any PublishError surfaces here.
-        list(pool.map(lambda f: _put_object(client, bucket, f, cache_control), uploads))
+        list(
+            pool.map(
+                lambda f: _put_object(client, bucket, f, cache_control, f.key in dated_keys),
+                uploads,
+            )
+        )
+
+
+def _tag_object(client: _S3Client, bucket: str, key: str) -> None:
+    """Tag one unchanged object as dated, as the old standalone step did."""
+    try:
+        client.put_object_tagging(
+            Bucket=bucket,
+            Key=key,
+            Tagging={"TagSet": [{"Key": DATED_TAG_KEY, "Value": DATED_TAG_VALUE}]},
+        )
+    except Exception as exc:
+        raise PublishError(f"could not tag s3://{bucket}/{key}: {exc}") from exc
 
 
 def _retirement_keys(
@@ -338,6 +402,7 @@ def publish_tree(
     workers: int = DEFAULT_PUBLISH_WORKERS,
     retirement_manifest: Path | None = None,
     protected_agency_ids: Collection[str] = (),
+    dated_tag_date: str | None = None,
 ) -> PublishResult:
     """Publish ``root`` under ``prefix``, uploading only objects whose bytes changed.
 
@@ -349,6 +414,13 @@ def publish_tree(
     if not root.is_dir():
         raise PublishError(f"publish root does not exist: {root}")
     files = local_files(root, prefix, excludes)
+    dated_keys: frozenset[str] = frozenset()
+    if dated_tag_date is not None:
+        tag_date = validate_dated_tag_date(dated_tag_date)
+        key_prefix = normalize_prefix(prefix)
+        dated_keys = frozenset(
+            local.key for local in files if is_dated_for(local.key[len(key_prefix) :], tag_date)
+        )
     retirements = _retirement_keys(retirement_manifest, prefix, protected_agency_ids)
     conflicts = sorted({local.key for local in files} & set(retirements))
     if conflicts:
@@ -368,10 +440,17 @@ def publish_tree(
     for key in existing_retirements:
         remote.pop(key, None)
     uploads = changed_files(files, remote, workers=workers)
-    _upload_all(client, bucket, uploads, cache_control, workers)
+    _upload_all(client, bucket, uploads, cache_control, workers, dated_keys)
+    # A selected file that was already current (a same-day re-run) is not
+    # rewritten, so it still gets the standalone tagging call the old step
+    # made for every selected file. On a normal Daily this list is empty.
+    uploaded_keys = {local.key for local in uploads}
+    for key in sorted(dated_keys - uploaded_keys):
+        _tag_object(client, bucket, key)
     return PublishResult(
         uploaded=len(uploads),
         skipped=len(files) - len(uploads),
         listed=listed,
         retired=len(existing_retirements),
+        tagged=len(dated_keys),
     )

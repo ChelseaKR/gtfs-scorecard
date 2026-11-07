@@ -672,6 +672,19 @@ jobs:
           # it is excluded here and uploaded only after all public writes and
           # deletes. Direct mutable latest.json consumers are not atomic with
           # this sequence; the deployed Pages manifest is the bound snapshot.
+          #
+          # The bucket's expire-dated-artifacts lifecycle rule (infra/artifacts)
+          # only matches objects tagged artifact-class=dated. `--tag-dated-date`
+          # tags each `<dir>/<today>.json` directly under data/artifacts in the
+          # same PutObject that writes it, the same files a separate step used
+          # to tag one put-object-tagging call at a time (about 2,500 calls and
+          # half an hour a day). A selected file that is already current gets
+          # that standalone call instead. latest.json, badge.json and
+          # directory.json never match the filename, so they are never tagged
+          # and never expire. History synced before tagging existed stays
+          # untagged (fails open: it never expires rather than expiring by
+          # surprise) until a future run happens to touch it again.
+          today=$(date -u +%Y-%m-%d)
           uv run --project pipeline --with boto3 scorecard publish-artifacts \
             --root data/artifacts \
             --bucket "${{ vars.ARTIFACTS_BUCKET }}" --prefix data/artifacts \
@@ -679,7 +692,8 @@ jobs:
             --exclude "index.json" \
             --exclude "*/validator-cache.json" --exclude "*/structure.json" \
             --exclude "*/fixlog.json" --exclude "*/corrected.zip" \
-            --cache-control "max-age=300"
+            --cache-control "max-age=300" \
+            --tag-dated-date "$today"
           # Remove legacy public-path pipeline state after every upload.
           aws s3 rm "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" --recursive \
             --exclude "*" --include "*/validator-cache.json" \
@@ -691,6 +705,31 @@ jobs:
           aws s3 sync data/artifacts/changes \
             "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/changes" \
             --delete --cache-control "max-age=300" --only-show-errors
+          # That sync can rewrite changes/<today>.json (on a re-run its local
+          # copy is newer than the object), and a rewrite drops the tag the
+          # publisher just set. Re-tag that one file, as the old tagging step
+          # did after this sync.
+          tag_dated_artifact() {
+            local key="$1"
+            local attempt
+            for attempt in 1 2 3 4; do
+              if aws s3api put-object-tagging \
+                --bucket "${{ vars.ARTIFACTS_BUCKET }}" \
+                --key "$key" \
+                --tagging 'TagSet=[{Key=artifact-class,Value=dated}]' \
+                --output text >/dev/null; then
+                return 0
+              fi
+              if [ "$attempt" -eq 4 ]; then
+                echo "::error title=lifecycle tagging failed::Could not tag ${key} after ${attempt} attempts"
+                return 1
+              fi
+              sleep $((attempt * 2))
+            done
+          }
+          if [ -f "data/artifacts/changes/${today}.json" ]; then
+            tag_dated_artifact "data/artifacts/changes/${today}.json"
+          fi
           # Advance the aggregate index only after every public artifact write
           # and bounded deletion above has completed successfully.
           scripts/s3-index.sh put "${{ vars.ARTIFACTS_BUCKET }}" data/artifacts/index.json
@@ -740,51 +779,15 @@ jobs:
             fi
             echo "Private object ${private_path} stayed private (HTTP ${status})."
           done
-      # Lifecycle tagging is intentionally sequential and currently takes
-      # roughly half an hour. Refresh the one-hour OIDC session here so corpus
-      # growth cannot expire the collect job's original credentials mid-step.
-      - name: Refresh AWS credentials before lifecycle tagging
+      # Renew the one-hour OIDC session after the long publish so the AWS
+      # steps below (the feed-health digest) never start on credentials that
+      # are about to expire. Lifecycle tagging now happens inside the publish.
+      - name: Refresh AWS credentials after publishing
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
-      - name: Tag today's dated artifacts for lifecycle expiration
-        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
-        run: |
-          set -euo pipefail
-          # The bucket's expire-dated-artifacts lifecycle rule (infra/artifacts)
-          # only matches objects tagged artifact-class=dated, so tag today's
-          # newly-synced <agency>/<date>.json files here. latest.json,
-          # badge.json and directory.json never match this filename pattern, so
-          # they never get this tag and never expire. Validator caches live
-          # outside the published artifact tree. History synced before this
-          # step existed stays untagged
-          # (fails open: it never expires rather than expiring by surprise)
-          # until a future run happens to touch it again.
-          tag_dated_artifact() {
-            local key="$1"
-            local attempt
-            for attempt in 1 2 3 4; do
-              if aws s3api put-object-tagging \
-                --bucket "${{ vars.ARTIFACTS_BUCKET }}" \
-                --key "$key" \
-                --tagging 'TagSet=[{Key=artifact-class,Value=dated}]' \
-                --output text >/dev/null; then
-                return 0
-              fi
-              if [ "$attempt" -eq 4 ]; then
-                echo "::error title=lifecycle tagging failed::Could not tag ${key} after ${attempt} attempts"
-                return 1
-              fi
-              sleep $((attempt * 2))
-            done
-          }
-          today=$(date -u +%Y-%m-%d)
-          find data/artifacts -mindepth 2 -maxdepth 2 -type f -name "${today}.json" | while read -r f; do
-            key="${f#./}"
-            tag_dated_artifact "$key"
-          done
 
       # Send opt-in feed-health emails to confirmed subscribers in the DynamoDB
       # store. Gated on SES_FROM, so it is off until an operator verifies an SES

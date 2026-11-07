@@ -73,9 +73,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "artifacts" {
 # Keep the bucket bounded now that the collect job syncs every dated
 # artifact and nothing prunes them client-side (docs/follow-ups.md, S3 as
 # the artifact source of truth, step 4). Only objects tagged
-# artifact-class=dated are eligible for expiration: the collect job's "Tag
-# today's dated artifacts" step applies that tag to each day's
-# `<agency>/<date>.json` file. latest.json, badge.json, directory.json, and
+# artifact-class=dated are eligible for expiration: the collect job's
+# `scorecard publish-artifacts --tag-dated-date` applies that tag in the
+# PutObject that writes each day's `<agency>/<date>.json` file. latest.json, badge.json, directory.json, and
 # the validator cache are never tagged, so current-state reads (what the
 # site actually serves) never expire out from under it even if an agency's
 # feed goes a long time without changing.

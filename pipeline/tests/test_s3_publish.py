@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
+import subprocess
 import threading
 from pathlib import Path
 from typing import Any
@@ -74,6 +76,11 @@ class _FakeS3:
         self.fail_deletes = False
         self.delete_errors: list[dict[str, str]] = []
         self.list_calls = 0
+        # S3 semantics: a PutObject replaces the object's whole tag set (with
+        # the Tagging header's tags, or none), and PutObjectTagging replaces it.
+        self.tags: dict[str, dict[str, str]] = {}
+        self.tag_calls: list[str] = []
+        self.fail_tag_keys: set[str] = set()
         self._lock = threading.Lock()
 
     def etag(self, key: str) -> str:
@@ -89,6 +96,19 @@ class _FakeS3:
             self.objects[key] = body
             self.etag_overrides.pop(key, None)
             self.puts.append((key, body, metadata))
+            tagging = str(kwargs.get("Tagging") or "")
+            self.tags[key] = dict(pair.split("=", 1) for pair in tagging.split("&") if pair)
+        return {}
+
+    def put_object_tagging(self, **kwargs: Any) -> dict[str, Any]:
+        assert kwargs["Bucket"] == BUCKET
+        key = str(kwargs["Key"])
+        with self._lock:
+            if key in self.fail_tag_keys:
+                raise RuntimeError("AccessDenied")
+            assert key in self.objects, f"tagging a missing object {key}"
+            self.tags[key] = {t["Key"]: t["Value"] for t in kwargs["Tagging"]["TagSet"]}
+            self.tag_calls.append(key)
         return {}
 
     def delete_objects(self, **kwargs: Any) -> dict[str, Any]:
@@ -510,6 +530,9 @@ def test_listing_skips_entries_without_a_key() -> None:
         def put_object(self, **kwargs: Any) -> dict[str, Any]:  # pragma: no cover - unused
             raise AssertionError("no upload expected")
 
+        def put_object_tagging(self, **kwargs: Any) -> dict[str, Any]:  # pragma: no cover
+            raise AssertionError("no tagging expected")
+
         def delete_objects(self, **kwargs: Any) -> dict[str, Any]:  # pragma: no cover - unused
             raise AssertionError("no deletion expected")
 
@@ -775,3 +798,193 @@ def test_a_staged_publish_root_still_honors_the_withdrawal_reindex_recorded(
 
     assert not current & set(client.objects)
     assert client.put_keys == [f"{PREFIX}/unitrans/2026-09-18.json"]
+
+
+# --- lifecycle tagging inside the publish (cost cut 2, 2026-11-06) ----------
+#
+# The Daily used to tag dated artifacts in a separate step, after the publish:
+#
+#   find data/artifacts -mindepth 2 -maxdepth 2 -type f -name "${today}.json"
+#     | while read -r f; do aws s3api put-object-tagging ... "${f#./}"; done
+#
+# These tests pin that the publisher tags exactly that set of keys, with the
+# same single tag, and that every other byte and header it writes is unchanged.
+
+TODAY = "2026-11-06"
+DATED = {"artifact-class": "dated"}
+
+
+def _dated_fixture(root: Path) -> None:
+    """A tree with every shape the old `find` could or could not select."""
+    _write(root, f"unitrans/{TODAY}.json", '{"grade": "B"}')
+    _write(root, f"yolobus/{TODAY}.json", '{"grade": "A"}')
+    _write(root, "unitrans/2026-11-05.json", '{"grade": "C"}')
+    _write(root, "unitrans/latest.json", '{"grade": "B"}')
+    _write(root, "unitrans/badge.json", "{}")
+    _write(root, "unitrans/directory.json", "{}")
+    _write(root, f"rollups/{TODAY}.json", "{}")
+    _write(root, f"changes/{TODAY}.json", "{}")
+    _write(root, f"{TODAY}.json", "{}")  # depth 1: never selected
+    _write(root, f"unitrans/history/{TODAY}.json", "{}")  # depth 3: never selected
+    _write(root, f"unitrans/{TODAY}.json.bak", "{}")
+    _write(root, f"unitrans/{TODAY}.csv", "id\n")
+    _write(root, "index.json", "{}")
+
+
+def _old_step_keys(root: Path, prefix: str) -> set[str]:
+    """Run the old step's own `find` and map each hit to its key."""
+    find = shutil.which("find")
+    assert find is not None
+    out = subprocess.run(  # noqa: S603 - fixed argv, test-only tree
+        [find, ".", "-mindepth", "2", "-maxdepth", "2", "-type", "f", "-name", f"{TODAY}.json"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    return {f"{prefix}/{line.removeprefix('./')}" for line in out.splitlines() if line}
+
+
+def test_dated_tagging_selects_exactly_the_old_find_set(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    _dated_fixture(root)
+    client = _FakeS3()
+
+    result = _publish(
+        client, root, excludes=("index.json",), cache_control="max-age=300", dated_tag_date=TODAY
+    )
+
+    tagged = {key for key, tags in client.tags.items() if tags}
+    old = _old_step_keys(root, PREFIX)
+    assert old == {
+        f"{PREFIX}/unitrans/{TODAY}.json",
+        f"{PREFIX}/yolobus/{TODAY}.json",
+        f"{PREFIX}/rollups/{TODAY}.json",
+        f"{PREFIX}/changes/{TODAY}.json",
+    }
+    assert tagged == old
+    assert all(client.tags[key] == DATED for key in tagged)
+    assert result.tagged == len(old)
+    # Every selected file was new, so the tag rode on its PutObject: no
+    # standalone tagging call at all on a normal Daily.
+    assert client.tag_calls == []
+
+
+def test_dated_tagging_changes_no_body_or_other_header(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    _dated_fixture(root)
+    plain = _FakeS3()
+    tagged = _FakeS3()
+
+    _publish(plain, root, excludes=("index.json",), cache_control="max-age=300")
+    _publish(
+        tagged, root, excludes=("index.json",), cache_control="max-age=300", dated_tag_date=TODAY
+    )
+
+    assert plain.objects == tagged.objects
+    assert sorted(plain.put_keys) == sorted(tagged.put_keys)
+    plain_meta = {key: meta for key, _, meta in plain.puts}
+    selected = _old_step_keys(root, PREFIX)
+    for key, _, meta in tagged.puts:
+        without_tag = {k: v for k, v in meta.items() if k != "Tagging"}
+        assert without_tag == plain_meta[key]
+        assert ("Tagging" in meta) is (key in selected)
+        if key in selected:
+            assert meta["Tagging"] == "artifact-class=dated"
+
+
+def test_without_a_tag_date_nothing_is_tagged(tmp_path: Path) -> None:
+    """refresh.yml and targeted-score.yml pass no date and keep their behavior."""
+    root = tmp_path / "artifacts"
+    _dated_fixture(root)
+    client = _FakeS3()
+
+    result = _publish(client, root)
+
+    assert all("Tagging" not in meta for _, _, meta in client.puts)
+    assert client.tag_calls == []
+    assert result.tagged == 0
+
+
+def test_an_unchanged_dated_file_still_gets_the_standalone_tag(tmp_path: Path) -> None:
+    """A same-day re-run skips the unchanged upload, so the tag is applied the
+    way the old step applied it: one put-object-tagging call for that key."""
+    root = tmp_path / "artifacts"
+    body = '{"grade": "B"}'
+    _write(root, f"unitrans/{TODAY}.json", body)
+    _write(root, f"yolobus/{TODAY}.json", '{"grade": "A"}')
+    key = f"{PREFIX}/unitrans/{TODAY}.json"
+    client = _FakeS3({key: body.encode()})
+
+    result = _publish(client, root, dated_tag_date=TODAY)
+
+    assert client.put_keys == [f"{PREFIX}/yolobus/{TODAY}.json"]
+    assert client.tag_calls == [key]
+    assert client.tags[key] == DATED
+    assert client.tags[f"{PREFIX}/yolobus/{TODAY}.json"] == DATED
+    assert result.tagged == 2
+
+
+def test_a_failed_standalone_tag_fails_the_publish(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    body = "{}"
+    _write(root, f"unitrans/{TODAY}.json", body)
+    key = f"{PREFIX}/unitrans/{TODAY}.json"
+    client = _FakeS3({key: body.encode()})
+    client.fail_tag_keys.add(key)
+
+    with pytest.raises(PublishError, match="could not tag"):
+        _publish(client, root, dated_tag_date=TODAY)
+
+
+def test_an_excluded_dated_file_is_neither_uploaded_nor_tagged(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    _write(root, f"unitrans/{TODAY}.json", "{}")
+    client = _FakeS3()
+
+    _publish(client, root, excludes=(f"*/{TODAY}.json",), dated_tag_date=TODAY)
+
+    assert client.puts == []
+    assert client.tag_calls == []
+
+
+@pytest.mark.parametrize("bad", ["2026-11-6", "today", "2026-11-06/..", "*", ""])
+def test_a_malformed_tag_date_fails_closed(tmp_path: Path, bad: str) -> None:
+    root = tmp_path / "artifacts"
+    _write(root, f"unitrans/{TODAY}.json", "{}")
+    client = _FakeS3()
+
+    with pytest.raises(PublishError, match="YYYY-MM-DD"):
+        _publish(client, root, dated_tag_date=bad)
+    assert client.puts == []
+
+
+def test_the_cli_passes_the_tag_date(
+    tmp_path: Path, isolated_repo_root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from scorecard_pipeline.cli import main
+
+    _minimal_registry(isolated_repo_root)
+    root = tmp_path / "artifacts"
+    _write(root, f"unitrans/{TODAY}.json", "{}")
+    _write(root, "unitrans/latest.json", "{}")
+    client = _FakeS3()
+    monkeypatch.setattr(s3_publish, "s3_client", lambda workers: client)
+
+    exit_code = main(
+        [
+            "publish-artifacts",
+            "--root",
+            str(root),
+            "--bucket",
+            BUCKET,
+            "--prefix",
+            PREFIX,
+            "--tag-dated-date",
+            TODAY,
+        ]
+    )
+
+    assert exit_code == 0
+    assert client.tags[f"{PREFIX}/unitrans/{TODAY}.json"] == DATED
+    assert client.tags[f"{PREFIX}/unitrans/latest.json"] == {}

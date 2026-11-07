@@ -3747,12 +3747,13 @@ def _cmd_publish_artifacts(args: argparse.Namespace, parser: argparse.ArgumentPa
             workers=args.workers,
             retirement_manifest=args.retirement_manifest,
             protected_agency_ids=protected_agency_ids,
+            dated_tag_date=args.tag_dated_date,
         )
     except PublishError as exc:
         parser.error(str(exc))
     log.info(
         "Published %d of %d local objects to s3://%s/%s "
-        "(%d unchanged, %d retired pointers, %d objects listed).",
+        "(%d unchanged, %d retired pointers, %d objects listed, %d tagged dated).",
         result.uploaded,
         result.considered,
         args.bucket,
@@ -3760,6 +3761,7 @@ def _cmd_publish_artifacts(args: argparse.Namespace, parser: argparse.ArgumentPa
         result.skipped,
         result.retired,
         result.listed,
+        result.tagged,
     )
     return 0
 
@@ -4968,6 +4970,13 @@ def main(argv: list[str] | None = None) -> int:
         help=(
             "validated local manifest of retired agency ids whose mutable current "
             "artifacts must be deleted; dated history is never deleted"
+        ),
+    )
+    publish_artifacts.add_argument(
+        "--tag-dated-date",
+        help=(
+            "YYYY-MM-DD: tag each <dir>/<date>.json directly under --root "
+            "artifact-class=dated in its PutObject, for the lifecycle rule"
         ),
     )
     publish_artifacts.add_argument(

@@ -45,9 +45,10 @@ Steps, in order:
 4. **Lifecycle policy — done.** `aws_s3_bucket_lifecycle_configuration.artifacts`
    in `infra/artifacts/main.tf` expires objects tagged `artifact-class=dated`
    after 400 days, plus a 30-day noncurrent-version expiration now that
-   versioning is on. The collect job's "Tag today's dated artifacts" step
-   (`scorecard.yml`) applies the tag to each day's `<agency>/<date>.json` as
-   it's synced; `latest.json`, `badge.json`, `directory.json`, and the
+   versioning is on. The collect job's publish (`scorecard.yml`,
+   `publish-artifacts --tag-dated-date`; a separate tagging step before
+   2026-11) applies the tag to each day's `<agency>/<date>.json` as it's
+   written; `latest.json`, `badge.json`, `directory.json`, and the
    validator cache never match that filename pattern, so they're never tagged
    and never expire. The lifecycle configuration was applied on 2026-07-10.
    Artifact history synced to the bucket before this step

@@ -158,6 +158,15 @@ the declared public surface).
   unchanged feed's artifact once, and the national trend restarts at 1.5 for
   any record that cannot be rescored.
 
+- **The Daily tags dated artifacts in the upload instead of one call per
+  file.** `scorecard publish-artifacts --tag-dated-date` sets
+  `artifact-class=dated` in the `PutObject` that writes each
+  `<dir>/<today>.json`, so the separate "Tag today's dated artifacts" step and
+  its roughly 2,500 `PutObjectTagging` calls and half hour a day are gone. The
+  files tagged are exactly the ones the old step's `find` selected (a test runs
+  that `find` and compares), an already-current file still gets the standalone
+  call, and `changes/<today>.json` is re-tagged after the sync that can rewrite
+  it. Nothing else written changes, and the lifecycle rule is unchanged.
 - **The Daily collect job lists the artifact archive once instead of five or
   six times.** Each recursive copy under `data/artifacts/` lists all of its
   roughly 332,000 keys (0.11 GB of S3 egress), whatever the filters. The

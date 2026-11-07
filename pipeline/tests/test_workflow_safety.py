@@ -299,10 +299,27 @@ def test_daily_publish_compares_content_not_timestamps() -> None:
     ):
         assert f'--exclude "{private}"' in workflow
     assert '--cache-control "max-age=300"' in workflow
-    # The upload must still precede the lifecycle tagging of today's artifacts.
-    assert workflow.index("scorecard publish-artifacts") < workflow.index(
-        "Tag today's dated artifacts for lifecycle expiration"
-    )
+
+
+def test_daily_tags_dated_artifacts_in_the_publish_not_one_call_per_file() -> None:
+    """The lifecycle tag rides on each dated file's PutObject (cut 2 of the
+    2026-11-06 cost plan). The separate step that walked the tree and made one
+    put-object-tagging call per `<dir>/<today>.json` (about 2,500 a day) is
+    gone; the only standalone call left re-tags changes/<today>.json after the
+    sync that can rewrite it."""
+    workflow = _workflow("scorecard.yml")
+    publish = workflow.index("scorecard publish-artifacts")
+    legacy_cleanup = workflow.index("Remove legacy public-path pipeline state")
+
+    assert "today=$(date -u +%Y-%m-%d)" in workflow[:publish]
+    assert '--tag-dated-date "$today"' in workflow[publish:legacy_cleanup]
+    assert "Tag today's dated artifacts for lifecycle expiration" not in workflow
+    assert '-name "${today}.json"' not in workflow
+    assert workflow.count("aws s3api put-object-tagging") == 1
+    changes_sync = workflow.index("aws s3 sync data/artifacts/changes")
+    retag = workflow.index('tag_dated_artifact "data/artifacts/changes/${today}.json"')
+    index_upload = workflow.index("scripts/s3-index.sh put")
+    assert changes_sync < retag < index_upload
 
 
 def test_daily_index_is_the_last_aggregate_discovery_pointer() -> None:
