@@ -33,7 +33,7 @@ from .artifact_lifecycle import (
     reconcile_retired_current_artifacts,
 )
 from .badge import render_badge, render_mark
-from .comparisons import reader_archive_profile
+from .comparisons import reader_archive_profile, scored_from_mirror
 from .config import Agency, artifacts_dir, current_agency_ids, repo_root, utc_today
 from .effort_calibration import (
     CALIBRATION_SCHEMA_NOTE,
@@ -574,7 +574,10 @@ def _history_entry(artifact: dict[str, Any]) -> dict[str, Any]:
     # draws trends from, so a point published before the rounding fix must not
     # make the next run's correct letter look like an agency's grade changing.
     derived = published_overall(float(artifact["overall"]["score"]))
+    # Only ever "mirror": every other point stays byte-for-byte as it was.
+    source_mark = {"fetch_source": "mirror"} if scored_from_mirror(artifact) else {}
     return {
+        **source_mark,
         "date": artifact["snapshot_date"],
         "score": derived["score"],
         "grade": derived["grade"],

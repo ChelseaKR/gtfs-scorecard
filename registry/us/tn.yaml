@@ -74,7 +74,13 @@ agencies:
     name: Memphis Area Transit Authority
     subdivision_code: US-TN
     subdivision_name: Tennessee
-    static_gtfs_url: http://mata.cadavl.com:5053/MATA/GTFS/GTFS_MATA.zip
+    static_gtfs_url: https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks gtfs.mata.cadavl.com, the current address Transitland
+      lists for this feed. The agency name and service area in that file match
+      this record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 2352
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
