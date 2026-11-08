@@ -284,6 +284,14 @@ the declared public surface).
 
 ### Fixed
 
+- **The Daily scorecard no longer stops on an expired mirror copy.** Holding
+  freshness out of the grade wrote `reason` and `mirror_copy` on the freshness
+  category, and the artifact schema refused both. The first such feed the sweep
+  reached failed `collect` on 2026-11-07 and 2026-11-08, and the site stayed at
+  2026-11-06. The schema now allows them on freshness only, in that one held
+  shape, and the same record passes through publish in both the sweep and the
+  full run. A record the sweep holds also stops saying "Measured 4 of 4": its
+  confidence count, level, and note now match the partial grade beside them.
 - **Padded CSV headers no longer hide columns.** Metra writes `service_id, monday`
   (comma-space) and Renfe pads every line with trailing spaces, so lookups such
   as `end_date` and `wheelchair_boarding` missed columns that were there. Metra

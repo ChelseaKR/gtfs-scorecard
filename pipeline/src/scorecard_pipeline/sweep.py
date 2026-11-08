@@ -235,6 +235,10 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
     }
 
     _rederive_expiry_verdicts(new_artifact)
+    if hold is not None and isinstance(artifact.get("confidence"), dict):
+        from .publish import confidence_after_hold
+
+        new_artifact["confidence"] = confidence_after_hold(artifact["confidence"], new_cats)
 
     old = artifact.get("overall", {})
     summary = {
