@@ -284,6 +284,9 @@ the declared public surface).
 
 ### Fixed
 
+- **An empty Atom feed no longer says it was updated in 1970.** `/changes/feed.xml`
+  and the agency feeds with no entries now carry the date of the newest check
+  behind them, and leave the element out if there is no usable date.
 - **A returning browser no longer shows old "checked" dates.** The service worker
   served every JSON file from its saved copy first, so a reader back after weeks
   away saw weeks-old data on the first load with no notice. JSON is now network
