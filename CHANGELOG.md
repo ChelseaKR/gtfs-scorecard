@@ -284,6 +284,15 @@ the declared public surface).
 
 ### Fixed
 
+- **A returning browser no longer shows old "checked" dates.** The service worker
+  served every JSON file from its saved copy first, so a reader back after weeks
+  away saw weeks-old data on the first load with no notice. JSON is now network
+  first and falls back to the saved copy only when the network fails, and the
+  offline note names the date that copy was saved. The note stays after the
+  network returns until the page is reloaded. The 173 MB `index.json` and any
+  JSON over 16 MiB are no longer saved on the device, so views that need
+  `index.json` (`/app/#/cohort`, `/app/#/agency/<id>`) now need a connection. The
+  cache moves to `scorecard-offline-v3`, which clears the old copies.
 - **Padded CSV headers no longer hide columns.** Metra writes `service_id, monday`
   (comma-space) and Renfe pads every line with trailing spaces, so lookups such
   as `end_date` and `wheelchair_boarding` missed columns that were there. Metra
