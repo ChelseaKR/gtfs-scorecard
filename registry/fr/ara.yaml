@@ -791,7 +791,7 @@ agencies:
     subdivision_code: FR-ARA
     subdivision_name: Auvergne-Rhône-Alpes
     is_official: true
-    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/373e19e2-af0a-4939-9f33-3f1268d1e0bb
+    static_gtfs_url: https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/tp2a/exports/medias.zip
     rt_urls:
       trip_updates: https://proxy.transport.data.gouv.fr/resource/tac-annemasse-gtfs-rt-trip-update
       service_alerts: https://proxy.transport.data.gouv.fr/resource/annemasse-tp2a-gtfs-rt-alerts
@@ -801,6 +801,10 @@ agencies:
       to Annemasse-Les Voirons Agglomération and the update date.
     operating_note: >-
       A different network from the TAC of Ardenne Métropole (fr-pan-80451).
+      Checked 2026-11-08: www.data.gouv.fr's robots.txt disallows the address on
+      file, so this record now tracks s3.eu-west-1.amazonaws.com, the
+      publisher's own address listed on France's National Access Point. The
+      agency name and stop locations in that file match this record.
     reuse_evidence:
       decision: approved
       source_kind: official_portal

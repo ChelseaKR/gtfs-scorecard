@@ -35,6 +35,9 @@ the declared public surface).
   agency's URL is no longer a comparable transition, so it claims no improvement
   and clears no finding. The page now names the day a mirror copy was downloaded.
   Discovery no longer moves a record onto a frozen archive file (ADR 0076).
+- 4 more of those records and 9 Licence Ouverte records in France track a current
+  file, `advance-transit-at` retires into `advance-transit`, and `NOTICE` and
+  `/fetcher/` credit Transitland Atlas.
 
 ### Fixed
 
