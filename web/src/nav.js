@@ -42,7 +42,10 @@
  * loads, so the service worker registers here, and the honesty half lives
  * here too: whenever the network is gone, a visible note says the page is a
  * saved copy, so cached data never masquerades as current. The note is a
- * polite live region, announced to screen readers without stealing focus. */
+ * polite live region, announced to screen readers without stealing focus.
+ * The worker also reports each saved data file it answers with, so the note
+ * can name the date, and can stay after the network returns: the page keeps
+ * showing that older data until it is reloaded. */
 (function () {
   "use strict";
   if ("serviceWorker" in navigator) {
@@ -53,20 +56,60 @@
   }
 
   var note = null;
+  var servedSavedData = false;
+  var oldestSavedAt = null;
+  var someSavedDateUnknown = false;
+
+  function savedDay() {
+    if (oldestSavedAt === null || someSavedDateUnknown) return null;
+    return new Date(oldestSavedAt).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
+  function setNote(text) {
+    if (!note) {
+      note = document.createElement("div");
+      note.className = "offline-note";
+      note.setAttribute("role", "status");
+      document.body.insertBefore(note, document.body.firstChild);
+    }
+    if (note.textContent !== text) note.textContent = text;
+  }
   function showOfflineNote() {
-    if (note) return;
-    note = document.createElement("div");
-    note.className = "offline-note";
-    note.setAttribute("role", "status");
-    note.textContent =
-      "You are offline. This is a saved copy of the page; " +
-      "dates shown were current when it was saved.";
-    document.body.insertBefore(note, document.body.firstChild);
+    var day = savedDay();
+    setNote(
+      day
+        ? "You are offline. This is a saved copy of the page; its data was saved on " + day + "."
+        : "You are offline. This is a saved copy of the page; " +
+            "dates shown were current when it was saved."
+    );
   }
   function hideOfflineNote() {
+    if (servedSavedData) {
+      var day = savedDay();
+      setNote(
+        "You are back online. This page still shows data saved " +
+          (day ? "on " + day : "earlier") +
+          ". Reload it for current data."
+      );
+      return;
+    }
     if (!note) return;
     note.remove();
     note = null;
+  }
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", function (event) {
+      if (!event.data || event.data.type !== "scorecard-saved-copy") return;
+      servedSavedData = true;
+      var savedAt = Date.parse(event.data.savedAt);
+      if (isNaN(savedAt)) someSavedDateUnknown = true;
+      else if (oldestSavedAt === null || savedAt < oldestSavedAt) oldestSavedAt = savedAt;
+      showOfflineNote();
+    });
   }
 
   window.addEventListener("offline", showOfflineNote);

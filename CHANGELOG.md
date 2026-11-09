@@ -304,6 +304,18 @@ the declared public surface).
 
 ### Fixed
 
+- **An empty Atom feed no longer says it was updated in 1970.** `/changes/feed.xml`
+  and the agency feeds with no entries now carry the date of the newest check
+  behind them, and leave the element out if there is no usable date.
+- **A returning browser no longer shows old "checked" dates.** The service worker
+  served every JSON file from its saved copy first, so a reader back after weeks
+  away saw weeks-old data on the first load with no notice. JSON is now network
+  first and falls back to the saved copy only when the network fails, and the
+  offline note names the date that copy was saved. The note stays after the
+  network returns until the page is reloaded. The 173 MB `index.json` and any
+  JSON over 16 MiB are no longer saved on the device, so views that need
+  `index.json` (`/app/#/cohort`, `/app/#/agency/<id>`) now need a connection. The
+  cache moves to `scorecard-offline-v3`, which clears the old copies.
 - **The Daily scorecard no longer stops on an expired mirror copy.** Holding
   freshness out of the grade wrote `reason` and `mirror_copy` on the freshness
   category, and the artifact schema refused both. The first such feed the sweep
