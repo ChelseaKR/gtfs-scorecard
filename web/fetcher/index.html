@@ -88,7 +88,8 @@
       &#8220;not fetched: robots disallows&#8221; beside the last grade we measured, never a
       zero. A <code>robots.txt</code> that answers with an error or redirects elsewhere is
       treated the same way. The one exception is cloud object storage and API hosts (Amazon S3
-      and similar), where a 403 is the standard answer for any file that does not exist; the
+      and similar), where a 403 is the standard answer for any file that does not exist, and
+      one named Azure storage host that answers 400 the same way; the
       list of those hosts, and why each is on it, is in the
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/pipeline/src/scorecard_pipeline/robots_policy.py">source</a>.</p>
     </section>
