@@ -972,6 +972,18 @@ def _artifact_contract_current(agency_id: str) -> bool:
     )
 
 
+def _latest_artifact_scored_from_mirror(agency_id: str) -> bool:
+    """Whether the published grade was scored from a Mobility Database mirror copy."""
+    from .config import artifacts_dir
+    from .feed_provenance import artifact_fetch_source
+
+    try:
+        artifact = json.loads((artifacts_dir() / agency_id / "latest.json").read_text())
+    except (OSError, json.JSONDecodeError):
+        return False
+    return artifact_fetch_source(artifact) == "mirror"
+
+
 def _liveness_unchanged(agency_id: str) -> bool:
     """Perform a cheap conditional GET and return True when the feed is unchanged.
 
@@ -996,6 +1008,12 @@ def _liveness_unchanged(agency_id: str) -> bool:
         # would answer 401 and count as a liveness failure against a feed that
         # is fine. Score it; the credentialed fetch is the real check.
         log.info("Re-scoring %s: credentialed feeds skip the keyless liveness check", agency_id)
+        return False
+    if _latest_artifact_scored_from_mirror(agency_id):
+        # "Unchanged" describes the origin's bytes, and this grade did not come
+        # from them. Skipping would keep a mirror copy published for as long as
+        # the agency's own file sits still.
+        log.info("Re-scoring %s: published grade came from a mirror copy", agency_id)
         return False
     state_path = repo_root() / "data" / "liveness.json"
     state = load_state(state_path)

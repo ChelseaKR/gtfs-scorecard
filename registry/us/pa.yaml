@@ -44,7 +44,13 @@ agencies:
     name: Rabbit Transit
     subdivision_code: US-PA
     subdivision_name: Pennsylvania
-    static_gtfs_url: http://www.rabbittransit.org/infopoint/gtfs/google_transit.zip
+    static_gtfs_url: https://realtime.rabbittransit.org/InfoPoint/GTFS-Zip.ashx
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks realtime.rabbittransit.org, the current address
+      Transitland lists for this feed. The agency name and service area in that
+      file match this record. Grades dated before this change came from an older
+      Mobility Database mirror copy.
     mdb_id: 499
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

@@ -91,7 +91,13 @@ agencies:
     name: Broward County Transit
     subdivision_code: US-FL
     subdivision_name: Florida
-    static_gtfs_url: https://www.broward.org/bct/documents/google_transit.zip
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/acd9791dc1fd49a8aaeaab261dd61b89/data
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks arcgis.com, the address the Mobility Database lists for
+      the record that replaced this one. The agency name and service area in
+      that file match this record. Grades dated before this change came from an
+      older Mobility Database mirror copy.
     mdb_id: 330
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -116,7 +122,13 @@ agencies:
     name: South Florida Regional Transportation Authority (Tri-Rail)
     subdivision_code: US-FL
     subdivision_name: Florida
-    static_gtfs_url: http://www.tri-rail.com/GTDF/Current/google_transit.zip
+    static_gtfs_url: https://gtfs.tri-rail.com/gtfs.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks gtfs.tri-rail.com, the current address Transitland lists
+      for this feed. The agency name and service area in that file match this
+      record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 333
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

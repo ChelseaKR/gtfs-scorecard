@@ -18,6 +18,7 @@ import hashlib
 import json
 from collections.abc import Iterator
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
@@ -369,3 +370,33 @@ def test_liveness_skips_network_when_artifact_contract_is_stale(
     with patch("scorecard_pipeline.liveness.check_feed") as check_feed:
         assert _liveness_unchanged(_TEST_ID) is False
     check_feed.assert_not_called()
+
+
+def test_a_mirror_scored_grade_is_never_skipped_as_unchanged(
+    one_agency: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A 304 from the origin says nothing about bytes that came from a mirror."""
+    monkeypatch.setenv("SCORECARD_ROOT", str(tmp_path))
+    _write_current_artifact(tmp_path, fetch={"source": "mirror"})
+    with patch("scorecard_pipeline.liveness.check_feed") as check_feed:
+        assert _liveness_unchanged(one_agency) is False
+    check_feed.assert_not_called()
+
+
+def test_an_origin_scored_grade_is_still_skipped_when_unchanged(
+    one_agency: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Control: the mirror guard does not re-score every unchanged feed."""
+    monkeypatch.setenv("SCORECARD_ROOT", str(tmp_path))
+    _write_current_artifact(tmp_path, fetch={"source": "origin"})
+    (tmp_path / "data" / "liveness.json").write_text("{}")
+    checker = SimpleNamespace(check=lambda _url: SimpleNamespace(allowed=True))
+    with (
+        patch("scorecard_pipeline.robots_policy.shared_checker", return_value=checker),
+        patch(
+            "scorecard_pipeline.liveness.check_feed",
+            return_value=({"url": _TEST_URL}, UNCHANGED),
+        ),
+        patch("scorecard_pipeline.liveness.save_state"),
+    ):
+        assert _liveness_unchanged(one_agency) is True

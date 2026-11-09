@@ -27,6 +27,18 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Changed
+
+- 49 records scored from a Mobility Database mirror copy now track the feed their
+  agency publishes today, each checked by reading the file, and 5 retire into the
+  record already publishing that feed. A move between a mirror copy and the
+  agency's URL is no longer a comparable transition, so it claims no improvement
+  and clears no finding. The page now names the day a mirror copy was downloaded.
+  Discovery no longer moves a record onto a frozen archive file (ADR 0076).
+- 4 more of those records and 9 Licence Ouverte records in France track a current
+  file, `advance-transit-at` retires into `advance-transit`, and `NOTICE` and
+  `/fetcher/` credit Transitland Atlas.
+
 ### Added
 
 - **New and changed pages are announced to IndexNow after each deploy**
@@ -296,6 +308,14 @@ the declared public surface).
   JSON over 16 MiB are no longer saved on the device, so views that need
   `index.json` (`/app/#/cohort`, `/app/#/agency/<id>`) now need a connection. The
   cache moves to `scorecard-offline-v3`, which clears the old copies.
+- **The Daily scorecard no longer stops on an expired mirror copy.** Holding
+  freshness out of the grade wrote `reason` and `mirror_copy` on the freshness
+  category, and the artifact schema refused both. The first such feed the sweep
+  reached failed `collect` on 2026-11-07 and 2026-11-08, and the site stayed at
+  2026-11-06. The schema now allows them on freshness only, in that one held
+  shape, and the same record passes through publish in both the sweep and the
+  full run. A record the sweep holds also stops saying "Measured 4 of 4": its
+  confidence count, level, and note now match the partial grade beside them.
 - **Padded CSV headers no longer hide columns.** Metra writes `service_id, monday`
   (comma-space) and Renfe pads every line with trailing spaces, so lookups such
   as `end_date` and `wheelchair_boarding` missed columns that were there. Metra

@@ -353,7 +353,12 @@ agencies:
     subdivision_code: FR-HDF
     subdivision_name: "Hauts-de-France"
     is_official: true
-    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/ab24abac-0a10-4695-9d4d-c0df885b1970"
+    static_gtfs_url: https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/tul-gares/exports/medias.zip
+    operating_note: >-
+      Checked 2026-11-08: www.data.gouv.fr's robots.txt disallows the address on
+      file, so this record now tracks s3.eu-west-1.amazonaws.com, the
+      publisher's own address listed on France's National Access Point. The
+      agency name and stop locations in that file match this record.
     license_note: >-
       Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
       reuse including commercial reuse is permitted with attribution to
