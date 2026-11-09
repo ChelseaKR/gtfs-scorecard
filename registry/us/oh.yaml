@@ -130,7 +130,13 @@ agencies:
     name: Western Reserve Transit Authority
     subdivision_code: US-OH
     subdivision_name: Ohio
-    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/western-reserve-transit-authority.zip
+    static_gtfs_url: https://myvalleystops.wrtaonline.com/InfoPoint/gtfs-zip.ashx
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks myvalleystops.wrtaonline.com, the current address
+      Transitland lists for this feed. The agency name and service area in that
+      file match this record. Grades dated before this change came from an older
+      Mobility Database mirror copy.
     mdb_id: 922
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

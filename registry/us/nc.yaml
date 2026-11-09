@@ -124,7 +124,13 @@ agencies:
     name: Wave Transit
     subdivision_code: US-NC
     subdivision_name: North Carolina
-    static_gtfs_url: https://www.wavetransit.com/gtransit/google_transit.zip
+    static_gtfs_url: https://wave.connexionz.net/rtt/public/resource/gtfs.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks wave.connexionz.net, the address the Mobility Database
+      lists for the record that replaced this one. The agency name and service
+      area in that file match this record. Grades dated before this change came
+      from an older Mobility Database mirror copy.
     mdb_id: 1110
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

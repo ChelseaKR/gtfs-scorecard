@@ -7,7 +7,13 @@ agencies:
     name: Eau Claire Transit
     subdivision_code: US-WI
     subdivision_name: Wisconsin
-    static_gtfs_url: http://www-ecbus-org.site.atfni.com/build_data_feed.phtml
+    static_gtfs_url: https://gtfs.ect.cadavl.com/ECT/GTFS/GTFS_ECT.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks gtfs.ect.cadavl.com, the current address Transitland
+      lists for this feed. The agency name and service area in that file match
+      this record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 208
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -98,7 +104,13 @@ agencies:
     name: Green Bay Metro
     subdivision_code: US-WI
     subdivision_name: Wisconsin
-    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/green-bay-wi-us.zip
+    static_gtfs_url: https://greenbaywi.gov/DocumentCenter/View/12124/Transit-Data-August-2024
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks greenbaywi.gov, the current address Transitland lists
+      for this feed. The agency name and service area in that file match this
+      record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 917
     license_note: "License: https://greenbaywi.gov/496/Transit-Data-Developer"
 
