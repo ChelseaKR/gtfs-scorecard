@@ -1020,7 +1020,7 @@ def fetch_catalog_bytes(url: str = DEFAULT_CATALOG_URL) -> bytes:
     """
     from urllib.parse import urlsplit
 
-    from .robots_policy import USER_AGENT
+    from .robots_policy import USER_AGENT, require_robots
 
     if (urlsplit(url).hostname or "").lower() in DISALLOWED_CATALOG_HOSTS:
         raise ValueError(
@@ -1028,7 +1028,11 @@ def fetch_catalog_bytes(url: str = DEFAULT_CATALOG_URL) -> bytes:
             "read; use the Mobility Database API (--catalog api) or a local CSV"
         )
     return safe_get(
-        url, headers={"User-Agent": USER_AGENT}, timeout=60, max_bytes=128 * 1024 * 1024
+        url,
+        headers={"User-Agent": USER_AGENT},
+        timeout=60,
+        max_bytes=128 * 1024 * 1024,
+        hop_guard=require_robots,
     )
 
 

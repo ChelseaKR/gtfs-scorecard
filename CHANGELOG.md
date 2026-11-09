@@ -27,6 +27,12 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Fixed
+
+- robots.txt is now read before every redirect hop of a feed request, and the daily
+  liveness check reads it at all. A record refused this way says "not fetched" beside
+  its last measured grade. At least 72 records stop refreshing (ADR 0077).
+
 ### Added
 
 - **New and changed pages are announced to IndexNow after each deploy**

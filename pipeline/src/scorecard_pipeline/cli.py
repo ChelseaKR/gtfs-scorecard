@@ -3568,6 +3568,7 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
     from .config import repo_root
     from .liveness import (
         CHANGED,
+        NOT_FETCHED,
         UNREACHABLE,
         check_feeds,
         load_state,
@@ -3624,12 +3625,13 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         log.info("Wrote liveness state for %d feeds.", len(state))
     log.info(
         "Liveness: %d changed, %d unreachable, %d recovered, %d unchanged, "
-        "%d credentialed not checked.%s",
+        "%d credentialed not checked, %d not fetched under robots.txt.%s",
         len(changed),
         len(unreachable),
         len(recovered_ids),
         tally.get("unchanged", 0),
         tally.get("credentialed_skipped", 0),
+        tally.get(NOT_FETCHED, 0),
         "" if args.apply else " Report only; re-run with --apply to persist state.",
     )
     return 0

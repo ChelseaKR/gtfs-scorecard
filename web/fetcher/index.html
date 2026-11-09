@@ -83,7 +83,8 @@
       server refuses this User-Agent, the feed is shown as unreachable with its last known
       grade, and you can tell us to use a different URL.</p>
       <p>Before requesting a feed we read your host&#8217;s <code>robots.txt</code> and follow
-      it. If it disallows the feed&#8217;s path, we do not download the feed, and its page says
+      it, and we do the same for every host a redirect leads to, before requesting anything
+      from it. If it disallows the feed&#8217;s path, we do not download the feed, and its page says
       &#8220;not fetched: robots disallows&#8221; beside the last grade we measured, never a
       zero. A <code>robots.txt</code> that answers with an error or redirects elsewhere is
       treated the same way. The one exception is cloud object storage and API hosts (Amazon S3

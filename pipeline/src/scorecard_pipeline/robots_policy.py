@@ -24,9 +24,11 @@ from __future__ import annotations
 import fnmatch
 import importlib.metadata
 import urllib.parse
+import urllib.request
 import urllib.robotparser
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 from .instance import BASE_URL
 
@@ -304,6 +306,40 @@ def shared_checker() -> RobotsChecker:
     if _SHARED is None:
         _SHARED = RobotsChecker()
     return _SHARED
+
+
+def require_robots(url: str) -> None:
+    """``hop_guard`` for the guarded client: refuse any hop robots.txt forbids (ADR 0077).
+
+    Reads ``shared_checker`` at call time, so a run reads each host's file once
+    however many feeds redirect to it.
+    """
+    shared_checker().require(url)
+
+
+class _RobotsRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """urllib's redirect handling, with robots.txt read before each new hop."""
+
+    def redirect_request(
+        self,
+        req: urllib.request.Request,
+        fp: Any,
+        code: int,
+        msg: str,
+        headers: Any,
+        newurl: str,
+    ) -> urllib.request.Request | None:
+        require_robots(newurl)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+_ROBOTS_OPENER = urllib.request.build_opener(_RobotsRedirectHandler)
+
+
+def guarded_urlopen(req: urllib.request.Request, timeout: float) -> Any:
+    """``urlopen`` that reads robots.txt before the first request and every redirect."""
+    require_robots(req.full_url)
+    return _ROBOTS_OPENER.open(req, timeout=timeout)
 
 
 def reset_shared_checker(checker: RobotsChecker | None = None) -> None:
