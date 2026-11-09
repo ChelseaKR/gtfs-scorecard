@@ -7,7 +7,13 @@ agencies:
     name: Wichita Transit
     subdivision_code: US-KS
     subdivision_name: Kansas
-    static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/blob/master/wichita-transit.zip?raw=true
+    static_gtfs_url: https://bus.wichitatransit.org/InfoPoint/gtfs-zip.ashx
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks bus.wichitatransit.org, the current address Transitland
+      lists for this feed. The agency name and service area in that file match
+      this record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 185
     license_note: "License: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/blob/master/wichita-transit-license.pdf"
 

@@ -27,6 +27,15 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Changed
+
+- 49 records scored from a Mobility Database mirror copy now track the feed their
+  agency publishes today, each checked by reading the file, and 5 retire into the
+  record already publishing that feed. A move between a mirror copy and the
+  agency's URL is no longer a comparable transition, so it claims no improvement
+  and clears no finding. The page now names the day a mirror copy was downloaded.
+  Discovery no longer moves a record onto a frozen archive file (ADR 0076).
+
 ### Fixed
 
 - robots.txt is now read before every redirect hop of a feed request, and the daily

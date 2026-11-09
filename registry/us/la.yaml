@@ -18,7 +18,13 @@ agencies:
     name: Shreveport and Bossier City
     subdivision_code: US-LA
     subdivision_name: Louisiana
-    static_gtfs_url: http://sportranbus.com/gtfs
+    static_gtfs_url: https://sportran.rideralerts.com/infopoint/gtfs-zip.ashx
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks sportran.rideralerts.com, the current address
+      Transitland lists for this feed. The agency name and service area in that
+      file match this record. Grades dated before this change came from an older
+      Mobility Database mirror copy.
     mdb_id: 1060
     rt_urls:
       trip_updates: https://sportranbus.com/gtfs-rt/tripupdates
