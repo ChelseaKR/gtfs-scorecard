@@ -39,6 +39,14 @@ the declared public surface).
   file, `advance-transit-at` retires into `advance-transit`, and `NOTICE` and
   `/fetcher/` credit Transitland Atlas.
 
+### Fixed
+
+- robots.txt is now read before every redirect hop of a feed request, and the daily
+  liveness check reads it at all. A record refused this way says "not fetched" beside
+  its last measured grade. 86 records stop refreshing: 70 disallowed and 16 with
+  robots.txt refused or unreadable. One Azure host joins the robots.txt allowlist for
+  its 400 answer (ADR 0077).
+
 ### Added
 
 - **New and changed pages are announced to IndexNow after each deploy**

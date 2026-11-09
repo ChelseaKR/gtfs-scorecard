@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+from collections.abc import Callable
 from dataclasses import replace
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -513,11 +514,20 @@ def test_catalog_fetch_exposes_exact_bytes_for_one_fetch_parse_and_hash(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from scorecard_pipeline import mobilitydb as m
+    from scorecard_pipeline.robots_policy import require_robots
 
     calls: list[tuple[str, int, int]] = []
 
-    def fake_safe_get(url: str, *, timeout: int, max_bytes: int, headers: dict[str, str]) -> bytes:
+    def fake_safe_get(
+        url: str,
+        *,
+        timeout: int,
+        max_bytes: int,
+        headers: dict[str, str],
+        hop_guard: Callable[[str], None],
+    ) -> bytes:
         assert "Mozilla" not in headers["User-Agent"]
+        assert hop_guard is require_robots
         calls.append((url, timeout, max_bytes))
         return b"id,data_type\nsource,gtfs\n"
 

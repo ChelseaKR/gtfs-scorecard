@@ -48,7 +48,7 @@ sys.path.insert(0, str(REPO_ROOT / "pipeline" / "src"))
 from scorecard_pipeline.agencies import load_agencies  # noqa: E402
 from scorecard_pipeline.config import AGENCIES, utc_today  # noqa: E402
 from scorecard_pipeline.fetch import FEED_HEADERS  # noqa: E402
-from scorecard_pipeline.robots_policy import shared_checker  # noqa: E402
+from scorecard_pipeline.robots_policy import guarded_urlopen, shared_checker  # noqa: E402
 
 OUT = REPO_ROOT / "data" / "feed-publishers.json"
 SCHEMA_VERSION = "1.0"
@@ -104,7 +104,7 @@ class _HttpRangeFile(io.RawIOBase):
         req = urllib.request.Request(  # noqa: S310
             self.url, headers={**HEADERS, "Range": f"bytes={self.pos}-{end}"}
         )
-        with urllib.request.urlopen(req, timeout=30) as resp:  # noqa: S310
+        with guarded_urlopen(req, 30) as resp:
             if resp.status != 206:
                 raise OSError("range request not honored")
             data = resp.read()
@@ -125,7 +125,7 @@ def _feed_info_row(zf: zipfile.ZipFile) -> dict[str, str]:
 
 def _head(url: str) -> tuple[int, str]:
     req = urllib.request.Request(url, headers=HEADERS, method="HEAD")  # noqa: S310
-    with urllib.request.urlopen(req, timeout=20) as resp:  # noqa: S310
+    with guarded_urlopen(req, 20) as resp:
         return int(resp.headers.get("Content-Length") or 0), resp.geturl()
 
 
@@ -145,7 +145,7 @@ def _read_declaration(url: str) -> dict[str, str]:
     if size > MAX_WHOLE_DOWNLOAD_BYTES:
         raise RuntimeError(f"feed is {size} bytes; too large to read whole")
     req = urllib.request.Request(final_url, headers=HEADERS)  # noqa: S310
-    with urllib.request.urlopen(req, timeout=90) as resp:  # noqa: S310
+    with guarded_urlopen(req, 90) as resp:
         body = resp.read(MAX_WHOLE_DOWNLOAD_BYTES + 1)
     if len(body) > MAX_WHOLE_DOWNLOAD_BYTES:
         raise RuntimeError("feed exceeds the whole-download cap")

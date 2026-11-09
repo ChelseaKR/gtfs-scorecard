@@ -31,15 +31,17 @@ from pathlib import Path
 from typing import Any, Protocol
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import Request
 
 from .robots_policy import USER_AGENT as ROBOTS_USER_AGENT
+from .robots_policy import RobotsRefusedError, guarded_urlopen
 
 # The same identifying User-Agent as every other feed request (ADR 0070).
 USER_AGENT = ROBOTS_USER_AGENT
 
 # Classifications returned per feed.
 UNCHANGED = "unchanged"
+NOT_FETCHED = "not_fetched"
 CHANGED = "changed"
 UNREACHABLE = "unreachable"
 
@@ -92,7 +94,8 @@ Opener = Callable[[Request, float], _Response]
 
 
 def _default_opener(req: Request, timeout: float) -> _Response:
-    return urlopen(req, timeout=timeout)  # type: ignore[no-any-return]  # noqa: S310
+    # ADR 0077: robots.txt before the request and before every redirect it takes.
+    return guarded_urlopen(req, timeout)  # type: ignore[no-any-return]
 
 
 def _now() -> str:
@@ -155,6 +158,10 @@ def check_feed(
     req = Request(url, headers=conditional_headers(prev))  # noqa: S310
     try:
         resp = opener(req, timeout)
+    except RobotsRefusedError:
+        # No request went out, so this is neither a check nor an outage. The last
+        # record stands as it was and no failure streak moves.
+        return (prev or LivenessRecord(url=url)), NOT_FETCHED
     except HTTPError as exc:
         if exc.code == 304:
             return _carry_forward(url, prev, status=304, now=now, ok=True), UNCHANGED
@@ -277,7 +284,9 @@ def requeue(
 
 def recovered(prev: LivenessRecord | None, classification: str) -> bool:
     """True when a feed that had been failing is reachable again."""
-    return bool(prev and prev.consecutive_failures > 0 and classification != UNREACHABLE)
+    return bool(
+        prev and prev.consecutive_failures > 0 and classification not in {UNREACHABLE, NOT_FETCHED}
+    )
 
 
 def load_state(path: Path) -> dict[str, LivenessRecord]:
