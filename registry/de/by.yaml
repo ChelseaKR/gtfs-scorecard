@@ -56,14 +56,18 @@ agencies:
     subdivision_name: Bayern
     mdb_id: "779"
     is_official: true
-    static_gtfs_url: https://www.mvv-muenchen.de/fileadmin/mediapool/02-Fahrplanauskunft/03-Downloads/openData/mvv_gtfs.zip
+    static_gtfs_url: https://www.mvv-muenchen.de/fileadmin/mediapool/developer/opendata/mvv_gtfs.zip
     license_note: >-
       CC BY per MVV's open data terms; commercial reuse is permitted with
       attribution to MVV, the retrieval date, and the feed version.
     operating_note: >-
-      The Munich region's transport association network. The direct download
-      is MobilityData's hosted mirror; the association rotates its own file
-      path.
+      The Munich region's transport association network. The direct download is
+      MobilityData's hosted mirror; the association rotates its own file path.
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks mvv-muenchen.de, the regional bus file on MVV's
+      developer page. The agency name and stop locations in that file match this
+      record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     reuse_evidence:
       decision: approved
       source_kind: provider

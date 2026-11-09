@@ -231,7 +231,12 @@ agencies:
     subdivision_name: Pays-de-la-Loire
     is_official: true
     service_type: demand_response
-    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/53f79f73-e770-4772-a315-1117708f2647
+    static_gtfs_url: https://storage.googleapis.com/ecov-gtfs/nantes/gtfs_nantes.zip
+    operating_note: >-
+      Checked 2026-11-08: www.data.gouv.fr's robots.txt disallows the address on
+      file, so this record now tracks storage.googleapis.com, the publisher's
+      own address listed on France's National Access Point. The agency name and
+      stop locations in that file match this record.
     license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
       commercial reuse is permitted with attribution to Ecov and the update date.
     reuse_evidence:
