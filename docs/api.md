@@ -166,6 +166,11 @@ Changelog:
   exports, where it is `null` (empty in CSV) for a full grade. Unmeasured
   freshness is never published as a number: the `freshness` category score is
   absent and `days_until_expiry` is `null`. Additive.
+  A freshness category held for an expired mirror copy has
+  `status: "not_yet_measured"`, `reason: "mirror_copy_expired"`, and a
+  `mirror_copy` block with the copy's `service_start` and `service_end`, each a
+  date or `null`. Those dates describe the copy, not the agency's feed, and no
+  other category can carry them.
 - `1.19` adds an optional `consequence` block to every category finding and
   `top_fixes` entry: the finding's network reach, plus annual rider-trips and
   served-area need as values or as `null` with a reason. The per-agency
