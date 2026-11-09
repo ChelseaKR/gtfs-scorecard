@@ -31,7 +31,9 @@ the declared public surface).
 
 - robots.txt is now read before every redirect hop of a feed request, and the daily
   liveness check reads it at all. A record refused this way says "not fetched" beside
-  its last measured grade. At least 72 records stop refreshing (ADR 0077).
+  its last measured grade. 86 records stop refreshing: 70 disallowed and 16 with
+  robots.txt refused or unreadable. One Azure host joins the robots.txt allowlist for
+  its 400 answer (ADR 0077).
 
 ### Added
 

@@ -8,8 +8,8 @@
 ADR 0070 reads robots.txt "before any feed request", and the code did that for the
 URL on file only. A redirect was then followed to wherever it led. On 2026-11-08
 that was measured from the published artifacts. 740 fetched records end on a
-different host from the one on file, and at least 65 of them end on a path that
-host's robots.txt disallows, 58 on `static.data.gouv.fr` by way of
+different host from the one on file, and 70 of them end on a path that host's
+robots.txt disallows, 58 on `static.data.gouv.fr` by way of
 `transport.data.gouv.fr/resources/N/download`.
 
 The daily liveness check had a wider gap. `scorecard liveness` read no robots.txt
@@ -35,6 +35,17 @@ at all, so it sent a conditional GET to feeds the schedule fetch refuses.
    or a recovery.
 5. **robots.txt stays cached per scheme and host within a process.**
 
+6. **One object store joins the allowlist, for one status.** On 2026-11-08
+   `dataodpt.blob.core.windows.net` answered `/robots.txt` and a random root path the
+   same way: 400 with `OutOfRangeInput` XML. We infer this is the host's generic reply
+   for a path with no container, so that exact host and status read as "no file".
+   This admits 27 records in Japan. No wildcard or other status is added.
+7. **Two other object stores stay stopped.** `min01rg96sablob01.blob.core.windows.net`
+   answers 409 `PublicAccessNotPermitted`, and
+   `83025b28472d6aa2bf5ae59f3724aa78.eu.r2.cloudflarestorage.com` answers 400
+   `InvalidArgument` naming Authorization. "Not permitted" and an authorization refusal
+   do not count as having no robots file.
+
 ## Paths not changed
 
 These do not download feeds, or use a rule already decided:
@@ -46,9 +57,10 @@ These do not download feeds, or use a rule already decided:
 
 ## Consequences
 
-- At least 72 records stop refreshing until a permitted address is found (65
-  disallowed, 7 with unreadable robots.txt). Another 58 on 24 hosts were not
-  measured and will show in the first run. They keep their last grade and page.
+- 86 records stop refreshing until a permitted address is found: 70 disallowed
+  and 16 with robots.txt refused or unreadable. Counted on 2026-11-08 from each
+  published artifact's final URL. 64 more change path on the same host and were
+  not rechecked. They keep their last grade and page.
 - France's Access Point download link stops being a way to read those files. The
   maintainer can ask the Access Point team whether bots may use it.
 - About one more robots.txt read per new host per shard, and fewer feed downloads.
