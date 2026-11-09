@@ -983,7 +983,7 @@ export interface components {
             };
             categories: {
                 correctness: components["schemas"]["ArtifactCategory"];
-                freshness: components["schemas"]["ArtifactCategory"];
+                freshness: components["schemas"]["ArtifactHeldMirrorFreshness"] | components["schemas"]["ArtifactCategory"];
                 completeness: components["schemas"]["ArtifactCategory"];
                 realtime: components["schemas"]["ArtifactCategory"];
             };
@@ -1188,6 +1188,23 @@ export interface components {
             rank?: number;
             /** @description What this finding costs: network reach, annual rider-trips, and served-area need, each a value or null with a reason. Added in schema 1.19; absent on older snapshots. */
             consequence?: components["schemas"]["ArtifactConsequence"];
+        };
+        /** @description Freshness held out of the grade because the feed URL failed and the Mobility Database mirror copy scored instead has already ended its service. It has no score, findings, or details: the copy's dates sit under mirror_copy, never as an expiry countdown, so they cannot read as the agency's own lapse. Comes with overall.grade_qualifier. */
+        ArtifactHeldMirrorFreshness: {
+            /** @constant */
+            name: "freshness";
+            /** @constant */
+            status: "not_yet_measured";
+            weight: number;
+            /** @constant */
+            reason: "mirror_copy_expired";
+            summary: string;
+            mirror_copy: {
+                /** Format: date */
+                service_start: string | null;
+                /** Format: date */
+                service_end: string | null;
+            };
         };
         /** @description Additive API v1 location rollups. Count fields cover all published feed records in a location; score aggregates use the guarded comparison cohort and expose its denominator. Null codes collect rows whose curated location is unknown. */
         ByLocation: {

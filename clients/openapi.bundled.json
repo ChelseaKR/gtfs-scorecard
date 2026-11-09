@@ -1438,7 +1438,14 @@
                 "$ref": "#/components/schemas/ArtifactCategory"
               },
               "freshness": {
-                "$ref": "#/components/schemas/ArtifactCategory"
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ArtifactHeldMirrorFreshness"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArtifactCategory"
+                  }
+                ]
               },
               "completeness": {
                 "$ref": "#/components/schemas/ArtifactCategory"
@@ -2313,6 +2320,62 @@
           "consequence": {
             "$ref": "#/components/schemas/ArtifactConsequence",
             "description": "What this finding costs: network reach, annual rider-trips, and served-area need, each a value or null with a reason. Added in schema 1.19; absent on older snapshots."
+          }
+        },
+        "additionalProperties": false
+      },
+      "ArtifactHeldMirrorFreshness": {
+        "type": "object",
+        "description": "Freshness held out of the grade because the feed URL failed and the Mobility Database mirror copy scored instead has already ended its service. It has no score, findings, or details: the copy's dates sit under mirror_copy, never as an expiry countdown, so they cannot read as the agency's own lapse. Comes with overall.grade_qualifier.",
+        "required": [
+          "name",
+          "status",
+          "weight",
+          "reason",
+          "summary",
+          "mirror_copy"
+        ],
+        "properties": {
+          "name": {
+            "const": "freshness"
+          },
+          "status": {
+            "const": "not_yet_measured"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "reason": {
+            "const": "mirror_copy_expired"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "mirror_copy": {
+            "type": "object",
+            "required": [
+              "service_start",
+              "service_end"
+            ],
+            "properties": {
+              "service_start": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date"
+              },
+              "service_end": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date"
+              }
+            },
+            "additionalProperties": false
           }
         },
         "additionalProperties": false
