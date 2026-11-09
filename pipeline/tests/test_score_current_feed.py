@@ -33,7 +33,13 @@ MOVED_HOSTS = {
     "cherriots": "cherriots.rideralerts.com",
     "corpus-christi-regional-transportation-authority": "gtfs.ccrta.cadavl.com",
     "elk-grove-transit": "apps.sacrt.com",
+    "cascades-east-transit-cet": "passio3.com",
+    "essex-bus-network": "data.essex.gov.uk/download/2ydj8/hr6/",
     "exo-trains": "exo.quebec",
+    "fr-pan-83389": "data.grandpoitiers.fr",
+    "fr-tul": "files.orchestra.ratpdev.com",
+    "mvv-munchen": "/developer/opendata/mvv_gtfs.zip",
+    "suntran-2354": "suntran.com/wp-content/uploads/SunTranGTFS.zip",
     "gold-coast-transit-south-coast-area-transit": "gctd.org",
     "lane-transit-district-ltd": "feed.ltd.org",
     "memphis-area-transit-authority-2352": "gtfs.mata.cadavl.com",
@@ -42,6 +48,7 @@ MOVED_HOSTS = {
     "wave-transit": "wave.connexionz.net",
 }
 RETIRED_INTO = {
+    "advance-transit-at": "advance-transit",
     "beach-cities-transit": "beach-cities-transit-1999",
     "bellflower-bus": "bellflower-bus-3095",
     "glendora-transportation-division": "glendora-transportation-division-3097",
@@ -202,6 +209,40 @@ def test_moved_records_track_the_verified_host(
     assert "Checked 2026-11-08" in agency.operating_note
 
 
+@pytest.mark.parametrize(
+    "agency_id",
+    [
+        "fr-agglo-en-bus",
+        "fr-cmonbus",
+        "fr-pan-76779",
+        "fr-pan-81252",
+        "fr-pan-82619",
+        "fr-pan-83389",
+        "fr-pan-83990",
+        "fr-pan-84096",
+        "fr-tul",
+    ],
+)
+def test_french_moves_leave_the_disallowed_host_and_carry_no_key(
+    registry: dict[str, Agency], agency_id: str
+) -> None:
+    url = registry[agency_id].static_gtfs_url
+    assert "data.gouv.fr" not in url
+    assert "key=" not in url.lower()
+    assert registry[agency_id].reuse_evidence is not None
+
+
+@pytest.mark.parametrize("path", ["NOTICE", "web/fetcher/index.html"])
+def test_transitland_atlas_is_credited_with_its_license_as_published(path: str) -> None:
+    text = " ".join((REPO_ROOT / path).read_text().split())
+    assert "github.com/transitland/transitland-atlas" in text
+    assert (
+        "Unless otherwise indicated, data files and scripts in this repository are "
+        "made available under the Creative Commons Attribution 4.0 International Public "
+        "License."
+    ) in text
+
+
 @pytest.mark.parametrize("agency_id", sorted(MOVED_HOSTS))
 def test_weekly_discovery_holds_a_moved_record_instead_of_moving_it_back(
     registry: dict[str, Agency], agency_id: str
@@ -226,4 +267,5 @@ def test_records_with_a_published_successor_retire_into_it(
     assert agency.alias_of == successor
     assert agency.feed_status == "deprecated"
     assert registry[successor].feed_status == "active"
-    assert registry[successor].name == agency.name
+    # The one cross-state pair is a rename too, and has a review entry.
+    assert registry[successor].name in agency.name

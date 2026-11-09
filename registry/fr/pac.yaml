@@ -142,7 +142,12 @@ agencies:
     subdivision_code: FR-PAC
     subdivision_name: "Provence-Alpes-Côte-d’Azur"
     is_official: true
-    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/78b7910e-1e31-4f47-b0a8-949647205ffa"
+    static_gtfs_url: https://gtfs-rt.infra-hubup.fr/cagtd/current/gtfs
+    operating_note: >-
+      Checked 2026-11-08: www.data.gouv.fr's robots.txt disallows the address on
+      file, so this record now tracks gtfs-rt.infra-hubup.fr, the publisher's
+      own address listed on France's National Access Point. The agency name and
+      stop locations in that file match this record.
     license_note: >-
       Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
       reuse including commercial reuse is permitted with attribution to
@@ -187,7 +192,12 @@ agencies:
     subdivision_code: FR-PAC
     subdivision_name: "Provence-Alpes-Côte-d’Azur"
     is_official: true
-    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/a6a32465-7366-47dc-a6fc-96f1d52b09d8"
+    static_gtfs_url: https://app.pysae.com/api/v2/groups/cavaillon/gtfs/pub
+    operating_note: >-
+      Checked 2026-11-08: www.data.gouv.fr's robots.txt disallows the address on
+      file, so this record now tracks app.pysae.com, the publisher's own address
+      listed on France's National Access Point. The agency name and stop
+      locations in that file match this record.
     license_note: >-
       Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
       reuse including commercial reuse is permitted with attribution to
@@ -403,7 +413,12 @@ agencies:
     subdivision_code: FR-PAC
     subdivision_name: Provence-Alpes-Côte-d’Azur
     is_official: true
-    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/0a554ecc-a9b7-490c-a4ad-bbd8a0dc0ded
+    static_gtfs_url: https://proxy-data.zou.maregionsud.fr/GTFS/GTFS_SIBR_zou_ferre_datasud.zip
+    operating_note: >-
+      Checked 2026-11-08: www.data.gouv.fr's robots.txt disallows the address on
+      file, so this record now tracks proxy-data.zou.maregionsud.fr, the
+      publisher's own address listed on France's National Access Point. The
+      agency name and stop locations in that file match this record.
     license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
       commercial reuse is permitted with attribution to Région Provence-Alpes-Côte-d'Azur and the update
       date.

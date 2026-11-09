@@ -150,7 +150,12 @@ agencies:
     name: SunTran
     subdivision_code: US-AZ
     subdivision_name: Arizona
-    static_gtfs_url: https://www.suntran.com/wp-content/uploads/2024/07/SunTranGTFS.zip
+    static_gtfs_url: https://www.suntran.com/wp-content/uploads/SunTranGTFS.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks the file linked from suntran.com. The agency name and
+      stop locations in that file match this record. Grades dated before this
+      change came from an older Mobility Database mirror copy.
     mdb_id: 2354
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
