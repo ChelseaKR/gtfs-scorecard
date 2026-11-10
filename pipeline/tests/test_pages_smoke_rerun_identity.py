@@ -41,7 +41,7 @@ def _smoke_filter() -> str:
     return match.group(1)
 
 
-def _served(run_id: int, attempt: int) -> dict:
+def _served(run_id: int, attempt: int) -> dict[str, object]:
     return {
         "schema_version": 3,
         "commit": COMMIT,
@@ -52,13 +52,22 @@ def _served(run_id: int, attempt: int) -> dict:
     }
 
 
-def _passes(served: dict, expected_id: str) -> bool:
-    result = subprocess.run(
+def _passes(served: dict[str, object], expected_id: str) -> bool:
+    jq = shutil.which("jq")
+    assert jq is not None
+    result = subprocess.run(  # noqa: S603 - fixed executable and test-owned inputs
         [
-            "jq", "-e",
-            "--arg", "commit", COMMIT,
-            "--arg", "deployment_id", expected_id,
-            "--argjson", "source_run_id", str(RUN_ID),
+            jq,
+            "-e",
+            "--arg",
+            "commit",
+            COMMIT,
+            "--arg",
+            "deployment_id",
+            expected_id,
+            "--argjson",
+            "source_run_id",
+            str(RUN_ID),
             _smoke_filter(),
         ],
         input=json.dumps(served),
