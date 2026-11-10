@@ -542,33 +542,47 @@ jobs:
   deploy:
     needs: lighthouse
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     permissions:
       contents: read
       pages: write
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment_retry.outputs.page_url || steps.deployment.outputs.page_url }}
     steps:
-      # RELIABILITY: the action's own bound is 10 minutes, and when it expires
-      # the action does not just stop waiting — it CANCELS the deployment it
-      # started. Run 34461157937 (2026-09-10, an Intraday refresh deploy) spent
-      # all 600 seconds reading `Current status: updating_pages` from a healthy
-      # backend and then printed `Timeout reached, aborting!` and
-      # `Canceled deployment with ID ea066b0c…`, so a slow publish became no
-      # publish and the site served the previous generation for another cycle.
+      # RELIABILITY: the action's own bound is 10 minutes and it cannot be
+      # raised: `timeout` is clamped to 600000 ms in the action's source (the
+      # log prints "timeout set to the maximum of 600000 milliseconds"). When
+      # it expires the action does not just stop waiting, it CANCELS the
+      # deployment it started. Run 34461157937 (2026-09-10) did exactly that,
+      # and so did the 2026-11-09 and 2026-11-10 scheduled deploys, which sat
+      # in GitHub's server-side `syncing_files` for the full 600 seconds. The
+      # identical artifact then deployed in about 40 seconds when rerun hours
+      # later, so the backend was slow, not the artifact.
       #
-      # 20 minutes is a bound on GitHub's Pages backend, not on this repo's
-      # work: the artifact is already uploaded by the time this step starts,
-      # and the job's own 30-minute `timeout-minutes` still contains it. A
-      # retry is deliberately not added here — a second `deploy-pages` after a
-      # cancel starts the same publish again against the same slow backend,
-      # where waiting longer is what the evidence says was needed.
+      # So the bound below is the honest one, and the recovery is a delayed
+      # second attempt: if the first deploy fails, wait five minutes and start a
+      # fresh deployment of the same, already uploaded artifact. An immediate
+      # retry would meet the same busy backend; the wait is the point. Only the
+      # first attempt tolerates its own failure. The second one is not allowed
+      # to, so the job fails only when both attempts fail. Worst case is
+      # 10 + 5 + 10 minutes, inside the job's 35.
       - uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
         id: deployment
+        continue-on-error: true
         with:
-          timeout: "1200000"
+          timeout: "600000"
+      - name: Wait before retrying the Pages deploy
+        if: ${{ steps.deployment.outcome == 'failure' }}
+        run: |
+          echo "::warning title=Pages deploy failed::First deploy-pages attempt failed; waiting 300s before a fresh deployment."
+          sleep 300
+      - uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+        id: deployment_retry
+        if: ${{ steps.deployment.outcome == 'failure' }}
+        with:
+          timeout: "600000"
 
   production-smoke:
     needs: [lighthouse, deploy]
