@@ -1940,7 +1940,7 @@ export interface components {
     parameters: {
         /** @description A published feed record's id, as listed in `/data/artifacts/index.json`. `changes`, `rollups` and `run` are reserved and are never agency ids. */
         agency_id: string;
-        /** @description A snapshot date, `YYYY-MM-DD`. */
+        /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for the last 90 days before the agency's newest snapshot, plus its previous snapshot; older dates return not found. */
         date: string;
         /** @description A rollup id, as listed in `/data/artifacts/rollups/index.json`. */
         rollup_id: string;
@@ -2007,7 +2007,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A snapshot date, `YYYY-MM-DD`. */
+                /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for the last 90 days before the agency's newest snapshot, plus its previous snapshot; older dates return not found. */
                 date: components["parameters"]["date"];
             };
             cookie?: never;
@@ -2040,7 +2040,7 @@ export interface operations {
             path: {
                 /** @description A published feed record's id, as listed in `/data/artifacts/index.json`. `changes`, `rollups` and `run` are reserved and are never agency ids. */
                 agency_id: components["parameters"]["agency_id"];
-                /** @description A snapshot date, `YYYY-MM-DD`. */
+                /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for the last 90 days before the agency's newest snapshot, plus its previous snapshot; older dates return not found. */
                 date: components["parameters"]["date"];
             };
             cookie?: never;

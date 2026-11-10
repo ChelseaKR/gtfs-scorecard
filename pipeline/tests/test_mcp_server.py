@@ -590,7 +590,9 @@ def test_the_new_tools_introduce_no_language_model() -> None:
         assert forbidden not in source.lower()
 
 
-def test_latest_finding_changes_survives_an_unpublished_dated_file(monkeypatch) -> None:
+def test_latest_finding_changes_survives_an_unpublished_dated_file(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     from scorecard_pipeline import comparisons
     from scorecard_pipeline.mcp_server import _latest_finding_changes
 
