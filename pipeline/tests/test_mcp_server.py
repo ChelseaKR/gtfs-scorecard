@@ -588,3 +588,18 @@ def test_the_new_tools_introduce_no_language_model() -> None:
     ).read_text()
     for forbidden in ("anthropic", "openai", "langchain", "llm", "boto3", "bedrock"):
         assert forbidden not in source.lower()
+
+
+def test_latest_finding_changes_survives_an_unpublished_dated_file(monkeypatch) -> None:
+    from scorecard_pipeline import comparisons
+    from scorecard_pipeline.mcp_server import _latest_finding_changes
+
+    monkeypatch.setattr(comparisons, "same_producer_contract", lambda *_: True)
+
+    def fetch(url: str) -> object:
+        raise OSError("HTTP Error 404: Not Found")
+
+    points = [{"date": "2026-08-01"}, {"date": "2026-11-10"}]
+    result = _latest_finding_changes(fetch, "demo", points)
+    assert result is not None and result["comparable"] is False
+    assert "not published" in result["reason"]

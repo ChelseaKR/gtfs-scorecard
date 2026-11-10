@@ -19,7 +19,7 @@ with one is served from the site root.
 | `directory.json` | Slim covered-set directory: per-scorecard grade, portable location, size tier, plus guarded corpus-wide, country/subdivision, and legacy place summaries. Individual percentiles are not published. |
 | `changes/latest.json` | Canonical feed records whose grade or score moved under the same current producer contract since their last check. Auditable dated copies are retained at `changes/<date>.json`. |
 | `<agency>/latest.json` | The most recent full scorecard for one agency. |
-| `<agency>/<date>.json` | The scorecard for one agency on one date (`YYYY-MM-DD`). |
+| `<agency>/<date>.json` | The scorecard for one agency on one date (`YYYY-MM-DD`). Published for the last 90 days before that agency's newest snapshot, plus its previous snapshot however old; older dates are not served, so an `index.json` history date outside that window has no file. |
 | `<agency>/badge.svg` | Embeddable grade badge (see below). |
 | `<agency>/badge.json` | The same grade in the Shields.io endpoint format, for custom badges. |
 | `rollups/index.json` | Every published program rollup, summarized. |
@@ -979,8 +979,11 @@ run did not measure. Those did not clear; nobody looked at them.
 
 - Served over HTTPS as `application/json` with `Access-Control-Allow-Origin: *`,
   so the artifacts are fetchable directly from a browser or an edge function.
-- Dated artifacts (`<agency>/<date>.json`) are immutable once written and are
-  retained, so a consumer can pin a specific date as a stable reference.
+- Dated artifacts (`<agency>/<date>.json`) are immutable once written, so a
+  consumer can pin a specific date as a stable reference. They are published for
+  the last 90 days before the agency's newest snapshot, plus its previous
+  snapshot however old; older dates return not found (GitHub Pages limits a site
+  to 1 GB). The committed history is not deleted.
   `latest.json`, `catalog.json`, and `directory.json` are rewritten when a
   scoring run completes; `/api/v1/status.json` and `/api/v1/run-status.json`
   disclose the observed freshness and latest completed run.

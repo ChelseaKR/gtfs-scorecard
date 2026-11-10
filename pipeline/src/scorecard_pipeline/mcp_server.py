@@ -374,8 +374,18 @@ def _latest_finding_changes(
             ),
         }
     base = _base_url()
-    before = fetch(f"{base}/data/artifacts/{agency_id}/{previous.get('date')}.json")
-    after = fetch(f"{base}/data/artifacts/{agency_id}/{latest.get('date')}.json")
+    try:
+        before = fetch(f"{base}/data/artifacts/{agency_id}/{previous.get('date')}.json")
+        after = fetch(f"{base}/data/artifacts/{agency_id}/{latest.get('date')}.json")
+    except (OSError, ValueError):
+        # Dated snapshots are published for the last 90 days plus each agency's
+        # previous one, so an older point can be absent (HTTP 404 is a URLError).
+        return {
+            "comparable": False,
+            "from_date": previous.get("date"),
+            "to_date": latest.get("date"),
+            "reason": "a dated snapshot for one of the two most recent points is not published",
+        }
     before_codes, after_codes = finding_codes(before), finding_codes(after)
     return {
         "comparable": True,
