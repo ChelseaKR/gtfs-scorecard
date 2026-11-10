@@ -270,6 +270,19 @@ the declared public surface).
 
 ### Security
 
+- **Container images clear ten fixable HIGH CVEs that failed the Trivy
+  scan on 2026-11-10.** All ten are Amazon Linux 2023 base packages, not
+  code in this repository: glibc CVE-2026-86805 (TOCTOU race, fixed in
+  `2.34-231.amzn2023.0.6`) reported across `glibc`, `glibc-common`,
+  `glibc-langpack-en`, and `glibc-minimal-langpack`, and rpm CVE-2026-103242,
+  CVE-2026-84837, and CVE-2026-95519 (fixed in `4.16.1.3-29.amzn2023.0.9`)
+  reported in both `rpm` and `rpm-libs`. `AL2023_REPO_GUID` in both
+  Dockerfiles moves from `c5eb6613...a009e57f60` to the current snapshot on
+  Amazon's mirror list, `b1757122...c71cee19`, whose repodata was read and
+  serves exactly those fixed builds (the old snapshot stops at glibc `0.5`
+  and rpm `0.8`). No `.trivyignore.yaml` change: these are real, fixable
+  CVEs, not exceptions.
+
 - **Container images clear two fixable HIGH CVEs that failed the Trivy
   scan on 2026-10-30.** `libbrotli` CVE-2026-111497 (out-of-bounds write in
   the Brotli decoder, fixed in `1.1.0-1.amzn2023.0.2`): `AL2023_REPO_GUID` in
