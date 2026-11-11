@@ -110,3 +110,11 @@ done
 # it prints counts, never a value.
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 python3 -I "$script_dir/../src/scorecard_pipeline/url_redaction.py" "$dest_root" --write
+
+# Then the published copy is slimmed (src/scorecard_pipeline/publish_boundary.py):
+# every JSON file is rewritten compact, and index.json keeps each agency's
+# newest 120 history points without feed_sha256 or service_horizon_status,
+# which nothing on the site reads from the index. Same objects, about a third
+# fewer bytes. S3, the committed history, and every field of latest.json are
+# untouched; GitHub Pages caps a site at 1 GB.
+python3 -I "$script_dir/../src/scorecard_pipeline/publish_boundary.py" "$dest_root" --write

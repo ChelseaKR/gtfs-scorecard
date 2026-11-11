@@ -11,7 +11,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Every published feed record with its score and grade history. */
+        /**
+         * Every published feed record with its score and grade history.
+         * @description Each agency's `history` is its newest 120 points, oldest first. Index points carry no `feed_sha256` or `service_horizon_status`; read those from the agency's `latest.json`.
+         */
         get: operations["getArtifactIndex"];
         put?: never;
         post?: never;
@@ -1940,7 +1943,7 @@ export interface components {
     parameters: {
         /** @description A published feed record's id, as listed in `/data/artifacts/index.json`. `changes`, `rollups` and `run` are reserved and are never agency ids. */
         agency_id: string;
-        /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for the last 90 days before the agency's newest snapshot, plus its previous snapshot; older dates return not found. */
+        /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for at most the last 90 days before the agency's newest snapshot, plus its previous snapshot; in practice the site build carries the committed history and the last two days, so expect the newest two dates. Older dates return not found. */
         date: string;
         /** @description A rollup id, as listed in `/data/artifacts/rollups/index.json`. */
         rollup_id: string;
@@ -2007,7 +2010,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for the last 90 days before the agency's newest snapshot, plus its previous snapshot; older dates return not found. */
+                /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for at most the last 90 days before the agency's newest snapshot, plus its previous snapshot; in practice the site build carries the committed history and the last two days, so expect the newest two dates. Older dates return not found. */
                 date: components["parameters"]["date"];
             };
             cookie?: never;
@@ -2040,7 +2043,7 @@ export interface operations {
             path: {
                 /** @description A published feed record's id, as listed in `/data/artifacts/index.json`. `changes`, `rollups` and `run` are reserved and are never agency ids. */
                 agency_id: components["parameters"]["agency_id"];
-                /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for the last 90 days before the agency's newest snapshot, plus its previous snapshot; older dates return not found. */
+                /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for at most the last 90 days before the agency's newest snapshot, plus its previous snapshot; in practice the site build carries the committed history and the last two days, so expect the newest two dates. Older dates return not found. */
                 date: components["parameters"]["date"];
             };
             cookie?: never;
