@@ -239,3 +239,82 @@ def test_public_artifact_assembly_is_a_positive_allowlist(tmp_path: Path) -> Non
     }
     assert (retired / "2026-07-13.json").exists()
     assert not (destination / "retired-demo").exists()
+
+
+def _assemble(source: Path, destination: Path) -> set[str]:
+    bash = shutil.which("bash")
+    assert bash is not None
+    subprocess.run(  # noqa: S603 - fixed executable and test-owned paths
+        [
+            bash,
+            str(ROOT / "pipeline" / "scripts" / "assemble_public_artifacts.sh"),
+            str(source),
+            str(destination),
+        ],
+        check=True,
+    )
+    return {
+        path.relative_to(destination).as_posix()
+        for path in destination.rglob("*")
+        if path.is_file()
+    }
+
+
+def _dated_sample(tmp_path: Path) -> tuple[Path, Path]:
+    source = tmp_path / "source"
+    (source / "demo").mkdir(parents=True)
+    (source / "solo").mkdir()
+    (source / "index.json").write_text(
+        json.dumps({"agencies": {"demo": {}, "solo": {}, "gap": {}}})
+    )
+    for name in (
+        "2026-06-01.json",  # old: dropped
+        "2026-09-20.json",  # inside 90 days of the newest: kept
+        "2026-11-10.json",  # newest
+        "latest.json",
+        "geometry.geojson",
+    ):
+        (source / "demo" / name).write_text("{}")
+    (source / "gap").mkdir()
+    for name in ("2026-06-01.json", "2026-08-10.json", "2026-11-10.json", "latest.json"):
+        (source / "gap" / name).write_text("{}")  # 08-10 is the previous one, 92 days old
+    for name in ("2026-01-01.json", "latest.json"):  # lone old file is also the newest
+        (source / "solo" / name).write_text("{}")
+    return source, tmp_path / "site"
+
+
+def test_dated_snapshots_keep_ninety_days_and_the_previous_one(tmp_path: Path) -> None:
+    source, destination = _dated_sample(tmp_path)
+    published = _assemble(source, destination)
+
+    assert "demo/2026-06-01.json" not in published
+    assert "gap/2026-06-01.json" not in published
+    assert {
+        "demo/2026-09-20.json",
+        "gap/2026-08-10.json",
+        "gap/2026-11-10.json",
+        "demo/2026-11-10.json",
+        "demo/latest.json",
+        "demo/geometry.geojson",
+        "solo/2026-01-01.json",
+        "solo/latest.json",
+    } <= published
+    assert (source / "demo" / "2026-06-01.json").exists(), "only the published copy shrinks"
+
+
+def test_dated_snapshot_trim_negative_control(tmp_path: Path) -> None:
+    """With the trim removed the old file ships, so the test above can fail."""
+    script = (ROOT / "pipeline" / "scripts" / "assemble_public_artifacts.sh").read_text()
+    assert "timedelta(days=90)" in script
+    broken = tmp_path / "assemble.sh"
+    broken.write_text(script.replace("timedelta(days=90)", "timedelta(days=9000)"))
+    # The script locates its sibling python via BASH_SOURCE, so keep it in place.
+    real = ROOT / "pipeline" / "scripts" / "assemble_public_artifacts.sh"
+    backup = real.read_text()
+    source, destination = _dated_sample(tmp_path)
+    try:
+        real.write_text(broken.read_text())
+        published = _assemble(source, destination)
+    finally:
+        real.write_text(backup)
+    assert "demo/2026-06-01.json" in published
