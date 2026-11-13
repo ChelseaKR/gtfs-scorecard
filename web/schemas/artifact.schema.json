@@ -622,7 +622,7 @@
     },
     "heldMirrorFreshness": {
       "type": "object",
-      "description": "Freshness held out of the grade because the feed URL failed and the Mobility Database mirror copy scored instead has already ended its service. It has no score, findings, or details: the copy's dates sit under mirror_copy, never as an expiry countdown, so they cannot read as the agency's own lapse. Comes with overall.grade_qualifier.",
+      "description": "Freshness held out of the grade because the feed URL failed and a Mobility Database mirror copy was scored instead (ADR 0075). reason is mirror_copy_expired when that copy's service has ended and mirror_copy otherwise. It has no score, findings, or details: the copy's dates sit under mirror_copy, never as an expiry countdown, so they cannot read as the agency's own calendar. Comes with overall.grade_qualifier.",
       "required": [
         "name",
         "status",
@@ -644,7 +644,10 @@
           "maximum": 1
         },
         "reason": {
-          "const": "mirror_copy_expired"
+          "enum": [
+            "mirror_copy",
+            "mirror_copy_expired"
+          ]
         },
         "summary": {
           "type": "string"
@@ -702,37 +705,6 @@
         },
         "summary": {
           "type": "string"
-        },
-        "reason": {
-          "description": "Why a not-measured category is held out of the grade. Set only on a held Mobility Database mirror copy's freshness (score.hold_mirror_freshness).",
-          "type": "string",
-          "enum": [
-            "mirror_copy",
-            "mirror_copy_expired"
-          ]
-        },
-        "mirror_copy": {
-          "description": "The held mirror copy's own service dates, never an expiry countdown. Either side is null when unknown.",
-          "type": "object",
-          "required": [
-            "service_start",
-            "service_end"
-          ],
-          "properties": {
-            "service_start": {
-              "type": [
-                "string",
-                "null"
-              ]
-            },
-            "service_end": {
-              "type": [
-                "string",
-                "null"
-              ]
-            }
-          },
-          "additionalProperties": false
         },
         "score": {
           "type": "number",

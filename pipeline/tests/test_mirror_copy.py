@@ -370,8 +370,28 @@ def test_a_swept_hold_stops_claiming_freshness_was_measured() -> None:
     assert CONFIDENCE_LEVELS.index(confidence["level"]) <= CONFIDENCE_LEVELS.index(level_before)
 
 
-def test_control_a_sweep_that_holds_nothing_leaves_confidence_alone() -> None:
+def test_a_copy_still_current_is_held_too_and_publishes() -> None:
+    # ADR 0075: the copy's calendar is not the agency's, current or lapsed, so
+    # the sweep holds it under its own reason and the strict shape accepts it.
     before = _measured_mirror_record(dt.date(2026, 6, 10), "2026-07-10", 30)
+    swept, _summary = resweep(before, dt.date(2026, 6, 20))
+    stored = json.loads(publish(swept).read_text())
+
+    fresh = stored["categories"]["freshness"]
+    assert fresh["status"] == "not_yet_measured"
+    assert fresh["reason"] == "mirror_copy"
+    assert fresh["mirror_copy"] == {"service_start": None, "service_end": "2026-07-10"}
+    assert "score" not in fresh and "details" not in fresh
+    assert stored["overall"]["grade_qualifier"] == "partial: freshness not measured"
+    assert not needs_sweep(stored, dt.date(2026, 6, 21))
+
+
+def test_control_a_sweep_that_holds_nothing_leaves_confidence_alone() -> None:
+    # Only a mirror copy is held (ADR 0075 holds every one), so the record the
+    # sweep leaves measured is one downloaded from the agency's own URL.
+    before = _measured_mirror_record(dt.date(2026, 6, 10), "2026-07-10", 30)
+    before["fetch"] = {"source": "origin"}
+    before["confidence"]["fetch_source"] = "origin"
     swept, _summary = resweep(before, dt.date(2026, 6, 20))
     assert swept["categories"]["freshness"]["status"] == "measured"
     assert swept["confidence"] == before["confidence"]

@@ -6,8 +6,6 @@ from .artifact_autofix import ArtifactAutofix
 from .artifact_categories import ArtifactCategories
 from .artifact_category import ArtifactCategory
 from .artifact_category_details import ArtifactCategoryDetails
-from .artifact_category_mirror_copy import ArtifactCategoryMirrorCopy
-from .artifact_category_reason import ArtifactCategoryReason
 from .artifact_category_status import ArtifactCategoryStatus
 from .artifact_confidence import ArtifactConfidence
 from .artifact_confidence_level import ArtifactConfidenceLevel
@@ -42,6 +40,7 @@ from .artifact_held_mirror_freshness import ArtifactHeldMirrorFreshness
 from .artifact_held_mirror_freshness_mirror_copy import (
     ArtifactHeldMirrorFreshnessMirrorCopy,
 )
+from .artifact_held_mirror_freshness_reason import ArtifactHeldMirrorFreshnessReason
 from .artifact_mode_profile import ArtifactModeProfile
 from .artifact_mode_profile_modes_item import ArtifactModeProfileModesItem
 from .artifact_ntd_id_alignment import ArtifactNtdIdAlignment
@@ -241,8 +240,6 @@ __all__ = (
     "ArtifactCategories",
     "ArtifactCategory",
     "ArtifactCategoryDetails",
-    "ArtifactCategoryMirrorCopy",
-    "ArtifactCategoryReason",
     "ArtifactCategoryStatus",
     "ArtifactConfidence",
     "ArtifactConfidenceLevel",
@@ -273,6 +270,7 @@ __all__ = (
     "ArtifactGeo",
     "ArtifactHeldMirrorFreshness",
     "ArtifactHeldMirrorFreshnessMirrorCopy",
+    "ArtifactHeldMirrorFreshnessReason",
     "ArtifactModeProfile",
     "ArtifactModeProfileModesItem",
     "ArtifactNtdIdAlignment",

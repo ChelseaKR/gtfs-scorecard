@@ -118,9 +118,11 @@ def test_an_origin_fetch_is_swept_as_before() -> None:
 def test_a_held_artifact_matches_the_published_schema() -> None:
     jsonschema = pytest.importorskip("jsonschema")
     schema = json.loads(SCHEMA.read_text())
-    category = schema["$defs"]["category"]
+    # The one shape a held freshness may take (#566); a plain category cannot
+    # carry the hold's reason or the copy's dates.
+    held = schema["$defs"]["heldMirrorFreshness"]
     new, _ = resweep(_artifact("mirror", days=-3, fresh_score=0.0), TODAY)
-    jsonschema.validate(new["categories"]["freshness"], {**category, "$defs": schema["$defs"]})
+    jsonschema.validate(new["categories"]["freshness"], {**held, "$defs": schema["$defs"]})
 
 
 def _robots(by_host: dict[str, RobotsResponse]) -> None:

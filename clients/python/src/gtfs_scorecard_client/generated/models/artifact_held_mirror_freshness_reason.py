@@ -1,7 +1,7 @@
 from enum import StrEnum
 
 
-class ArtifactCategoryReason(StrEnum):
+class ArtifactHeldMirrorFreshnessReason(StrEnum):
     MIRROR_COPY = "mirror_copy"
     MIRROR_COPY_EXPIRED = "mirror_copy_expired"
 
