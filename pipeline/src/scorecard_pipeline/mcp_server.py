@@ -40,6 +40,7 @@ from .metrics import (
     resolve_service_horizon_status,
 )
 from .ntd import presented_readiness as presented_ntd_readiness
+from .score import grade_qualifier
 
 PROTOCOL_VERSION = "2025-06-18"
 SERVER_INFO = {"name": "gtfs-scorecard", "version": "1.0.0"}
@@ -143,6 +144,7 @@ def search_agencies(
             "id": r.get("id"),
             "name": r.get("name"),
             "grade": r.get("grade"),
+            "grade_qualifier": r.get("grade_qualifier"),
             "score": r.get("score"),
             "state": r.get("state"),
             "country": _country(r),
@@ -209,6 +211,9 @@ def get_scorecard(fetch: Fetch, agency_id: str) -> dict[str, Any]:
         "agency": art.get("agency"),
         "snapshot_date": art.get("snapshot_date"),
         "overall": art.get("overall"),
+        # "partial: freshness not measured" beside a partial letter (rubric
+        # 1.5), so an assistant never repeats it as a full grade; else None.
+        "grade_qualifier": grade_qualifier(art),
         "categories": categories,
         "top_fixes": art.get("top_fixes"),
         "findings": findings,
@@ -314,6 +319,7 @@ def get_history(
             {
                 "date": point.get("date"),
                 "grade": point.get("grade"),
+                "grade_qualifier": point.get("grade_qualifier"),
                 "score": point.get("score"),
                 "categories": point.get("categories"),
                 "days_until_expiry": point.get("days_until_expiry"),
@@ -338,6 +344,22 @@ def get_history(
             "is not a change in the feed and must not be described as one."
         ),
     }
+
+
+def _newest_record(fetch: Fetch, base: str, agency_id: str, date: str) -> Any:
+    """The full scorecard behind the newest history point.
+
+    That is ``latest.json``, which is always published; the dated file of the
+    same day is a byte-identical copy of it (the site build materializes it from
+    those bytes), so reading ``latest.json`` needs nothing from the dated window.
+    If ``latest.json`` carries a different date than the index's newest point
+    (a fork mid-deploy), it is a different record, and the dated file is the
+    honest side of the comparison.
+    """
+    record = fetch(f"{base}/data/artifacts/{agency_id}/latest.json")
+    if str(record.get("snapshot_date") or "") == date:
+        return record
+    return fetch(f"{base}/data/artifacts/{agency_id}/{date}.json")
 
 
 def _latest_finding_changes(
@@ -368,8 +390,18 @@ def _latest_finding_changes(
             ),
         }
     base = _base_url()
-    before = fetch(f"{base}/data/artifacts/{agency_id}/{previous.get('date')}.json")
-    after = fetch(f"{base}/data/artifacts/{agency_id}/{latest.get('date')}.json")
+    try:
+        before = fetch(f"{base}/data/artifacts/{agency_id}/{previous.get('date')}.json")
+        after = _newest_record(fetch, base, agency_id, str(latest.get("date") or ""))
+    except (OSError, ValueError):
+        # Dated snapshots are published for at most 90 days plus each agency's
+        # previous one, so an older point can be absent (HTTP 404 is a URLError).
+        return {
+            "comparable": False,
+            "from_date": previous.get("date"),
+            "to_date": latest.get("date"),
+            "reason": "a dated snapshot for one of the two most recent points is not published",
+        }
     before_codes, after_codes = finding_codes(before), finding_codes(after)
     return {
         "comparable": True,
@@ -471,6 +503,7 @@ def get_rollup(fetch: Fetch, rollup_id: str) -> dict[str, Any]:
                 "id": m.get("id"),
                 "name": m.get("name"),
                 "grade": m.get("grade"),
+                "grade_qualifier": m.get("grade_qualifier"),
                 "score": m.get("score"),
                 "expiry_status": m.get("expiry_status"),
                 "needs_attention": m.get("needs_attention"),

@@ -122,3 +122,97 @@ def feed_source_lede(provenance: object, fetch_source: object) -> str:
         "third_party": "Based on a third-party feed source on file",
         "unverified": ("Based on the feed source on file; publisher ownership is not verified"),
     }[kind]
+
+
+def _iso_date_or_none(value: object) -> str | None:
+    import datetime as dt
+
+    if not isinstance(value, str):
+        return None
+    try:
+        return dt.date.fromisoformat(value).isoformat()
+    except ValueError:
+        return None
+
+
+def artifact_fetch_source(artifact: object) -> str:
+    """How the scored bytes were fetched, read the way the pages read it."""
+    if not isinstance(artifact, dict):
+        return "unknown"
+    confidence = artifact.get("confidence")
+    if isinstance(confidence, dict) and confidence.get("fetch_source"):
+        return str(confidence["fetch_source"])
+    fetch = artifact.get("fetch")
+    return str(fetch.get("source") or "unknown") if isinstance(fetch, dict) else "unknown"
+
+
+def mirror_copy_window(artifact: object) -> tuple[str | None, str | None]:
+    """The service dates of the copy that was scored, as (start, end).
+
+    Read from the freshness category: its details when the copy was graded,
+    or its ``mirror_copy`` block when an expired copy was held out of the
+    grade (score.hold_mirror_freshness). Either side is None when unknown.
+    """
+    if not isinstance(artifact, dict):
+        return None, None
+    cats = artifact.get("categories")
+    fresh = cats.get("freshness") if isinstance(cats, dict) else None
+    if not isinstance(fresh, dict):
+        return None, None
+    held = fresh.get("mirror_copy")
+    if isinstance(held, dict):
+        return (
+            _iso_date_or_none(held.get("service_start")),
+            _iso_date_or_none(held.get("service_end")),
+        )
+    details = fresh.get("details")
+    if not isinstance(details, dict):
+        return None, None
+    end = (
+        details.get("effective_expiry_date")
+        or details.get("last_service_date")
+        or details.get("feed_end_date")
+    )
+    return _iso_date_or_none(details.get("feed_start_date")), _iso_date_or_none(end)
+
+
+def _mirror_copy_downloaded_on(artifact: object) -> str | None:
+    """The date the copy behind ``artifact`` was downloaded, or None if unknown.
+
+    A freshness sweep restamps ``snapshot_date`` without downloading anything,
+    so a swept artifact's own ``recompute.feed_fetched_date`` is the real date
+    (sweep.last_fetched_date reads the same two fields). An unreadable date
+    leaves the phrase out rather than borrowing another date.
+    """
+    if not isinstance(artifact, dict):
+        return None
+    recompute = artifact.get("recompute")
+    if isinstance(recompute, dict) and recompute.get("kind") == "freshness":
+        return _iso_date_or_none(recompute.get("feed_fetched_date"))
+    return _iso_date_or_none(artifact.get("snapshot_date"))
+
+
+def mirror_copy_caveat(artifact: object) -> str:
+    """One sentence saying the grade came from a mirror copy, and its dates.
+
+    Empty unless the bytes came from the Mobility Database mirror. The full
+    agency page, the board one-pager, and the paid board report all print
+    this same sentence, so none of them presents a mirror copy's grade as a
+    read of the feed the agency publishes today.
+    """
+    if artifact_fetch_source(artifact) != "mirror":
+        return ""
+    start, end = mirror_copy_window(artifact)
+    copied = _mirror_copy_downloaded_on(artifact)
+    copy_phrase = f" downloaded on {copied}" if copied else ""
+    lead = (
+        f"Scored from a Mobility Database mirror copy{copy_phrase}, because the feed URL on "
+        "file could not be downloaded."
+    )
+    if start and end:
+        dates = f" Service dates in that copy run {start} to {end}."
+    elif end:
+        dates = f" Service dates in that copy end {end}."
+    else:
+        dates = " Service dates in that copy could not be read."
+    return f"{lead}{dates} It may not match the feed the agency publishes today."

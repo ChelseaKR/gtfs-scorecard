@@ -36,7 +36,13 @@ agencies:
     subdivision_name: Essex
     mdb_id: "2688"
     is_official: true
-    static_gtfs_url: https://data.essex.gov.uk/download/2ydj8/gl4/gtfs.zip
+    static_gtfs_url: https://data.essex.gov.uk/download/2ydj8/hr6/gtfs.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks the GTFS file on data.essex.gov.uk's Essex Bus Network
+      dataset page. The agency name and stop locations in that file match this
+      record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     license_note: >-
       UK Open Government Licence v3.0 on the Essex County Council dataset;
       personal, educational, and commercial reuse is explicitly permitted.

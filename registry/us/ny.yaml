@@ -74,7 +74,13 @@ agencies:
     name: Niagara Frontier Transportation Authority (NFTA)
     subdivision_code: US-NY
     subdivision_name: New York
-    static_gtfs_url: http://www.nfta.com/metro/__googletransit/google_transit.zip
+    static_gtfs_url: https://metro.nfta.com/__googletransit/google_transit.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks metro.nfta.com, the current address Transitland lists
+      for this feed. The agency name and service area in that file match this
+      record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 465
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -301,7 +307,12 @@ agencies:
     name: Capital District Transportation Authority (CDTA)
     subdivision_code: US-NY
     subdivision_name: New York
-    static_gtfs_url: http://www.cdta.org/schedules/google_transit.zip
+    static_gtfs_url: https://www.cdta.org/schedules/google_transit.zip
+    operating_note: >-
+      Checked 2026-11-05: http://www.cdta.org/schedules/google_transit.zip returns
+      404, so runs fell back to a June 2026 Mobility Database copy. The same path
+      on https://www.cdta.org serves the current feed (Last-Modified 2026-10-08,
+      service through 2026-11-28), so the record uses https.
     mdb_id: 538
     rt_urls:
       trip_updates: http://gtfs.cdta.org:8080/gtfsrealtime/TripUpdates

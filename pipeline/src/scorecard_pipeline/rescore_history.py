@@ -3,7 +3,7 @@
 The national trend compares only records produced under one producer contract
 (rubric, scoring profile, validator, reader view, measured categories). Every
 rubric release therefore restarts it, and records from June to early October
-2026 (rubric 1.0 to 1.3) cannot sit in the same average as rubric 1.4 records.
+2026 (rubric 1.0 to 1.4) cannot sit in the same average as current-rubric records.
 This module asks a narrower question of each stored record: can the score the
 current rubric would have given that same feed on that same day be derived
 exactly from what the record already stores, without fetching the feed again?
@@ -18,6 +18,10 @@ Each category is handled on its own terms:
   feed dates the record stores, as of the record's own snapshot date, the same
   way the freshness sweep does. A record that stores no end date is not
   rescored, because "no dates" cannot be told apart from "no date tables".
+  Rubric 1.5 holds freshness out of the grade when the bytes were a Mobility
+  Database mirror copy whose service had already ended, so such a record is
+  not rescored either: its grade would be partial, and the trend compares
+  only records whose freshness was measured.
 - **Rider experience completeness** reads the feed archive. Rubric 1.3 (loop
   headsign exemption, ADR 0041) and 1.4 (stop_headsign credit, ADR 0060) only
   ever add headsign credit, and the other components have not changed except
@@ -60,7 +64,7 @@ RESCORED_HISTORY_SCHEMA = "rescored-history/1"
 #: Rubric versions whose realtime rule is the current one (rubric 1.2, ADR in
 #: METHODOLOGY_CHANGELOG: "Realtime quality now assesses only the GTFS-Realtime
 #: feed kinds an agency publishes").
-REALTIME_RULE_SINCE = ("1.2", "1.3", "1.4")
+REALTIME_RULE_SINCE = ("1.2", "1.3", "1.4", "1.5")
 
 _CATEGORY_ORDER = ("correctness", "freshness", "completeness", "realtime")
 
@@ -197,7 +201,9 @@ def _provenance_reason(artifact: Mapping[str, Any]) -> str | None:
     return None
 
 
-def _freshness(cat: Any, as_of: dt.date) -> tuple[CategoryResult | None, str]:
+def _freshness(
+    cat: Any, as_of: dt.date, *, mirror: bool = False
+) -> tuple[CategoryResult | None, str]:
     if not _measured(cat):
         return None, "freshness_not_measured"
     details = cat.get("details") or {}
@@ -206,6 +212,11 @@ def _freshness(cat: Any, as_of: dt.date) -> tuple[CategoryResult | None, str]:
     fresh = freshness(_feed_dates(details), as_of, details.get("service_type", "fixed"))
     if fresh is None:
         return None, "freshness_unmeasurable"
+    days = fresh.details.get("days_until_expiry")
+    if mirror and isinstance(days, int) and days < 0:
+        # score.hold_mirror_freshness: the current rubric does not grade an
+        # expired mirror copy's calendar, so there is no full score to derive.
+        return None, "freshness_held_expired_mirror_copy"
     return fresh, ""
 
 
@@ -225,7 +236,11 @@ def rescore_artifact(
     corr = _correctness(cats["correctness"])
     if corr is None:
         return RescoreResult(None, "correctness_inputs_incomplete")
-    fresh, reason = _freshness(cats.get("freshness"), dt.date.fromisoformat(snapshot))
+    fetch = artifact.get("fetch")
+    mirror = isinstance(fetch, Mapping) and fetch.get("source") == "mirror"
+    fresh, reason = _freshness(
+        cats.get("freshness"), dt.date.fromisoformat(snapshot), mirror=mirror
+    )
     if fresh is None:
         return RescoreResult(None, reason)
     if not _measured(cats.get("completeness")):

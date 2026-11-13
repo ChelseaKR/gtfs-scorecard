@@ -100,7 +100,7 @@ def _sample_index() -> dict[str, Any]:
 
 def test_rows_use_latest_history_point_only() -> None:
     dataset = build_quality_dataset(_sample_index())
-    assert dataset["schema_version"] == "1.5"
+    assert dataset["schema_version"] == "1.7"
     assert dataset["generated_fields"] == list(COLUMNS)
     rows = dataset["rows"]
     # Sorted by id: unitrans before yolobus.
@@ -112,6 +112,7 @@ def test_rows_use_latest_history_point_only() -> None:
         "name": "Yolobus",
         "date": "2026-06-01",
         "grade": "B",
+        "grade_qualifier": None,
         "score": 85.0,
         "rubric_version": RUBRIC_VERSION,
         "scoring_profile_id": SCORING_PROFILE_ID,

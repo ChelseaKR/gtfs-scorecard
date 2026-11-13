@@ -15,11 +15,11 @@ with one is served from the site root.
 
 | Path | What it is |
 | --- | --- |
-| `index.json` | Every published feed record with its score/grade history. Powers the picker and trends. |
+| `index.json` | Every published feed record with its score/grade history. Powers the picker and trends. Each agency's `history` is its newest 120 points, oldest first (older checks stay in the dated archive and the history export). Index points carry no `feed_sha256` or `service_horizon_status`; read those from `latest.json`. |
 | `directory.json` | Slim covered-set directory: per-scorecard grade, portable location, size tier, plus guarded corpus-wide, country/subdivision, and legacy place summaries. Individual percentiles are not published. |
 | `changes/latest.json` | Canonical feed records whose grade or score moved under the same current producer contract since their last check. Auditable dated copies are retained at `changes/<date>.json`. |
 | `<agency>/latest.json` | The most recent full scorecard for one agency. |
-| `<agency>/<date>.json` | The scorecard for one agency on one date (`YYYY-MM-DD`). |
+| `<agency>/<date>.json` | The scorecard for one agency on one date (`YYYY-MM-DD`). The publish rule allows at most the last 90 days before that agency's newest snapshot, plus its previous snapshot however old; in practice the site build carries only the committed history and the last two days from the bucket, so expect the newest two dates. Older dates are not served, and an `index.json` history date without a file is normal. |
 | `<agency>/badge.svg` | Embeddable grade badge (see below). |
 | `<agency>/badge.json` | The same grade in the Shields.io endpoint format, for custom badges. |
 | `rollups/index.json` | Every published program rollup, summarized. |
@@ -70,7 +70,7 @@ page counts.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.19`). The rule for
+Every artifact carries a `schema_version` (currently `1.20`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -123,6 +123,12 @@ the row's `days_until_expiry` (see Freshness fields below). It reaches
 same way `1.4` was `1.3` plus `license_notice`, so the version alone names the
 column set.
 
+Flat export schema `1.7` adds `grade_qualifier`, right after `grade`: `null`
+(an empty cell in CSV) for a full grade, or `"partial: freshness not
+measured"` when freshness was not measured (rubric 1.5). It reaches
+`dataset.json`, `dataset.csv`, `api/v1/agencies.json`, and
+`api/v1/agencies.parquet`. Schema `1.8` is `1.7` plus `license_notice`.
+
 Flat export schema `1.4` adds `license_notice`, the last column. It appears only
 in a build where at least one record's recorded license requires share-alike;
 until then the exports have no such column. From flat export `1.5`, a build
@@ -145,6 +151,26 @@ the bytes analyzed. Releases:
 
 Changelog:
 
+- `1.20` adds `overall.grade_qualifier` under rubric 1.5. It is present only
+  when the grade is partial, and its one value today is
+  `"partial: freshness not measured"`. The rule is one rule on every surface:
+  the qualifier is present whenever the `freshness` category is not measured,
+  whatever the reason. Usually the feed URL on file could not be downloaded
+  and the Mobility Database mirror copy scored instead had already ended, so
+  freshness was held out of the grade rather than scored from that copy's
+  dates. It is also present when the feed's calendar could not be read. The
+  letter is still published, but it describes less of the
+  feed than a full grade, so show it with the qualifier. The same value rides
+  as `grade_qualifier` on index history points, `catalog.json` and
+  `directory.json` rows, rollup members, the MCP search rows, and the flat
+  exports, where it is `null` (empty in CSV) for a full grade. Unmeasured
+  freshness is never published as a number: the `freshness` category score is
+  absent and `days_until_expiry` is `null`. Additive.
+  A freshness category held for an expired mirror copy has
+  `status: "not_yet_measured"`, `reason: "mirror_copy_expired"`, and a
+  `mirror_copy` block with the copy's `service_start` and `service_end`, each a
+  date or `null`. Those dates describe the copy, not the agency's feed, and no
+  other category can carry them.
 - `1.19` adds an optional `consequence` block to every category finding and
   `top_fixes` entry: the finding's network reach, plus annual rider-trips and
   served-area need as values or as `null` with a reason. The per-agency
@@ -189,11 +215,12 @@ Changelog:
   publishers. Additive.
 - `1.10` adds `effective_expiry_date`, `service_horizon_review_years`, and
   `service_horizon_status` to freshness details; the status is also copied to
-  index history, catalog rows, and the open dataset/API. An unusually distant
-  service end date is a display and trust advisory, not a GTFS error, finding,
-  or score deduction. Readers derive the same status for legacy rows when the
-  field is absent but snapshot date and expiry evidence are present, so an
-  existing artifact is safe on the first deployment.
+  catalog rows and the open dataset/API, and to index history in the bucket
+  (the published `index.json` omits it from history points since 2026-11). An
+  unusually distant service end date is a display and trust advisory, not a
+  GTFS error, finding, or score deduction. Readers derive the same status for
+  legacy rows when the field is absent but snapshot date and expiry evidence
+  are present, so an existing artifact is safe on the first deployment.
   The downloadable dataset shape was `1.1` with the added status column.
   Additive.
 - `1.9` broadens portable country fields from the initial US/Canada values to
@@ -465,8 +492,8 @@ fields are surfaced for consumers:
   used from `feed_info` and scheduled service.
 - `details.service_horizon_review_years` (integer): the documented ten-year
   review threshold used for this artifact.
-- `details.service_horizon_status` (string, also copied onto index history,
-  catalog, and open-dataset rows): `within_review_threshold`,
+- `details.service_horizon_status` (string, also on catalog and open-dataset
+  rows; not on published `index.json` history points): `within_review_threshold`,
   `unusually_distant`, or `unknown`. Unusually distant means the effective end
   date is strictly more than ten calendar years after the check. The exact
   boundary stays within the threshold. This advisory is outside category
@@ -507,7 +534,7 @@ whole picture in a single request rather than fetching each `latest.json`.
   "agencies": [
     { "id": "yolobus", "name": "Yolobus (...)", "country": "US",
       "subdivision_code": "US-CA", "subdivision_name": "California",
-      "state": "California", "grade": "B", "score": 84.1,
+      "state": "California", "grade": "B", "grade_qualifier": null, "score": 84.1,
       "correctness": 90, "freshness": 85, "completeness": 72,
       "realtime": 88, "size_tier": "small",
       "national_percentile": null, "peer_percentile": null,
@@ -953,8 +980,17 @@ run did not measure. Those did not clear; nobody looked at them.
 
 - Served over HTTPS as `application/json` with `Access-Control-Allow-Origin: *`,
   so the artifacts are fetchable directly from a browser or an edge function.
-- Dated artifacts (`<agency>/<date>.json`) are immutable once written and are
-  retained, so a consumer can pin a specific date as a stable reference.
+- Dated artifacts (`<agency>/<date>.json`) are immutable once written, so a
+  consumer can pin a specific date as a stable reference. The publish rule
+  allows at most the last 90 days before the agency's newest snapshot, plus its
+  previous snapshot however old; in practice the site build carries only the
+  committed history and the last two days from the bucket, so the newest two
+  dates are served and older dates return not found (GitHub Pages limits a site
+  to 1 GB). The committed history is not deleted.
+- Published JSON is compact, with no indentation: the same objects as the
+  bucket's pretty-printed copies, in the same key order. `index.json` carries
+  each agency's newest 120 history points, without `feed_sha256` or
+  `service_horizon_status`; both stay on `latest.json` and every dated snapshot.
   `latest.json`, `catalog.json`, and `directory.json` are rewritten when a
   scoring run completes; `/api/v1/status.json` and `/api/v1/run-status.json`
   disclose the observed freshness and latest completed run.

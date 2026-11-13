@@ -38,7 +38,7 @@ from .fetch import (
     prepare_reader_archive,
 )
 from .metrics import correctness
-from .score import build_scorecard, score_feed_content
+from .score import build_scorecard_for_fetch, score_feed_content
 from .validate import parse_report, run_validator
 
 
@@ -180,7 +180,15 @@ def reproduce(agency: Agency, date: str) -> dict[str, Any]:
                 fare_free=agency.fare_free,
             ),
         ]
-        scorecard = build_scorecard(cats)
+        raw_fetch, raw_feed = artifact.get("fetch"), artifact.get("feed")
+        fetch_block: dict[str, Any] = raw_fetch if isinstance(raw_fetch, dict) else {}
+        feed_block: dict[str, Any] = raw_feed if isinstance(raw_feed, dict) else {}
+        scorecard = build_scorecard_for_fetch(
+            cats,
+            fetch_source=str(fetch_block.get("source") or "unknown"),
+            configured_url=str(feed_block.get("static_url") or ""),
+            origin_error=fetch_block.get("origin_error"),
+        )
 
     published_overall = artifact.get("overall", {})
     published_cats = artifact.get("categories", {})

@@ -214,6 +214,8 @@ agencies:
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://www.redondo.org/civicax/filebank/blobdload.aspx?BlobID=33555
+    alias_of: beach-cities-transit-1999
+    feed_status: deprecated
     mdb_id: 803
     rt_urls:
       trip_updates: https://redondobeachbct.com/gtfs-rt/tripupdates
@@ -245,7 +247,13 @@ agencies:
     name: Bell Gardens Trolley
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/bellgardens-ca-us/bellgardens-ca-us.zip
+    static_gtfs_url: https://www.ips-systems.com/GTFS/Schedule/21
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks ips-systems.com, the current address Transitland lists
+      for this feed. The agency name and service area in that file match this
+      record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 228
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -255,6 +263,8 @@ agencies:
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/bellflower-ca-us/bellflower-ca-us.zip
+    alias_of: bellflower-bus-3095
+    feed_status: deprecated
     mdb_id: 227
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -409,7 +419,13 @@ agencies:
     organization_id: city-of-bell
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/lacampana-ca-us/lacampana-ca-us.zip
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13119/LaCampanaGTFS-2025-01-17.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks rapid.nationalrtap.org, the current address Transitland
+      lists for this feed. The agency name and service area in that file match
+      this record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 2249
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -442,7 +458,13 @@ agencies:
     name: City of San Luis Obispo Transit
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://app.mecatran.com/urb/ws/feed/c2l0ZT1zbG90cmFuc2l0O2NsaWVudD1zZWxmO2V4cGlyZT07dHlwZT1ndGZzO2tleT0zZTMwMzM1OTRiMTE2NzA0N2IxNjQwNjA0ZjQwMGMzMzdiM2E1MTQ0
+    static_gtfs_url: https://slocity.connexionz.net/rtt/public/resource/gtfs.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks slocity.connexionz.net, the current address Transitland
+      lists for this feed. The agency name and service area in that file match
+      this record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     license_note: No stated data license in the Mobility Database; verify before publishing.
     rt_urls:
       trip_updates: https://slocity.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate
@@ -626,7 +648,13 @@ agencies:
     name: Culver City Bus
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://www.culvercity.org/files/assets/public/documents/information-technology/maps/gtfsexport.zip
+    static_gtfs_url: https://web.culvercity.org/gtfs/gtfsexport.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks web.culvercity.org, the current address Transitland
+      lists for this feed. The agency name and service area in that file match
+      this record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     license_note: No stated data license in the Mobility Database; verify before publishing.
     rt_urls:
       trip_updates: https://nextccbus.org/gtfsrt/trips
@@ -663,7 +691,13 @@ agencies:
     name: DowneyLINK
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/downey-ca-us/downey-ca-us.zip
+    static_gtfs_url: https://downey.rideralerts.com/infopoint/gtfs-zip.ashx
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks downey.rideralerts.com, the current address Transitland
+      lists for this feed. The agency name and service area in that file match
+      this record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 383
     license_note: No stated data license in the Mobility Database; verify before publishing.
     rt_urls:
@@ -741,7 +775,7 @@ agencies:
     name: Elk Grove Transit
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://iportal.sacrt.com/GTFS/EG/google_transit.zip
+    static_gtfs_url: https://apps.sacrt.com/gtfs/eg/google_transit.zip
     mdb_id: 2136
     license_note: >-
       Sacramento Regional Transit District (SacRT) transit data portal grants
@@ -750,11 +784,15 @@ agencies:
     operating_note: >-
       The old address, elkgrovetransit.com/gtfs, now leads to an unrelated
       website, so this record reads SacRT's Elk Grove feed. Checked 2026-10-01:
-      the security certificate on iportal.sacrt.com, which
-      serves this feed, expired on 2026-09-20, so a download that checks
-      certificates fails until SacRT renews it. The scorecard keeps checking
-      certificates; while the check fails, the run records the failure and the
-      artifact names any mirror copy it scored instead.
+      the security certificate on iportal.sacrt.com, which serves this feed,
+      expired on 2026-09-20, so a download that checks certificates fails until
+      SacRT renews it. The scorecard keeps checking certificates; while the
+      check fails, the run records the failure and the artifact names any mirror
+      copy it scored instead. Checked 2026-11-08: the feed URL on file had
+      stopped working, so this record now tracks apps.sacrt.com, the host
+      SacRT's transit data portal links. The agency name and service area in
+      that file match this record. Grades dated before this change came from an
+      older Mobility Database mirror copy.
     rt_urls:
       trip_updates: https://bustime.sacrt.com/EG_gtfsrt/trips
       vehicle_positions: https://bustime.sacrt.com/EG_gtfsrt/vehicles
@@ -834,7 +872,13 @@ agencies:
     name: Get Around Town Express
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/getaroundtownexpress-ca-us/getaroundtownexpress-ca-us.zip
+    static_gtfs_url: https://www.cityofsouthgate.org/files/sharedassets/public/v/1/city-services/documents/southgategtfs-2026-3-26.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks cityofsouthgate.org, the current address Transitland
+      lists for this feed. The agency name and service area in that file match
+      this record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 606
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -872,6 +916,8 @@ agencies:
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/glendora-ca-us/glendora-ca-us.zip
+    alias_of: glendora-transportation-division-3097
+    feed_status: deprecated
     mdb_id: 609
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -929,7 +975,13 @@ agencies:
     name: Gold Coast Transit, South Coast Area Transit
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: http://www.goldcoasttransit.org/images/GTFS/GTFS.zip
+    static_gtfs_url: https://www.gctd.org/wp-content/uploads/2021/06/GCTD_GTFS.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks gctd.org, the current address Transitland lists for this
+      feed. The agency name and service area in that file match this record.
+      Grades dated before this change came from an older Mobility Database
+      mirror copy.
     mdb_id: 32
     license_note: "License: http://www.goldcoasttransit.org/2-uncategorised/250-gtfs-data-download"
     rt_urls:
@@ -1040,6 +1092,8 @@ agencies:
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/huntingtonpark-ca-us/huntingtonpark-ca-us.zip
+    alias_of: huntington-park-express-2648
+    feed_status: deprecated
     mdb_id: 558
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -1773,7 +1827,13 @@ agencies:
     name: Ridgecrest Transit
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://www.ridgecrest-ca.gov/DocumentCenter/View/7499/Ridgecrest_gtfszip
+    static_gtfs_url: https://ridgecrest-ca.gov/DocumentCenter/View/8038/Ridgecrest-GTFS-03052026
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks ridgecrest-ca.gov, the current address Transitland lists
+      for this feed. The agency name and service area in that file match this
+      record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: ridgerunner
@@ -1810,6 +1870,8 @@ agencies:
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/rosemead-ca-us/rosemead-ca-us.zip
+    alias_of: rosemead-explorer-3098
+    feed_status: deprecated
     mdb_id: 806
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -1824,7 +1886,7 @@ agencies:
     name: Roseville Transit
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://iportal.sacrt.com/gtfs/Roseville/google_transit.zip
+    static_gtfs_url: https://apps.sacrt.com/gtfs/Roseville/google_transit.zip
     # sacrt.com/gtfs.stm is retired and redirects to SacRT's transit data
     # portal, which (2026-10-01) offers SacRT, Elk Grove, and SCT/Link feeds but
     # not Roseville's, so the portal grant is not recorded as covering this file.
@@ -1834,7 +1896,11 @@ agencies:
       serves this feed, expired on 2026-09-20, so a download that checks
       certificates fails until SacRT renews it. The scorecard keeps checking
       certificates; while the check fails, the run records the failure and the
-      artifact names any mirror copy it scored instead.
+      artifact names any mirror copy it scored instead. Checked 2026-11-08: the
+      feed URL on file had stopped working, so this record now tracks
+      apps.sacrt.com, the host SacRT's transit data portal links. The agency
+      name and service area in that file match this record. Grades dated before
+      this change came from an older Mobility Database mirror copy.
     rt_urls:
       trip_updates: https://cityofroseville.tripshot.com/v1/gtfs/realtime/tripUpdate/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
       vehicle_positions: https://cityofroseville.tripshot.com/v1/gtfs/realtime/vehiclePosition/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
@@ -1848,24 +1914,29 @@ agencies:
   # serves a January 2025 file whose service ended 2025-04-05. So mdb-2137 is
   # the retired alias, and the weekly sync cannot re-apply the catalog redirect
   # because its target is no longer a canonical record.
+  #
+  # Checked 2026-11-05: iportal.sacrt.com's certificate is still expired, so
+  # every run since 2026-09-20 scored a 2024 mirror copy. The transit data
+  # portal links apps.sacrt.com/gtfs/srtd/google_transit.zip, which has a valid
+  # certificate and serves the same bytes as iportal (SEP26, service through
+  # 2027-01-02), so the record now points there.
   - id: sacramento-regional-transit-sacrt
     ntd_id: "90019"
     name: Sacramento Regional Transit (SacRT)
     organization_id: sacramento-regional-transit-district
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://iportal.sacrt.com/GTFS/SRTD/google_transit.zip
+    static_gtfs_url: https://apps.sacrt.com/gtfs/srtd/google_transit.zip
     mdb_id: 1296
     license_note: >-
       Sacramento Regional Transit District (SacRT) transit data portal grants
       non-exclusive rights to use, reproduce, and redistribute the data:
       https://www.sacrt.com/transit-data-portal/
     operating_note: >-
-      Checked 2026-10-01: the security certificate on iportal.sacrt.com, which
-      serves this feed, expired on 2026-09-20, so a download that checks
-      certificates fails until SacRT renews it. The scorecard keeps checking
-      certificates; while the check fails, the run records the failure and the
-      artifact names any mirror copy it scored instead.
+      Checked 2026-11-05: the certificate on iportal.sacrt.com is still expired.
+      SacRT's transit data portal links apps.sacrt.com/gtfs/srtd/, which has a
+      valid certificate and serves the same bytes, so the record tracks that
+      host.
     rt_urls:
       trip_updates: https://bustime.sacrt.com/gtfsrt/trips
       vehicle_positions: https://bustime.sacrt.com/gtfsrt/vehicles
@@ -2284,7 +2355,7 @@ agencies:
     organization_id: sacramento-county
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://iportal.sacrt.com/GTFS/SCTLink/google_transit.zip
+    static_gtfs_url: https://apps.sacrt.com/gtfs/SCTLink/google_transit.zip
     mdb_id: 2203
     license_note: >-
       Sacramento Regional Transit District (SacRT) transit data portal grants
@@ -2294,7 +2365,11 @@ agencies:
       serves this feed, expired on 2026-09-20, so a download that checks
       certificates fails until SacRT renews it. The scorecard keeps checking
       certificates; while the check fails, the run records the failure and the
-      artifact names any mirror copy it scored instead.
+      artifact names any mirror copy it scored instead. Checked 2026-11-08: the
+      feed URL on file had stopped working, so this record now tracks
+      apps.sacrt.com, the host SacRT's transit data portal links. The agency
+      name and service area in that file match this record. Grades dated before
+      this change came from an older Mobility Database mirror copy.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
@@ -2472,7 +2547,13 @@ agencies:
     name: Tideline Water Taxi
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: http://trilliumtransit.com/transit_feeds/tidelinewatertaxi-ca-us/tidelinewatertaxi-ca-us.zip
+    static_gtfs_url: https://data.trilliumtransit.com/gtfs/tidelinewatertaxi-ca-us/tidelinewatertaxi-ca-us.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks data.trilliumtransit.com, the current address
+      Transitland lists for this agency. The agency name and service area in
+      that file match this record. Grades dated before this change came from an
+      older Mobility Database mirror copy.
     mdb_id: 52
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

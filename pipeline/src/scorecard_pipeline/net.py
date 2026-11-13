@@ -138,6 +138,7 @@ def safe_get(
     backoff: float = 2.0,
     trace: FetchTrace | None = None,
     credential_headers: Mapping[str, str] | None = None,
+    hop_guard: Callable[[str], None] | None = None,
 ) -> bytes:
     """Fetch a URL's body with SSRF and size guards, validating each redirect hop.
 
@@ -147,8 +148,10 @@ def safe_get(
     (see RETRIABLE_STATUS), with exponential backoff, since a GTFS host behind a
     bot filter often serves the second request. When ``trace`` is supplied, it
     is populated with the actual final URL and redirect chain from the
-    successful attempt. Returns the bytes; raises UnsafeURLError or the last
-    requests exception.
+    successful attempt. ``hop_guard`` is called with each URL before it is
+    requested, including every redirect target; whatever it raises stops the
+    fetch and is not retried (ADR 0077). Returns the bytes; raises
+    UnsafeURLError or the last requests exception.
     """
     for attempt in range(retries + 1):
         try:
@@ -160,6 +163,7 @@ def safe_get(
                 max_redirects=max_redirects,
                 trace=trace,
                 credential_headers=credential_headers,
+                hop_guard=hop_guard,
             )
         except (requests.exceptions.RequestException, UnsafeURLError) as exc:
             if attempt >= retries or not _is_retriable(exc):
@@ -180,6 +184,7 @@ def safe_download(
     backoff: float = 2.0,
     trace: FetchTrace | None = None,
     credential_headers: Mapping[str, str] | None = None,
+    hop_guard: Callable[[str], None] | None = None,
 ) -> int:
     """Stream a URL's body to ``dest`` with the same guards as :func:`safe_get`.
 
@@ -204,6 +209,7 @@ def safe_download(
                 max_redirects=max_redirects,
                 trace=trace,
                 credential_headers=credential_headers,
+                hop_guard=hop_guard,
             )
             part.replace(dest)
             return size
@@ -227,6 +233,7 @@ def _fetch_once(
     max_redirects: int,
     trace: FetchTrace | None = None,
     credential_headers: Mapping[str, str] | None = None,
+    hop_guard: Callable[[str], None] | None = None,
 ) -> bytes:
     """A single in-memory fetch attempt with SSRF, redirect, and size guards."""
     body = bytearray()
@@ -239,6 +246,7 @@ def _fetch_once(
         sink=body.extend,
         trace=trace,
         credential_headers=credential_headers,
+        hop_guard=hop_guard,
     )
     return bytes(body)
 
@@ -253,6 +261,7 @@ def _download_once(
     max_redirects: int,
     trace: FetchTrace | None = None,
     credential_headers: Mapping[str, str] | None = None,
+    hop_guard: Callable[[str], None] | None = None,
 ) -> int:
     """A single streaming-to-disk fetch attempt sharing the guards of _fetch_once."""
     written = 0
@@ -272,6 +281,7 @@ def _download_once(
             sink=sink,
             trace=trace,
             credential_headers=credential_headers,
+            hop_guard=hop_guard,
         )
     return written
 
@@ -286,6 +296,7 @@ def _stream_guarded(
     sink: Callable[[bytes], None],
     trace: FetchTrace | None = None,
     credential_headers: Mapping[str, str] | None = None,
+    hop_guard: Callable[[str], None] | None = None,
 ) -> None:
     """A single fetch attempt with SSRF, redirect, and size guards.
 
@@ -306,6 +317,8 @@ def _stream_guarded(
     credential_origin = _origin(url) if credential_headers else None
     for _ in range(max_redirects + 1):
         validate_public_url(current)
+        if hop_guard is not None:
+            hop_guard(current)
         hop_headers = headers
         if credential_headers and _origin(current) == credential_origin:
             hop_headers = {**(headers or {}), **credential_headers}

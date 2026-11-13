@@ -11,7 +11,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Every published feed record with its score and grade history. */
+        /**
+         * Every published feed record with its score and grade history.
+         * @description Each agency's `history` is its newest 120 points, oldest first. Index points carry no `feed_sha256` or `service_horizon_status`; read those from the agency's `latest.json`.
+         */
         get: operations["getArtifactIndex"];
         put?: never;
         post?: never;
@@ -973,12 +976,17 @@ export interface components {
                 score: number;
                 /** @enum {string} */
                 grade: "A" | "B" | "C" | "D" | "F";
+                /**
+                 * @description Present only when the grade is partial: freshness was not measured because an expired Mobility Database mirror copy was held out of the grade (rubric 1.5). The letter is still published and must be shown with this qualifier.
+                 * @enum {string}
+                 */
+                grade_qualifier?: "partial: freshness not measured";
                 margin_to_next_band?: number | null;
                 margin_to_lower_band?: number | null;
             };
             categories: {
                 correctness: components["schemas"]["ArtifactCategory"];
-                freshness: components["schemas"]["ArtifactCategory"];
+                freshness: components["schemas"]["ArtifactHeldMirrorFreshness"] | components["schemas"]["ArtifactCategory"];
                 completeness: components["schemas"]["ArtifactCategory"];
                 realtime: components["schemas"]["ArtifactCategory"];
             };
@@ -1184,6 +1192,23 @@ export interface components {
             /** @description What this finding costs: network reach, annual rider-trips, and served-area need, each a value or null with a reason. Added in schema 1.19; absent on older snapshots. */
             consequence?: components["schemas"]["ArtifactConsequence"];
         };
+        /** @description Freshness held out of the grade because the feed URL failed and the Mobility Database mirror copy scored instead has already ended its service. It has no score, findings, or details: the copy's dates sit under mirror_copy, never as an expiry countdown, so they cannot read as the agency's own lapse. Comes with overall.grade_qualifier. */
+        ArtifactHeldMirrorFreshness: {
+            /** @constant */
+            name: "freshness";
+            /** @constant */
+            status: "not_yet_measured";
+            weight: number;
+            /** @constant */
+            reason: "mirror_copy_expired";
+            summary: string;
+            mirror_copy: {
+                /** Format: date */
+                service_start: string | null;
+                /** Format: date */
+                service_end: string | null;
+            };
+        };
         /** @description Additive API v1 location rollups. Count fields cover all published feed records in a location; score aggregates use the guarded comparison cohort and expose its denominator. Null codes collect rows whose curated location is unknown. */
         ByLocation: {
             countries: components["schemas"]["ByLocationCountry"][];
@@ -1252,6 +1277,11 @@ export interface components {
             subdivision_name?: string;
             /** @enum {string} */
             grade: "A" | "B" | "C" | "D" | "F";
+            /**
+             * @description null for a full grade; "partial: freshness not measured" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier.
+             * @enum {string|null}
+             */
+            grade_qualifier?: "partial: freshness not measured" | null;
             score: number;
             /** @description Whether this row belongs to the current producer-, category-, and identity-safe comparison cohort. */
             comparison_eligible?: boolean;
@@ -1417,6 +1447,11 @@ export interface components {
                 subdivision_name?: string;
                 /** @enum {string} */
                 grade: "A" | "B" | "C" | "D" | "F";
+                /**
+                 * @description null for a full grade; "partial: freshness not measured" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier.
+                 * @enum {string|null}
+                 */
+                grade_qualifier?: "partial: freshness not measured" | null;
                 score: number;
                 /** @description Whether this row belongs to the comparison cohort documented in summary.comparison. */
                 comparison_eligible?: boolean;
@@ -1642,6 +1677,11 @@ export interface components {
                 score: number;
                 /** @enum {unknown} */
                 grade: "A" | "B" | "C" | "D" | "F";
+                /**
+                 * @description null for a full grade; "partial: freshness not measured" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier.
+                 * @enum {string|null}
+                 */
+                grade_qualifier?: "partial: freshness not measured" | null;
                 snapshot_date: string;
                 needs_attention: boolean;
                 attention_reason: string | null;
@@ -1903,7 +1943,7 @@ export interface components {
     parameters: {
         /** @description A published feed record's id, as listed in `/data/artifacts/index.json`. `changes`, `rollups` and `run` are reserved and are never agency ids. */
         agency_id: string;
-        /** @description A snapshot date, `YYYY-MM-DD`. */
+        /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for at most the last 90 days before the agency's newest snapshot, plus its previous snapshot; in practice the site build carries the committed history and the last two days, so expect the newest two dates. Older dates return not found. */
         date: string;
         /** @description A rollup id, as listed in `/data/artifacts/rollups/index.json`. */
         rollup_id: string;
@@ -1970,7 +2010,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description A snapshot date, `YYYY-MM-DD`. */
+                /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for at most the last 90 days before the agency's newest snapshot, plus its previous snapshot; in practice the site build carries the committed history and the last two days, so expect the newest two dates. Older dates return not found. */
                 date: components["parameters"]["date"];
             };
             cookie?: never;
@@ -2003,7 +2043,7 @@ export interface operations {
             path: {
                 /** @description A published feed record's id, as listed in `/data/artifacts/index.json`. `changes`, `rollups` and `run` are reserved and are never agency ids. */
                 agency_id: components["parameters"]["agency_id"];
-                /** @description A snapshot date, `YYYY-MM-DD`. */
+                /** @description A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for at most the last 90 days before the agency's newest snapshot, plus its previous snapshot; in practice the site build carries the committed history and the last two days, so expect the newest two dates. Older dates return not found. */
                 date: components["parameters"]["date"];
             };
             cookie?: never;

@@ -2694,6 +2694,8 @@ main:focus { outline: none; }
   font-size: clamp(2rem, 5vw, 3rem); line-height: 1; }
 .score-block .score-of { font-family: var(--font-mono); color: var(--board-soft); font-size: 1rem; }
 .score-block .score-trend { font-family: var(--font-mono); font-size: .82rem; margin: .45rem 0 0; color: #bcccbd; }
+/* Rubric 1.5: a partial grade is never shown bare. Same ink as the trend line. */
+.score-block .score-qualifier { font-family: var(--font-mono); font-size: .82rem; margin: .45rem 0 0; color: #bcccbd; }
 .score-block .chips { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.1rem; }
 .chip { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase;
   padding: .32rem .65rem; border-radius: 999px; border: 1px solid rgb(244 246 240 / 0.22); color: #dfe7dd; }
@@ -3004,6 +3006,7 @@ main p,
 :root[data-theme="contrast"] .score-block .score-of,
 :root[data-theme="contrast"] .board-sub,
 :root[data-theme="contrast"] .score-block .score-trend,
+:root[data-theme="contrast"] .score-block .score-qualifier,
 :root[data-theme="contrast"] .peer-context { color: #ffffff; }
 :root[data-theme="contrast"] .chip { color: #ffffff; border-color: #ffffff; }
 

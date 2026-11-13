@@ -81,10 +81,14 @@ __all__ = [
 # severity deductions, count multipliers, component weights) are identical, so
 # one build's arithmetic explains an artifact from any of them. Rubric 1.4
 # changed what the headsign component counts (ADR 0060), not any constant this
-# module applies, so a 1.3 artifact's trail is still exact. Add a version here
-# only after checking that every constant matches; otherwise it is refused.
+# module applies, so a 1.3 artifact's trail is still exact. Rubric 1.5 holds an
+# expired mirror copy's freshness out of the grade and marks it partial; that
+# is a category left unmeasured, which this module already renormalizes, and
+# no weight, band, or deduction moved. Add a version here only after checking
+# that every constant matches; otherwise it is refused.
 SAME_CONSTANTS: dict[str, frozenset[str]] = {
     "1.4": frozenset({"1.3", "1.4"}),
+    "1.5": frozenset({"1.3", "1.4", "1.5"}),
 }
 
 

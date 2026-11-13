@@ -145,6 +145,66 @@ def test_resweep_keeps_current_feed_current() -> None:
     assert summary["new_days"] == (dt.date(2026, 9, 1) - dt.date(2026, 6, 20)).days
 
 
+MIRROR_URL = "https://iportal.example.org/GTFS/demo/google_transit.zip"
+
+
+def _mirror_copy_artifact(last_service: str, days: int) -> dict[str, Any]:
+    """A current Mobility Database mirror copy, graded with measured freshness
+    because its service had not ended on the day it was scored."""
+    art = _artifact(last_service=last_service, fresh_score=85.0, days=days)
+    art["feed"] = {"static_url": MIRROR_URL, "reachable": True}
+    art["fetch"] = {"source": "mirror", "origin_error": "SSLError"}
+    return art
+
+
+def test_a_current_mirror_copy_keeps_counting_down_between_full_runs() -> None:
+    # Scored 2026-06-10 with service through 2026-07-10. Ten days later the
+    # countdown must read 20, not stay frozen at the full run's 30.
+    art = _mirror_copy_artifact("2026-07-10", 30)
+    assert needs_sweep(art, dt.date(2026, 6, 20))
+    new, summary = resweep(art, dt.date(2026, 6, 20))
+    fresh = new["categories"]["freshness"]
+    assert fresh["status"] == "measured"
+    assert fresh["details"]["days_until_expiry"] == 20
+    assert summary["new_days"] == 20
+    assert "grade_qualifier" not in new["overall"]
+
+
+def test_a_mirror_copy_that_lapses_between_full_runs_turns_partial_not_current() -> None:
+    # The copy's service ended 2026-07-10; swept on 2026-07-20 it must not read
+    # as current (frozen) and must not grade the copy's lapse as the agency's
+    # (freshness 0, "re-export"): freshness is held, the grade is partial, and
+    # the failed download leads, exactly as the full run does it.
+    art = _mirror_copy_artifact("2026-07-10", 30)
+    new, summary = resweep(art, dt.date(2026, 7, 20))
+    fresh = new["categories"]["freshness"]
+    assert fresh["status"] == "not_yet_measured"
+    assert fresh["reason"] == "mirror_copy_expired"
+    assert "score" not in fresh and "details" not in fresh
+    assert fresh["mirror_copy"]["service_end"] == "2026-07-10"
+    assert new["overall"]["grade_qualifier"] == "partial: freshness not measured"
+    assert new["top_fixes"][0]["code"] == "scorecard_feed_download_failed"
+    assert MIRROR_URL in new["top_fixes"][0]["what"]
+    assert not any(f["code"] == "scorecard_feed_expired" for f in new["top_fixes"])
+    # Absent, never a number standing in for "not measured".
+    assert summary["new_days"] is None
+    # The overall is the weighted mean of what was measured, freshness left out.
+    expected = (90 * 0.35 + 60 * 0.25) / (0.35 + 0.25)
+    assert new["overall"]["score"] == round(expected, 1)
+    # Held freshness is not measured, so the next sweep leaves it alone.
+    assert not needs_sweep(new, dt.date(2026, 7, 21))
+
+
+def test_control_an_origin_feed_that_lapses_is_counted_down_to_zero() -> None:
+    # The same dates fetched from the agency's own URL are the agency's lapse.
+    art = _artifact(last_service="2026-07-10", fresh_score=85.0, days=30)
+    new, summary = resweep(art, dt.date(2026, 7, 20))
+    assert new["categories"]["freshness"]["score"] == 0.0
+    assert summary["new_days"] == -10
+    assert new["top_fixes"][0]["code"] == "scorecard_feed_expired"
+    assert "grade_qualifier" not in new["overall"]
+
+
 def test_a_chain_of_sweeps_keeps_naming_the_day_the_feed_was_fetched() -> None:
     """The defect: each sweep took the previous sweep's stamp as a fetch date.
 

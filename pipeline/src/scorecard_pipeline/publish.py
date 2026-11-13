@@ -33,7 +33,7 @@ from .artifact_lifecycle import (
     reconcile_retired_current_artifacts,
 )
 from .badge import render_badge, render_mark
-from .comparisons import reader_archive_profile
+from .comparisons import reader_archive_profile, scored_from_mirror
 from .config import Agency, artifacts_dir, current_agency_ids, repo_root, utc_today
 from .effort_calibration import (
     CALIBRATION_SCHEMA_NOTE,
@@ -51,7 +51,7 @@ from .fetch import FetchResult
 from .fixlog import diff_receipts, load_fixlog_candidates, merge_receipts, reconcile_receipts
 from .identity import resolve_published_agency_name
 from .metrics import expiry_status, resolve_service_horizon_status
-from .score import Scorecard
+from .score import Scorecard, grade_qualifier
 from .site_shell import CATEGORY_LABELS
 from .url_redaction import redact_url_text
 
@@ -76,6 +76,46 @@ def _join_labels(labels: list[str]) -> str:
     if len(labels) <= 1:
         return "".join(labels)
     return ", ".join(labels[:-1]) + (f"{',' if len(labels) > 2 else ''} and {labels[-1]}")
+
+
+def _breadth_rank(measured: int, total: int) -> int:
+    """The confidence rank how many categories were measured earns on its own."""
+    if measured == total:
+        return 2
+    return 1 if measured * 2 >= total else 0
+
+
+def _coverage_note(unmeasured: list[str]) -> str:
+    """The confidence note saying which categories were not measured."""
+    if not unmeasured:
+        return "All four score categories were measured this run."
+    labels = _join_labels([CATEGORY_LABELS.get(k, k) for k in unmeasured])
+    was, does = ("was", "It does") if len(unmeasured) == 1 else ("were", "They do")
+    return f"{labels} {was} not measured this run. {does} not count against the grade."
+
+
+def confidence_after_hold(confidence: dict[str, Any], categories: dict[str, Any]) -> dict[str, Any]:
+    """The stored confidence block once the sweep has held a category out.
+
+    The sweep cannot call :func:`_confidence`: it has no FetchResult, and what
+    it carries forward (realtime sampling, source, snapshot age) has not moved.
+    Only the coverage changes, so only the count, the level that count earns,
+    and the coverage note (always the first) are rewritten. Left alone, a page
+    says "Measured 4 of 4" beside "partial: freshness not measured".
+    """
+    measured = sum(1 for c in categories.values() if c.get("status") == "measured")
+    total = len(categories)
+    unmeasured = [k for k, c in categories.items() if c.get("status") != "measured"]
+    drop = _breadth_rank(int(confidence["measured_categories"]), total) - _breadth_rank(
+        measured, total
+    )
+    level = CONFIDENCE_LEVELS[max(0, CONFIDENCE_LEVELS.index(confidence["level"]) - drop)]
+    return {
+        **confidence,
+        "level": level,
+        "measured_categories": measured,
+        "notes": [_coverage_note(unmeasured), *confidence["notes"][1:]],
+    }
 
 
 def _confidence(
@@ -103,14 +143,8 @@ def _confidence(
 
     # Breadth of measurement sets the base level; provenance and staleness can
     # only lower it.
-    if not unmeasured:
-        rank = 2
-        notes.append("All four score categories were measured this run.")
-    else:
-        rank = 1 if len(measured) * 2 >= total else 0
-        labels = _join_labels([CATEGORY_LABELS.get(k, k) for k in unmeasured])
-        was, does = ("was", "It does") if len(unmeasured) == 1 else ("were", "They do")
-        notes.append(f"{labels} {was} not measured this run. {does} not count against the grade.")
+    rank = _breadth_rank(len(measured), total)
+    notes.append(_coverage_note(unmeasured))
 
     rt_windows = 1 if categories.get("realtime", {}).get("status") == "measured" else 0
     if rt_windows:
@@ -491,10 +525,14 @@ def _write_badge(agency_dir: Path, artifact: dict[str, Any]) -> None:
     days = fresh_details.get("days_until_expiry")
     grade = str(overall["grade"])
     status = expiry_status(days)
-    svg = render_badge(grade, float(overall["score"]), expiry_status=status)
+    qualifier = grade_qualifier(artifact)
+    svg = render_badge(grade, float(overall["score"]), expiry_status=status, qualifier=qualifier)
     _write_atomic(agency_dir / "badge.svg", svg)
 
     message = f"{grade} {overall['score']}"
+    if qualifier:
+        # A partial grade is never shown bare, on a badge least of all.
+        message += f" · {qualifier}"
     if status in ("lapsed", "stale"):
         message += " · feed expired"
     elif status == "expiring_soon":
@@ -570,10 +608,17 @@ def _history_entry(artifact: dict[str, Any]) -> dict[str, Any]:
     # draws trends from, so a point published before the rounding fix must not
     # make the next run's correct letter look like an agency's grade changing.
     derived = published_overall(float(artifact["overall"]["score"]))
+    # Only ever "mirror": every other point stays byte-for-byte as it was.
+    source_mark = {"fetch_source": "mirror"} if scored_from_mirror(artifact) else {}
     return {
+        **source_mark,
         "date": artifact["snapshot_date"],
         "score": derived["score"],
         "grade": derived["grade"],
+        # None for a full grade; "partial: freshness not measured" when the
+        # artifact's freshness was held out (rubric 1.5). Directory cards, the
+        # dataset, and the API rows all read it from here.
+        "grade_qualifier": grade_qualifier(artifact),
         "rubric_version": artifact.get("rubric_version"),
         "scoring_profile_id": profile.get("id"),
         "scoring_profile_rubric_version": profile.get("rubric_version"),

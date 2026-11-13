@@ -13,7 +13,13 @@ agencies:
     name: Casco Bay Lines
     subdivision_code: US-ME
     subdivision_name: Maine
-    static_gtfs_url: http://smttracker.com/downloads/gtfs/cascobaylines-portland-me-usa.zip
+    static_gtfs_url: https://gtfs.remix.com/Casco_Bay_Lines_Portland_ME_USA.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks gtfs.remix.com, the address the Mobility Database lists
+      for the record that replaced this one. The agency name and service area in
+      that file match this record. Grades dated before this change came from an
+      older Mobility Database mirror copy.
     mdb_id: 1
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

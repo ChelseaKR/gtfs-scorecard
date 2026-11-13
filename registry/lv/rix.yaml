@@ -17,13 +17,17 @@ agencies:
     subdivision_name: Rīga
     mdb_id: "3502"
     is_official: true
-    static_gtfs_url: https://saraksti.rigassatiksme.lv/gtfs.zip
+    static_gtfs_url: https://data.gov.lv/dati/dataset/6d78358a-0095-4ce3-b119-6cde5d0ac54f/resource/2e9922e8-d863-41d3-9ff4-9a97ec9031a3/download/marsrutusaraksti08_2026.zip
     license_note: >-
       CC0 1.0 per the data.gov.lv "Rīgas satiksme public transport routes"
       dataset. The scored URL is the operator's stable production endpoint.
     operating_note: >-
       Bus, tram, and trolleybus network of Rīga, operated by the municipal
-      company Rīgas satiksme.
+      company Rīgas satiksme. Checked 2026-11-08: the feed URL on file had
+      stopped working, so this record now tracks data.gov.lv, the current
+      address Transitland lists for this feed. The agency name and service area
+      in that file match this record. Grades dated before this change came from
+      an older Mobility Database mirror copy.
     reuse_evidence:
       decision: approved
       source_kind: official_portal

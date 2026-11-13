@@ -1115,6 +1115,7 @@ function renderOverview(directory) {
       id: a.id,
       name: a.name,
       grade: String(a.grade),
+      gradeQualifier: typeof a.grade_qualifier === "string" ? a.grade_qualifier : "",
       score: Number(a.score),
       state: a.state || "",
       country: a.country || "",
@@ -1785,7 +1786,7 @@ function setupOverview(agencies, total, summary) {
       <span class="grade-chip ${escAttr(gradeClass(a.grade))}">${esc(a.grade)}<span class="visually-hidden"> grade</span></span>
       <div>
         <h2><a href="#/agency/${escAttr(a.id)}"><bdi>${esc(a.name)}</bdi></a></h2>
-        <p class="meta">Overall ${a.score} out of 100${place ? ` · <bdi>${esc(place)}</bdi>` : ""} · checked ${formatDate(a.date)}</p>
+        <p class="meta">Overall ${a.score} out of 100${partialSuffix(a.gradeQualifier)}${place ? ` · <bdi>${esc(place)}</bdi>` : ""} · checked ${formatDate(a.date)}</p>
         ${featureEvidence(a)}
       </div>
       <button type="button" class="follow" data-id="${escAttr(a.id)}" aria-pressed="${followed}">${followed ? "Following" : "Follow"}</button>
@@ -2397,7 +2398,7 @@ function renderProgram(rollup) {
         <span class="grade-chip ${escAttr(gradeClass(m.grade))}">${esc(m.grade)}<span class="visually-hidden"> grade</span></span>
         <div>
           <h3><a href="#/agency/${escAttr(m.id)}">${esc(m.name)}</a>${flag}</h3>
-          <p class="meta">${m.score} out of 100 · checked ${formatDate(m.snapshot_date)}</p>
+          <p class="meta">${m.score} out of 100${partialSuffix(m.grade_qualifier)} · checked ${formatDate(m.snapshot_date)}</p>
           ${fix}
         </div>
       </li>`;
@@ -2540,6 +2541,7 @@ async function renderCohort(index, urlIds) {
       name: a.name,
       score: last.score,
       grade: last.grade,
+      gradeQualifier: last.grade_qualifier || "",
       date: last.date,
       reason,
       topFix,
@@ -2568,7 +2570,7 @@ async function renderCohort(index, urlIds) {
     const stamp = new Date().toISOString().slice(0, 10);
     const lines = [`Call prep — My agencies (${stamp})`, `${members.length} agencies, ${attn} need attention.`, ""];
     for (const m of members) {
-      lines.push(`${m.name} — Grade ${m.grade} (${m.score}/100)`);
+      lines.push(`${m.name} — Grade ${m.grade}${m.gradeQualifier ? ` (${m.gradeQualifier})` : ""} (${m.score}/100)`);
       if (m.reason) lines.push(`  Status: ${m.reason}`);
       if (m.gradeChanged) lines.push(`  Changed: ${m.prevGrade} -> ${m.grade} since ${m.prevDate}`);
       else if (m.scoreDelta) lines.push(`  Score ${m.scoreDelta > 0 ? "up" : "down"} ${Math.abs(m.scoreDelta)} since ${m.prevDate}`);
@@ -2595,7 +2597,7 @@ async function renderCohort(index, urlIds) {
         <span class="grade-chip ${escAttr(gradeClass(m.grade))}">${esc(m.grade)}<span class="visually-hidden"> grade</span></span>
         <div>
           <h3><a href="#/agency/${escAttr(m.id)}">${esc(m.name)}</a>${flag}</h3>
-          <p class="meta">${m.score} out of 100 · checked ${formatDate(m.date)}</p>
+          <p class="meta">${m.score} out of 100${partialSuffix(m.gradeQualifier)} · checked ${formatDate(m.date)}</p>
           ${change}
           ${fix}
           <details class="cohort-note"${note ? " open" : ""}>
@@ -3142,11 +3144,38 @@ function plainNumber(value) {
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
 }
 
-/** Split-flap grade reel that lands on the agency's grade. @param {string} grade */
-function gradeReel(grade) {
+/** The words a partial grade carries (rubric 1.5), matching
+ *  score.grade_qualifier: "partial: freshness not measured" when freshness is
+ *  present but not measured, else "". Unmeasured freshness is never a value.
+ *  @param {any} artifact */
+function gradeQualifier(artifact) {
+  const o = artifact?.overall;
+  if (!o || !o.grade) return "";
+  if (typeof o.grade_qualifier === "string" && o.grade_qualifier) return o.grade_qualifier;
+  const fresh = artifact?.categories?.freshness;
+  return fresh && fresh.status && fresh.status !== "measured" ? "partial: freshness not measured" : "";
+}
+
+/** " · partial: freshness not measured" for a list row, or "". @param {any} qualifier */
+function partialSuffix(qualifier) {
+  return typeof qualifier === "string" && qualifier ? ` · ${esc(qualifier)}` : "";
+}
+
+/** The partial-grade mark under the score, matching the renderer in render_site.py,
+ *  _grade_qualifier_html; empty for a full grade. @param {string} qualifier */
+function qualifierLine(qualifier) {
+  if (!qualifier) return "";
+  const sentence = qualifier.charAt(0).toUpperCase() + qualifier.slice(1);
+  return `<p class="score-qualifier"><strong>${esc(sentence)}.</strong></p>`;
+}
+
+/** Split-flap grade reel that lands on the agency's grade.
+ *  @param {string} grade @param {string} [qualifier] */
+function gradeReel(grade, qualifier = "") {
   const g = String(grade || "F").toUpperCase().slice(0, 1);
   const idx = GRADE_RANK[g] ?? 0;
-  return `<div class="reel" role="img" aria-label="Overall grade ${escAttr(g)}"
+  const label = qualifier ? `${g} (${qualifier})` : g;
+  return `<div class="reel" role="img" aria-label="Overall grade ${escAttr(label)}"
       style="--flap-end: calc(var(--reel-h) * -${idx})">
     <div class="reel-strip"><span>F</span><span>D</span><span>C</span><span>B</span><span>A</span></div>
   </div>`;
@@ -3261,6 +3290,44 @@ function feedSourceLede(artifact) {
   return "Based on the feed source on file; publisher ownership is not verified";
 }
 
+/** An ISO date string, or null for anything else.
+ *  @param {any} value */
+function isoDateOrNull(value) {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
+}
+
+/** The mirror-copy sentence, matching feed_provenance.mirror_copy_caveat;
+ *  "" unless the scored bytes came from the Mobility Database mirror.
+ *  @param {any} artifact */
+function mirrorCopyCaveat(artifact) {
+  const fetchSource = artifact?.confidence?.fetch_source || artifact?.fetch?.source || "unknown";
+  if (fetchSource !== "mirror") return "";
+  const fresh = artifact?.categories?.freshness || {};
+  const held = fresh.mirror_copy;
+  const details = fresh.details || {};
+  const start = isoDateOrNull(held ? held.service_start : details.feed_start_date);
+  const end = isoDateOrNull(
+    held
+      ? held.service_end
+      : details.effective_expiry_date || details.last_service_date || details.feed_end_date,
+  );
+  // A sweep restamps snapshot_date without downloading (feed_provenance.py).
+  const recompute = artifact?.recompute;
+  const copied = isoDateOrNull(
+    recompute?.kind === "freshness" ? recompute.feed_fetched_date : artifact?.snapshot_date,
+  );
+  const lead = `Scored from a Mobility Database mirror copy${
+    copied ? ` downloaded on ${copied}` : ""
+  }, because the feed URL on file could not be downloaded.`;
+  const dates =
+    start && end
+      ? ` Service dates in that copy run ${start} to ${end}.`
+      : end
+        ? ` Service dates in that copy end ${end}.`
+        : " Service dates in that copy could not be read.";
+  return `${lead}${dates} It may not match the feed the agency publishes today.`;
+}
+
 /** @param {string} name @param {any} artifact @param {any[]} history @param {any} [dirRecord] */
 function boardHero(name, artifact, history, dirRecord) {
   const o = artifact.overall;
@@ -3270,11 +3337,13 @@ function boardHero(name, artifact, history, dirRecord) {
       <p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status · checked ${formatDate(artifact.snapshot_date)}</p>
       <h1 class="board-title"><bdi>${esc(name)}</bdi></h1>
       <p class="board-sub">${esc(feedSourceLede(artifact))}</p>
+      ${mirrorCopyCaveat(artifact) ? `<p class="board-sub">${esc(mirrorCopyCaveat(artifact))}</p>` : ""}
       ${mode ? `<p class="board-mode"><span>Service mode</span> ${esc(mode)}</p>` : ""}
       <div class="grade-block">
-        ${gradeReel(o.grade)}
+        ${gradeReel(o.grade, gradeQualifier(artifact))}
         <div class="score-block">
           <div><span class="score-big">${o.score}</span><span class="score-of"> / 100</span></div>
+          ${qualifierLine(gradeQualifier(artifact))}
           <p class="score-trend">${boardTrend(history)}</p>
           ${peerContext(dirRecord)}
           <div class="chips">${statusChips(artifact)}</div>
@@ -4217,7 +4286,7 @@ async function renderCompare(aId, bId) {
 
   const gradeCell = (art) => {
     const o = art.overall || {};
-    return `<span class="grade-chip ${escAttr(gradeClass(o.grade))}">${esc(o.grade)}<span class="visually-hidden"> grade</span></span> ${esc(String(o.score ?? "—"))}<span class="outof"> / 100</span>`;
+    return `<span class="grade-chip ${escAttr(gradeClass(o.grade))}">${esc(o.grade)}<span class="visually-hidden"> grade</span></span> ${esc(String(o.score ?? "—"))}<span class="outof"> / 100</span>${partialSuffix(gradeQualifier(art))}`;
   };
   const catCell = (art, key) => {
     const c = (art.categories || {})[key];

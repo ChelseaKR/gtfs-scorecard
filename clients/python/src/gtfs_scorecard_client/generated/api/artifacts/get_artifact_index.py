@@ -50,6 +50,9 @@ def sync_detailed(
 ) -> Response[GetArtifactIndexResponse200]:
     """Every published feed record with its score and grade history.
 
+     Each agency's `history` is its newest 120 points, oldest first. Index points carry no `feed_sha256`
+    or `service_horizon_status`; read those from the agency's `latest.json`.
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
@@ -73,6 +76,9 @@ def sync(
 ) -> GetArtifactIndexResponse200 | None:
     """Every published feed record with its score and grade history.
 
+     Each agency's `history` is its newest 120 points, oldest first. Index points carry no `feed_sha256`
+    or `service_horizon_status`; read those from the agency's `latest.json`.
+
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
@@ -91,6 +97,9 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
 ) -> Response[GetArtifactIndexResponse200]:
     """Every published feed record with its score and grade history.
+
+     Each agency's `history` is its newest 120 points, oldest first. Index points carry no `feed_sha256`
+    or `service_horizon_status`; read those from the agency's `latest.json`.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -112,6 +121,9 @@ async def asyncio(
     client: AuthenticatedClient | Client,
 ) -> GetArtifactIndexResponse200 | None:
     """Every published feed record with its score and grade history.
+
+     Each agency's `history` is its newest 120 points, oldest first. Index points carry no `feed_sha256`
+    or `service_horizon_status`; read those from the agency's `latest.json`.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

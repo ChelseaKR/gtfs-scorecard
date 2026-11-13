@@ -137,6 +137,8 @@ FINDING_BASIS: dict[str, str] = {
     "scorecard_intermittent_calendar_ended": NO_BASIS,
     "scorecard_planned_service_boundary": NO_BASIS,
     "scorecard_missing_feed_info_dates": NO_BASIS,
+    # score.py: the configured URL could not be downloaded at all.
+    "scorecard_feed_download_failed": NO_BASIS,
     # rt.py: measured over a sampling window, so the denominators that exist
     # (trips scheduled in the window, vehicles sampled, alerts published) are
     # window-scoped and must not be read against a feed-wide total.
@@ -179,6 +181,7 @@ _NO_BASIS_REASON: dict[str, str] = {
     "scorecard_intermittent_calendar_ended": FEED_LEVEL,
     "scorecard_planned_service_boundary": FEED_LEVEL,
     "scorecard_missing_feed_info_dates": FEED_LEVEL,
+    "scorecard_feed_download_failed": FEED_LEVEL,
     "scorecard_rt_trip_updates_unreachable": SAMPLED_WINDOW,
     "scorecard_rt_vehicle_positions_unreachable": SAMPLED_WINDOW,
     "scorecard_rt_service_alerts_unreachable": SAMPLED_WINDOW,

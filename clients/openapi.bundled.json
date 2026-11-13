@@ -61,6 +61,7 @@
           "artifacts"
         ],
         "summary": "Every published feed record with its score and grade history.",
+        "description": "Each agency's `history` is its newest 120 points, oldest first. Index points carry no `feed_sha256` or `service_horizon_status`; read those from the agency's `latest.json`.",
         "responses": {
           "200": {
             "$ref": "#/components/responses/JsonObject"
@@ -863,7 +864,7 @@
         "name": "date",
         "in": "path",
         "required": true,
-        "description": "A snapshot date, `YYYY-MM-DD`.",
+        "description": "A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for at most the last 90 days before the agency's newest snapshot, plus its previous snapshot; in practice the site build carries the committed history and the last two days, so expect the newest two dates. Older dates return not found.",
         "schema": {
           "type": "string",
           "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
@@ -1403,6 +1404,13 @@
                   "F"
                 ]
               },
+              "grade_qualifier": {
+                "type": "string",
+                "enum": [
+                  "partial: freshness not measured"
+                ],
+                "description": "Present only when the grade is partial: freshness was not measured because an expired Mobility Database mirror copy was held out of the grade (rubric 1.5). The letter is still published and must be shown with this qualifier."
+              },
               "margin_to_next_band": {
                 "type": [
                   "number",
@@ -1431,7 +1439,14 @@
                 "$ref": "#/components/schemas/ArtifactCategory"
               },
               "freshness": {
-                "$ref": "#/components/schemas/ArtifactCategory"
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ArtifactHeldMirrorFreshness"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ArtifactCategory"
+                  }
+                ]
               },
               "completeness": {
                 "$ref": "#/components/schemas/ArtifactCategory"
@@ -2310,6 +2325,62 @@
         },
         "additionalProperties": false
       },
+      "ArtifactHeldMirrorFreshness": {
+        "type": "object",
+        "description": "Freshness held out of the grade because the feed URL failed and the Mobility Database mirror copy scored instead has already ended its service. It has no score, findings, or details: the copy's dates sit under mirror_copy, never as an expiry countdown, so they cannot read as the agency's own lapse. Comes with overall.grade_qualifier.",
+        "required": [
+          "name",
+          "status",
+          "weight",
+          "reason",
+          "summary",
+          "mirror_copy"
+        ],
+        "properties": {
+          "name": {
+            "const": "freshness"
+          },
+          "status": {
+            "const": "not_yet_measured"
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "reason": {
+            "const": "mirror_copy_expired"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "mirror_copy": {
+            "type": "object",
+            "required": [
+              "service_start",
+              "service_end"
+            ],
+            "properties": {
+              "service_start": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date"
+              },
+              "service_end": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
       "ByLocation": {
         "x-title": "GTFS Scorecard country and subdivision rollups",
         "description": "Additive API v1 location rollups. Count fields cover all published feed records in a location; score aggregates use the guarded comparison cohort and expose its denominator. Null codes collect rows whose curated location is unknown.",
@@ -2597,6 +2668,17 @@
               "D",
               "F"
             ]
+          },
+          "grade_qualifier": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "partial: freshness not measured",
+              null
+            ],
+            "description": "null for a full grade; \"partial: freshness not measured\" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier."
           },
           "score": {
             "type": "number",
@@ -3231,6 +3313,17 @@
                     "D",
                     "F"
                   ]
+                },
+                "grade_qualifier": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "partial: freshness not measured",
+                    null
+                  ],
+                  "description": "null for a full grade; \"partial: freshness not measured\" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier."
                 },
                 "score": {
                   "type": "number"
@@ -4227,6 +4320,17 @@
                     "D",
                     "F"
                   ]
+                },
+                "grade_qualifier": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "partial: freshness not measured",
+                    null
+                  ],
+                  "description": "null for a full grade; \"partial: freshness not measured\" when freshness was not measured (rubric 1.5). A partial letter must be shown with this qualifier."
                 },
                 "snapshot_date": {
                   "type": "string"

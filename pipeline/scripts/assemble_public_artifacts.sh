@@ -68,6 +68,7 @@ jq -r '.agencies | keys[]' "$index_path" | while IFS= read -r agency_id; do
   fi
   agency_source="$source_root/$agency_id"
   [ -d "$agency_source" ] || continue
+  dated_names=()
   for source in "$agency_source"/*; do
     [ -f "$source" ] || continue
     name="$(basename "$source")"
@@ -77,11 +78,28 @@ jq -r '.agencies | keys[]' "$index_path" | while IFS= read -r agency_id; do
         ;;
       *)
         if [[ "$name" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}\.json$ ]]; then
-          copy_if_present "$source" "$dest_root/$agency_id/$name"
+          dated_names+=("$name")
         fi
         ;;
     esac
   done
+  # Dated snapshots: the last 90 days counted back from this agency's newest
+  # dated file, plus its second-newest file however old (the MCP history tool
+  # compares the last two points). Only the published copy shrinks; the source
+  # tree keeps everything. GitHub Pages caps a site at 1 GB.
+  if [ "${#dated_names[@]}" -gt 0 ]; then
+    while IFS= read -r name; do
+      copy_if_present "$agency_source/$name" "$dest_root/$agency_id/$name"
+    done < <(python3 -I -c '
+import datetime, sys
+names = sorted(sys.argv[1:])
+newest = datetime.date.fromisoformat(names[-1][:10])
+cutoff = newest - datetime.timedelta(days=90)
+keep = {n for n in names if datetime.date.fromisoformat(n[:10]) >= cutoff}
+keep.update(names[-2:])
+print("\n".join(sorted(keep)))
+' "${dated_names[@]}")
+  fi
 done
 
 # Every JSON file that crossed the boundary above passes the one URL redaction
@@ -92,3 +110,11 @@ done
 # it prints counts, never a value.
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 python3 -I "$script_dir/../src/scorecard_pipeline/url_redaction.py" "$dest_root" --write
+
+# Then the published copy is slimmed (src/scorecard_pipeline/publish_boundary.py):
+# every JSON file is rewritten compact, and index.json keeps each agency's
+# newest 120 history points without feed_sha256 or service_horizon_status,
+# which nothing on the site reads from the index. Same objects, about a third
+# fewer bytes. S3, the committed history, and every field of latest.json are
+# untouched; GitHub Pages caps a site at 1 GB.
+python3 -I "$script_dir/../src/scorecard_pipeline/publish_boundary.py" "$dest_root" --write

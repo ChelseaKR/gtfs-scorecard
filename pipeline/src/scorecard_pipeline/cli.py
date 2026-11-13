@@ -62,7 +62,8 @@ from .publish import build_artifact, publish
 from .rt import capture_window, realtime, scheduled_trip_ids_at
 from .rt_drift import compute_drift, vehicle_plausibility
 from .s3_publish import DEFAULT_PUBLISH_WORKERS, MAX_PUBLISH_WORKERS
-from .score import build_scorecard, score_feed_content
+from .score import build_scorecard, build_scorecard_for_fetch, score_feed_content
+from .url_redaction import redact_url_text
 from .validate import (
     ValidationReport,
     country_scoped_output_dir,
@@ -274,7 +275,14 @@ def run_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                 rt_interval=rt_interval,
             )
         )
-    scorecard = build_scorecard(cats)
+    # An expired Mobility Database mirror copy is not the agency's calendar, so
+    # its freshness is held out and the failed download leads (score.py).
+    scorecard = build_scorecard_for_fetch(
+        cats,
+        fetch_source=fetched.source,
+        configured_url=redact_url_text(agency.static_gtfs_url),
+        origin_error=fetched.origin_error,
+    )
     # Derive generated_at from the snapshot date (not wall-clock) so re-running a
     # given date reproduces the artifact byte-for-byte (publish.py contract).
     generated_at = dt.datetime.combine(fetched.fetched_date, dt.time(), dt.UTC)
@@ -964,6 +972,18 @@ def _artifact_contract_current(agency_id: str) -> bool:
     )
 
 
+def _latest_artifact_scored_from_mirror(agency_id: str) -> bool:
+    """Whether the published grade was scored from a Mobility Database mirror copy."""
+    from .config import artifacts_dir
+    from .feed_provenance import artifact_fetch_source
+
+    try:
+        artifact = json.loads((artifacts_dir() / agency_id / "latest.json").read_text())
+    except (OSError, json.JSONDecodeError):
+        return False
+    return artifact_fetch_source(artifact) == "mirror"
+
+
 def _liveness_unchanged(agency_id: str) -> bool:
     """Perform a cheap conditional GET and return True when the feed is unchanged.
 
@@ -988,6 +1008,12 @@ def _liveness_unchanged(agency_id: str) -> bool:
         # would answer 401 and count as a liveness failure against a feed that
         # is fine. Score it; the credentialed fetch is the real check.
         log.info("Re-scoring %s: credentialed feeds skip the keyless liveness check", agency_id)
+        return False
+    if _latest_artifact_scored_from_mirror(agency_id):
+        # "Unchanged" describes the origin's bytes, and this grade did not come
+        # from them. Skipping would keep a mirror copy published for as long as
+        # the agency's own file sits still.
+        log.info("Re-scoring %s: published grade came from a mirror copy", agency_id)
         return False
     state_path = repo_root() / "data" / "liveness.json"
     state = load_state(state_path)
@@ -3560,6 +3586,7 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
     from .config import repo_root
     from .liveness import (
         CHANGED,
+        NOT_FETCHED,
         UNREACHABLE,
         check_feeds,
         load_state,
@@ -3616,12 +3643,13 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         log.info("Wrote liveness state for %d feeds.", len(state))
     log.info(
         "Liveness: %d changed, %d unreachable, %d recovered, %d unchanged, "
-        "%d credentialed not checked.%s",
+        "%d credentialed not checked, %d not fetched under robots.txt.%s",
         len(changed),
         len(unreachable),
         len(recovered_ids),
         tally.get("unchanged", 0),
         tally.get("credentialed_skipped", 0),
+        tally.get(NOT_FETCHED, 0),
         "" if args.apply else " Report only; re-run with --apply to persist state.",
     )
     return 0

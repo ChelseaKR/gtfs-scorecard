@@ -28,7 +28,7 @@ from typing import Any
 from .corrections import grades_a_feed_with_nothing_in_it
 from .gtfs import FeedDates
 from .metrics import CategoryResult, Finding, freshness
-from .score import CATEGORY_WEIGHTS, build_scorecard
+from .score import CATEGORY_WEIGHTS, build_scorecard, hold_mirror_freshness
 
 
 def _date(value: str | None) -> dt.date | None:
@@ -106,7 +106,17 @@ def can_resweep(artifact: dict[str, Any]) -> bool:
 
     A feed with no readable expiry (the `scorecard_no_expiry_date` case) stores
     no dates, so there is nothing to recompute and a full re-score is the only
-    way its freshness changes."""
+    way its freshness changes.
+
+    A Mobility Database mirror copy is reswept like any other measured feed, so
+    its "N more days" countdown keeps moving between full runs. Skipping it
+    froze the countdown at the last full score, and once the copy's service
+    ended the page still called it current: a stale number standing in for
+    "not re-measured". When a reswept mirror copy's countdown goes negative,
+    :func:`resweep` holds freshness out the way the full run does
+    (score.hold_mirror_freshness), so the grade turns partial rather than
+    counting the copy's lapse as the agency's. A copy whose freshness is
+    already held is not measured, so it is not reswept again."""
     fresh = artifact.get("categories", {}).get("freshness", {})
     if fresh.get("status") != "measured":
         return False
@@ -184,10 +194,29 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
         if cat.get("status") != "measured":
             continue
         measured.append(new_fresh if name == "freshness" else _category_from_json(cat))
-    card = build_scorecard(measured).to_json()
 
     new_cats = {name: dict(cat) for name, cat in cats.items()}
-    new_cats["freshness"] = {**new_fresh.to_json(), "weight": CATEGORY_WEIGHTS["freshness"]}
+    # A mirror copy whose service has now ended is held out exactly as the full
+    # run holds it (score.build_scorecard_for_fetch): freshness becomes "not
+    # graded", the failed download leads the fixes, and the grade is partial.
+    # Counting the copy down past zero would grade its lapse as the agency's.
+    fetch = artifact.get("fetch")
+    feed = artifact.get("feed")
+    hold = None
+    if isinstance(fetch, dict) and fetch.get("source") == "mirror":
+        hold = hold_mirror_freshness(
+            measured,
+            fetch_source="mirror",
+            configured_url=str((feed or {}).get("static_url") or ""),
+            origin_error=fetch.get("origin_error"),
+        )
+    if hold is None:
+        card = build_scorecard(measured).to_json()
+        new_cats["freshness"] = {**new_fresh.to_json(), "weight": CATEGORY_WEIGHTS["freshness"]}
+    else:
+        kept, held, lead = hold
+        card = build_scorecard(kept, held=held, lead_fix=lead).to_json()
+        new_cats["freshness"] = card["categories"]["freshness"]
 
     new_artifact = dict(artifact)
     new_artifact["categories"] = new_cats
@@ -206,6 +235,10 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
     }
 
     _rederive_expiry_verdicts(new_artifact)
+    if hold is not None and isinstance(artifact.get("confidence"), dict):
+        from .publish import confidence_after_hold
+
+        new_artifact["confidence"] = confidence_after_hold(artifact["confidence"], new_cats)
 
     old = artifact.get("overall", {})
     summary = {
@@ -216,7 +249,9 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
         "old_score": old.get("score"),
         "new_score": card["overall"]["score"],
         "old_days": details.get("days_until_expiry"),
-        "new_days": new_cats["freshness"]["details"].get("days_until_expiry"),
+        # None once a mirror copy's freshness is held: the countdown is not
+        # measured, so it is reported as absent, never as a number.
+        "new_days": (new_cats["freshness"].get("details") or {}).get("days_until_expiry"),
         "grade_changed": old.get("grade") != card["overall"]["grade"],
     }
     return new_artifact, summary

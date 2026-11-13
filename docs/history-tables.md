@@ -217,7 +217,7 @@ Every column name below is held to the export's own column list by
 `mdb_id`, `ntd_id`, `snapshot_date`, `generated_at`, `recompute_kind`,
 `feed_fetched_date`, `artifact_schema_version`, `rubric_version`,
 `scoring_profile_id`, `scoring_profile_rubric_version`, `validator_version`,
-`reader_archive_profile`, `grade`, `score`, `correctness`, `freshness`,
+`reader_archive_profile`, `grade`, `grade_qualifier`, `score`, `correctness`, `freshness`,
 `completeness`, `realtime`, `categories_measured`, `confidence_level`,
 `days_until_expiry`, `effective_expiry_date`, `expiry_status`,
 `service_horizon_status`, `feed_sha256`, `feed_size_bytes`, `feed_static_url`,

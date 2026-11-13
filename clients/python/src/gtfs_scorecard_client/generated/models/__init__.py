@@ -36,12 +36,17 @@ from .artifact_fetch_reader_archive_profile import ArtifactFetchReaderArchivePro
 from .artifact_finding import ArtifactFinding
 from .artifact_finding_severity import ArtifactFindingSeverity
 from .artifact_geo import ArtifactGeo
+from .artifact_held_mirror_freshness import ArtifactHeldMirrorFreshness
+from .artifact_held_mirror_freshness_mirror_copy import (
+    ArtifactHeldMirrorFreshnessMirrorCopy,
+)
 from .artifact_mode_profile import ArtifactModeProfile
 from .artifact_mode_profile_modes_item import ArtifactModeProfileModesItem
 from .artifact_ntd_id_alignment import ArtifactNtdIdAlignment
 from .artifact_ntd_readiness import ArtifactNtdReadiness
 from .artifact_overall import ArtifactOverall
 from .artifact_overall_grade import ArtifactOverallGrade
+from .artifact_overall_grade_qualifier import ArtifactOverallGradeQualifier
 from .artifact_recompute import ArtifactRecompute
 from .artifact_routability import ArtifactRoutability
 from .artifact_route_map import ArtifactRouteMap
@@ -65,6 +70,13 @@ from .catalog_agency import CatalogAgency
 from .catalog_agency_expiry_status import CatalogAgencyExpiryStatus
 from .catalog_agency_google_gate import CatalogAgencyGoogleGate
 from .catalog_agency_grade import CatalogAgencyGrade
+from .catalog_agency_grade_qualifier_type_1 import CatalogAgencyGradeQualifierType1
+from .catalog_agency_grade_qualifier_type_2_type_1 import (
+    CatalogAgencyGradeQualifierType2Type1,
+)
+from .catalog_agency_grade_qualifier_type_3_type_1 import (
+    CatalogAgencyGradeQualifierType3Type1,
+)
 from .catalog_agency_ntd_ready_type_1 import CatalogAgencyNtdReadyType1
 from .catalog_agency_ntd_ready_type_2_type_1 import CatalogAgencyNtdReadyType2Type1
 from .catalog_agency_ntd_ready_type_3_type_1 import CatalogAgencyNtdReadyType3Type1
@@ -77,6 +89,15 @@ from .directory import Directory
 from .directory_agencies_item import DirectoryAgenciesItem
 from .directory_agencies_item_google_gate import DirectoryAgenciesItemGoogleGate
 from .directory_agencies_item_grade import DirectoryAgenciesItemGrade
+from .directory_agencies_item_grade_qualifier_type_1 import (
+    DirectoryAgenciesItemGradeQualifierType1,
+)
+from .directory_agencies_item_grade_qualifier_type_2_type_1 import (
+    DirectoryAgenciesItemGradeQualifierType2Type1,
+)
+from .directory_agencies_item_grade_qualifier_type_3_type_1 import (
+    DirectoryAgenciesItemGradeQualifierType3Type1,
+)
 from .directory_agencies_item_ntd_ready_type_1 import DirectoryAgenciesItemNtdReadyType1
 from .directory_agencies_item_ntd_ready_type_2_type_1 import (
     DirectoryAgenciesItemNtdReadyType2Type1,
@@ -193,6 +214,15 @@ from .rollup_index_rollups_item import RollupIndexRollupsItem
 from .rollup_members_item import RollupMembersItem
 from .rollup_members_item_expiry_status import RollupMembersItemExpiryStatus
 from .rollup_members_item_grade import RollupMembersItemGrade
+from .rollup_members_item_grade_qualifier_type_1 import (
+    RollupMembersItemGradeQualifierType1,
+)
+from .rollup_members_item_grade_qualifier_type_2_type_1 import (
+    RollupMembersItemGradeQualifierType2Type1,
+)
+from .rollup_members_item_grade_qualifier_type_3_type_1 import (
+    RollupMembersItemGradeQualifierType3Type1,
+)
 from .rollup_members_item_shapes_status_type_1 import RollupMembersItemShapesStatusType1
 from .rollup_realtime import RollupRealtime
 from .rollup_realtime_bands import RollupRealtimeBands
@@ -237,12 +267,15 @@ __all__ = (
     "ArtifactFinding",
     "ArtifactFindingSeverity",
     "ArtifactGeo",
+    "ArtifactHeldMirrorFreshness",
+    "ArtifactHeldMirrorFreshnessMirrorCopy",
     "ArtifactModeProfile",
     "ArtifactModeProfileModesItem",
     "ArtifactNtdIdAlignment",
     "ArtifactNtdReadiness",
     "ArtifactOverall",
     "ArtifactOverallGrade",
+    "ArtifactOverallGradeQualifier",
     "ArtifactRecompute",
     "ArtifactRoutability",
     "ArtifactRouteMap",
@@ -262,6 +295,9 @@ __all__ = (
     "CatalogAgencyExpiryStatus",
     "CatalogAgencyGoogleGate",
     "CatalogAgencyGrade",
+    "CatalogAgencyGradeQualifierType1",
+    "CatalogAgencyGradeQualifierType2Type1",
+    "CatalogAgencyGradeQualifierType3Type1",
     "CatalogAgencyNtdReadyType1",
     "CatalogAgencyNtdReadyType2Type1",
     "CatalogAgencyNtdReadyType3Type1",
@@ -274,6 +310,9 @@ __all__ = (
     "DirectoryAgenciesItem",
     "DirectoryAgenciesItemGoogleGate",
     "DirectoryAgenciesItemGrade",
+    "DirectoryAgenciesItemGradeQualifierType1",
+    "DirectoryAgenciesItemGradeQualifierType2Type1",
+    "DirectoryAgenciesItemGradeQualifierType3Type1",
     "DirectoryAgenciesItemNtdReadyType1",
     "DirectoryAgenciesItemNtdReadyType2Type1",
     "DirectoryAgenciesItemNtdReadyType3Type1",
@@ -358,6 +397,9 @@ __all__ = (
     "RollupMembersItem",
     "RollupMembersItemExpiryStatus",
     "RollupMembersItemGrade",
+    "RollupMembersItemGradeQualifierType1",
+    "RollupMembersItemGradeQualifierType2Type1",
+    "RollupMembersItemGradeQualifierType3Type1",
     "RollupMembersItemShapesStatusType1",
     "RollupRealtime",
     "RollupRealtimeBands",

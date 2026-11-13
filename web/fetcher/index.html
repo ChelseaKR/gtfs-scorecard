@@ -83,13 +83,26 @@
       server refuses this User-Agent, the feed is shown as unreachable with its last known
       grade, and you can tell us to use a different URL.</p>
       <p>Before requesting a feed we read your host&#8217;s <code>robots.txt</code> and follow
-      it. If it disallows the feed&#8217;s path, we do not download the feed, and its page says
+      it, and we do the same for every host a redirect leads to, before requesting anything
+      from it. If it disallows the feed&#8217;s path, we do not download the feed, and its page says
       &#8220;not fetched: robots disallows&#8221; beside the last grade we measured, never a
       zero. A <code>robots.txt</code> that answers with an error or redirects elsewhere is
       treated the same way. The one exception is cloud object storage and API hosts (Amazon S3
-      and similar), where a 403 is the standard answer for any file that does not exist; the
+      and similar), where a 403 is the standard answer for any file that does not exist, and
+      one named Azure storage host that answers 400 the same way; the
       list of those hosts, and why each is on it, is in the
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/pipeline/src/scorecard_pipeline/robots_policy.py">source</a>.</p>
+    </section>
+
+    <section aria-labelledby="sources-h">
+      <h2 class="section-title" id="sources-h">Where feed addresses come from</h2>
+      <p>Feed addresses come from the Mobility Database, agencies&#8217; own pages and
+      national access points. Some were found using
+      <a href="https://github.com/transitland/transitland-atlas">Transitland Atlas</a>, which
+      states: &#8220;Unless otherwise indicated, data files and scripts in this repository are
+      made available under the Creative Commons Attribution 4.0 International Public
+      License.&#8221; We use it only to find addresses. Each feed is downloaded from the
+      address itself.</p>
     </section>
 
     <section aria-labelledby="retry-h">

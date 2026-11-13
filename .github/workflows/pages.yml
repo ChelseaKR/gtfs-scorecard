@@ -61,6 +61,10 @@ jobs:
       id-token: write
     outputs:
       deployed_sha: ${{ steps.assemble.outputs.deployed_sha }}
+      # The id baked into this artifact's deployment.json. A deploy-only
+      # rerun (`gh run rerun --failed`) reuses this job and its artifact, so
+      # smoke must expect this id, not one rebuilt from the rerun's attempt.
+      deployment_id: ${{ steps.assemble.outputs.deployment_id }}
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
@@ -365,6 +369,7 @@ jobs:
               release_manifest_sha256: $release_manifest_sha256}' \
             > _site/deployment.json
           echo "deployed_sha=$deployed_sha" >> "$GITHUB_OUTPUT"
+          echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
       # Site measurement (docs/decisions/0055-cookieless-site-measurement.md).
       # POSTHOG_KEY is a PostHog project key: write-only and shipped in every
       # page by design, held as a secret only so it can be set without a
@@ -482,6 +487,30 @@ jobs:
             lhci-*.log
           if-no-files-found: warn
           retention-days: 14
+      # IndexNow (ADR 0073): pick the sitemap URLs that are new or whose
+      # lastmod moved, comparing this build's sitemap.xml with the live one,
+      # which is still the previous deploy here. A lastmod is a date the
+      # page's content changed, never the build clock (ADR 0067), so a build
+      # with no content change selects nothing. Runs after every gate above,
+      # so only a site that passed them is compared. Selection only: nothing
+      # is sent here. indexnow.py exits 0 on any problem and prints a notice,
+      # so it never blocks the deploy. The key file comes from web/ and is
+      # public by design.
+      - name: Pick the pages to announce to IndexNow
+        working-directory: pipeline
+        run: >-
+          uv run python -m scorecard_pipeline.indexnow select
+          --site-dir ../_site
+          --base-url https://gtfsscorecard.org
+          --kind sitemap --file sitemap.xml --missing-is-empty
+          --out "$RUNNER_TEMP/indexnow-urls.json"
+      - name: Keep the IndexNow list for the job after the deploy
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: indexnow-urls
+          path: ${{ runner.temp }}/indexnow-urls.json
+          retention-days: 1
+          if-no-files-found: warn
       # RELIABILITY: this upload is the last thing between a finished render and
       # a published site, and it fails on the platform rather than on anything
       # in this repository. Run 34245244731 (2026-09-08, an Intraday refresh
@@ -513,33 +542,47 @@ jobs:
   deploy:
     needs: lighthouse
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     permissions:
       contents: read
       pages: write
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment_retry.outputs.page_url || steps.deployment.outputs.page_url }}
     steps:
-      # RELIABILITY: the action's own bound is 10 minutes, and when it expires
-      # the action does not just stop waiting — it CANCELS the deployment it
-      # started. Run 34461157937 (2026-09-10, an Intraday refresh deploy) spent
-      # all 600 seconds reading `Current status: updating_pages` from a healthy
-      # backend and then printed `Timeout reached, aborting!` and
-      # `Canceled deployment with ID ea066b0c…`, so a slow publish became no
-      # publish and the site served the previous generation for another cycle.
+      # RELIABILITY: the action's own bound is 10 minutes and it cannot be
+      # raised: `timeout` is clamped to 600000 ms in the action's source (the
+      # log prints "timeout set to the maximum of 600000 milliseconds"). When
+      # it expires the action does not just stop waiting, it CANCELS the
+      # deployment it started. Run 34461157937 (2026-09-10) did exactly that,
+      # and so did the 2026-11-09 and 2026-11-10 scheduled deploys, which sat
+      # in GitHub's server-side `syncing_files` for the full 600 seconds. The
+      # identical artifact then deployed in about 40 seconds when rerun hours
+      # later, so the backend was slow, not the artifact.
       #
-      # 20 minutes is a bound on GitHub's Pages backend, not on this repo's
-      # work: the artifact is already uploaded by the time this step starts,
-      # and the job's own 30-minute `timeout-minutes` still contains it. A
-      # retry is deliberately not added here — a second `deploy-pages` after a
-      # cancel starts the same publish again against the same slow backend,
-      # where waiting longer is what the evidence says was needed.
+      # So the bound below is the honest one, and the recovery is a delayed
+      # second attempt: if the first deploy fails, wait five minutes and start a
+      # fresh deployment of the same, already uploaded artifact. An immediate
+      # retry would meet the same busy backend; the wait is the point. Only the
+      # first attempt tolerates its own failure. The second one is not allowed
+      # to, so the job fails only when both attempts fail. Worst case is
+      # 10 + 5 + 10 minutes, inside the job's 35.
       - uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
         id: deployment
+        continue-on-error: true
         with:
-          timeout: "1200000"
+          timeout: "600000"
+      - name: Wait before retrying the Pages deploy
+        if: ${{ steps.deployment.outcome == 'failure' }}
+        run: |
+          echo "::warning title=Pages deploy failed::First deploy-pages attempt failed; waiting 300s before a fresh deployment."
+          sleep 300
+      - uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+        id: deployment_retry
+        if: ${{ steps.deployment.outcome == 'failure' }}
+        with:
+          timeout: "600000"
 
   production-smoke:
     needs: [lighthouse, deploy]
@@ -578,13 +621,22 @@ jobs:
         env:
           BASE_URL: https://gtfsscorecard.org
           DEPLOYED_SHA: ${{ needs.lighthouse.outputs.deployed_sha }}
-          DEPLOYMENT_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+          # The artifact's own id, not `run_id-run_attempt`: a deploy-only
+          # rerun serves attempt 1's artifact under attempt 2.
+          DEPLOYMENT_ID: ${{ needs.lighthouse.outputs.deployment_id }}
           # Ceiling on the whole wait. One full edge TTL plus slack: enough for
           # a poisoned cache entry to expire once, not enough to sit on a
           # genuinely broken deploy.
           SMOKE_BUDGET_SECONDS: "900"
         run: |
           set -euo pipefail
+          case "$DEPLOYMENT_ID" in
+            "${GITHUB_RUN_ID}"-[1-9]*) ;;
+            *)
+              echo "::error::lighthouse output deployment_id='${DEPLOYMENT_ID}' is not from run ${GITHUB_RUN_ID}" >&2
+              exit 1
+              ;;
+          esac
           smoke_dir=$(mktemp -d)
           trap 'rm -rf "$smoke_dir"' EXIT
 
@@ -632,11 +684,11 @@ jobs:
             if ! jq -e --arg commit "$DEPLOYED_SHA" \
                 --arg deployment_id "$DEPLOYMENT_ID" \
                 --argjson source_run_id "$GITHUB_RUN_ID" \
-                --argjson source_run_attempt "$GITHUB_RUN_ATTEMPT" \
                 '.schema_version == 3 and .commit == $commit
                  and .source_run_id == $source_run_id
-                 and .source_run_attempt == $source_run_attempt
+                 and (.source_run_attempt | type == "number")
                  and .deployment_id == $deployment_id
+                 and .deployment_id == "\(.source_run_id)-\(.source_run_attempt)"
                  and (.release_manifest_sha256 | test("^[0-9a-f]{64}$"))' \
                 "$smoke_dir/deployment.json" >/dev/null 2>&1; then
               local served_id
@@ -714,3 +766,31 @@ jobs:
             cat "$smoke_dir/deployment.headers" 2>/dev/null || echo "(nothing readable)"
           } >&2
           exit 1
+
+  # Tell IndexNow which pages are new or changed, only after the deploy and
+  # the production smoke check succeeded (either failing skips this job).
+  # Never fails the run: indexnow.py exits 0 on any problem and prints a
+  # notice, and the sitemap still gets the pages crawled. No AWS role, no
+  # secret, read-only. https://www.indexnow.org/documentation
+  indexnow:
+    needs: production-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: pipeline/src/scorecard_pipeline/indexnow.py
+          sparse-checkout-cone-mode: false
+      - name: Fetch the list the build selected
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: indexnow-urls
+          path: ${{ runner.temp }}/indexnow
+      - name: Announce the new and changed pages to IndexNow
+        shell: bash
+        run: >-
+          python3 pipeline/src/scorecard_pipeline/indexnow.py submit
+          --list "$RUNNER_TEMP/indexnow/indexnow-urls.json"

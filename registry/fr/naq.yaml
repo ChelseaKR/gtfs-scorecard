@@ -802,7 +802,7 @@ agencies:
     subdivision_code: FR-NAQ
     subdivision_name: Nouvelle-Aquitaine
     is_official: true
-    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/82146378-f019-4048-aa16-7328081b0369
+    static_gtfs_url: https://data.grandpoitiers.fr/data-fair/api/v1/datasets/offre-de-transport-du-reseau-vitalis/metadata-attachments/gtfs.zip
     rt_urls:
       trip_updates: https://www.data.gouv.fr/api/1/datasets/r/bc0b47d2-38fa-461c-8916-18e05779370a
     rt_note: >-
@@ -815,8 +815,11 @@ agencies:
     operating_note: >-
       The archive carries both the Vitalis network and the Flex'e-bus
       demand-responsive service under one publisher. The calendar fetched on
-      2026-09-01 ran to 2026-11-08, so this record is worth an early
-      re-check.
+      2026-09-01 ran to 2026-11-08, so this record is worth an early re-check.
+      Checked 2026-11-08: www.data.gouv.fr's robots.txt disallows the address on
+      file, so this record now tracks data.grandpoitiers.fr, the publisher's own
+      address listed on France's National Access Point. The agency name and stop
+      locations in that file match this record.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
@@ -833,7 +836,12 @@ agencies:
     subdivision_code: FR-NAQ
     subdivision_name: Nouvelle-Aquitaine
     is_official: true
-    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/95654461-59d1-4a33-8830-f90d55e8a217
+    static_gtfs_url: https://api.pysae.com/api/v4/groups/parthenay/gtfs/pub
+    operating_note: >-
+      Checked 2026-11-08: www.data.gouv.fr's robots.txt disallows the address on
+      file, so this record now tracks api.pysae.com, the publisher's own address
+      listed on France's National Access Point. The agency name and stop
+      locations in that file match this record.
     rt_urls:
       trip_updates: https://www.data.gouv.fr/api/1/datasets/r/ab934941-2bd2-49e2-a83c-0dcddf95b1b9
       vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/ab934941-2bd2-49e2-a83c-0dcddf95b1b9

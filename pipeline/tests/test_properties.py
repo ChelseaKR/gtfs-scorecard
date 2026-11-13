@@ -36,6 +36,7 @@ from scorecard_pipeline.rt_drift import DriftStats, PlausibilityStats
 from scorecard_pipeline.score import (
     _OPERATIONAL_CODES,
     CATEGORY_WEIGHTS,
+    PARTIAL_FRESHNESS_QUALIFIER,
     build_scorecard,
     letter_grade,
     published_overall,
@@ -264,6 +265,10 @@ def test_overall_lies_within_measured_category_scores(scores: dict[str, float]) 
     published = published_overall(card.overall_score)
     assert card.grade == published["grade"] == letter_grade(published["score"])
     # And what to_json actually emits agrees with it, which is what a reader sees.
+    # A card without measured freshness is partial (rubric 1.5), and says so
+    # beside the letter rather than in it.
+    if "freshness" not in scores:
+        published = {**published, "grade_qualifier": PARTIAL_FRESHNESS_QUALIFIER}
     assert card.to_json()["overall"] == published
 
 

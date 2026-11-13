@@ -27,8 +27,34 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Changed
+
+- 49 records scored from a Mobility Database mirror copy now track the feed their
+  agency publishes today, each checked by reading the file, and 5 retire into the
+  record already publishing that feed. A move between a mirror copy and the
+  agency's URL is no longer a comparable transition, so it claims no improvement
+  and clears no finding. The page now names the day a mirror copy was downloaded.
+  Discovery no longer moves a record onto a frozen archive file (ADR 0076).
+- 4 more of those records and 9 Licence Ouverte records in France track a current
+  file, `advance-transit-at` retires into `advance-transit`, and `NOTICE` and
+  `/fetcher/` credit Transitland Atlas.
+
+### Fixed
+
+- robots.txt is now read before every redirect hop of a feed request, and the daily
+  liveness check reads it at all. A record refused this way says "not fetched" beside
+  its last measured grade. 86 records stop refreshing: 70 disallowed and 16 with
+  robots.txt refused or unreadable. One Azure host joins the robots.txt allowlist for
+  its 400 answer (ADR 0077).
+
 ### Added
 
+- **New and changed pages are announced to IndexNow after each deploy**
+  ([ADR 0073](docs/decisions/0073-indexnow-after-deploy.md)). The Deploy site
+  workflow compares the new sitemap with the live one and sends only the URLs
+  that are new or whose `lastmod` moved, after the production smoke check
+  passes. A deploy with no content change sends nothing. The IndexNow key file
+  at the site root is public by design.
 - **Sitemap `lastmod` for clearance logs, directory pages and NTD pages.** The
   1,183 sitemap URLs that carried none now get one derived from the data the page
   shows: a clearance log takes its newest `cleared` date, an `/agencies/` page the
@@ -137,6 +163,21 @@ the declared public surface).
 
 ### Changed
 
+- **Rubric 1.5: a grade whose freshness was not measured is marked partial.**
+  When the feed URL on file fails and the Mobility Database mirror copy scored
+  instead has already ended, freshness is held out of the grade (see Fixed).
+  The letter is kept, but it is now marked "partial: freshness not measured"
+  everywhere it appears: the agency page, board one-pager, call brief, paid
+  board report and bundle, both badges, search snippets, directory and program
+  lists, the map table, citations, the MCP tools, and the API, dataset, CSV,
+  parquet, and history exports (`overall.grade_qualifier` and a
+  `grade_qualifier` column, `null` or empty for a full grade). Unmeasured
+  freshness is never shown as 0 or as fresh. `RUBRIC_VERSION` is `1.5`, the
+  artifact schema is `1.20`, flat exports are `1.7` (`1.8` with
+  `license_notice`), and history tables are `1.2`. The bump rebuilds every
+  unchanged feed's artifact once, and the national trend restarts at 1.5 for
+  any record that cannot be rescored.
+
 - **The Daily collect job lists the artifact archive once instead of five or
   six times.** Each recursive copy under `data/artifacts/` lists all of its
   roughly 332,000 keys (0.11 GB of S3 egress), whatever the filters. The
@@ -229,6 +270,19 @@ the declared public surface).
 
 ### Security
 
+- **Container images clear ten fixable HIGH CVEs that failed the Trivy
+  scan on 2026-11-10.** All ten are Amazon Linux 2023 base packages, not
+  code in this repository: glibc CVE-2026-86805 (TOCTOU race, fixed in
+  `2.34-231.amzn2023.0.6`) reported across `glibc`, `glibc-common`,
+  `glibc-langpack-en`, and `glibc-minimal-langpack`, and rpm CVE-2026-103242,
+  CVE-2026-84837, and CVE-2026-95519 (fixed in `4.16.1.3-29.amzn2023.0.9`)
+  reported in both `rpm` and `rpm-libs`. `AL2023_REPO_GUID` in both
+  Dockerfiles moves from `c5eb6613...a009e57f60` to the current snapshot on
+  Amazon's mirror list, `b1757122...c71cee19`, whose repodata was read and
+  serves exactly those fixed builds (the old snapshot stops at glibc `0.5`
+  and rpm `0.8`). No `.trivyignore.yaml` change: these are real, fixable
+  CVEs, not exceptions.
+
 - **Container images clear two fixable HIGH CVEs that failed the Trivy
   scan on 2026-10-30.** `libbrotli` CVE-2026-111497 (out-of-bounds write in
   the Brotli decoder, fixed in `1.1.0-1.amzn2023.0.2`): `AL2023_REPO_GUID` in
@@ -263,6 +317,43 @@ the declared public surface).
 
 ### Fixed
 
+- **An empty Atom feed no longer says it was updated in 1970.** `/changes/feed.xml`
+  and the agency feeds with no entries now carry the date of the newest check
+  behind them, and leave the element out if there is no usable date.
+- **A returning browser no longer shows old "checked" dates.** The service worker
+  served every JSON file from its saved copy first, so a reader back after weeks
+  away saw weeks-old data on the first load with no notice. JSON is now network
+  first and falls back to the saved copy only when the network fails, and the
+  offline note names the date that copy was saved. The note stays after the
+  network returns until the page is reloaded. The 173 MB `index.json` and any
+  JSON over 16 MiB are no longer saved on the device, so views that need
+  `index.json` (`/app/#/cohort`, `/app/#/agency/<id>`) now need a connection. The
+  cache moves to `scorecard-offline-v3`, which clears the old copies.
+- **The Daily scorecard no longer stops on an expired mirror copy.** Holding
+  freshness out of the grade wrote `reason` and `mirror_copy` on the freshness
+  category, and the artifact schema refused both. The first such feed the sweep
+  reached failed `collect` on 2026-11-07 and 2026-11-08, and the site stayed at
+  2026-11-06. The schema now allows them on freshness only, in that one held
+  shape, and the same record passes through publish in both the sweep and the
+  full run. A record the sweep holds also stops saying "Measured 4 of 4": its
+  confidence count, level, and note now match the partial grade beside them.
+- **Padded CSV headers no longer hide columns.** Metra writes `service_id, monday`
+  (comma-space) and Renfe pads every line with trailing spaces, so lookups such
+  as `end_date` and `wheelchair_boarding` missed columns that were there. Metra
+  read as F 37.7 with "no service end date" and 0% wheelchair data. Column names
+  are now stripped of whitespace and byte-order marks when a table is read.
+- **An expired Mobility Database mirror copy is no longer graded as the
+  agency's lapse.** When the feed URL on file fails and the copy scored instead
+  has already ended, freshness is held out of the grade as not measured, the
+  failed download leads the fixes, and the agency page, board one-pager, call
+  brief, paid board report, and bundle manifest name the copy and its service
+  dates. CDTA, Grand Valley Transit, and Blacksburg Transit now use the https
+  form of their feed URLs, and SacRT uses its portal's apps.sacrt.com URL,
+  each checked on 2026-11-05. The freshness sweep keeps counting a current
+  mirror copy down between full runs, and once that copy's service ends the
+  sweep holds freshness out the same way, so the grade turns partial instead
+  of reading as current. Every surface, the artifact's own `overall` included,
+  marks a grade partial on one rule: freshness not measured, for any reason.
 - **`/ntd/` no longer reports a limit of the catalogs read as a count.** The
   reporter join matched 1,253 Report Year 2024 reporters against three catalogs
   and printed "473 to 641 have no feed discoverable in any open catalog", without

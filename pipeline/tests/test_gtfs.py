@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from scorecard_pipeline.completeness import completeness
 from scorecard_pipeline.gtfs import (
     TableTooLargeError,
     iter_table_rows,
@@ -342,3 +343,103 @@ def test_a_header_only_table_is_not_service_content_with_or_without_a_bom(
             name=f"gtfs-{len(stops)}.zip",
         )
         assert not read_feed_dates(str(path)).has_service_content
+
+
+# Header and first data line of each table, copied verbatim from the feeds
+# these agencies published on 2026-11-05. Metra separates every column with
+# comma-space; Renfe pads every line with trailing spaces. Both made
+# row.get("end_date") and row.get("wheelchair_boarding") miss columns that
+# were there, so Metra read as "no service end date" and 0% wheelchair data.
+METRA = {
+    "calendar.txt": (
+        "service_id, monday, tuesday, wednesday, thursday, friday, saturday, sunday, "
+        "start_date, end_date\n"
+        "A1, 1, 1, 1, 1, 1, 0, 0, 20250101, 20261231\n"
+    ),
+    "stops.txt": (
+        "stop_id, stop_name, stop_desc, stop_lat, stop_lon, zone_id, stop_url, "
+        "wheelchair_boarding\n"
+        "GENEVA, Geneva, ,41.8816667,-88.3100000,4, "
+        "https://metrarail.com/maps-schedules/train-lines/UP-W/stations/GENEVA,1\n"
+    ),
+    "trips.txt": (
+        "route_id, service_id, trip_id, trip_headsign, block_id, shape_id, direction_id\n"
+        "BNSF, A1, BNSF_BN1200_V4_A, Chicago Union Station, , BNSF_IB_1,  1\n"
+    ),
+    "routes.txt": (
+        "route_id, route_short_name, route_long_name, route_desc, agency_id, route_type, "
+        "route_color, route_text_color, route_url\n"
+        "BNSF, BNSF, Burlington Northern, , METRA, 2, 29C233, 000000, "
+        "https://metrarail.com/maps-schedules/train-lines/BNSF\n"
+    ),
+}
+
+PAD = " " * 40
+RENFE = {
+    "calendar.txt": (
+        "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,"
+        f"start_date,end_date{PAD}\n"
+        f"2026-11-052026-12-07001901,1,1,1,1,1,1,1,20261105,20261207{PAD}\n"
+    ),
+    "stops.txt": (
+        "stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,"
+        f"location_type,parent_station,stop_timezone,wheelchair_boarding{PAD}\n"
+        "17000,,Madrid-Chamart\u00edn-Clara Campoamor,,40.4711789,-3.6829524,,,,,"
+        f"Europe/Madrid,1{PAD}\n"
+    ),
+    "trips.txt": (
+        "route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,"
+        f"block_id,shape_id,wheelchair_accessible{PAD}\n"
+        f"1700037606GL023,2026-11-052026-12-07001901,0019012026-11-05,,00190,,,,1{PAD}\n"
+    ),
+}
+
+
+@pytest.mark.parametrize(
+    ("files", "end"),
+    [
+        pytest.param(METRA, dt.date(2026, 12, 31), id="metra-comma-space"),
+        pytest.param(RENFE, dt.date(2026, 12, 7), id="renfe-trailing-padding"),
+    ],
+)
+def test_padded_headers_still_name_their_columns(
+    make_gtfs_zip: Callable[..., Path], files: dict[str, str], end: dt.date
+) -> None:
+    """GTFS field names never contain spaces, so padding is not part of one."""
+    path = make_gtfs_zip(files)
+    assert read_feed_dates(str(path)).last_service_date == end
+    stops = list(iter_table_rows(str(path), "stops.txt"))
+    assert stops[0]["wheelchair_boarding"].strip() == "1"
+    assert all(key == key.strip() for row in stops for key in row)
+
+
+def test_padded_headers_do_not_read_as_missing_accessibility(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    """The published failure: stops that say wheelchair_boarding=1 read as 0%
+    stated and trips with a headsign read as having none."""
+    details = completeness(str(make_gtfs_zip(METRA))).details  # type: ignore[union-attr]
+    assert details["wheelchair_boarding_pct"] == 100.0
+    renfe = completeness(str(make_gtfs_zip(RENFE))).details  # type: ignore[union-attr]
+    assert renfe["wheelchair_boarding_pct"] == 100.0
+    assert renfe["wheelchair_accessible_pct"] == 100.0
+
+
+def test_a_bom_and_padding_together_are_stripped_from_the_first_column(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    """utf-8-sig strips one leading BOM; a second one, or one after a space,
+    used to stay glued to the first column name."""
+    path = make_gtfs_zip(
+        {"stops.txt": "\ufeff \ufeffstop_id , stop_name \nS1, Main St\n"},
+    )
+    rows = list(iter_table_rows(str(path), "stops.txt"))
+    assert rows == [{"stop_id": "S1", "stop_name": "Main St"}]
+
+
+def test_a_quoted_value_after_comma_space_is_read_as_quoted(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    path = make_gtfs_zip({"stops.txt": 'stop_id, stop_name\nS1, "Main St, North"\n'})
+    rows = list(iter_table_rows(str(path), "stops.txt"))
+    assert rows[0]["stop_name"] == "Main St, North"

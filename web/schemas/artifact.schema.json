@@ -276,6 +276,11 @@
             "F"
           ]
         },
+        "grade_qualifier": {
+          "type": "string",
+          "enum": ["partial: freshness not measured"],
+          "description": "Present only when the grade is partial: freshness was not measured because an expired Mobility Database mirror copy was held out of the grade (rubric 1.5). The letter is still published and must be shown with this qualifier."
+        },
         "margin_to_next_band": {
           "type": [
             "number",
@@ -304,7 +309,14 @@
           "$ref": "#/$defs/category"
         },
         "freshness": {
-          "$ref": "#/$defs/category"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/heldMirrorFreshness"
+            },
+            {
+              "$ref": "#/$defs/category"
+            }
+          ]
         },
         "completeness": {
           "$ref": "#/$defs/category"
@@ -607,6 +619,62 @@
         "not_allowed_count": { "type": "integer", "minimum": 0 },
         "not_allowed_pct": { "type": ["number", "null"], "minimum": 0, "maximum": 100 }
       }
+    },
+    "heldMirrorFreshness": {
+      "type": "object",
+      "description": "Freshness held out of the grade because the feed URL failed and the Mobility Database mirror copy scored instead has already ended its service. It has no score, findings, or details: the copy's dates sit under mirror_copy, never as an expiry countdown, so they cannot read as the agency's own lapse. Comes with overall.grade_qualifier.",
+      "required": [
+        "name",
+        "status",
+        "weight",
+        "reason",
+        "summary",
+        "mirror_copy"
+      ],
+      "properties": {
+        "name": {
+          "const": "freshness"
+        },
+        "status": {
+          "const": "not_yet_measured"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reason": {
+          "const": "mirror_copy_expired"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "mirror_copy": {
+          "type": "object",
+          "required": [
+            "service_start",
+            "service_end"
+          ],
+          "properties": {
+            "service_start": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date"
+            },
+            "service_end": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
     },
     "category": {
       "type": "object",

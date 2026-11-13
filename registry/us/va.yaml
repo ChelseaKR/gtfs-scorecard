@@ -69,7 +69,13 @@ agencies:
     name: HDPT
     subdivision_code: US-VA
     subdivision_name: Virginia
-    static_gtfs_url: http://harrisonburgva.gov/sites/default/files/Transit/files/gtfs/google_transit_Working%20%281%29.zip
+    static_gtfs_url: https://passio3.com/harrisonburg/passioTransit/gtfs/google_transit.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks passio3.com, the current address Transitland lists for
+      this feed. The agency name and service area in that file match this
+      record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 382
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -277,7 +283,12 @@ agencies:
     name: Blacksburg Transit
     subdivision_code: US-VA
     subdivision_name: Virginia
-    static_gtfs_url: http://www.bt4uclassic.org/gtfs/google_transit.zip
+    static_gtfs_url: https://www.bt4uclassic.org/gtfs/google_transit.zip
+    operating_note: >-
+      Checked 2026-11-05: the http download from www.bt4uclassic.org was cut off
+      mid-transfer, so runs scored an expired Mobility Database copy. Over https
+      the same path serves the current feed (Last-Modified 2026-11-02, service
+      through 2026-12-30).
     mdb_id: 1189
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -315,7 +326,13 @@ agencies:
     name: JAUNT Inc
     subdivision_code: US-VA
     subdivision_name: Virginia
-    static_gtfs_url: https://e8vkzj229xs.exactdn.com/wp-content/uploads/2022/04/GTFS-4.11.2022.zip
+    static_gtfs_url: https://gtfs.remix.com/jaunt_charlottesville_va_us.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks gtfs.remix.com, the current address Transitland lists
+      for this feed. The agency name and service area in that file match this
+      record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 1324
     license_note: "License: http://virginia-gtfs.com/"
 
