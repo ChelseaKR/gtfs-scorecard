@@ -34,7 +34,7 @@ from .fetch import USER_AGENT
 from .gtfs import _parse_gtfs_date, read_tables
 from .metrics import CategoryResult, Finding
 from .net import UnresolvableHostError, UnsafeURLError, safe_get
-from .robots_policy import RobotsRefusedError, shared_checker
+from .robots_policy import RobotsRefusedError, require_robots
 
 log = logging.getLogger(__name__)
 
@@ -312,10 +312,12 @@ def fetch_sample(kind: str, url: str, archive_to: str | None = None) -> RtSample
     """
     fetched_at = int(time.time())
     try:
-        # ADR 0070: a robots.txt refusal raises before any request and is
-        # recorded as not measured, never as the agency's outage.
-        shared_checker().require(url)
-        body = safe_get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
+        # ADR 0070, 0077: a robots.txt refusal, on any hop, raises before that
+        # request and is recorded as not measured, never as the agency's outage.
+        require_robots(url)
+        body = safe_get(
+            url, headers={"User-Agent": USER_AGENT}, timeout=30, hop_guard=require_robots
+        )
         msg = gtfs_realtime_pb2.FeedMessage()
         msg.ParseFromString(body)
     except Exception as exc:

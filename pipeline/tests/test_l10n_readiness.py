@@ -126,7 +126,11 @@ HARDCODED_STRING_BASELINE = {
     # footer markup. A sentence a reader sees does not belong in this file, so
     # this stays at 3.
     "measure.js": 3,
-    "nav.js": 4,
+    # Raised 4 -> 7: the offline note now names the saved data's date and has a
+    # back-online form, so a saved copy cannot pass as current. The note was
+    # already English-only; nav.js runs as a classic script on every page and
+    # cannot import the generated strings module, so moving it is its own job.
+    "nav.js": 7,
     # The compact paid-tier summary the landing page and /support/ render from
     # web/bundle/plan.json. New module, so this is its first recorded baseline
     # rather than an increase: six English literals, all of them the same

@@ -3311,8 +3311,14 @@ function mirrorCopyCaveat(artifact) {
       ? held.service_end
       : details.effective_expiry_date || details.last_service_date || details.feed_end_date,
   );
-  const lead =
-    "Scored from a Mobility Database mirror copy, because the feed URL on file could not be downloaded.";
+  // A sweep restamps snapshot_date without downloading (feed_provenance.py).
+  const recompute = artifact?.recompute;
+  const copied = isoDateOrNull(
+    recompute?.kind === "freshness" ? recompute.feed_fetched_date : artifact?.snapshot_date,
+  );
+  const lead = `Scored from a Mobility Database mirror copy${
+    copied ? ` downloaded on ${copied}` : ""
+  }, because the feed URL on file could not be downloaded.`;
   const dates =
     start && end
       ? ` Service dates in that copy run ${start} to ${end}.`

@@ -8,6 +8,8 @@ agencies:
     subdivision_code: US-NH
     subdivision_name: New Hampshire
     static_gtfs_url: http://whereismybus.advancetransit.com/GTFS/feed.zip
+    alias_of: advance-transit
+    feed_status: deprecated
     mdb_id: 451
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.

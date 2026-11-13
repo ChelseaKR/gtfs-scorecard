@@ -77,6 +77,14 @@ def _date_to_dt(date: str) -> dt.datetime:
         return dt.datetime(1970, 1, 1, tzinfo=dt.UTC)
 
 
+def _checked_on(date: str | None) -> dt.datetime | None:
+    """The date of the newest check behind an empty feed, or None if unusable."""
+    try:
+        return dt.datetime.fromisoformat(date or "").replace(tzinfo=dt.UTC)
+    except ValueError:
+        return None
+
+
 def render_atom(
     *,
     feed_id: str,
@@ -89,13 +97,14 @@ def render_atom(
 ) -> str:
     """Serialize an Atom 1.0 feed.
 
-    ``updated`` defaults to the newest entry's timestamp (or the epoch when there
-    are no entries) so the document stays a pure function of its data. Entries are
+    ``updated`` defaults to the newest entry's timestamp so the document stays a
+    pure function of its data. An empty feed with no ``updated`` has no date to
+    report, so the element is left out: the epoch would read as a real date, and
+    the sites' feeds always pass the date of their newest check. Entries are
     emitted newest first.
     """
     ordered = sorted(entries, key=lambda e: (e.updated, e.id), reverse=True)
-    _epoch = dt.datetime(1970, 1, 1, tzinfo=dt.UTC)
-    feed_updated = updated or (ordered[0].updated if ordered else _epoch)
+    feed_updated = updated or (ordered[0].updated if ordered else None)
     parts = [
         '<?xml version="1.0" encoding="utf-8"?>',
         '<feed xmlns="http://www.w3.org/2005/Atom">',
@@ -104,7 +113,7 @@ def render_atom(
         f"  <id>{escape(feed_id)}</id>",
         f'  <link rel="self" type="application/atom+xml" href="{escape(self_url)}"/>',
         f'  <link rel="alternate" type="text/html" href="{escape(alternate_url)}"/>',
-        f"  <updated>{_rfc3339(feed_updated)}</updated>",
+        *([f"  <updated>{_rfc3339(feed_updated)}</updated>"] if feed_updated else []),
         # RFC 4287 4.1.1 requires a feed-level author when entries omit their own;
         # without it the document is not valid Atom and feed validators reject it.
         f"  <author><name>{escape(SITE_NAME)}</name></author>",
@@ -201,6 +210,7 @@ def site_change_feed(
     max_entries: int = 60,
     comparison: dict[str, object] | None = None,
     export_changes: list[dict[str, object]] | None = None,
+    checked_on: str | None = None,
 ) -> str:
     """The site-wide Atom feed: every agency that moved on the latest run, plus
     every agency whose export structure changed on the latest run.
@@ -216,6 +226,9 @@ def site_change_feed(
     (regressions first, then largest move) rather than date-ordered: a day with
     many export changes would push the grade drops that matter most out of the
     document. Two bounded lists keep both guarantees.
+
+    ``checked_on`` is the newest check's date. It dates the feed only when there
+    are no entries to date it.
     """
     entries = [_change_entry(c, base_url) for c in changes[:max_entries]]
     entries.extend(_export_change_entry(c, base_url) for c in (export_changes or [])[:max_entries])
@@ -250,6 +263,7 @@ def site_change_feed(
         self_url=f"{base_url}/changes/feed.xml",
         alternate_url=f"{base_url}/pulse/#changes",
         entries=entries,
+        updated=None if entries else _checked_on(checked_on),
     )
 
 
@@ -260,6 +274,7 @@ def agency_change_feed(
     *,
     base_url: str,
     max_entries: int = 50,
+    checked_on: str | None = None,
 ) -> str:
     """A single agency's Atom feed of dated change events.
 
@@ -271,6 +286,9 @@ def agency_change_feed(
     attributes works) when the latest run's artifact carries a non-empty
     ``export_diff`` block, so a subscriber hears about a structural export
     change alongside grade and score history.
+
+    ``checked_on`` is the latest check's date. It dates the feed only when there
+    are no entries to date it.
     """
     entries: list[Entry] = []
     for ev in events[:max_entries]:
@@ -300,6 +318,7 @@ def agency_change_feed(
         self_url=f"{base_url}/agency/{agency_id}/feed.xml",
         alternate_url=f"{base_url}/agency/{agency_id}/",
         entries=entries,
+        updated=None if entries else _checked_on(checked_on),
     )
 
 

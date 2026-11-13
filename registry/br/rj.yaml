@@ -10,13 +10,18 @@ agencies:
     subdivision_name: Rio de Janeiro
     mdb_id: "1791"
     is_official: true
-    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/8ffe62ad3b2f42e49814bf941654ea6c/data
+    static_gtfs_url: https://dados.mobilidade.rio/gtfs/schedule
     license_note: >-
       CC BY 4.0 through the data.rio open data portal; credit the Prefeitura da
       Cidade do Rio de Janeiro and the Instituto Pereira Passos.
     operating_note: >-
       Rio de Janeiro's municipal bus and BRT network as published by the
-      Secretaria Municipal de Transportes; counted as one feed record.
+      Secretaria Municipal de Transportes; counted as one feed record. Checked
+      2026-11-08: the feed URL on file had stopped working, so this record now
+      tracks dados.mobilidade.rio, the current address Transitland lists for
+      this feed. The agency name and service area in that file match this
+      record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     reuse_evidence:
       decision: approved
       source_kind: official_portal

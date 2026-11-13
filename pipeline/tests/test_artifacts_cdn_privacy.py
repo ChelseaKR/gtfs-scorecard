@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 from pathlib import Path
+from typing import Any
 
 from scorecard_pipeline.artifact_lifecycle import MUTABLE_PUBLIC_ARTIFACT_NAMES
 
@@ -239,3 +240,221 @@ def test_public_artifact_assembly_is_a_positive_allowlist(tmp_path: Path) -> Non
     }
     assert (retired / "2026-07-13.json").exists()
     assert not (destination / "retired-demo").exists()
+
+
+def _assemble(source: Path, destination: Path) -> set[str]:
+    bash = shutil.which("bash")
+    assert bash is not None
+    subprocess.run(  # noqa: S603 - fixed executable and test-owned paths
+        [
+            bash,
+            str(ROOT / "pipeline" / "scripts" / "assemble_public_artifacts.sh"),
+            str(source),
+            str(destination),
+        ],
+        check=True,
+    )
+    return {
+        path.relative_to(destination).as_posix()
+        for path in destination.rglob("*")
+        if path.is_file()
+    }
+
+
+def _dated_sample(tmp_path: Path) -> tuple[Path, Path]:
+    source = tmp_path / "source"
+    (source / "demo").mkdir(parents=True)
+    (source / "solo").mkdir()
+    (source / "index.json").write_text(
+        json.dumps({"agencies": {"demo": {}, "solo": {}, "gap": {}}})
+    )
+    for name in (
+        "2026-06-01.json",  # old: dropped
+        "2026-09-20.json",  # inside 90 days of the newest: kept
+        "2026-11-10.json",  # newest
+        "latest.json",
+        "geometry.geojson",
+    ):
+        (source / "demo" / name).write_text("{}")
+    (source / "gap").mkdir()
+    for name in ("2026-06-01.json", "2026-08-10.json", "2026-11-10.json", "latest.json"):
+        (source / "gap" / name).write_text("{}")  # 08-10 is the previous one, 92 days old
+    for name in ("2026-01-01.json", "latest.json"):  # lone old file is also the newest
+        (source / "solo" / name).write_text("{}")
+    return source, tmp_path / "site"
+
+
+def test_dated_snapshots_keep_ninety_days_and_the_previous_one(tmp_path: Path) -> None:
+    source, destination = _dated_sample(tmp_path)
+    published = _assemble(source, destination)
+
+    assert "demo/2026-06-01.json" not in published
+    assert "gap/2026-06-01.json" not in published
+    assert {
+        "demo/2026-09-20.json",
+        "gap/2026-08-10.json",
+        "gap/2026-11-10.json",
+        "demo/2026-11-10.json",
+        "demo/latest.json",
+        "demo/geometry.geojson",
+        "solo/2026-01-01.json",
+        "solo/latest.json",
+    } <= published
+    assert (source / "demo" / "2026-06-01.json").exists(), "only the published copy shrinks"
+
+
+def test_dated_snapshot_trim_negative_control(tmp_path: Path) -> None:
+    """With the trim removed the old file ships, so the test above can fail."""
+    script = (ROOT / "pipeline" / "scripts" / "assemble_public_artifacts.sh").read_text()
+    assert "timedelta(days=90)" in script
+    broken = tmp_path / "assemble.sh"
+    broken.write_text(script.replace("timedelta(days=90)", "timedelta(days=9000)"))
+    # The script locates its sibling python via BASH_SOURCE, so keep it in place.
+    real = ROOT / "pipeline" / "scripts" / "assemble_public_artifacts.sh"
+    backup = real.read_text()
+    source, destination = _dated_sample(tmp_path)
+    try:
+        real.write_text(broken.read_text())
+        published = _assemble(source, destination)
+    finally:
+        real.write_text(backup)
+    assert "demo/2026-06-01.json" in published
+
+
+def _is_compact(text: str) -> bool:
+    """Exactly what ``json.dumps`` with ``,`` and ``:`` separators gives for its own object."""
+    return text == json.dumps(json.loads(text), separators=(",", ":"), ensure_ascii=text.isascii())
+
+
+def _history_point(date: str) -> dict[str, Any]:
+    return {
+        "categories": {"freshness": 100.0},
+        "date": date,
+        "days_until_expiry": 40,
+        "feed_sha256": "ab" * 32,
+        "grade": "B",
+        "grade_qualifier": None,
+        "reader_archive_profile": "raw-v1",
+        "rubric_version": "1.5",
+        "score": 80.0,
+        "scoring_profile_id": "gtfs-scorecard-1.3",
+        "scoring_profile_rubric_version": "1.5",
+        "service_horizon_status": "within_review_threshold",
+        "validator_version": "7.0.0",
+    }
+
+
+def _pretty_sample(tmp_path: Path) -> tuple[Path, Path]:
+    """A store written the way publish.py writes it: indent=2, sorted keys, 130 points."""
+    source = tmp_path / "source"
+    (source / "demo").mkdir(parents=True)
+    (source / "rollups").mkdir()
+    dates = [f"2026-{1 + i // 28:02d}-{1 + i % 28:02d}" for i in range(130)]
+    index = {
+        "agencies": {
+            "demo": {"name": "Demo", "history": [_history_point(d) for d in dates]},
+            "few": {"name": "Few", "history": [_history_point(d) for d in dates[:3]]},
+        }
+    }
+    latest = {
+        "agency": {"id": "demo", "name": "Demo"},
+        "categories": {"freshness": {"details": {"service_horizon_status": "unknown"}}},
+        "feed": {"sha256": "ab" * 32, "static_url": "https://pub.example/gtfs.zip"},
+        "snapshot_date": "2026-11-10",
+    }
+    for path, document in (
+        (source / "index.json", index),
+        (source / "demo" / "latest.json", latest),
+        (source / "demo" / "2026-11-10.json", latest),
+        (source / "directory.json", {"agencies": [{"id": "demo", "grade": "B"}]}),
+        (source / "rollups" / "index.json", {"rollups": [{"id": "california"}]}),
+    ):
+        path.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n")
+    (source / "demo" / "geometry.geojson").write_text('{"type":"FeatureCollection","features":[]}')
+    return source, tmp_path / "site"
+
+
+def test_published_json_is_compact_and_parses_to_the_same_object(tmp_path: Path) -> None:
+    source, destination = _pretty_sample(tmp_path)
+    published = _assemble(source, destination)
+    assert {
+        "index.json",
+        "directory.json",
+        "rollups/index.json",
+        "demo/latest.json",
+        "demo/2026-11-10.json",
+        "demo/geometry.geojson",
+    } <= published
+
+    for relative in (
+        "directory.json",
+        "rollups/index.json",
+        "demo/latest.json",
+        "demo/2026-11-10.json",
+    ):
+        pretty = (source / relative).read_text()
+        compact = (destination / relative).read_text()
+        assert _is_compact(compact), relative
+        assert json.loads(compact) == json.loads(pretty), relative
+        assert len(compact) < len(pretty), relative
+        # Negative control: the pretty-printed source fails the same assertion.
+        assert not _is_compact(pretty), relative
+    assert _is_compact((destination / "index.json").read_text())
+    geometry = destination / "demo" / "geometry.geojson"
+    assert geometry.read_text() == (source / "demo" / "geometry.geojson").read_text()
+    assert not _is_compact((source / "index.json").read_text()), "the source store stays pretty"
+
+
+def test_published_index_history_keeps_the_newest_120_points_without_two_fields(
+    tmp_path: Path,
+) -> None:
+    source, destination = _pretty_sample(tmp_path)
+    _assemble(source, destination)
+    index = json.loads((destination / "index.json").read_text())
+    stored = json.loads((source / "index.json").read_text())
+
+    demo = index["agencies"]["demo"]["history"]
+    assert len(demo) == 120 and len(stored["agencies"]["demo"]["history"]) == 130
+    assert [p["date"] for p in demo] == [p["date"] for p in stored["agencies"]["demo"]["history"]][
+        -120:
+    ]
+    assert len(index["agencies"]["few"]["history"]) == 3
+    for entry in index["agencies"].values():
+        for point in entry["history"]:
+            assert "feed_sha256" not in point and "service_horizon_status" not in point
+            assert {
+                "date",
+                "grade",
+                "grade_qualifier",
+                "score",
+                "categories",
+                "days_until_expiry",
+            } <= set(point)
+            assert {"rubric_version", "scoring_profile_id", "validator_version"} <= set(point)
+    assert "feed_sha256" in stored["agencies"]["demo"]["history"][0], "only the published copy"
+
+    latest = json.loads((destination / "demo" / "latest.json").read_text())
+    assert latest["feed"]["sha256"] == "ab" * 32
+    assert latest["categories"]["freshness"]["details"]["service_horizon_status"] == "unknown"
+
+
+def test_publish_boundary_pass_negative_control(tmp_path: Path) -> None:
+    """With the boundary pass removed, the pretty, unslimmed index ships, so the
+    two tests above can fail."""
+    real = ROOT / "pipeline" / "scripts" / "assemble_public_artifacts.sh"
+    script = real.read_text()
+    call = (
+        'python3 -I "$script_dir/../src/scorecard_pipeline/publish_boundary.py" '
+        '"$dest_root" --write'
+    )
+    assert call in script
+    source, destination = _pretty_sample(tmp_path)
+    try:
+        real.write_text(script.replace(call, "true"))
+        _assemble(source, destination)
+    finally:
+        real.write_text(script)
+    published = (destination / "index.json").read_text()
+    assert not _is_compact(published)
+    assert len(json.loads(published)["agencies"]["demo"]["history"]) == 130
+    assert "feed_sha256" in published

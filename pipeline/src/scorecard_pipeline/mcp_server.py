@@ -346,6 +346,22 @@ def get_history(
     }
 
 
+def _newest_record(fetch: Fetch, base: str, agency_id: str, date: str) -> Any:
+    """The full scorecard behind the newest history point.
+
+    That is ``latest.json``, which is always published; the dated file of the
+    same day is a byte-identical copy of it (the site build materializes it from
+    those bytes), so reading ``latest.json`` needs nothing from the dated window.
+    If ``latest.json`` carries a different date than the index's newest point
+    (a fork mid-deploy), it is a different record, and the dated file is the
+    honest side of the comparison.
+    """
+    record = fetch(f"{base}/data/artifacts/{agency_id}/latest.json")
+    if str(record.get("snapshot_date") or "") == date:
+        return record
+    return fetch(f"{base}/data/artifacts/{agency_id}/{date}.json")
+
+
 def _latest_finding_changes(
     fetch: Fetch, agency_id: str, points: list[dict[str, Any]]
 ) -> dict[str, Any] | None:
@@ -374,8 +390,18 @@ def _latest_finding_changes(
             ),
         }
     base = _base_url()
-    before = fetch(f"{base}/data/artifacts/{agency_id}/{previous.get('date')}.json")
-    after = fetch(f"{base}/data/artifacts/{agency_id}/{latest.get('date')}.json")
+    try:
+        before = fetch(f"{base}/data/artifacts/{agency_id}/{previous.get('date')}.json")
+        after = _newest_record(fetch, base, agency_id, str(latest.get("date") or ""))
+    except (OSError, ValueError):
+        # Dated snapshots are published for at most 90 days plus each agency's
+        # previous one, so an older point can be absent (HTTP 404 is a URLError).
+        return {
+            "comparable": False,
+            "from_date": previous.get("date"),
+            "to_date": latest.get("date"),
+            "reason": "a dated snapshot for one of the two most recent points is not published",
+        }
     before_codes, after_codes = finding_codes(before), finding_codes(after)
     return {
         "comparable": True,

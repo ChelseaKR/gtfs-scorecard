@@ -11,7 +11,8 @@ The maintainer's rules, decided 2026-10-13:
 - A 403 at ``/robots.txt`` also means "no file", but only on the hosts in
   ``MISSING_OBJECT_403_HOSTS``: object stores and API gateways where 403 is the
   generic answer for any object that does not exist. Each entry carries the
-  reason and the date it was checked.
+  reason and the date it was checked. One named host answers 400 instead, and
+  only that host and that status count (ADR 0077).
 - Everywhere else, a 401, 403, 429 or 5xx, a redirect that leaves the
   ``robots.txt`` path, an HTML page served in place of a rules file, or a
   failure to read the file at all puts the host off-limits.
@@ -24,9 +25,11 @@ from __future__ import annotations
 import fnmatch
 import importlib.metadata
 import urllib.parse
+import urllib.request
 import urllib.robotparser
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 from .instance import BASE_URL
 
@@ -43,6 +46,7 @@ USER_AGENT = f"gtfs-scorecard/{_package_version()} (+{BASE_URL})"
 # Reason codes, written into run summaries and reports.
 NO_ROBOTS_FILE = "no_robots_file"
 MISSING_OBJECT_403 = "missing_object_403"
+MISSING_OBJECT_400 = "missing_object_400"
 ALLOWED_BY_ROBOTS = "allowed_by_robots"
 DISALLOWED_BY_ROBOTS = "disallowed_by_robots"
 ROBOTS_REDIRECTED_OFF = "robots_redirected_off"
@@ -63,6 +67,7 @@ class AllowlistedHost:
 
     pattern: str  # an fnmatch pattern over the lowercase hostname
     reason: str
+    status: int = 403  # the one status at /robots.txt this entry reads as "no file"
 
 
 # Each entry was checked on 2026-10-13 by requesting /robots.txt and a random
@@ -124,14 +129,26 @@ MISSING_OBJECT_403_HOSTS: tuple[AllowlistedHost, ...] = (
         "CloudFront distribution over an S3 origin (Server: AmazonS3); a random path "
         "answers 403 AccessDenied",
     ),
+    AllowlistedHost(
+        "dataodpt.blob.core.windows.net",
+        "Azure Blob Storage: checked 2026-11-08, /robots.txt and a random root path both "
+        "answer 400 OutOfRangeInput XML. We infer this is the host's generic reply for a "
+        "path with no container",
+        status=400,
+    ),
 )
 
 
 def allowlisted_403(host: str) -> AllowlistedHost | None:
     """The allowlist entry that covers ``host``, if any."""
+    return _allowlisted(host, 403)
+
+
+def _allowlisted(host: str, status: int) -> AllowlistedHost | None:
+    """The entry that reads ``status`` from ``host`` as "no file", if any."""
     name = host.lower().rstrip(".")
     for entry in MISSING_OBJECT_403_HOSTS:
-        if fnmatch.fnmatchcase(name, entry.pattern):
+        if entry.status == status and fnmatch.fnmatchcase(name, entry.pattern):
             return entry
     return None
 
@@ -194,6 +211,8 @@ def classify_robots_response(
         return RobotsVerdict(True, NO_ROBOTS_FILE)
     if status == 403 and allowlisted_403(urllib.parse.urlsplit(target_url).hostname or ""):
         return RobotsVerdict(True, MISSING_OBJECT_403)
+    if status == 400 and _allowlisted(urllib.parse.urlsplit(target_url).hostname or "", 400):
+        return RobotsVerdict(True, MISSING_OBJECT_400)
     if status >= 400:
         return RobotsVerdict(False, f"robots_status_{status}")
     if not urllib.parse.urlsplit(final_url).path.endswith("/robots.txt"):
@@ -304,6 +323,40 @@ def shared_checker() -> RobotsChecker:
     if _SHARED is None:
         _SHARED = RobotsChecker()
     return _SHARED
+
+
+def require_robots(url: str) -> None:
+    """``hop_guard`` for the guarded client: refuse any hop robots.txt forbids (ADR 0077).
+
+    Reads ``shared_checker`` at call time, so a run reads each host's file once
+    however many feeds redirect to it.
+    """
+    shared_checker().require(url)
+
+
+class _RobotsRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """urllib's redirect handling, with robots.txt read before each new hop."""
+
+    def redirect_request(
+        self,
+        req: urllib.request.Request,
+        fp: Any,
+        code: int,
+        msg: str,
+        headers: Any,
+        newurl: str,
+    ) -> urllib.request.Request | None:
+        require_robots(newurl)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+_ROBOTS_OPENER = urllib.request.build_opener(_RobotsRedirectHandler)
+
+
+def guarded_urlopen(req: urllib.request.Request, timeout: float) -> Any:
+    """``urlopen`` that reads robots.txt before the first request and every redirect."""
+    require_robots(req.full_url)
+    return _ROBOTS_OPENER.open(req, timeout=timeout)
 
 
 def reset_shared_checker(checker: RobotsChecker | None = None) -> None:

@@ -13649,6 +13649,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             base_url=BASE_URL,
             comparison=_comparison_metadata,
             export_changes=export_changes,
+            checked_on=newest_data_date(
+                artifact.get("snapshot_date") for artifact in artifacts_by_id.values()
+            ),
         ),
     )
 
@@ -13921,6 +13924,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                     artifact["agency"]["name"],
                     _agency_feed_events(artifact, history),
                     base_url=BASE_URL,
+                    checked_on=data_date(artifact.get("snapshot_date")),
                 ),
             )
 
