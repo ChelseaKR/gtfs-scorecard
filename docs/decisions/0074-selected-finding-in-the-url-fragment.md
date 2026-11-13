@@ -48,3 +48,8 @@ signal kept arriving from everywhere else.
 - `pipeline/tests/test_finding_fragment.py` fails if any generated link or
   golden page carries `?finding=`, and a negative control restores the old form
   to prove the check can fail.
+- The structural SEO contract (`pipeline/scripts/check_site_seo.py`) reads a
+  `#finding=` fragment as page state, not as an element id. It checks the
+  element the script scrolls to instead: `at` when the link names one, and
+  `finding-handoff` otherwise. Before that, every finding link on the site was
+  reported as a missing fragment.
