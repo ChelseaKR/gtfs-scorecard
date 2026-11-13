@@ -63,7 +63,13 @@ agencies:
     name: Corpus Christi Regional Transportation Authority
     subdivision_code: US-TX
     subdivision_name: Texas
-    static_gtfs_url: https://www.ccrta.org/gtfs/ccrta-gtfs.zip
+    static_gtfs_url: https://gtfs.ccrta.cadavl.com/CCRTA/GTFS/GTFS_CCRTA.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks gtfs.ccrta.cadavl.com, the current address Transitland
+      lists for this feed. The agency name and service area in that file match
+      this record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 315
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

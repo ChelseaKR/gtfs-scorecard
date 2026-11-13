@@ -18,9 +18,21 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+import jsonschema
+import pytest
+
 from scorecard_pipeline.bundle import SOURCE_MIRROR, STATUS_INCLUDED, build_bundle, parse_request
+from scorecard_pipeline.config import Agency
 from scorecard_pipeline.feed_provenance import mirror_copy_caveat
-from scorecard_pipeline.metrics import Finding
+from scorecard_pipeline.fetch import FetchResult
+from scorecard_pipeline.metrics import CategoryResult, Finding
+from scorecard_pipeline.publish import (
+    CONFIDENCE_LEVELS,
+    build_artifact,
+    confidence_after_hold,
+    publish,
+    validate_artifact,
+)
 from scorecard_pipeline.report import build_report_data, render_report
 from scorecard_pipeline.score import (
     FEED_DOWNLOAD_FAILED,
@@ -28,7 +40,7 @@ from scorecard_pipeline.score import (
     build_scorecard_for_fetch,
     score_feed_content,
 )
-from scorecard_pipeline.sweep import can_resweep
+from scorecard_pipeline.sweep import can_resweep, needs_sweep, resweep
 
 TODAY = dt.date(2026, 11, 5)
 URL = "https://iportal.example.org/GTFS/SRTD/google_transit.zip"
@@ -54,7 +66,6 @@ def _feed(make_gtfs_zip: Callable[..., Path], start: str, end: str) -> Path:
 
 
 def _correctness() -> Any:
-    from scorecard_pipeline.metrics import CategoryResult
 
     return CategoryResult(name="correctness", score=90.0, summary="ok")
 
@@ -218,7 +229,6 @@ def test_the_freshness_sweep_keeps_counting_down_a_mirror_copy() -> None:
 
 
 def test_a_lead_fix_never_pushes_the_list_past_three() -> None:
-    from scorecard_pipeline.metrics import CategoryResult
 
     findings = [
         Finding(
@@ -246,3 +256,221 @@ def test_a_lead_fix_never_pushes_the_list_past_three() -> None:
     )
     card = build_scorecard([cat], lead_fix=lead)
     assert [f.code for f in card.top_fixes] == [FEED_DOWNLOAD_FAILED, "c0", "c1"]
+
+
+# --- the held record against the published schema ------------------------------
+#
+# hold_mirror_freshness shipped without its schema, and every test above reads
+# the held category without validating it. publish() validates, so the first
+# feed the sweep held stopped the Daily scorecard's collect job on 2026-11-07
+# and 2026-11-08, and the site froze at 2026-11-06.
+
+#: categories.freshness exactly as run 42484805472 printed it when it failed.
+FAILING_FRESHNESS: dict[str, Any] = {
+    "name": "freshness",
+    "status": "not_yet_measured",
+    "weight": 0.2,
+    "reason": "mirror_copy_expired",
+    "summary": (
+        "Not graded. The feed URL on file could not be downloaded, "
+        "and the Mobility Database mirror copy scored instead "
+        "ended its service on 2023-03-22. That date describes the "
+        "copy, not the feed the agency publishes today, so it does "
+        "not count against the grade."
+    ),
+    "mirror_copy": {"service_start": None, "service_end": "2023-03-22"},
+}
+MIRROR_AGENCY = Agency(
+    id="advance-transit-at",
+    name="Advance Transit",
+    static_gtfs_url=URL,
+    license_note="test",
+)
+
+
+def _mirror_fetch(date: dt.date) -> FetchResult:
+    return FetchResult(
+        agency_id=MIRROR_AGENCY.id,
+        path=Path("/tmp/gtfs.zip"),
+        url=URL,
+        fetched_date=date,
+        sha256="a" * 64,
+        size_bytes=1024,
+        reused=False,
+        source="mirror",
+        origin_error="SSLError",
+    )
+
+
+def _freshness_category(last_service: str, days: int) -> CategoryResult:
+    return CategoryResult(
+        name="freshness",
+        score=85.0 if days >= 0 else 0.0,
+        summary="s",
+        details={
+            "has_feed_info": False,
+            "service_type": "fixed",
+            "last_service_date": last_service,
+            "days_until_expiry": days,
+        },
+    )
+
+
+def _measured_mirror_record(date: dt.date, last_service: str, days: int) -> dict[str, Any]:
+    """A mirror copy still current on the day it was scored, as publish() stores it."""
+    card = build_scorecard([_correctness(), _freshness_category(last_service, days)])
+    return build_artifact(
+        MIRROR_AGENCY, _mirror_fetch(date), card, dt.datetime(2026, 1, 1, tzinfo=dt.UTC)
+    )
+
+
+def _held_record() -> dict[str, Any]:
+    record = _measured_mirror_record(dt.date(2023, 3, 1), "2023-03-22", 21)
+    record["categories"]["freshness"] = dict(FAILING_FRESHNESS)
+    return record
+
+
+def test_the_exact_record_that_stopped_the_daily_run_is_valid() -> None:
+    validate_artifact(_held_record())
+
+
+def test_a_copy_the_sweep_holds_publishes_and_reads_back_held() -> None:
+    # The path that failed: a measured copy lapses, the sweep holds it, publish validates.
+    before = _measured_mirror_record(dt.date(2026, 6, 10), "2026-07-10", 30)
+    swept, _summary = resweep(before, dt.date(2026, 7, 20))
+    stored = json.loads(publish(swept).read_text())
+
+    fresh = stored["categories"]["freshness"]
+    assert fresh["status"] == "not_yet_measured"
+    assert fresh["reason"] == "mirror_copy_expired"
+    assert fresh["mirror_copy"] == {"service_start": None, "service_end": "2026-07-10"}
+    assert "score" not in fresh and "details" not in fresh
+    assert stored["overall"]["grade_qualifier"] == "partial: freshness not measured"
+    assert stored["top_fixes"][0]["code"] == FEED_DOWNLOAD_FAILED
+    # Held is not measured, so tomorrow's sweep passes over the stored record.
+    assert not needs_sweep(stored, dt.date(2026, 7, 21))
+
+
+def test_a_swept_hold_stops_claiming_freshness_was_measured() -> None:
+    # The page prints the confidence block beside the partial grade. Carried
+    # forward as it was, it read "Measured 4 of 4" on the same page.
+    before = _measured_mirror_record(dt.date(2026, 6, 10), "2026-07-10", 30)
+    measured_before = before["confidence"]["measured_categories"]
+    level_before = before["confidence"]["level"]
+    swept, _summary = resweep(before, dt.date(2026, 7, 20))
+
+    assert swept["categories"]["freshness"]["status"] == "not_yet_measured"
+    confidence = swept["confidence"]
+    assert confidence["measured_categories"] == measured_before - 1
+    assert "Freshness" in confidence["notes"][0]
+    assert "not measured" in confidence["notes"][0]
+    # What the sweep did not touch stays, and the level never rises.
+    assert confidence["notes"][1:] == before["confidence"]["notes"][1:]
+    assert confidence["fetch_source"] == "mirror"
+    assert CONFIDENCE_LEVELS.index(confidence["level"]) <= CONFIDENCE_LEVELS.index(level_before)
+
+
+def test_control_a_sweep_that_holds_nothing_leaves_confidence_alone() -> None:
+    before = _measured_mirror_record(dt.date(2026, 6, 10), "2026-07-10", 30)
+    swept, _summary = resweep(before, dt.date(2026, 6, 20))
+    assert swept["categories"]["freshness"]["status"] == "measured"
+    assert swept["confidence"] == before["confidence"]
+
+
+@pytest.mark.parametrize(
+    ("was_measured", "was_level", "now_measured", "now_level"),
+    [
+        (4, CONFIDENCE_LEVELS[2], 3, CONFIDENCE_LEVELS[1]),
+        (4, CONFIDENCE_LEVELS[1], 3, CONFIDENCE_LEVELS[0]),
+        (3, CONFIDENCE_LEVELS[1], 2, CONFIDENCE_LEVELS[1]),
+        (2, CONFIDENCE_LEVELS[1], 1, CONFIDENCE_LEVELS[0]),
+        (4, CONFIDENCE_LEVELS[0], 3, CONFIDENCE_LEVELS[0]),
+    ],
+)
+def test_the_level_after_a_hold_moves_only_as_far_as_coverage_did(
+    was_measured: int, was_level: str, now_measured: int, now_level: str
+) -> None:
+    names = ["correctness", "completeness", "realtime", "freshness"]
+    categories = {
+        name: {"status": "measured" if i < now_measured else "not_yet_measured"}
+        for i, name in enumerate(names)
+    }
+    held = confidence_after_hold(
+        {"level": was_level, "measured_categories": was_measured, "notes": ["old", "kept"]},
+        categories,
+    )
+    assert (held["measured_categories"], held["level"]) == (now_measured, now_level)
+    assert held["notes"][0] != "old" and held["notes"][1] == "kept"
+
+
+def test_a_copy_the_full_run_holds_publishes_too() -> None:
+    # The full run reaches the same record through build_scorecard_for_fetch.
+    card = build_scorecard_for_fetch(
+        [_correctness(), _freshness_category("2026-07-10", -10)],
+        fetch_source="mirror",
+        configured_url=URL,
+        origin_error="SSLError",
+    )
+    artifact = build_artifact(
+        MIRROR_AGENCY,
+        _mirror_fetch(dt.date(2026, 7, 20)),
+        card,
+        dt.datetime(2026, 7, 20, tzinfo=dt.UTC),
+    )
+    stored = json.loads(publish(artifact).read_text())
+    assert stored["categories"]["freshness"]["reason"] == "mirror_copy_expired"
+
+
+def _set_in(path: tuple[str, ...], value: object) -> Callable[[dict[str, Any]], None]:
+    def apply(fresh: dict[str, Any]) -> None:
+        target = fresh
+        for key in path[:-1]:
+            target = target[key]
+        target[path[-1]] = value
+
+    return apply
+
+
+def _drop(key: str) -> Callable[[dict[str, Any]], None]:
+    def apply(fresh: dict[str, Any]) -> None:
+        del fresh[key]
+
+    return apply
+
+
+@pytest.mark.parametrize(
+    "sabotage",
+    [
+        pytest.param(_set_in(("reason",), "feed_was_slow"), id="another-reason"),
+        pytest.param(_set_in(("status",), "measured"), id="measured-with-a-reason"),
+        pytest.param(_set_in(("name",), "correctness"), id="another-name"),
+        pytest.param(_set_in(("score",), 0.0), id="a-score-standing-in-for-unknown"),
+        pytest.param(_set_in(("details",), {}), id="details-beside-the-hold"),
+        pytest.param(_set_in(("findings",), []), id="findings-beside-the-hold"),
+        pytest.param(_set_in(("extra",), 1), id="an-unknown-key"),
+        pytest.param(
+            _set_in(("mirror_copy", "days_until_expiry"), -1325), id="a-countdown-on-the-copy"
+        ),
+        pytest.param(_set_in(("mirror_copy", "service_end"), 20230322), id="a-date-as-a-number"),
+        pytest.param(_drop("mirror_copy"), id="no-mirror-copy"),
+        pytest.param(_drop("reason"), id="no-reason"),
+    ],
+)
+def test_control_the_schema_refuses_anything_else_on_a_held_freshness(
+    sabotage: Callable[[dict[str, Any]], None],
+) -> None:
+    record = json.loads(json.dumps(_held_record()))
+    untouched = json.loads(json.dumps(record["categories"]["freshness"]))
+    sabotage(record["categories"]["freshness"])
+    # A sabotage that silently failed to apply would read as a pass.
+    assert record["categories"]["freshness"] != untouched
+    with pytest.raises(jsonschema.ValidationError):
+        validate_artifact(record)
+
+
+@pytest.mark.parametrize("category", ["correctness", "completeness", "realtime"])
+def test_control_only_freshness_can_be_held(category: str) -> None:
+    record = _held_record()
+    record["categories"][category] = {**FAILING_FRESHNESS, "name": category}
+    with pytest.raises(jsonschema.ValidationError):
+        validate_artifact(record)

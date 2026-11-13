@@ -1022,7 +1022,7 @@ def fetch_catalog_bytes(url: str = DEFAULT_CATALOG_URL) -> bytes:
     """
     from urllib.parse import urlsplit
 
-    from .robots_policy import USER_AGENT, shared_checker
+    from .robots_policy import USER_AGENT, require_robots
 
     if (urlsplit(url).hostname or "").lower() in DISALLOWED_CATALOG_HOSTS:
         raise ValueError(
@@ -1030,10 +1030,17 @@ def fetch_catalog_bytes(url: str = DEFAULT_CATALOG_URL) -> bytes:
             "read; use the storage.googleapis.com export (the default) or a local CSV"
         )
     # Any other catalog host is read only when its own robots.txt allows it
-    # (ADR 0075). RobotsRefusedError propagates before any request.
-    shared_checker().require(url)
+    # (ADR 0075). RobotsRefusedError propagates here, before the host is
+    # resolved or asked for anything. The hop guard then repeats the check for
+    # every host a redirect leads to (ADR 0077); robots.txt is cached per host,
+    # so the first hop is read once.
+    require_robots(url)
     return safe_get(
-        url, headers={"User-Agent": USER_AGENT}, timeout=60, max_bytes=128 * 1024 * 1024
+        url,
+        headers={"User-Agent": USER_AGENT},
+        timeout=60,
+        max_bytes=128 * 1024 * 1024,
+        hop_guard=require_robots,
     )
 
 
@@ -1203,18 +1210,36 @@ def find_replacements(
     return matches
 
 
+# Frozen archives the catalog still lists as producer URLs. A file here never
+# changes (`.../ride-sitka/713/20180520/gtfs.zip`), so moving a record onto one
+# would grade a years-old copy as the agency's own URL (ADR 0076).
+FROZEN_ARCHIVE_PREFIXES = (
+    "openmobilitydata-data.s3.us-west-1.amazonaws.com/",
+    "transitfeeds.com/",
+    "github.com/transitland/gtfs-archives-not-hosted-elsewhere/",
+    "raw.githubusercontent.com/transitland/gtfs-archives-not-hosted-elsewhere/",
+)
+
+
+def is_frozen_archive(url: str) -> bool:
+    """Whether ``url`` is on a known archive that never receives a newer feed."""
+    return _url_slug(url).startswith(FROZEN_ARCHIVE_PREFIXES)
+
+
 def replacement_url(match: FeedMatch) -> str | None:
     """The catalog download URL to move a ``replaced`` agency onto, if any.
 
-    The first candidate whose URL actually differs from the current one. Returns
-    None for any other status, so callers can treat "has a replacement" as a
-    single truthy check.
+    The first candidate whose URL actually differs from the current one and is
+    not a frozen archive. Returns None for any other status, so callers can
+    treat "has a replacement" as a single truthy check.
     """
     if match.status != "replaced":
         return None
     current_slug = _url_slug(match.current_url)
     for f in match.candidates:
-        if _url_slug(f.direct_download) != current_slug:
+        if _url_slug(f.direct_download) != current_slug and not is_frozen_archive(
+            f.direct_download
+        ):
             return f.direct_download
     return None
 

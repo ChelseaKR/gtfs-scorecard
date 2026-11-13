@@ -59,6 +59,9 @@ paths:
       operationId: getArtifactIndex
       tags: [artifacts]
       summary: Every published feed record with its score and grade history.
+      description: >-
+        Each agency's `history` is its newest 120 points, oldest first. Index points carry no
+        `feed_sha256` or `service_horizon_status`; read those from the agency's `latest.json`.
       responses:
         "200": {$ref: "#/components/responses/JsonObject"}
   /data/artifacts/directory.json:
@@ -488,7 +491,7 @@ components:
       name: date
       in: path
       required: true
-      description: A snapshot date, `YYYY-MM-DD`.
+      description: A snapshot date, `YYYY-MM-DD`. Per-agency dated files are published for at most the last 90 days before the agency's newest snapshot, plus its previous snapshot; in practice the site build carries the committed history and the last two days, so expect the newest two dates. Older dates return not found.
       schema:
         type: string
         pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"

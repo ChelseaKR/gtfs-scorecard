@@ -343,7 +343,12 @@ pair. When bounded hydration or lifecycle retention omitted the current dated
 record, the build creates an ephemeral byte-identical copy of `latest.json`
 before rendering. An existing dated record must already match. The workflows
 then assemble a fresh `_site` directory and run the blocking structural check
-before the page-budget check. The structural command is:
+before the page-budget check. The assembly copies only the documented public
+filenames, then rewrites every JSON copy compact and trims the published
+`index.json` to each agency's newest 120 history points without `feed_sha256`
+or `service_horizon_status` (`pipeline/src/scorecard_pipeline/publish_boundary.py`);
+the bucket, the committed history, and `latest.json`'s fields are untouched.
+The structural command is:
 
 ```sh
 cd pipeline

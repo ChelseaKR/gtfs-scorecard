@@ -9,13 +9,23 @@
  * - Navigations are network first. A deploy is picked up immediately and the
  *   saved copy is served only when the network fails, so the worker can never
  *   pin a reader to an old build.
- * - Stylesheets, scripts, and artifact JSON are stale-while-revalidate: the
- *   saved copy renders at once and refreshes in the background.
+ * - JSON is network first for the same reason, and because the "checked" dates
+ *   in the app come from it: a reader back after weeks away must see today's
+ *   data, not last month's for one more load. The saved copy answers only when
+ *   the network fails, and the page is told, so nav.js can name its date.
+ * - Stylesheets and scripts are stale-while-revalidate: the saved copy renders
+ *   at once and refreshes in the background.
+ * - The full history index is never saved (173 MB in production, and no phone
+ *   should hold that), and neither is any other JSON over the size cap.
  * - Only same-origin requests are considered; nothing cross-origin is touched.
  */
 (function () {
   "use strict";
-  var CACHE = "scorecard-offline-v2";
+  var CACHE = "scorecard-offline-v3";
+  var NEVER_SAVED_JSON = "/data/artifacts/index.json";
+  // Above directory.json (8 MB in production), the largest file a page needs
+  // offline.
+  var MAX_SAVED_JSON_BYTES = 16 * 1024 * 1024;
   var SHELL = ["/src/styles.css", "/src/theme.js", "/src/nav.js"];
   var sw = /** @type {any} */ (self);
 
@@ -65,14 +75,85 @@
   }
 
   /* Beyond navigations, only the shell and the data a page reads offline are
-   * worth saving: stylesheets and scripts under /src/, locale catalogs, and
-   * artifact JSON. Tiles and images stay network-only so the cache stays
-   * small on a phone. */
-  function isCacheableAsset(pathname) {
-    return (
-      pathname.indexOf("/src/") === 0 ||
-      pathname.indexOf("/locales/") === 0 ||
-      pathname.slice(-5) === ".json"
+   * worth saving: stylesheets and scripts under /src/, and JSON (see below).
+   * Tiles and images stay network-only so the cache stays small on a phone. */
+  function isShellAsset(pathname) {
+    return pathname.indexOf("/src/") === 0;
+  }
+
+  function isJson(pathname) {
+    return pathname.slice(-5) === ".json";
+  }
+
+  function isNeverSaved(pathname) {
+    return pathname.slice(-NEVER_SAVED_JSON.length) === NEVER_SAVED_JSON;
+  }
+
+  /* Feed data, whose age a reader needs to know. Locale catalogs and map
+   * outlines are JSON too, but their age says nothing about the data shown. */
+  function isDatedData(pathname) {
+    return pathname.indexOf("/data/") === 0 || pathname.indexOf("/api/") === 0;
+  }
+
+  /* Takes its own clone of a response, and measures the real size: production
+   * serves large JSON gzipped with no Content-Length to go by. */
+  function saveJsonCopy(request, response) {
+    if (response.status !== 200) return undefined;
+    if (Number(response.headers.get("Content-Length")) > MAX_SAVED_JSON_BYTES) return undefined;
+    return response
+      .clone()
+      .blob()
+      .then(function (body) {
+        if (body.size > MAX_SAVED_JSON_BYTES) return undefined;
+        var copy = new Response(body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers,
+        });
+        return caches.open(CACHE).then(function (cache) {
+          return cache.put(request, copy);
+        });
+      });
+  }
+
+  /* Tell the page it was given a saved copy. The response's own Date header is
+   * when the server sent it, so it is when the copy was saved; it is passed as
+   * is, and nav.js names no date when there is none. */
+  function announceSavedCopy(clientId, saved) {
+    return sw.clients.get(clientId).then(function (client) {
+      if (client) {
+        client.postMessage({ type: "scorecard-saved-copy", savedAt: saved.headers.get("Date") });
+      }
+    });
+  }
+
+  function networkFirstJson(event, pathname) {
+    var request = event.request;
+    var network = fetch(request);
+    event.waitUntil(
+      network
+        .then(
+          function (response) {
+            return saveJsonCopy(request, response);
+          },
+          function (error) {
+            // The page cancelled this one itself; nothing was served to it.
+            if ((error && error.name === "AbortError") || !isDatedData(pathname)) return undefined;
+            return caches.match(request).then(function (saved) {
+              return saved ? announceSavedCopy(event.clientId, saved) : undefined;
+            });
+          }
+        )
+        .catch(function () {
+          /* A full cache or a closed tab costs the offline copy, nothing more. */
+        })
+    );
+    event.respondWith(
+      network.catch(function () {
+        return caches.match(request).then(function (saved) {
+          return saved || Response.error();
+        });
+      })
     );
   }
 
@@ -108,7 +189,12 @@
       return;
     }
 
-    if (!isCacheableAsset(url.pathname)) return;
+    if (isJson(url.pathname)) {
+      if (!isNeverSaved(url.pathname)) networkFirstJson(event, url.pathname);
+      return;
+    }
+
+    if (!isShellAsset(url.pathname)) return;
     event.respondWith(
       caches.match(request).then(function (saved) {
         var refresh = fetch(request)

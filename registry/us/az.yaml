@@ -7,7 +7,13 @@ agencies:
     name: Yuma County Intergovernmental Public Transportation Authority (YCIPTA)
     subdivision_code: US-AZ
     subdivision_name: Arizona
-    static_gtfs_url: http://www.ycipta.org/gtfs/google_transit.zip
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11462/ycatfeed1.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks rapid.nationalrtap.org, the current address Transitland
+      lists for this feed. The agency name and service area in that file match
+      this record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 17
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -144,7 +150,12 @@ agencies:
     name: SunTran
     subdivision_code: US-AZ
     subdivision_name: Arizona
-    static_gtfs_url: https://www.suntran.com/wp-content/uploads/2024/07/SunTranGTFS.zip
+    static_gtfs_url: https://www.suntran.com/wp-content/uploads/SunTranGTFS.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks the file linked from suntran.com. The agency name and
+      stop locations in that file match this record. Grades dated before this
+      change came from an older Mobility Database mirror copy.
     mdb_id: 2354
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

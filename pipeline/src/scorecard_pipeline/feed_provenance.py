@@ -176,6 +176,22 @@ def mirror_copy_window(artifact: object) -> tuple[str | None, str | None]:
     return _iso_date_or_none(details.get("feed_start_date")), _iso_date_or_none(end)
 
 
+def _mirror_copy_downloaded_on(artifact: object) -> str | None:
+    """The date the copy behind ``artifact`` was downloaded, or None if unknown.
+
+    A freshness sweep restamps ``snapshot_date`` without downloading anything,
+    so a swept artifact's own ``recompute.feed_fetched_date`` is the real date
+    (sweep.last_fetched_date reads the same two fields). An unreadable date
+    leaves the phrase out rather than borrowing another date.
+    """
+    if not isinstance(artifact, dict):
+        return None
+    recompute = artifact.get("recompute")
+    if isinstance(recompute, dict) and recompute.get("kind") == "freshness":
+        return _iso_date_or_none(recompute.get("feed_fetched_date"))
+    return _iso_date_or_none(artifact.get("snapshot_date"))
+
+
 def mirror_copy_caveat(artifact: object) -> str:
     """One sentence saying the grade came from a mirror copy, and its dates.
 
@@ -187,9 +203,11 @@ def mirror_copy_caveat(artifact: object) -> str:
     if artifact_fetch_source(artifact) != "mirror":
         return ""
     start, end = mirror_copy_window(artifact)
+    copied = _mirror_copy_downloaded_on(artifact)
+    copy_phrase = f" downloaded on {copied}" if copied else ""
     lead = (
-        "Scored from a Mobility Database mirror copy, because the feed URL on file "
-        "could not be downloaded."
+        f"Scored from a Mobility Database mirror copy{copy_phrase}, because the feed URL on "
+        "file could not be downloaded."
     )
     if start and end:
         dates = f" Service dates in that copy run {start} to {end}."

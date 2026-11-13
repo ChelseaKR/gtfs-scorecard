@@ -34,7 +34,13 @@ agencies:
     name: Interurban Trolley
     subdivision_code: US-IN
     subdivision_name: Indiana
-    static_gtfs_url: http://macog.com/google/google_transit.zip
+    static_gtfs_url: https://passio3.com/macog/passioTransit/gtfs/google_transit.zip
+    operating_note: >-
+      Checked 2026-11-08: the feed URL on file had stopped working, so this
+      record now tracks passio3.com, the current address Transitland lists for
+      this feed. The agency name and service area in that file match this
+      record. Grades dated before this change came from an older Mobility
+      Database mirror copy.
     mdb_id: 571
     license_note: No stated data license in the Mobility Database; verify before publishing.
 

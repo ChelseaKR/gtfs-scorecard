@@ -38,6 +38,10 @@ from .artifact_fetch_reader_archive_profile import ArtifactFetchReaderArchivePro
 from .artifact_finding import ArtifactFinding
 from .artifact_finding_severity import ArtifactFindingSeverity
 from .artifact_geo import ArtifactGeo
+from .artifact_held_mirror_freshness import ArtifactHeldMirrorFreshness
+from .artifact_held_mirror_freshness_mirror_copy import (
+    ArtifactHeldMirrorFreshnessMirrorCopy,
+)
 from .artifact_mode_profile import ArtifactModeProfile
 from .artifact_mode_profile_modes_item import ArtifactModeProfileModesItem
 from .artifact_ntd_id_alignment import ArtifactNtdIdAlignment
@@ -267,6 +271,8 @@ __all__ = (
     "ArtifactFinding",
     "ArtifactFindingSeverity",
     "ArtifactGeo",
+    "ArtifactHeldMirrorFreshness",
+    "ArtifactHeldMirrorFreshnessMirrorCopy",
     "ArtifactModeProfile",
     "ArtifactModeProfileModesItem",
     "ArtifactNtdIdAlignment",

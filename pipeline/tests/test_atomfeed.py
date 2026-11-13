@@ -6,6 +6,8 @@ import datetime as dt
 from typing import Any
 from xml.etree import ElementTree as ET
 
+import pytest
+
 from scorecard_pipeline.atomfeed import (
     Entry,
     agency_change_feed,
@@ -275,11 +277,38 @@ def test_agency_feed_grade_rise_not_tagged_drop() -> None:
     assert cat is not None and cat.get("term") != "grade_drop"
 
 
-def test_empty_feed_is_valid() -> None:
-    xml = site_change_feed([], base_url=_BASE)
+def test_empty_feed_is_dated_by_the_newest_check() -> None:
+    xml = site_change_feed([], base_url=_BASE, checked_on="2026-07-02")
     root = ET.fromstring(xml)
     assert root.findall(f"{_ATOM}entry") == []
-    assert root.find(f"{_ATOM}updated") is not None
+    assert root.findtext(f"{_ATOM}updated") == "2026-07-02T00:00:00Z"
+
+
+def test_empty_agency_feed_is_dated_by_its_latest_check() -> None:
+    xml = agency_change_feed("acme", "Acme Transit", [], base_url=_BASE, checked_on="2026-07-02")
+    assert ET.fromstring(xml).findtext(f"{_ATOM}updated") == "2026-07-02T00:00:00Z"
+
+
+@pytest.mark.parametrize("checked_on", [None, "", "not a date"])
+def test_empty_feed_with_no_usable_date_claims_none(checked_on: str | None) -> None:
+    xml = site_change_feed([], base_url=_BASE, checked_on=checked_on)
+    assert ET.fromstring(xml).find(f"{_ATOM}updated") is None
+    assert "1970" not in xml
+
+
+def test_check_date_does_not_outrank_an_entry_date() -> None:
+    change = {
+        "id": "acme",
+        "name": "Acme Transit",
+        "date": "2026-05-01",
+        "from_grade": "B",
+        "to_grade": "C",
+        "from_score": 80,
+        "to_score": 72,
+        "regression": True,
+    }
+    xml = site_change_feed([change], base_url=_BASE, checked_on="2026-07-02")
+    assert ET.fromstring(xml).findtext(f"{_ATOM}updated") == "2026-05-01T00:00:00Z"
 
 
 def test_zero_comparison_change_feed_is_explicitly_unavailable() -> None:

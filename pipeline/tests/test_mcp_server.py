@@ -588,3 +588,87 @@ def test_the_new_tools_introduce_no_language_model() -> None:
     ).read_text()
     for forbidden in ("anthropic", "openai", "langchain", "llm", "boto3", "bedrock"):
         assert forbidden not in source.lower()
+
+
+def test_latest_finding_changes_survives_an_unpublished_dated_file(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import comparisons
+    from scorecard_pipeline.mcp_server import _latest_finding_changes
+
+    monkeypatch.setattr(comparisons, "same_producer_contract", lambda *_: True)
+
+    def fetch(url: str) -> object:
+        raise OSError("HTTP Error 404: Not Found")
+
+    points = [{"date": "2026-08-01"}, {"date": "2026-11-10"}]
+    result = _latest_finding_changes(fetch, "demo", points)
+    assert result is not None and result["comparable"] is False
+    assert "not published" in result["reason"]
+
+
+def _finding_changes_fetch(latest_date: str, requested: list[str]) -> Any:
+    """Serve the previous dated file and latest.json; refuse the newest dated file."""
+    before = _dated_artifact(["expired_calendar", "unused_shape"])
+    latest = _dated_artifact(["unused_shape", "missing_stop_name"])
+    latest["snapshot_date"] = latest_date
+
+    def fetch(url: str) -> Any:
+        requested.append(url)
+        if url.endswith("/demo/2026-11-09.json"):
+            return before
+        if url.endswith("/demo/latest.json"):
+            return latest
+        if url.endswith("/demo/2026-11-10.json"):
+            return _dated_artifact(["unused_shape"])  # the stale copy a fork might keep
+        raise OSError("HTTP Error 404: Not Found")
+
+    return fetch
+
+
+def test_latest_finding_changes_reads_latest_json_as_the_newest_side(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The newest point's record is latest.json, which is always published; the
+    dated copy of the same day is never requested."""
+    from scorecard_pipeline import comparisons
+    from scorecard_pipeline.mcp_server import _latest_finding_changes
+
+    monkeypatch.setattr(comparisons, "same_producer_contract", lambda *_: True)
+    requested: list[str] = []
+    points = [{"date": "2026-11-09"}, {"date": "2026-11-10"}]
+    result = _latest_finding_changes(
+        _finding_changes_fetch("2026-11-10", requested), "demo", points
+    )
+
+    assert result is not None and result["comparable"] is True
+    assert (result["from_date"], result["to_date"]) == ("2026-11-09", "2026-11-10")
+    assert [f["code"] for f in result["appeared"]] == ["missing_stop_name"]
+    assert [f["code"] for f in result["cleared"]] == ["expired_calendar"]
+    assert [u.rsplit("/", 1)[1] for u in requested] == ["2026-11-09.json", "latest.json"]
+
+
+def test_latest_finding_changes_falls_back_to_the_dated_file_when_latest_moved_on(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """latest.json dated a different day than the index's newest point is a
+    different record; the dated file is the honest side of the comparison."""
+    from scorecard_pipeline import comparisons
+    from scorecard_pipeline.mcp_server import _latest_finding_changes
+
+    monkeypatch.setattr(comparisons, "same_producer_contract", lambda *_: True)
+    requested: list[str] = []
+    points = [{"date": "2026-11-09"}, {"date": "2026-11-10"}]
+    result = _latest_finding_changes(
+        _finding_changes_fetch("2026-11-11", requested), "demo", points
+    )
+
+    assert result is not None and result["comparable"] is True
+    assert result["appeared"] == [] and [f["code"] for f in result["cleared"]] == [
+        "expired_calendar"
+    ]
+    assert [u.rsplit("/", 1)[1] for u in requested] == [
+        "2026-11-09.json",
+        "latest.json",
+        "2026-11-10.json",
+    ]

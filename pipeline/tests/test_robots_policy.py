@@ -181,3 +181,41 @@ def test_default_getter_keeps_the_status_of_an_error_response(
     monkeypatch.setattr(net, "safe_get", fake_safe_get)
     got = rp._default_get("https://bucket.s3.amazonaws.com/robots.txt")
     assert (got.status, got.content_type) == (403, "application/xml")
+
+
+ODPT_FEED = "https://dataodpt.blob.core.windows.net/feeds/feed.zip"
+
+
+def test_the_named_azure_host_answering_400_has_no_rules_file() -> None:
+    assert _classify(400, target=ODPT_FEED) == rp.RobotsVerdict(True, rp.MISSING_OBJECT_400)
+
+
+@pytest.mark.parametrize("status", [401, 403, 409, 429, 500])
+def test_the_named_azure_host_is_admitted_on_its_one_status_only(status: int) -> None:
+    assert not _classify(status, target=ODPT_FEED).allowed
+
+
+@pytest.mark.parametrize(
+    ("status", "url"),
+    [
+        (409, "https://min01rg96sablob01.blob.core.windows.net/feeds/feed.zip"),
+        (400, "https://83025b28472d6aa2bf5ae59f3724aa78.eu.r2.cloudflarestorage.com/feed.zip"),
+        (400, "https://other.blob.core.windows.net/feeds/feed.zip"),
+        (400, "https://dataodpt.blob.core.windows.net.evil.example/feed.zip"),
+        (400, "https://bucket.s3.amazonaws.com/feed.zip"),
+    ],
+)
+def test_negative_control_an_unlisted_object_store_still_stops(status: int, url: str) -> None:
+    verdict = _classify(status, target=url)
+    assert not verdict.allowed
+    assert verdict.reason == f"robots_status_{status}"
+
+
+def test_the_400_entry_is_exact_and_not_a_403_entry() -> None:
+    entries = [entry for entry in rp.MISSING_OBJECT_403_HOSTS if entry.status != 403]
+    assert [(entry.pattern, entry.status) for entry in entries] == [
+        ("dataodpt.blob.core.windows.net", 400)
+    ]
+    assert "*" not in entries[0].pattern
+    assert "inference" in entries[0].reason or "infer" in entries[0].reason
+    assert allowlisted_403("dataodpt.blob.core.windows.net") is None

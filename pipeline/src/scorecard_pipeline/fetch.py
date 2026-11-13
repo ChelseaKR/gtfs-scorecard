@@ -27,7 +27,7 @@ from .feed_auth import (
 )
 from .net import FetchTrace, UnsafeURLError, safe_download, safe_get
 from .robots_policy import USER_AGENT as ROBOTS_USER_AGENT
-from .robots_policy import shared_checker
+from .robots_policy import require_robots, shared_checker
 from .worklock import outside_heavy_section
 
 log = logging.getLogger(__name__)
@@ -469,6 +469,7 @@ def _fetch_to(
             retries=retries,
             trace=trace,
             credential_headers=credential_headers,
+            hop_guard=require_robots,
         )
     else:
         body = safe_get(
@@ -479,6 +480,7 @@ def _fetch_to(
             retries=retries,
             trace=trace,
             credential_headers=credential_headers,
+            hop_guard=require_robots,
         )
         dest.write_bytes(body)
     return trace.final_url or url

@@ -226,8 +226,31 @@ def producer_contract(
     )
 
 
+def scored_from_mirror(record: dict[str, Any]) -> bool:
+    """Whether an artifact or history point was scored from a mirror copy.
+
+    Artifacts state it under ``fetch``/``confidence``; history points carry
+    ``fetch_source`` only when it is "mirror", so a point without it is the
+    agency's own URL or predates the field.
+    """
+    if record.get("fetch_source") == "mirror":
+        return True
+    fetch = record.get("fetch")
+    confidence = record.get("confidence")
+    return (isinstance(fetch, dict) and fetch.get("source") == "mirror") or (
+        isinstance(confidence, dict) and confidence.get("fetch_source") == "mirror"
+    )
+
+
 def same_producer_contract(left: dict[str, Any], right: dict[str, Any]) -> bool:
-    """True only when a transition cannot be explained by producer changes."""
+    """True only when a transition cannot be explained by producer changes.
+
+    A move between a mirror copy and the agency's own URL is such a change: the
+    two grades read different files, so neither a score jump nor a cleared
+    finding between them says anything about what the agency did (ADR 0076).
+    """
+    if scored_from_mirror(left) != scored_from_mirror(right):
+        return False
     left_contract = producer_contract(left)
     right_contract = producer_contract(right)
     return bool(all(left_contract[:5]) and left_contract[5] and left_contract == right_contract)

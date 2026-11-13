@@ -79,18 +79,23 @@ jobs:
           FEED_URL: ${{ matrix.feed.feed_url }}
         run: |
           mkdir -p otp-work
-          # The pipeline's own client (ADR 0075): robots.txt first, the
-          # identifying User-Agent, the SSRF and size guards. A refusal or a
+          # The pipeline's own client (ADR 0075, ADR 0077): robots.txt on every
+          # hop, the identifying User-Agent, and the SSRF and size guards. A refusal or a
           # failed download is the same "unavailable" result as before.
           if uv run --directory pipeline python -c '
           import os, sys
           from pathlib import Path
           from scorecard_pipeline.net import safe_download
-          from scorecard_pipeline.robots_policy import shared_checker
-          url = os.environ["FEED_URL"]
+          from scorecard_pipeline.robots_policy import USER_AGENT, require_robots
           try:
-              shared_checker().require(url)
-              safe_download(url, Path("../otp-work/feed.gtfs.zip"), timeout=(12, 120), retries=3)
+              safe_download(
+                  os.environ["FEED_URL"],
+                  Path("../otp-work/feed.gtfs.zip"),
+                  headers={"User-Agent": USER_AGENT},
+                  timeout=(12, 120),
+                  retries=3,
+                  hop_guard=require_robots,
+              )
           except Exception as exc:
               print(f"not downloaded: {exc}", file=sys.stderr)
               sys.exit(1)
