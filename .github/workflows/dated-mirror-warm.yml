@@ -1,0 +1,102 @@
+name: Dated mirror keep-warm
+
+# Keeps the dated-artifact mirror (the Actions cache entry history-export.yml
+# and trend-history-repair.yml restore) alive and current between the monthly
+# History exports, so the export downloads one day of new records instead of
+# the whole dated store.
+#
+# Without this the mirror cannot reach the next month. GitHub evicts a cache
+# entry that has not been read for seven days, and this repository sits at its
+# 10 GB cache cap, where the least recently read entries go first (on
+# 2026-11-06 the oldest surviving entry had last been read four days earlier).
+# The 2026-11-04 export saved the mirror (193 MB compressed) after a cold
+# 327,519-object download; read again only on 12-04, it would be gone, and that
+# run would download the full ~10 GB again.
+#
+# Once a day, after the Daily scorecard has published: restore the newest
+# mirror, sync it with the same object filter and the same
+# `--exact-timestamps --delete` as the export, and save it under a new key.
+# Each day moves only that day's dated records (about 2,500 objects), which the
+# next export would have downloaded anyway. Read-only: it assumes the Pages
+# deploy's read role (infra/artifacts/github_oidc.tf, pages_read), which can
+# list data/artifacts and read the dated records and cannot write anything.
+# The mirror is a copy of public data and carries nothing private.
+
+on:
+  schedule:
+    - cron: "47 20 * * *" # daily, after the Daily scorecard (13:23 UTC) has published
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dated-mirror-warm
+  cancel-in-progress: false
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      id-token: write # read the dated records through AWS OIDC (read-only role)
+    steps:
+      - name: Refuse to start without the store configuration
+        shell: bash
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+          PAGES_AWS_ROLE_ARN: ${{ secrets.PAGES_AWS_ROLE_ARN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ARTIFACTS_BUCKET}" ] || [ -z "${PAGES_AWS_ROLE_ARN}" ]; then
+            echo "::error::ARTIFACTS_BUCKET (repository variable) and PAGES_AWS_ROLE_ARN (repository secret) must both be set to keep the dated-artifact mirror warm."
+            exit 1
+          fi
+
+      - name: Authenticate to AWS (read-only Pages role)
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
+        with:
+          role-to-assume: ${{ secrets.PAGES_AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+
+      - name: Restore the dated-artifact mirror
+        id: dated-mirror
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/dated-artifact-mirror
+          key: dated-artifact-mirror-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            dated-artifact-mirror-v1-
+
+      - name: Sync the dated-artifact mirror
+        id: mirror
+        shell: bash
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+          aws configure set default.s3.max_concurrent_requests 64
+          mirror="$RUNNER_TEMP/dated-artifact-mirror"
+          log="$RUNNER_TEMP/dated-mirror-sync.log"
+          mkdir -p "$mirror"
+          aws s3 sync "s3://${ARTIFACTS_BUCKET}/data/artifacts" "$mirror" \
+            --exclude "*" \
+            --include "*/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].json" \
+            --delete --exact-timestamps --no-progress > "$log"
+          downloads=$(grep -c '^download:' "$log" || true)
+          removed=$(grep -c '^delete:' "$log" || true)
+          echo "::notice title=dated-artifact mirror::${downloads} objects downloaded, ${removed} removed"
+          echo "downloads=${downloads}" >> "$GITHUB_OUTPUT"
+          echo "removed=${removed}" >> "$GITHUB_OUTPUT"
+          echo "dated records mirrored: $(find "$mirror" -name '*.json' | wc -l)"
+
+      # A day with no new records still saves when nothing was restored, so a
+      # cold start always leaves a mirror behind. A day that moved nothing
+      # after a restore has already refreshed the entry's last-read time.
+      - name: Save the dated-artifact mirror
+        if: ${{ steps.mirror.outputs.downloads != '0' || steps.mirror.outputs.removed != '0' || steps.dated-mirror.outputs.cache-matched-key == '' }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/dated-artifact-mirror
+          key: dated-artifact-mirror-v1-${{ github.run_id }}-${{ github.run_attempt }}
