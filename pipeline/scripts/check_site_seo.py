@@ -85,6 +85,11 @@ _REFRESH_RE = re.compile(r"^\s*0(?:\.0+)?\s*;\s*url\s*=\s*(.+?)\s*$", re.IGNOREC
 # a moved scorecard's companion URLs redirect instead of answering 404.
 _AGENCY_PATH_RE = re.compile(r"^/agency/[a-z0-9][a-z0-9_-]*/(?:(?:brief|board|fixes)/)?$")
 _SITEMAP_NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9"
+# ADR 0074: the selected finding rides in the fragment as page state,
+# ``#finding=<code>`` with an optional ``&agency=<id>`` and ``&at=<element id>``.
+# The page script reads it; no element carries it as an id.
+_FINDING_STATE_FRAGMENT_RE = re.compile(r"finding=[A-Za-z0-9_-]+(?:&(?:agency|at)=[A-Za-z0-9_-]+)*")
+_FINDING_HANDOFF_ID = "finding-handoff"
 # The site-measurement contract (docs/decisions/0055-cookieless-site-measurement
 # .md): the one declared first-party script is the whole of what the site
 # collects about a visit, so every page must load it exactly once, a redirect
@@ -909,6 +914,20 @@ def _local_target(raw: str, page: Page, config: Config) -> LocalTarget | None:
     )
 
 
+def _fragment_anchor(fragment: str) -> str:
+    """The element id a fragment asks the target page to show.
+
+    A finding-state fragment is not an anchor (ADR 0074). The page script
+    selects the finding and scrolls to ``at`` when the link names one, and to
+    the finding handoff otherwise, so that is the id the page must carry. Any
+    other fragment is an ordinary anchor and names its own id.
+    """
+    if not _FINDING_STATE_FRAGMENT_RE.fullmatch(fragment):
+        return fragment
+    params = dict(part.split("=", 1) for part in fragment.split("&"))
+    return params.get("at", _FINDING_HANDOFF_ID)
+
+
 def _resolve_file(path: str, files: set[str]) -> str | None:
     if "\\" in path or not path.startswith("/"):
         return None
@@ -996,13 +1015,19 @@ def _validate_reference(
         and target.fragment
         and relative in pages
         and not any(target.path.startswith(prefix) for prefix in config.fragment_exempt_prefixes)
-        and target.fragment not in pages[relative].fragment_names
+        and _fragment_anchor(target.fragment) not in pages[relative].fragment_names
     ):
+        anchor = _fragment_anchor(target.fragment)
+        shown = (
+            f"fragment #{target.fragment}"
+            if anchor == target.fragment
+            else f"fragment #{target.fragment} scrolls to #{anchor}, which"
+        )
         findings.append(
             Finding(
                 "fragment.missing",
                 page.relative_path,
-                f"line {reference.line}: fragment #{target.fragment} is missing in {relative}",
+                f"line {reference.line}: {shown} is missing in {relative}",
             )
         )
 

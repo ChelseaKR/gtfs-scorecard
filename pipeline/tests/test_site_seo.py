@@ -1431,6 +1431,74 @@ def test_only_ids_and_legacy_anchor_names_define_fragments(tmp_path: Path) -> No
     assert _run(good_site, good_config, good_report).returncode == 0
 
 
+_FINDING_TARGET_IDS = '<section id="finding-handoff"></section><h2 id="trend-h">Over time</h2>'
+
+
+def test_a_finding_fragment_is_page_state_checked_by_its_scroll_target(tmp_path: Path) -> None:
+    """``#finding=<code>`` is read by the page script, not matched to an id (ADR 0074).
+
+    The script scrolls to ``at`` when the link names one and to the finding
+    handoff otherwise, so that element is what the target page must carry.
+    Reading the whole fragment as an id reported every finding link on the
+    site (84,658 of them on 2026-11-05).
+    """
+    site, config = _write_fixture(tmp_path)
+    _replace(site / "target/index.html", "</body>", f"{_FINDING_TARGET_IDS}</body>")
+    _replace(
+        site / "index.html",
+        "</body>",
+        (
+            '<a href="/target/#finding=unused_shape">Finding</a>'
+            '<a href="/target/#finding=unused_shape&amp;agency=demo-agency">Fix guide</a>'
+            '<a href="/target/#finding=unused_shape&amp;at=trend-h">History</a></body>'
+        ),
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize(
+    ("target_ids", "href", "missing"),
+    [
+        # The page the link opens has no handoff to select the finding in.
+        pytest.param("", "/target/#finding=unused_shape", "#finding-handoff", id="no-handoff"),
+        # The link names an element to scroll to that the page does not have.
+        pytest.param(
+            _FINDING_TARGET_IDS,
+            "/target/#finding=unused_shape&amp;at=absent",
+            "#absent",
+            id="at-absent",
+        ),
+        # Not the finding form: an ordinary anchor, and no element has this id.
+        pytest.param(_FINDING_TARGET_IDS, "/target/#finding=", "#finding=", id="no-code"),
+        pytest.param(
+            _FINDING_TARGET_IDS,
+            "/target/#view=unused_shape",
+            "#view=unused_shape",
+            id="other-key",
+        ),
+    ],
+)
+def test_a_finding_fragment_without_its_scroll_target_is_still_reported(
+    tmp_path: Path, target_ids: str, href: str, missing: str
+) -> None:
+    site, config = _write_fixture(tmp_path)
+    _replace(site / "target/index.html", "</body>", f"{target_ids}</body>")
+    _replace(site / "index.html", "</body>", f'<a href="{href}">Finding</a></body>')
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    findings = json.loads(report.read_text(encoding="utf-8"))["findings"]
+    messages = [item["message"] for item in findings if item["code"] == "fragment.missing"]
+    assert len(messages) == 1, findings
+    assert missing in messages[0]
+
+
 def test_strict_config_error_writes_schema_v1_report(tmp_path: Path) -> None:
     site, config = _write_fixture(tmp_path)
     payload = json.loads(config.read_text(encoding="utf-8"))
