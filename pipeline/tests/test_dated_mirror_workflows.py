@@ -134,6 +134,13 @@ CASES = [
         "dated-artifact-mirror",
         id="trend-history-repair",
     ),
+    pytest.param(
+        "dated-mirror-warm.yml",
+        "Sync the dated-artifact mirror",
+        ".",
+        "dated-artifact-mirror",
+        id="dated-mirror-warm",
+    ),
 ]
 
 
@@ -360,7 +367,11 @@ def test_history_export_reads_the_index_through_the_script_after_the_mirror(
 
 @pytest.mark.parametrize(
     ("workflow", "hydrate_id"),
-    [("history-export.yml", "hydrate"), ("trend-history-repair.yml", "mirror")],
+    [
+        ("history-export.yml", "hydrate"),
+        ("trend-history-repair.yml", "mirror"),
+        ("dated-mirror-warm.yml", "mirror"),
+    ],
 )
 def test_cache_is_shared_pinned_and_saved_only_when_the_mirror_moved(
     workflow: str, hydrate_id: str
@@ -391,6 +402,7 @@ def test_both_workflows_use_the_same_object_filter_so_the_shared_mirror_agrees()
     for workflow, name in (
         ("history-export.yml", "Hydrate the dated artifacts from S3"),
         ("trend-history-repair.yml", "Mirror the dated records and the current index"),
+        ("dated-mirror-warm.yml", "Sync the dated-artifact mirror"),
     ):
         run = str(_step(workflow, name)["run"])
         for line in run.splitlines():
@@ -404,8 +416,88 @@ def test_the_mirror_holds_public_dated_records_only() -> None:
     for workflow, name in (
         ("history-export.yml", "Hydrate the dated artifacts from S3"),
         ("trend-history-repair.yml", "Mirror the dated records and the current index"),
+        ("dated-mirror-warm.yml", "Sync the dated-artifact mirror"),
     ):
         run = str(_step(workflow, name)["run"])
         assert '--exclude "*"' in run
         assert "cache/" not in run.replace("# ", "")
         assert "fixlog" not in run and "structure" not in run
+
+
+# --- keeping the mirror alive between monthly exports ---------------------------------
+
+#: GitHub evicts a cache entry that has not been read for seven days, and sooner
+#: when the repository is at its 10 GB cap (on 2026-11-06 the oldest surviving
+#: entry had last been read four days earlier). A monthly export cannot keep its
+#: own entry alive, so something must read and re-save it more often than that.
+_ON: Any = True  # YAML 1.1 reads a bare `on:` key as True
+
+
+def _doc(workflow: str) -> dict[Any, Any]:
+    document = yaml.safe_load((WORKFLOWS / workflow).read_text())
+    assert isinstance(document, dict)
+    return document
+
+
+def test_the_mirror_is_warmed_every_day_on_a_schedule() -> None:
+    triggers = _doc("dated-mirror-warm.yml")[_ON]
+    crons = [entry["cron"] for entry in triggers["schedule"]]
+    assert crons, "the keep-warm workflow has no schedule"
+    for cron in crons:
+        minute, hour, day, month, weekday = cron.split()
+        assert (day, month, weekday) == ("*", "*", "*"), f"{cron!r} is not daily"
+        assert minute.isdigit() and hour.isdigit()
+    assert "workflow_dispatch" in triggers
+
+
+def test_the_export_restores_the_entry_the_warmer_saves() -> None:
+    """Same path, same key family: the export finds the warmer's newest mirror."""
+
+    def cache_steps(workflow: str) -> tuple[dict[str, Any], dict[str, Any]]:
+        steps = [s for job in _doc(workflow)["jobs"].values() for s in job["steps"]]
+        restore = next(s for s in steps if str(s.get("uses", "")).startswith(CACHE_ACTION))
+        save = next(s for s in steps if str(s.get("uses", "")).startswith(SAVE_ACTION))
+        return restore, save
+
+    export_restore, _ = cache_steps("history-export.yml")
+    _, warm_save = cache_steps("dated-mirror-warm.yml")
+    assert export_restore["with"]["path"] == warm_save["with"]["path"]
+    prefix = export_restore["with"]["restore-keys"].strip()
+    assert warm_save["with"]["key"].startswith(prefix)
+
+
+def test_the_export_restores_the_mirror_before_its_s3_sync() -> None:
+    steps = _doc("history-export.yml")["jobs"]["export"]["steps"]
+    names = [s.get("name") for s in steps]
+    restore = names.index("Restore the dated-artifact mirror")
+    hydrate = names.index("Hydrate the dated artifacts from S3")
+    assert restore < hydrate
+    assert str(steps[restore]["uses"]).startswith(CACHE_ACTION)
+    # The sync writes into the restored mirror, not into an empty folder.
+    run = str(steps[hydrate]["run"])
+    assert '"s3://${ARTIFACTS_BUCKET}/data/artifacts" "$mirror"' in run
+
+
+def test_the_warmer_is_read_only() -> None:
+    """It assumes the Pages read role and never writes to the bucket."""
+    document = _doc("dated-mirror-warm.yml")
+    steps = [s for job in document["jobs"].values() for s in job["steps"]]
+    auth = next(s for s in steps if "configure-aws-credentials" in str(s.get("uses", "")))
+    assert auth["with"]["role-to-assume"] == "${{ secrets.PAGES_AWS_ROLE_ARN }}"
+    text = (WORKFLOWS / "dated-mirror-warm.yml").read_text()
+    for forbidden in (
+        "secrets.AWS_ROLE_ARN",
+        "HISTORY_AWS_ROLE_ARN",
+        "s3 cp",
+        "put-object",
+        "s3 rm",
+    ):
+        assert forbidden not in text, forbidden
+
+
+def test_a_cold_export_has_room_to_finish() -> None:
+    """The 2026-11-04 cold run took 54 minutes to hydrate and hit a 60-minute limit."""
+    job = _doc("history-export.yml")["jobs"]["export"]
+    assert int(job["timeout-minutes"]) >= 120
+    run = str(_step("history-export.yml", "Hydrate the dated artifacts from S3")["run"])
+    assert "max_concurrent_requests 64" in run
