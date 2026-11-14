@@ -38,7 +38,12 @@ concurrency:
 jobs:
   export:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # A cold start (no mirror to restore) downloads the whole dated store. On
+    # 2026-11-04 the hydrate step alone took 54 minutes, and the job was
+    # marked cancelled at the old 60-minute limit seconds after its write step
+    # had reported success. Leave room for a cold start; a warm one takes
+    # minutes.
+    timeout-minutes: 120
     outputs:
       month: ${{ steps.write.outputs.month }}
     permissions:
@@ -109,6 +114,12 @@ jobs:
       # carries nothing private. The index is read separately and in full: it
       # is the pointer, it changes every cycle, and it is stored compressed
       # (scripts/s3-index.sh).
+      #
+      # A monthly job cannot keep its own cache entry alive: GitHub evicts an
+      # entry that has not been read for seven days, and sooner when the
+      # repository is at its 10 GB cap. dated-mirror-warm.yml restores and
+      # re-saves the mirror every day under this same key family, so the entry
+      # restored here is at most a day behind the store.
       - name: Restore the dated-artifact mirror
         id: dated-mirror
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -127,6 +138,9 @@ jobs:
           set -euo pipefail
           rm -rf ../data/artifacts
           mkdir -p ../data/artifacts
+          # ~330,000 small objects: raise concurrency as trend-history-repair.yml
+          # does, so a cold start is not bound by ten requests at a time.
+          aws configure set default.s3.max_concurrent_requests 64
           mirror="$RUNNER_TEMP/dated-artifact-mirror"
           log="$RUNNER_TEMP/dated-mirror-sync.log"
           mkdir -p "$mirror"

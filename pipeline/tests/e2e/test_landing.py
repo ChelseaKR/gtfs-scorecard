@@ -151,11 +151,11 @@ def test_landing_switches_record_category_and_fix_without_reload(page: Page, bas
     expect(page.locator('[data-agency-id="yolobus"]')).to_have_attribute("aria-pressed", "true")
     expect(page.locator("#scope-scorecard-link")).to_have_attribute(
         "href",
-        f"/agency/yolobus/?finding={first_fix}#finding-handoff",
+        f"/agency/yolobus/#finding={first_fix}",
     )
     expect(page.locator("#scope-brief-link")).to_have_attribute(
         "href",
-        f"/agency/yolobus/brief/?finding={first_fix}#finding-handoff",
+        f"/agency/yolobus/brief/#finding={first_fix}",
     )
 
     page.locator('[data-category="realtime"]').click()
@@ -166,11 +166,11 @@ def test_landing_switches_record_category_and_fix_without_reload(page: Page, bas
     expect(page.locator("#trace-source-files")).to_contain_text("feed_info.txt")
     expect(page.locator("#scope-scorecard-link")).to_have_attribute(
         "href",
-        f"/agency/yolobus/?finding={third_fix}#finding-handoff",
+        f"/agency/yolobus/#finding={third_fix}",
     )
     expect(page.locator("#scope-board-link")).to_have_attribute(
         "href",
-        f"/agency/yolobus/board/?finding={third_fix}#finding-handoff",
+        f"/agency/yolobus/board/#finding={third_fix}",
     )
     assert "feed=yolobus" in page.url
     assert "fix=3" in page.url
