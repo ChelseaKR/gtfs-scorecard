@@ -290,6 +290,20 @@ the declared public surface).
 ### Security
 
 - **Container images clear ten fixable HIGH CVEs that failed the Trivy
+  scan at 01:03 UTC on 2026-11-14.** All ten are Amazon Linux 2023 base
+  packages, not code in this repository: rpm CVE-2026-95520 and
+  CVE-2026-95521 (fixed in `4.16.1.3-29.amzn2023.0.10`) reported in both
+  `rpm` and `rpm-libs`, and sqlite CVE-2026-119371, CVE-2026-119372,
+  CVE-2026-119373, CVE-2026-119375, CVE-2026-119376, and CVE-2026-119378
+  (fixed in `3.40.0-1.amzn2023.0.9`) reported in `sqlite-libs`.
+  `AL2023_REPO_GUID` in both Dockerfiles moves
+  from `b1757122...c71cee19` (release 2023.12.20261109) to the current
+  snapshot on Amazon's mirror list, `707b7dfd...eefb6523` (release
+  2023.12.20261112), whose repodata was read and serves exactly those fixed
+  builds (the old snapshot stops at rpm `0.9` and sqlite-libs `0.8`). No
+  `.trivyignore.yaml` change: these are real, fixable CVEs, not exceptions.
+
+- **Container images clear ten fixable HIGH CVEs that failed the Trivy
   scan on 2026-11-10.** All ten are Amazon Linux 2023 base packages, not
   code in this repository: glibc CVE-2026-86805 (TOCTOU race, fixed in
   `2.34-231.amzn2023.0.6`) reported across `glibc`, `glibc-common`,
