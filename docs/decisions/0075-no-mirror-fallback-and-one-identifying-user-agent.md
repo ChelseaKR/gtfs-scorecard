@@ -209,6 +209,38 @@ held after the fix this measurement found.
 | Wichita Transit (`wichita-transit`) | F 11.7 | F 15.6 | 1175 days ago |
 | Yuma County Intergovernmental Public Transportation Authority (YCIPTA) (`yuma-county-intergovernmental-public-transportation-authority-ycipta`) | D 68.0 | D 64.0 | in 57 days |
 
+### Re-measured on 2026-11-13, before this was merged
+
+Between the measurement above and the merge, #567 and #569 moved most
+mirror-scored records back to the agency's own URL, and #560 and #566 began
+holding freshness for copies whose service has ended. Read again from the
+2,493 `latest.json` files on gtfsscorecard.org on 2026-11-13:
+
+- 64 published grades are scored from a mirror copy: 54 from
+  `files.mobilitydatabase.org` and 10 from `storage.googleapis.com`, all
+  fetched on or before 2026-10-19. Of the 133 above, 63 are now graded from
+  the agency's own URL and 6 are no longer published.
+- Main already holds freshness for 53 of the 64. This change holds 9 more:
+  8 copies that still list service and `atd-latvia-national`, whose end date
+  cannot be read. The two archives with no stops or trips are unchanged, as
+  before.
+- 9 scores change and 1 letter grade changes. The table above is the
+  2026-11-05 measurement and is kept as the record of it.
+- 422 artifacts record the old Chrome User-Agent, all last downloaded on or
+  before 2026-10-19.
+
+| Record | Before | After |
+| --- | --- | --- |
+| Aléop Yeu-Continent (Île d'Yeu ferry) (`aleop-yeu-continent`) | C 78.3 | C 77.7 |
+| Autotransporta direkcija (ATD) national routes (`atd-latvia-national`) | F 27.9 | F 37.2 |
+| Dana Point Trolley (`dana-point-trolley`) | D 69.8 | D 65.9 |
+| Knoxville Area Transit (KAT) (`knoxville-area-transit-kat`) | F 56.8 | F 47.3 |
+| Lakes Region Explorer (`lakes-region-explorer`) | D 66.9 | D 60.8 |
+| Mountain Line Transit Authority (`mountain-line-transit-authority`) | B 80.6 | B 80.8 |
+| San Clemente Trolley (`san-clemente-trolley`) | C 71.2 | D 67.7 |
+| Transtejo Soflusa (TTSL) (`transtejo-soflusa`) | A 98.8 | A 98.4 |
+| Washington Metropolitan Area Transit Authority (WMATA) Bus (`washington-metropolitan-area-transit-authority-wmata`) | C 78.3 | C 71.1 |
+
 ## Consequences
 
 - The daily fetch makes one request per feed (after robots.txt) and none to

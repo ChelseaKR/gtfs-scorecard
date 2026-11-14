@@ -181,10 +181,14 @@ the declared public surface).
 - **No more mirror copies, and one honest User-Agent on every request
   (ADR 0075).** When a feed's own URL fails, the feed is now "couldn't
   download" and nothing is graded from a Mobility Database hosted copy. The
-  133 published grades that were scored from such a copy keep their
-  correctness and completeness, but their freshness is held out of the grade
-  as not measured, never 0 and never current. 81 letter grades change (35 F to
-  D, 21 F to C, 8 C to D, 7 D to F, and 10 others); the full list is in the ADR.
+  64 published grades still scored from such a copy keep their correctness
+  and completeness, but their freshness is held out of the grade as not
+  measured, never 0 and never current. Earlier changes (#560 and #566) hold
+  53 of them, copies whose service has ended; this change holds 9 more, which
+  changes 9 scores and 1 letter grade (San Clemente Trolley, C to D). These
+  are the 2026-11-13 figures; the ADR also keeps the 2026-11-05 measurement
+  (133 grades), taken before #567 and #569 moved most of those records back
+  to the agency's own URL.
   Every HTTP client now sends `gtfs-scorecard/<version>
   (+https://gtfsscorecard.org/fetcher/)`: `net` fills it in and refuses a
   browser-like or anonymous one, and the test suite fails any request written
