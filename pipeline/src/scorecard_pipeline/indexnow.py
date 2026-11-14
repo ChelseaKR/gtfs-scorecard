@@ -42,11 +42,13 @@ from typing import Protocol
 from urllib.parse import urljoin, urlsplit
 from urllib.robotparser import RobotFileParser
 
+# One identifying User-Agent for every request this project makes (ADR 0075).
+from .user_agent import USER_AGENT
+
 ENDPOINT = "https://api.indexnow.org/indexnow"
 MAX_URLS = 10_000
 KEY_FILE_RE = re.compile(r"^([0-9a-f]{32})\.txt$")
 BOT = "bingbot"
-USER_AGENT = "indexnow-submit (+https://github.com/ChelseaKR)"
 _NOINDEX_RE = re.compile(
     r"<meta\b[^>]*\bname\s*=\s*[\"']robots[\"'][^>]*\bcontent\s*=\s*[\"'][^\"']*noindex",
     re.IGNORECASE,

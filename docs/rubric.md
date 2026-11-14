@@ -190,6 +190,15 @@ Scoring:
 - Missing `feed_info` validity dates: minus 15, because without stated dates
   no app (and no scorecard) can warn the agency before riders notice.
 
+**Only the agency's own feed is dated.** Freshness is measured from a feed
+downloaded from the URL on file. When that URL cannot be downloaded, the feed
+is "couldn't download" and its freshness is not measured; nothing is scored
+from a copy held elsewhere. Grades scored before 2026-11-05 from a Mobility
+Database mirror copy have freshness held out of the grade (`not_yet_measured`,
+weight redistributed over the measured categories, as for unmeasured
+realtime), never scored as 0 or as current, until the feed's own URL answers
+again (ADR 0075).
+
 **Open policy question: one curve for every publisher.** The 60-day curve is
 anchored on the Caltrans 30-day rule and applies to every feed, everywhere.
 It measures runway, not habit. An agency that republishes every two weeks
@@ -204,15 +213,16 @@ report. Until then the curve stays as written.
 
 **Mirror copies.** When the feed URL on file cannot be downloaded, the daily
 run scores the Mobility Database's hosted copy instead. That copy can be months
-or years old, so its expired calendar says nothing about the feed the agency
-publishes today. When a mirror copy's service has already ended, freshness is
-not graded: it is shown as not measured, with the copy's service dates, and it
-does not count against the grade, the same way unmeasured realtime is handled.
+or years old, so its calendar says nothing about the feed the agency publishes
+today. A mirror copy's freshness is not graded, whether its service has ended,
+is still current, or has no readable end date ([ADR 0075](decisions/0075-no-mirror-fallback-and-one-identifying-user-agent.md)):
+it is shown as not measured, with the copy's service dates, and it does not
+count against the grade, the same way unmeasured realtime is handled.
 The first fix becomes the failed download itself (`scorecard_feed_download_failed`),
-worded for the error the run saw, for example an expired HTTPS certificate. A
-mirror copy whose service is still current is graded normally. Every page and
-board report scored from a mirror copy says so and prints the copy's service
-dates.
+worded for the error the run saw, for example an expired HTTPS certificate.
+Since ADR 0075 the daily run no longer reads mirror copies at all; the freshness
+sweep holds the ones already published the same way. Every page and board
+report scored from a mirror copy says so and prints the copy's service dates.
 
 **Partial grades (rubric 1.5).** A grade whose freshness was held out this way,
 or was not measured for any other reason (for example, a calendar that could
@@ -443,8 +453,8 @@ also names the date behind an expiry: when `feed_info` ends before a calendar
 that runs on, the expiry finding says so and asks for the one-field correction.
 That change moves no score ([ADR 0061](decisions/0061-feed-end-date-before-calendar.md)).
 
-Rubric 1.5 stops grading an expired Mobility Database mirror copy's calendar
-as the agency's own lapse, and marks the resulting grade "partial: freshness
+Rubric 1.5 stops grading a Mobility Database mirror copy's calendar as the
+agency's own, and marks the resulting grade "partial: freshness
 not measured" wherever it appears (see Mirror copies and Partial grades under
 Freshness). It changes no weight, deduction, or band. On the 2026-11-05 corpus,
 99 published grades came from expired mirror copies; those records rescore on

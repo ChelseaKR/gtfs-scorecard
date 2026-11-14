@@ -12,6 +12,10 @@ from typing import (
 from attrs import define as _attrs_define
 from typing_extensions import Self
 
+from ..models.artifact_held_mirror_freshness_reason import (
+    ArtifactHeldMirrorFreshnessReason,
+)
+
 if TYPE_CHECKING:
     from ..models.artifact_held_mirror_freshness_mirror_copy import (
         ArtifactHeldMirrorFreshnessMirrorCopy,
@@ -23,15 +27,16 @@ T = TypeVar("T", bound="ArtifactHeldMirrorFreshness")
 
 @_attrs_define
 class ArtifactHeldMirrorFreshness:
-    """Freshness held out of the grade because the feed URL failed and the Mobility Database mirror copy scored instead has
-    already ended its service. It has no score, findings, or details: the copy's dates sit under mirror_copy, never as
-    an expiry countdown, so they cannot read as the agency's own lapse. Comes with overall.grade_qualifier.
+    """Freshness held out of the grade because the feed URL failed and a Mobility Database mirror copy was scored instead
+    (ADR 0075). reason is mirror_copy_expired when that copy's service has ended and mirror_copy otherwise. It has no
+    score, findings, or details: the copy's dates sit under mirror_copy, never as an expiry countdown, so they cannot
+    read as the agency's own calendar. Comes with overall.grade_qualifier.
 
         Attributes:
             name (Literal['freshness']):
             status (Literal['not_yet_measured']):
             weight (float):
-            reason (Literal['mirror_copy_expired']):
+            reason (ArtifactHeldMirrorFreshnessReason):
             summary (str):
             mirror_copy (ArtifactHeldMirrorFreshnessMirrorCopy):
     """
@@ -39,7 +44,7 @@ class ArtifactHeldMirrorFreshness:
     name: Literal["freshness"]
     status: Literal["not_yet_measured"]
     weight: float
-    reason: Literal["mirror_copy_expired"]
+    reason: ArtifactHeldMirrorFreshnessReason
     summary: str
     mirror_copy: ArtifactHeldMirrorFreshnessMirrorCopy
 
@@ -50,7 +55,7 @@ class ArtifactHeldMirrorFreshness:
 
         weight = self.weight
 
-        reason = self.reason
+        reason = self.reason.value
 
         summary = self.summary
 
@@ -90,11 +95,7 @@ class ArtifactHeldMirrorFreshness:
 
         weight = _d.pop("weight")
 
-        reason = cast(Literal["mirror_copy_expired"], _d.pop("reason"))
-        if reason != "mirror_copy_expired":
-            raise ValueError(
-                f"reason must match const 'mirror_copy_expired', got '{reason}'"
-            )
+        reason = ArtifactHeldMirrorFreshnessReason(_d.pop("reason"))
 
         summary = _d.pop("summary")
 

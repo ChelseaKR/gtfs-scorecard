@@ -108,7 +108,8 @@ def fetch(url: str) -> Fetched:
     # Same as the urlopen below: the four source URLs are pinned https
     # constants in this module, never caller-supplied.
     request = urllib.request.Request(  # noqa: S310
-        url, headers={"User-Agent": "gtfs-scorecard/ntd-coverage"}
+        url,
+        headers={"User-Agent": "gtfs-scorecard ntd-coverage (+https://gtfsscorecard.org/fetcher/)"},
     )
     with urllib.request.urlopen(request, timeout=180) as response:  # noqa: S310 - pinned https
         return Fetched(url=url, body=response.read())

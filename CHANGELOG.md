@@ -164,8 +164,8 @@ the declared public surface).
 ### Changed
 
 - **Rubric 1.5: a grade whose freshness was not measured is marked partial.**
-  When the feed URL on file fails and the Mobility Database mirror copy scored
-  instead has already ended, freshness is held out of the grade (see Fixed).
+  When the feed URL on file failed and a Mobility Database mirror copy was
+  scored instead, freshness is held out of the grade (see Fixed).
   The letter is kept, but it is now marked "partial: freshness not measured"
   everywhere it appears: the agency page, board one-pager, call brief, paid
   board report and bundle, both badges, search snippets, directory and program
@@ -178,6 +178,25 @@ the declared public surface).
   unchanged feed's artifact once, and the national trend restarts at 1.5 for
   any record that cannot be rescored.
 
+- **No more mirror copies, and one honest User-Agent on every request
+  (ADR 0075).** When a feed's own URL fails, the feed is now "couldn't
+  download" and nothing is graded from a Mobility Database hosted copy. The
+  64 published grades still scored from such a copy keep their correctness
+  and completeness, but their freshness is held out of the grade as not
+  measured, never 0 and never current. Earlier changes (#560 and #566) hold
+  53 of them, copies whose service has ended; this change holds 9 more, which
+  changes 9 scores and 1 letter grade (San Clemente Trolley, C to D). These
+  are the 2026-11-13 figures; the ADR also keeps the 2026-11-05 measurement
+  (133 grades), taken before #567 and #569 moved most of those records back
+  to the agency's own URL.
+  Every HTTP client now sends `gtfs-scorecard/<version>
+  (+https://gtfsscorecard.org/fetcher/)`: `net` fills it in and refuses a
+  browser-like or anonymous one, and the test suite fails any request written
+  with a browser string. The weekly catalog check reads the
+  storage.googleapis.com export instead of the Mobility Database API, whose
+  robots.txt redirects to a sign-in page, and every catalog and equity
+  overlay read now checks robots.txt first. The OTP QA feed download goes
+  through the pipeline's client instead of plain `curl`.
 - **The Daily collect job lists the artifact archive once instead of five or
   six times.** Each recursive copy under `data/artifacts/` lists all of its
   roughly 332,000 keys (0.11 GB of S3 egress), whatever the filters. The
@@ -363,10 +382,11 @@ the declared public surface).
   brief, paid board report, and bundle manifest name the copy and its service
   dates. CDTA, Grand Valley Transit, and Blacksburg Transit now use the https
   form of their feed URLs, and SacRT uses its portal's apps.sacrt.com URL,
-  each checked on 2026-11-05. The freshness sweep keeps counting a current
-  mirror copy down between full runs, and once that copy's service ends the
-  sweep holds freshness out the same way, so the grade turns partial instead
-  of reading as current. Every surface, the artifact's own `overall` included,
+  each checked on 2026-11-05. The freshness sweep holds any published mirror
+  copy's freshness out the same way, current, lapsed or with no readable end
+  date (ADR 0075), so the grade turns partial instead of reading as current;
+  the held category's `reason` and `mirror_copy` dates are now in the artifact
+  schema. Every surface, the artifact's own `overall` included,
   marks a grade partial on one rule: freshness not measured, for any reason.
 - **`/ntd/` no longer reports a limit of the catalogs read as a count.** The
   reporter join matched 1,253 Report Year 2024 reporters against three catalogs

@@ -23,7 +23,6 @@ One request per origin per process, cached.
 from __future__ import annotations
 
 import fnmatch
-import importlib.metadata
 import urllib.parse
 import urllib.request
 import urllib.robotparser
@@ -31,17 +30,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from .instance import BASE_URL
-
-
-def _package_version() -> str:
-    try:
-        return importlib.metadata.version("gtfs-scorecard")
-    except importlib.metadata.PackageNotFoundError:  # pragma: no cover - source checkout
-        return "unknown"
-
-
-USER_AGENT = f"gtfs-scorecard/{_package_version()} (+{BASE_URL})"
+# One User-Agent for every automated request (user_agent.py, ADR 0075).
+from .user_agent import USER_AGENT as USER_AGENT
 
 # Reason codes, written into run summaries and reports.
 NO_ROBOTS_FILE = "no_robots_file"
