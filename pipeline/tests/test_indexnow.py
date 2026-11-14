@@ -334,10 +334,14 @@ def test_pages_selects_before_the_upload_and_submits_after_the_production_smoke(
     positions = [build.index(step) for step in order]
     assert positions == sorted(positions)
     assert "--kind sitemap --file sitemap.xml --missing-is-empty" in build
-    assert "indexnow.py submit" not in build
+    assert "indexnow submit" not in build
     job = _block(text, "\n  indexnow:\n", None)
     assert "    needs: production-smoke\n" in job
-    assert "indexnow.py submit" in job
+    # A module run inside the installed pipeline: indexnow.py imports the
+    # package's User-Agent, so running the lone file as a script fails.
+    assert "uv sync --locked" in job
+    assert "uv run python -m scorecard_pipeline.indexnow submit" in job
+    assert "indexnow.py submit" not in job
     head = job.split("steps:")[0]
     assert "write" not in head and "id-token" not in head
     assert "secrets." not in job and "aws-actions" not in job
