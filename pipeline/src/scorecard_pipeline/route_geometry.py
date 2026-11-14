@@ -9,9 +9,9 @@ trips a day repeats the same handful of shapes hundreds of times. Plotting all o
 them is wasteful and illegible. This module deduplicates to **one representative
 LineString per route_id**: of the distinct shapes a route's trips use, it keeps
 the longest (the shape that traces the most of the route), which is the standard
-GTFS-route-shapes reduction. Each line is simplified (Ramer-Douglas-Peucker) and
-its coordinates rounded to five decimals (~1 m) so the per-agency artifact stays
-a few tens of kilobytes, not megabytes.
+GTFS-route-shapes reduction. Each line is simplified (Ramer-Douglas-Peucker,
+tolerance about 12 m) and its coordinates rounded to five decimals (~1 m) so the
+per-agency artifact stays a few tens of kilobytes, not megabytes.
 
 Output is one GeoJSON ``FeatureCollection`` mixing route ``LineString`` features
 and stop ``Point`` features, distinguished by a ``kind`` property, plus a compact
@@ -34,9 +34,9 @@ from typing import Any
 from .gtfs import read_tables
 from .modes import route_type_family, route_type_label
 
-# Coordinates are rounded to five decimals (~1.1 m) and lines simplified with a
-# tolerance a touch finer than that, so simplification never coarsens a feature
-# beyond the rounding floor while still collapsing the dense vertices vendors
+# Coordinates are rounded to five decimals (~1.1 m). Lines are simplified with a
+# tolerance of about 12 m (measured on the published geometry files, 2026-11-10),
+# roughly ten times the rounding step, which collapses the dense vertices vendors
 # emit along straight runs. Both are degree-space approximations: good enough for
 # a city-scale reference map, and they keep the file small at 1,445-agency scale.
 _COORD_DECIMALS = 5
