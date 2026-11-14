@@ -193,7 +193,9 @@ def _request(
     req = urllib.request.Request(url, data=data, method=method)  # noqa: S310 - api.github.com / api.stripe.com only
     for key, value in headers.items():
         req.add_header(key, value)
-    req.add_header("User-Agent", "gtfs-scorecard-program-bundle")
+    req.add_header(
+        "User-Agent", "gtfs-scorecard program-bundle (+https://gtfsscorecard.org/fetcher/)"
+    )
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:  # noqa: S310 - fixed hosts only
             raw = resp.read().decode()

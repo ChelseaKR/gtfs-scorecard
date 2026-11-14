@@ -157,7 +157,7 @@ def test_the_download_gives_the_turn_back(lock_path: Path, monkeypatch: pytest.M
             source="origin", final_url="https://x.example/g.zip", max_attempts=1
         )
 
-    monkeypatch.setattr(fetchmod, "_download_with_mirror_fallback", download)
+    monkeypatch.setattr(fetchmod, "_download_from_origin", download)
     agency = Agency(id="x", name="X", static_gtfs_url="https://x.example/g.zip")
 
     with heavy_section():

@@ -294,7 +294,7 @@ def test_the_paid_report_marks_the_grade() -> None:
 # --- the rescored national history ------------------------------------------------
 
 
-def test_rescoring_never_turns_an_expired_mirror_copy_back_into_a_grade() -> None:
+def test_rescoring_never_turns_a_mirror_copy_back_into_a_grade() -> None:
     old = _artifact()
     old["rubric_version"] = "1.4"
     old["overall"] = published_overall(51.1)
@@ -320,7 +320,7 @@ def test_rescoring_never_turns_an_expired_mirror_copy_back_into_a_grade() -> Non
     }
     result = rescore_artifact(old, {})
     assert result.row is None
-    assert result.reason == "freshness_held_expired_mirror_copy"
+    assert result.reason == "freshness_held_mirror_copy"
 
     old["fetch"] = {"source": "origin"}
     assert rescore_artifact(old, {}).row is not None

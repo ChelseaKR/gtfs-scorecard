@@ -1192,15 +1192,15 @@ export interface components {
             /** @description What this finding costs: network reach, annual rider-trips, and served-area need, each a value or null with a reason. Added in schema 1.19; absent on older snapshots. */
             consequence?: components["schemas"]["ArtifactConsequence"];
         };
-        /** @description Freshness held out of the grade because the feed URL failed and the Mobility Database mirror copy scored instead has already ended its service. It has no score, findings, or details: the copy's dates sit under mirror_copy, never as an expiry countdown, so they cannot read as the agency's own lapse. Comes with overall.grade_qualifier. */
+        /** @description Freshness held out of the grade because the feed URL failed and a Mobility Database mirror copy was scored instead (ADR 0075). reason is mirror_copy_expired when that copy's service has ended and mirror_copy otherwise. It has no score, findings, or details: the copy's dates sit under mirror_copy, never as an expiry countdown, so they cannot read as the agency's own calendar. Comes with overall.grade_qualifier. */
         ArtifactHeldMirrorFreshness: {
             /** @constant */
             name: "freshness";
             /** @constant */
             status: "not_yet_measured";
             weight: number;
-            /** @constant */
-            reason: "mirror_copy_expired";
+            /** @enum {unknown} */
+            reason: "mirror_copy" | "mirror_copy_expired";
             summary: string;
             mirror_copy: {
                 /** Format: date */

@@ -4,7 +4,7 @@ from .instance import BASE_URL as _BASE_URL
 from .instance import SITE_NAME as _SITE_NAME
 
 # 1.20: additive overall.grade_qualifier ("partial: freshness not measured")
-# when an expired mirror copy's freshness is held out of the grade (rubric 1.5),
+# when a mirror copy's freshness is held out of the grade (rubric 1.5),
 # carried on index history, catalog and directory rows, rollup members, and
 # the flat exports as grade_qualifier, so a partial letter is never shown bare.
 # 1.19: additive consequence block on every category finding and top fix:

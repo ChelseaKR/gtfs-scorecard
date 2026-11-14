@@ -25,7 +25,7 @@ from .feed_auth import (
     published_url,
     resolve_credential,
 )
-from .net import FetchTrace, UnresolvableHostError, UnsafeURLError, safe_download, safe_get
+from .net import FetchTrace, UnsafeURLError, safe_download, safe_get
 from .robots_policy import USER_AGENT as ROBOTS_USER_AGENT
 from .robots_policy import require_robots, shared_checker
 from .worklock import outside_heavy_section
@@ -121,12 +121,14 @@ def limits_for(large_feed: bool) -> ArchiveLimits | None:
 class FetchProvenance:
     """How a feed's bytes were actually obtained.
 
-    ``source`` is "origin" (the registry's configured URL) or "mirror" (the
-    Mobility Database hosted copy). ``final_url`` is the URL that served the
-    bytes. ``max_attempts`` is the configured attempt ceiling for that fetch
-    (retries + 1), not an observed count — safe_get does not report how many
-    attempts it used. ``origin_error`` names the exception class that pushed
-    the fetch to the mirror; None on an origin fetch.
+    ``source`` is "origin" (the registry's configured URL). "mirror" (the
+    Mobility Database hosted copy) is read back from older sidecars and
+    artifacts only; nothing has fetched a mirror since ADR 0075. ``final_url``
+    is the URL that served the bytes. ``max_attempts`` is the configured
+    attempt ceiling for that fetch (retries + 1), not an observed count --
+    safe_get does not report how many attempts it used. ``origin_error`` named
+    the exception class that pushed an older fetch to the mirror; always None
+    now.
     """
 
     source: str
@@ -522,24 +524,19 @@ def _download_credentialed(
     )
 
 
-def _download_with_mirror_fallback(
+def _download_from_origin(
     agency: Agency, dest: Path, limits: ArchiveLimits | None
 ) -> FetchProvenance:
-    """Fetch the agency's feed into ``dest``, falling back to the Mobility
-    Database's hosted mirror when the origin is unreachable.
+    """Fetch the agency's feed into ``dest`` from the URL on file, and nowhere else.
 
-    Some agencies firewall datacenter IP ranges (the feed times out from CI) or
-    sit behind a bot filter (a 403). MobilityData keeps a hosted copy on Google
-    Cloud Storage that is reachable regardless, so when the origin fails we score
-    that mirror rather than drop the agency. SSRF rejections are never retried or
-    mirrored; they mean the URL itself is unsafe.
+    There is no fallback (ADR 0075). Until 2026-11-05 a failed origin fell back
+    to the Mobility Database's hosted copy of the feed. Those copies are served
+    from ``files.mobilitydatabase.org``, whose robots.txt disallows every path,
+    and a copy is not the feed the agency publishes today. Now a failed download
+    raises, the run records the record as unreachable ("couldn't download"),
+    and nothing is graded from anyone else's bytes.
 
-    Returns a FetchProvenance stating which URL actually served the bytes now on
-    disk, so the published artifact can say "we scored the mirror copy" instead
-    of passing a mirror fetch off as an origin fetch.
-
-    A record with ``fetch_auth`` never reaches the fallback below: it goes to
-    _download_credentialed, which has no mirror branch (issue #371).
+    A record with ``fetch_auth`` goes to _download_credentialed (issue #371).
     """
     import requests
 
@@ -551,70 +548,23 @@ def _download_with_mirror_fallback(
 
     large = limits is not None
     max_bytes = limits.max_download_bytes if limits else MAX_GTFS_DOWNLOAD_BYTES
-
     try:
         final_url = _fetch_to(
             agency.static_gtfs_url, dest, max_bytes=max_bytes, retries=FETCH_RETRIES, large=large
         )
-        return FetchProvenance(
-            source="origin",
-            final_url=final_url or agency.static_gtfs_url,
-            max_attempts=FETCH_RETRIES + 1,
-        )
     except (requests.exceptions.RequestException, UnsafeURLError) as origin_exc:
-        from .mobilitydb import hosted_mirror_url
-
-        mirror = None
-        if not isinstance(origin_exc, UnsafeURLError) or isinstance(
-            origin_exc, UnresolvableHostError
-        ):
-            mirror = hosted_mirror_url(
-                agency.id, agency.name, agency.static_gtfs_url, agency.mdb_id
-            )
-        if not mirror:
-            raise
-        from urllib.parse import urlsplit
-
-        from .mobilitydb import DISALLOWED_CATALOG_HOSTS
-
-        if (urlsplit(mirror).hostname or "").lower() in DISALLOWED_CATALOG_HOSTS:
-            # ADR 0070: the Mobility Database's hosted copies live on a host
-            # whose robots.txt disallows every path. Not even asked.
-            log.warning(
-                "%s: origin %s unreachable (%s); no mirror fallback (%s is not read)",
-                agency.id,
-                agency.static_gtfs_url,
-                type(origin_exc).__name__,
-                urlsplit(mirror).hostname,
-            )
-            raise
-        mirror_verdict = shared_checker().check(mirror)
-        if not mirror_verdict.allowed:
-            # The mirror host's robots.txt refuses us, so the origin's own
-            # failure stands.
-            log.warning(
-                "%s: origin %s unreachable (%s); mirror %s not fetched (%s)",
-                agency.id,
-                agency.static_gtfs_url,
-                type(origin_exc).__name__,
-                mirror,
-                mirror_verdict.reason,
-            )
-            raise
         log.warning(
-            "%s: origin %s unreachable (%s); falling back to Mobility Database mirror %s",
+            "%s: couldn't download %s (%s); no fallback copy is fetched (ADR 0075)",
             agency.id,
             agency.static_gtfs_url,
             type(origin_exc).__name__,
-            mirror,
         )
-        final_url = _fetch_to(mirror, dest, max_bytes=max_bytes, retries=0, large=large)
-        return FetchProvenance(
-            source="mirror",
-            final_url=final_url or mirror,
-            max_attempts=1,  # the mirror fetch is a single attempt (no retries)
-            origin_error=type(origin_exc).__name__,
-        )
+        raise
+    return FetchProvenance(
+        source="origin",
+        final_url=final_url or agency.static_gtfs_url,
+        max_attempts=FETCH_RETRIES + 1,
+    )
 
 
 # Sidecar written next to gtfs.zip on a fresh download, so a rerun that reuses
@@ -706,7 +656,7 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
         # Waiting on a server is not heavy work: a sibling run may validate
         # meanwhile (worklock.py; a no-op outside the intraday rescore).
         with outside_heavy_section():
-            prov = _download_with_mirror_fallback(agency, tmp, limits)
+            prov = _download_from_origin(agency, tmp, limits)
     except BaseException:
         tmp.unlink(missing_ok=True)
         raise

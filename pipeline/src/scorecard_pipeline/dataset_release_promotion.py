@@ -16,6 +16,8 @@ from typing import Any, Protocol, cast
 
 import requests
 
+from .user_agent import USER_AGENT
+
 EXPECTED_PAYLOAD_ASSETS = (
     "CITATION.cff",
     "DATA-DICTIONARY.md",
@@ -93,7 +95,7 @@ class GitHubReleaseClient:
                 "Accept": "application/vnd.github+json",
                 "Authorization": f"Bearer {token}",
                 "X-GitHub-Api-Version": "2026-03-10",
-                "User-Agent": "gtfs-scorecard-dataset-release",
+                "User-Agent": USER_AGENT,
             }
         )
 

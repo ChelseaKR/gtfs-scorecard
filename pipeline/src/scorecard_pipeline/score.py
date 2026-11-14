@@ -483,9 +483,10 @@ def hold_mirror_freshness(
     grade the way unmeasured realtime is, and the one thing we do know --
     the feed could not be downloaded -- becomes the first fix.
 
-    Returns None (nothing to change) unless the bytes came from the mirror
-    and that copy's service has already ended. A mirror copy that is still
-    current is graded normally; its dates still describe live service.
+    Returns None (nothing to change) unless the bytes came from the mirror and
+    freshness was measured. Any mirror copy is held, current or lapsed, and one
+    with no readable end date too: the copy is not the feed the agency
+    publishes today, and nothing fetches mirrors any more (ADR 0075).
     Otherwise returns the categories without freshness, the held freshness
     entry, and the lead fix.
     """
@@ -495,18 +496,20 @@ def hold_mirror_freshness(
     if fresh is None:
         return None
     days = fresh.details.get("days_until_expiry")
-    if not isinstance(days, int) or days >= 0:
-        return None
+    lapsed = isinstance(days, int) and days < 0
     start = fresh.details.get("feed_start_date")
     end = fresh.details.get("effective_expiry_date") or fresh.details.get("last_service_date")
-    ended = f" ended its service on {end}" if end else "'s service has ended"
+    if lapsed:
+        copy_dates = f" ended its service on {end}" if end else "'s service has ended"
+    else:
+        copy_dates = f" lists service through {end}" if end else " has no readable end date"
     held = {
-        "reason": "mirror_copy_expired",
+        "reason": "mirror_copy_expired" if lapsed else "mirror_copy",
         "summary": (
             "Not graded. The feed URL on file could not be downloaded, and the "
-            f"Mobility Database mirror copy scored instead{ended}. That date "
-            "describes the copy, not the feed the agency publishes today, so it "
-            "does not count against the grade."
+            f"Mobility Database mirror copy scored instead{copy_dates}. Its dates "
+            "describe the copy, not the feed the agency publishes today, so they "
+            "do not count against the grade."
         ),
         # The copy's dates under their own key, never days_until_expiry: an
         # expiry countdown here would be counted as the agency's lapse again.
@@ -526,7 +529,7 @@ def hold_mirror_freshness(
             "Trip planners download the feed from that address too. The grade here "
             f"was measured on an older Mobility Database copy whose service ended {end}, "
             "so freshness is not graded until the current feed can be downloaded."
-            if end
+            if lapsed and end
             else "Trip planners download the feed from that address too. The grade here "
             "was measured on an older Mobility Database copy, so freshness is not "
             "graded until the current feed can be downloaded."

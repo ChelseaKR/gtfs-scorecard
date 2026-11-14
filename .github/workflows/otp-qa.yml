@@ -79,8 +79,8 @@ jobs:
           FEED_URL: ${{ matrix.feed.feed_url }}
         run: |
           mkdir -p otp-work
-          # The pipeline's own client (ADR 0077): robots.txt on every hop, the
-          # identifying User-Agent, and the SSRF and size guards. A refusal or a
+          # The pipeline's own client (ADR 0075, ADR 0077): robots.txt on every
+          # hop, the identifying User-Agent, and the SSRF and size guards. A refusal or a
           # failed download is the same "unavailable" result as before.
           if uv run --directory pipeline python -c '
           import os, sys

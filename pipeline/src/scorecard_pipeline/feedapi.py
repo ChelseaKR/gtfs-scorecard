@@ -182,7 +182,14 @@ def fetch_report_json(url: str, token: str | None = None) -> dict[str, Any]:
     it is sent when present in case the link is gated.
     """
     import json
+    from urllib.parse import urlsplit
 
+    from .mobilitydb import DISALLOWED_CATALOG_HOSTS
+    from .robots_policy import shared_checker
+
+    if (urlsplit(url).hostname or "").lower() in DISALLOWED_CATALOG_HOSTS:
+        raise ValueError(f"{urlsplit(url).hostname} disallows automated access; not read")
+    shared_checker().require(url)
     headers = _auth_headers(token) if token else None
     body = safe_get(url, headers=headers, timeout=120, max_bytes=64 * 1024 * 1024)
     data = json.loads(body.decode("utf-8"))
@@ -237,6 +244,14 @@ def try_cached_report(
     """
     feed_id = feed_id_for(mdb_id)
     if not feed_id or not token:
+        return None
+    from .robots_policy import shared_checker
+
+    # ADR 0075: the API host is called only when its robots.txt allows it. On
+    # 2026-11-05 it redirected /robots.txt to a sign-in page, so this returns
+    # None with no API request and the validator runs locally as before.
+    if not shared_checker().check(f"{API_BASE}/gtfs_feeds").allowed:
+        log.info("feedapi: api.mobilitydatabase.org robots.txt does not allow us; skipping")
         return None
     try:
         dataset = fetch_latest_dataset(feed_id, token)

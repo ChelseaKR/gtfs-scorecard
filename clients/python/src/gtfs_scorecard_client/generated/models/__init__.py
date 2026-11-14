@@ -40,6 +40,7 @@ from .artifact_held_mirror_freshness import ArtifactHeldMirrorFreshness
 from .artifact_held_mirror_freshness_mirror_copy import (
     ArtifactHeldMirrorFreshnessMirrorCopy,
 )
+from .artifact_held_mirror_freshness_reason import ArtifactHeldMirrorFreshnessReason
 from .artifact_mode_profile import ArtifactModeProfile
 from .artifact_mode_profile_modes_item import ArtifactModeProfileModesItem
 from .artifact_ntd_id_alignment import ArtifactNtdIdAlignment
@@ -269,6 +270,7 @@ __all__ = (
     "ArtifactGeo",
     "ArtifactHeldMirrorFreshness",
     "ArtifactHeldMirrorFreshnessMirrorCopy",
+    "ArtifactHeldMirrorFreshnessReason",
     "ArtifactModeProfile",
     "ArtifactModeProfileModesItem",
     "ArtifactNtdIdAlignment",

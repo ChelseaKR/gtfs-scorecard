@@ -22,7 +22,10 @@ import argparse
 import json
 import math
 from pathlib import Path
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
+
+# Names the scorecard and links to the fetcher page (ADR 0075).
+USER_AGENT = "gtfs-scorecard map-build (+https://gtfsscorecard.org/fetcher/)"
 
 SOURCE = (
     "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json"
@@ -126,7 +129,8 @@ def main() -> int:
     )
     args = ap.parse_args()
 
-    with urlopen(args.source, timeout=30) as resp:  # noqa: S310 - fixed https source
+    request = Request(args.source, headers={"User-Agent": USER_AGENT})  # noqa: S310
+    with urlopen(request, timeout=30) as resp:  # noqa: S310 - fixed https source
         geojson = json.loads(resp.read().decode("utf-8"))
     paths = build(geojson)
     payload = {"viewBox": f"0 0 {int(VIEW_W)} {int(VIEW_H)}", "states": paths}

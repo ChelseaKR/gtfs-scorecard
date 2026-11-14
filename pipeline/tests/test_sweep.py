@@ -157,17 +157,22 @@ def _mirror_copy_artifact(last_service: str, days: int) -> dict[str, Any]:
     return art
 
 
-def test_a_current_mirror_copy_keeps_counting_down_between_full_runs() -> None:
+def test_a_current_mirror_copy_is_held_not_frozen_and_not_graded() -> None:
     # Scored 2026-06-10 with service through 2026-07-10. Ten days later the
-    # countdown must read 20, not stay frozen at the full run's 30.
+    # full run's countdown of 30 must not stand, and the copy's still-current
+    # calendar is not graded as the agency's either (ADR 0075): freshness is
+    # held, the grade is partial, and the copy's own end date is kept.
     art = _mirror_copy_artifact("2026-07-10", 30)
     assert needs_sweep(art, dt.date(2026, 6, 20))
     new, summary = resweep(art, dt.date(2026, 6, 20))
     fresh = new["categories"]["freshness"]
-    assert fresh["status"] == "measured"
-    assert fresh["details"]["days_until_expiry"] == 20
-    assert summary["new_days"] == 20
-    assert "grade_qualifier" not in new["overall"]
+    assert fresh["status"] == "not_yet_measured"
+    assert fresh["reason"] == "mirror_copy"
+    assert "score" not in fresh and "details" not in fresh
+    assert fresh["mirror_copy"]["service_end"] == "2026-07-10"
+    assert "ended" not in fresh["summary"]
+    assert summary["new_days"] is None
+    assert new["overall"]["grade_qualifier"] == "partial: freshness not measured"
 
 
 def test_a_mirror_copy_that_lapses_between_full_runs_turns_partial_not_current() -> None:

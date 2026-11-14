@@ -78,7 +78,9 @@
     <section aria-labelledby="ua-h">
       <h2 class="section-title" id="ua-h">The User-Agent, stated honestly</h2>
       <p>Every request identifies itself as <code>gtfs-scorecard/&lt;version&gt;
-      (+https://gtfsscorecard.org)</code>. Until October 2026 the fetcher presented a desktop
+      (+https://gtfsscorecard.org/fetcher/)</code>, linking to this page. That covers feed
+      downloads, realtime samples, <code>robots.txt</code> reads, and the daily liveness
+      check. Until October 2026 the fetcher presented a desktop
       browser&#8217;s User-Agent to get past bot filters; that practice has ended. If your
       server refuses this User-Agent, the feed is shown as unreachable with its last known
       grade, and you can tell us to use a different URL.</p>
@@ -109,10 +111,10 @@
       <h2 class="section-title" id="retry-h">Retries</h2>
       <p>A failed download is retried a small number of times with exponential backoff, and
       only on responses that usually mean "try again" (403 from a web application firewall,
-      408, 425, 429, and 5xx). We no longer fall back to the MobilityData hosted mirror: it is
-      served from a host whose <code>robots.txt</code> asks automated tools to stay away. A
-      feed that cannot be fetched is shown as unreachable with its last known grade, never as
-      a zero.</p>
+      408, 425, 429, and 5xx). We do not fall back to the MobilityData hosted copy of a feed,
+      or to any other copy: your URL is the only one we ask. A feed that cannot be downloaded
+      is shown as unreachable with its last known grade, never as a zero, and its freshness is
+      not measured until your URL answers again.</p>
     </section>
 
     <section aria-labelledby="contact-h">

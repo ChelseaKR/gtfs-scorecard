@@ -1,5 +1,5 @@
 """Honest User-Agent, robots.txt on every feed request, and no reads of the
-disallowed Mobility Database file host (ADR 0070)."""
+disallowed Mobility Database file host (ADR 0070, ADR 0075)."""
 
 from __future__ import annotations
 
@@ -57,7 +57,7 @@ def test_feed_requests_send_the_identifying_user_agent(
         return _zip_bytes()
 
     monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
-    fetchmod._download_with_mirror_fallback(AGENCY, tmp_path / "g.zip", None)
+    fetchmod._download_from_origin(AGENCY, tmp_path / "g.zip", None)
     assert sent[0]["User-Agent"] == rp.USER_AGENT
     assert "Mozilla" not in sent[0]["User-Agent"]
     assert fetchmod.USER_AGENT == rp.USER_AGENT
@@ -73,26 +73,26 @@ def test_a_disallowed_feed_is_not_requested_at_all(
         return _zip_bytes()
 
     monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
-    monkeypatch.setattr(
-        "scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: "https://m.example/x.zip"
-    )
     _robots({"origin.example.org": DISALLOW_ALL})
 
     with pytest.raises(RobotsRefusedError) as raised:
-        fetchmod._download_with_mirror_fallback(AGENCY, tmp_path / "g.zip", None)
+        fetchmod._download_from_origin(AGENCY, tmp_path / "g.zip", None)
 
     assert raised.value.reason == "not fetched: robots disallows"
     assert requested == []  # neither the feed nor a mirror
 
     # Negative control: the same fetch with no rules on the host downloads.
     _robots({})
-    fetchmod._download_with_mirror_fallback(AGENCY, tmp_path / "g.zip", None)
+    fetchmod._download_from_origin(AGENCY, tmp_path / "g.zip", None)
     assert requested == [ORIGIN]
 
 
-def test_the_mobility_database_file_host_is_never_used_as_a_mirror(
+def test_a_failed_origin_reads_no_mirror_and_no_catalog(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
+    """ADR 0075: the origin is the only URL asked. Neither the Mobility
+    Database file host nor any other copy is requested, and robots.txt is read
+    for the origin alone."""
     requested: list[str] = []
 
     def fake_safe_get(url: str, **_: Any) -> bytes:
@@ -107,45 +107,16 @@ def test_the_mobility_database_file_host_is_never_used_as_a_mirror(
 
     rp.reset_shared_checker(RobotsChecker(get=get))
     monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
-    mirror = "https://files.mobilitydatabase.org/mdb-1/latest.zip"
-    monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: mirror)
 
     with pytest.raises(requests.exceptions.ConnectTimeout):
-        fetchmod._download_with_mirror_fallback(AGENCY, tmp_path / "g.zip", None)
+        fetchmod._download_from_origin(AGENCY, tmp_path / "g.zip", None)
 
-    assert mirror not in requested
-    assert not any(
-        (urlsplit(url).hostname or "").endswith(".mobilitydatabase.org")
-        for url in requested + robots_reads
-    )
-
-
-def test_a_mirror_whose_robots_refuses_us_is_not_requested(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    requested: list[str] = []
-
-    def fake_safe_get(url: str, **_: Any) -> bytes:
-        requested.append(url)
-        if url == ORIGIN:
-            raise requests.exceptions.ConnectTimeout("down")
-        return _zip_bytes()
-
-    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
-    mirror = "https://mirror.example.net/x.zip"
-    monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: mirror)
-    _robots(
-        {"mirror.example.net": RobotsResponse(503, "https://mirror.example.net/robots.txt", "", "")}
-    )
-
-    with pytest.raises(requests.exceptions.ConnectTimeout):
-        fetchmod._download_with_mirror_fallback(AGENCY, tmp_path / "g.zip", None)
     assert requested == [ORIGIN]
-
-    # Negative control: the same mirror with no rules file serves the bytes.
-    _robots({})
-    prov = fetchmod._download_with_mirror_fallback(AGENCY, tmp_path / "g.zip", None)
-    assert prov.source == "mirror"
+    assert robots_reads == ["https://origin.example.org/robots.txt"]
+    hosts = {urlsplit(url).hostname or "" for url in requested + robots_reads}
+    assert not any(
+        host == "mobilitydatabase.org" or host.endswith(".mobilitydatabase.org") for host in hosts
+    )
 
 
 def test_a_refused_realtime_feed_is_not_measured_not_an_outage() -> None:
