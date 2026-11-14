@@ -41,6 +41,14 @@ the declared public surface).
 
 ### Fixed
 
+- **The support page and `docs/support.md` no longer quote the September 2026 S3
+  charge ($28.35) as the running cost.** The runs that caused most of it changed
+  between 2026-10-23 and 2026-11-05. Both pages now give the rate AWS Cost
+  Explorer showed for November 1 to 5, 2026 (about $9 to $10.50 a month), say it
+  is a five-day rate and not a month's bill, and give October 2026, the last full
+  month ($43.66, $29.88 of it data transfer out). They still state no total.
+  `pipeline/tests/test_support_cost_claim.py` pins the new wording and fails if
+  the September figure returns.
 - robots.txt is now read before every redirect hop of a feed request, and the daily
   liveness check reads it at all. A record refused this way says "not fetched" beside
   its last measured grade. 86 records stop refreshing: 70 disallowed and 16 with
