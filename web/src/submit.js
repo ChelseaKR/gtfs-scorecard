@@ -84,6 +84,10 @@ form.addEventListener("submit", async (event) => {
   subdivisionCodeField?.removeAttribute("aria-invalid");
   subdivisionNameField?.removeAttribute("aria-invalid");
   for (const field of typedFields) field.removeAttribute("aria-invalid");
+  // A name of only spaces is empty: the submission service strips it and
+  // rejects the form, so catch it here and point at the field instead.
+  data.name = String(data.name || "").trim();
+  data.static_gtfs_url = String(data.static_gtfs_url || "").trim();
   if (!data.name || !data.static_gtfs_url) {
     setStatus("Please give at least an agency name and a GTFS Schedule URL.", "err");
     const missing = data.name ? urlField : nameField;
