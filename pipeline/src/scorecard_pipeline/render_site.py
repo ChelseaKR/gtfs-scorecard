@@ -1663,12 +1663,18 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     if len(comparable_history) >= 2:
         prev, cur = comparable_history[-2], comparable_history[-1]
         d = round(cur["score"] - prev["score"], 1)
+        # The letter move is shown whenever the letter moved, in either
+        # direction, and never as "B -> B": the /changes/ page and the board
+        # report already show a grade that fell, so the hero does too.
+        grade_move = (
+            f" &middot; {esc(prev['grade'])} &rarr; {esc(cur['grade'])}"
+            if prev.get("grade") != cur.get("grade")
+            else ""
+        )
         if d > 0:
-            trend = f'<span aria-hidden="true">&#9650;</span> up {d} since {esc(prev["date"])} &middot; {esc(prev["grade"])} &rarr; {esc(cur["grade"])}'
+            trend = f'<span aria-hidden="true">&#9650;</span> up {d} since {esc(prev["date"])}{grade_move}'
         elif d < 0:
-            trend = (
-                f'<span aria-hidden="true">&#9660;</span> down {abs(d)} since {esc(prev["date"])}'
-            )
+            trend = f'<span aria-hidden="true">&#9660;</span> down {abs(d)} since {esc(prev["date"])}{grade_move}'
         else:
             trend = f"unchanged since {esc(prev['date'])}"
     else:

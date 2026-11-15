@@ -41,6 +41,23 @@ the declared public surface).
 
 ### Fixed
 
+- **The compare table reads a feed's service window the way its scorecard does.**
+  "Days of service left" printed the raw countdown, so a feed published to an
+  end date more than ten years out showed a five-digit day count where its
+  scorecard says "Review service end date", and a feed with 0 days left showed
+  "0 days" where the scorecard says it has expired. Both now match the status
+  chip, and one day reads "1 day". The overall grade cell also carries the
+  partial-grade qualifier, as every other surface does. 39 feeds in the
+  committed snapshot have an unusually distant end date.
+- **A compare link that fails to load names the agency.** A 200 response that
+  was not JSON, or JSON that was not a scorecard, put a JSON parser error into
+  "We couldn't load a scorecard for ..." in place of the agency id.
+- **The scorecard hero shows a letter-grade move in both directions.** The
+  trend line under the score showed "B → C"-style moves only when the score
+  rose, and printed "B → B" when it rose within one grade. It now shows the
+  move whenever the letter changed, up or down, matching `/changes/` and the
+  board report. In the committed snapshot that is 11 feeds whose fall to a
+  lower grade was not shown and 30 whose rise showed an unchanged letter.
 - **The support page and `docs/support.md` no longer quote the September 2026 S3
   charge ($28.35) as the running cost.** The runs that caused most of it changed
   between 2026-10-23 and 2026-11-05. Both pages now give the rate AWS Cost
@@ -57,6 +74,11 @@ the declared public surface).
 
 ### Added
 
+- **A "Last checked" row for the compare table, off by default.**
+  `pages_tools.COMPARE_SHOWS_CHECK_DATES` adds each scorecard's check date
+  beside "Days of service left", and one sentence under the table when the two
+  dates differ, since each day count runs from its own check. While the flag is
+  off the page carries none of this copy.
 - **New and changed pages are announced to IndexNow after each deploy**
   ([ADR 0073](docs/decisions/0073-indexnow-after-deploy.md)). The Deploy site
   workflow compares the new sitemap with the live one and sends only the URLs
