@@ -29,6 +29,10 @@ the declared public surface).
 
 ### Changed
 
+- **The compare table now shows when each scorecard was checked.**
+  `pages_tools.COMPARE_SHOWS_CHECK_DATES` is on: a "Last checked" row sits
+  beside "Days of service left", and when the two dates differ a sentence under
+  the table says each day count runs from its own check.
 - 49 records scored from a Mobility Database mirror copy now track the feed their
   agency publishes today, each checked by reading the file, and 5 retire into the
   record already publishing that feed. A move between a mirror copy and the
