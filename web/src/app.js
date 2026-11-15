@@ -3225,9 +3225,13 @@ function boardTrend(history) {
   const prev = comparable[comparable.length - 2];
   const cur = comparable[comparable.length - 1];
   const d = Math.round((cur.score - prev.score) * 10) / 10;
+  // The letter move shows whenever the letter moved, in either direction, and
+  // never as "B → B", matching the static hero in render_site.py.
+  const gradeMove = prev.grade !== cur.grade ? ` · ${esc(prev.grade)} → ${esc(cur.grade)}` : "";
   if (d > 0)
-    return `<span aria-hidden="true">▲</span> up ${d} since ${formatDate(prev.date)} · ${prev.grade} → ${cur.grade}`;
-  if (d < 0) return `<span aria-hidden="true">▼</span> down ${Math.abs(d)} since ${formatDate(prev.date)}`;
+    return `<span aria-hidden="true">▲</span> up ${d} since ${formatDate(prev.date)}${gradeMove}`;
+  if (d < 0)
+    return `<span aria-hidden="true">▼</span> down ${Math.abs(d)} since ${formatDate(prev.date)}${gradeMove}`;
   return `unchanged since ${formatDate(prev.date)}`;
 }
 

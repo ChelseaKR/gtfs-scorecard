@@ -13,6 +13,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from .metrics import SERVICE_HORIZON_REVIEW_YEARS
+from .score import PARTIAL_FRESHNESS_QUALIFIER
 from .site_shell import BASE_URL, CATEGORY_LABELS, CATEGORY_ORDER, _breadcrumb, _page, esc
 
 # Where the compare page reads the rest of its picker list from, and how many
@@ -27,6 +29,13 @@ from .site_shell import BASE_URL, CATEGORY_LABELS, CATEGORY_ORDER, _breadcrumb, 
 # document now weighs the same at 2,000 agencies as at 20.
 _COMPARE_PICKER_URL = "/compare/agencies.json"
 _COMPARE_PICKER_INITIAL_OPTIONS = 50
+
+# Default-off: a "Last checked" row in the compare table, giving each
+# scorecard's snapshot date, plus one sentence under the table when the two
+# dates differ. "Days of service left" is counted from each scorecard's own
+# check, so two rows checked on different days are not counted from the same
+# day. Off until its copy is approved; while off, the page carries none of it.
+COMPARE_SHOWS_CHECK_DATES = False
 
 
 def _compare_picker_order(catalog: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -57,7 +66,9 @@ def _render_compare_picker_data(catalog: list[dict[str, Any]]) -> str:
     )
 
 
-def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
+def _render_compare_page(
+    catalog: list[dict[str, Any]], *, show_check_dates: bool | None = None
+) -> str:
     """The side-by-side compare page (/compare/?a=<id>&b=<id>).
 
     Two agencies' latest artifacts, loaded client-side and rendered as one
@@ -72,7 +83,12 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     announced in a status region and recoverable with a retry button, so the
     document stops growing with the registry. An unmeasured
     realtime category renders as "Not yet published", never as a zero
-    (docs/SIDE_BY_SIDE_COMPARE_DESIGN.md)."""
+    (docs/SIDE_BY_SIDE_COMPARE_DESIGN.md).
+
+    ``show_check_dates`` (default: ``COMPARE_SHOWS_CHECK_DATES``, off) adds
+    the "Last checked" row and its different-days note."""
+    if show_check_dates is None:
+        show_check_dates = COMPARE_SHOWS_CHECK_DATES
     ordered = _compare_picker_order(catalog)
     total = len(ordered)
     initial = ordered[:_COMPARE_PICKER_INITIAL_OPTIONS]
@@ -104,6 +120,28 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     )
     labels = json.dumps(
         [[key, CATEGORY_LABELS[key]] for key in CATEGORY_ORDER], separators=(",", ":")
+    )
+    checked_row_js = (
+        """
+          var checkedA = isoDate(artA.snapshot_date), checkedB = isoDate(artB.snapshot_date);
+          if (checkedA || checkedB) {
+            row("Last checked",
+                el("td", checkedA ? String(artA.snapshot_date).trim() : "\\u2014"),
+                el("td", checkedB ? String(artB.snapshot_date).trim() : "\\u2014"));
+          }"""
+        if show_check_dates
+        else ""
+    )
+    checked_note_js = (
+        """
+          if (checkedA && checkedB && checkedA.getTime() !== checkedB.getTime()) {
+            var checkedNote = el("p", "These scorecards were checked on different days, " +
+              "so each one counts its days of service left from its own check.");
+            checkedNote.className = "fineprint";
+            result.appendChild(checkedNote);
+          }"""
+        if show_check_dates
+        else ""
     )
     body = f"""    {_breadcrumb([("Home", "/"), ("Compare agencies", None)])}
     <a class="backlink" href="/">&larr; Home</a>
@@ -153,6 +191,8 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     <script>
       (function () {{
         var CATS = {labels};
+        var HORIZON_YEARS = {SERVICE_HORIZON_REVIEW_YEARS};
+        var PARTIAL = {json.dumps(PARTIAL_FRESHNESS_QUALIFIER)};
         var PICKER_URL = "{_COMPARE_PICKER_URL}";
         var SHOWN = {shown};
         var selA = document.getElementById("compare-a");
@@ -281,12 +321,21 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
           return;
         }}
         statusEl.textContent = "Loading both scorecards\\u2026";
+        // Any failure names the agency it was for: a 404, a network error, an
+        // HTML page served with a 200, or JSON that is not a scorecard. Before,
+        // the message quoted a JSON parser error where the id belonged.
         function fetchArtifact(id) {{
           return fetch("/data/artifacts/" + encodeURIComponent(id) + "/latest.json")
             .then(function (r) {{
               if (!r.ok) throw new Error(id);
               return r.json();
-            }});
+            }})
+            .then(function (art) {{
+              if (!art || typeof art !== "object" || !art.agency || !art.overall ||
+                  typeof art.agency.name !== "string") throw new Error(id);
+              return art;
+            }})
+            .catch(function () {{ throw new Error(id); }});
         }}
         function el(tag, text) {{
           var e = document.createElement(tag);
@@ -315,11 +364,67 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
           return cat.status === "measured" ? cat.score : null;
         }}
         function flag(v) {{ return v ? "Yes" : "Not yet"; }}
+        // A strict YYYY-MM-DD as a UTC date, or null.
+        function isoDate(value) {{
+          if (typeof value !== "string") return null;
+          var m = /^(\\d{{4}})-(\\d{{2}})-(\\d{{2}})$/.exec(value.trim());
+          if (!m) return null;
+          var y = Number(m[1]), mo = Number(m[2]) - 1, d = Number(m[3]);
+          var date = new Date(Date.UTC(2000, 0, 1));
+          date.setUTCFullYear(y, mo, d);
+          if (date.getUTCFullYear() !== y || date.getUTCMonth() !== mo ||
+              date.getUTCDate() !== d) return null;
+          return date;
+        }}
+        // metrics.resolve_service_horizon_status: the explicit status, or for
+        // an older artifact the same strict ten-calendar-year test from its
+        // check date and end date (or day count).
+        function horizonStatus(fresh, snapshotDate) {{
+          var explicit = fresh.service_horizon_status;
+          if (explicit === "within_review_threshold" || explicit === "unusually_distant" ||
+              explicit === "unknown") return explicit;
+          var checked = isoDate(snapshotDate) || isoDate(fresh.snapshot_date) ||
+            isoDate(fresh.date);
+          if (!checked) return "unknown";
+          var expiry = isoDate(fresh.effective_expiry_date);
+          if (!expiry) {{
+            var days = fresh.days_until_expiry;
+            if (typeof days !== "number" || !isFinite(days) || Math.floor(days) !== days)
+              return "unknown";
+            expiry = new Date(checked.getTime());
+            expiry.setUTCDate(expiry.getUTCDate() + days);
+          }}
+          var month = checked.getUTCMonth();
+          var boundary = new Date(checked.getTime());
+          boundary.setUTCFullYear(checked.getUTCFullYear() + HORIZON_YEARS, month,
+            checked.getUTCDate());
+          // February 29 clamps to the 28th in a year without one.
+          if (boundary.getUTCMonth() !== month)
+            boundary.setUTCFullYear(checked.getUTCFullYear() + HORIZON_YEARS, month, 28);
+          return expiry.getTime() > boundary.getTime() ? "unusually_distant"
+            : "within_review_threshold";
+        }}
+        // score.grade_qualifier: the stated qualifier, or the partial mark
+        // when freshness is present but was not measured.
+        function gradeQualifier(art) {{
+          var o = art.overall || {{}};
+          if (!o.grade) return "";
+          if (typeof o.grade_qualifier === "string" && o.grade_qualifier)
+            return o.grade_qualifier;
+          var fresh = (art.categories || {{}}).freshness;
+          return fresh && fresh.status && fresh.status !== "measured" ? PARTIAL : "";
+        }}
+        function overallText(art) {{
+          var q = gradeQualifier(art);
+          return art.overall.grade + " (" + art.overall.score + " / 100)" +
+            (q ? " \\u00b7 " + q : "");
+        }}
         function detail(art) {{
           var comp = ((art.categories || {{}}).completeness || {{}}).details || {{}};
           var fresh = ((art.categories || {{}}).freshness || {{}}).details || {{}};
           return {{
             days: typeof fresh.days_until_expiry === "number" ? fresh.days_until_expiry : null,
+            horizon: horizonStatus(fresh, art.snapshot_date),
             fares: !!comp.has_fares,
             flex: !!(comp.flex && comp.flex.has_flex),
             pathways: !!(comp.pathways && comp.pathways.has_pathways)
@@ -432,19 +537,23 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
             tr.appendChild(cellB);
             tbody.appendChild(tr);
           }}
-          row("Overall grade",
-              el("td", artA.overall.grade + " (" + artA.overall.score + " / 100)"),
-              el("td", artB.overall.grade + " (" + artB.overall.score + " / 100)"));
+          row("Overall grade", el("td", overallText(artA)), el("td", overallText(artB)));
           CATS.forEach(function (c) {{
             var sa = catScore(artA, c[0]), sb = catScore(artB, c[0]);
             row(c[1], scoreCell(sa, sb), scoreCell(sb, sa));
           }});
           var dA = detail(artA), dB = detail(artB);
-          function daysText(d) {{
+          // The same reading as the scorecard's status chip: an end date more
+          // than ten years out is a date to review, not a countdown, and a
+          // feed with no days left has expired.
+          function daysText(info) {{
+            var d = info.days;
             if (d === null) return "\\u2014";
-            return d < 0 ? "Expired" : d + " days";
-          }}
-          row("Days of service left", el("td", daysText(dA.days)), el("td", daysText(dB.days)));
+            if (info.horizon === "unusually_distant") return "Review service end date";
+            if (d <= 0) return "Expired";
+            return d === 1 ? "1 day" : d + " days";
+          }}{checked_row_js}
+          row("Days of service left", el("td", daysText(dA)), el("td", daysText(dB)));
           row("Fare data published", el("td", flag(dA.fares)), el("td", flag(dB.fares)));
           row("GTFS-Flex (demand-responsive)", el("td", flag(dA.flex)), el("td", flag(dB.flex)));
           row("Pathways (station wayfinding)", el("td", flag(dA.pathways)), el("td", flag(dB.pathways)));
@@ -456,7 +565,7 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
           var tableWrap = el("div");
           tableWrap.className = "table-wrap";
           tableWrap.appendChild(table);
-          result.appendChild(tableWrap);
+          result.appendChild(tableWrap);{checked_note_js}
           statusEl.textContent = "Comparing " + nameA + " and " + nameB + ".";
         }}).catch(function (err) {{
           statusEl.textContent = "We couldn't load a scorecard for \\"" + err.message +
