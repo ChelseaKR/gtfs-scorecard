@@ -2501,7 +2501,11 @@ async function renderCohort(index, urlIds) {
   document.title = "My agencies — GTFS Scorecard";
   const fromUrl = urlIds && urlIds.length ? urlIds : null;
   if (fromUrl) saveCohort(new Set(fromUrl)); // a shared link replaces the saved list
-  const ids = (fromUrl || [...getCohort()]).filter((id) => index.agencies[id]);
+  // Own keys only, once each: a hand-edited link such as ?ids=a,a or
+  // ?ids=constructor must not add a duplicate row or an inherited property.
+  const ids = [...new Set(fromUrl || getCohort())].filter((id) =>
+    Object.hasOwn(index.agencies, id)
+  );
 
   if (!ids.length) {
     main.innerHTML = `<a class="backlink" href="#/">&larr; All agencies</a>
@@ -2512,20 +2516,20 @@ async function renderCohort(index, urlIds) {
     return;
   }
 
+  // Fetch the artifact for every followed agency at once rather than one after
+  // another, so a long list does not wait on each round trip in turn. A failed
+  // fetch keeps the row from index data, as an artifact can be briefly missing.
+  const artifacts = await Promise.all(
+    ids.map((id) => fetchJson(`${id}/latest.json`).catch(() => null))
+  );
   const members = [];
-  for (const id of ids) {
+  for (const [i, id] of ids.entries()) {
     const a = index.agencies[id];
     const hist = a.history || [];
     const last = hist[hist.length - 1] || { score: 0, grade: "F", date: "" };
-    let days = null;
-    let topFix = null;
-    try {
-      const art = await fetchJson(`${id}/latest.json`);
-      days = art.categories?.freshness?.details?.days_until_expiry ?? null;
-      topFix = art.top_fixes && art.top_fixes[0] ? art.top_fixes[0].fix : null;
-    } catch {
-      /* keep the row from index data even if the artifact is briefly unavailable */
-    }
+    const art = artifacts[i];
+    const days = art?.categories?.freshness?.details?.days_until_expiry ?? null;
+    const topFix = art?.top_fixes?.[0]?.fix || null;
     const comparableHist = currentProducerHistory(hist);
     const prev = comparableHist.length >= 2 ? comparableHist[comparableHist.length - 2] : null;
     const regressed =
@@ -4366,7 +4370,7 @@ async function route() {
     const match = hash.match(/^#\/agency\/([a-z0-9_-]+)$/);
     if (match) {
       const index = await fetchJson("index.json");
-      if (index.agencies[match[1]]) {
+      if (Object.hasOwn(index.agencies, match[1])) {
         const artifact = await fetchJson(`${match[1]}/latest.json`);
         const dirRecord = await directoryRecord(match[1]);
         showUsPolicyToolsForCountry(dirRecord?.country || artifact.agency?.country || "US");

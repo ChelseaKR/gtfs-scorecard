@@ -28,7 +28,9 @@ async function fetchIndex() {
   for (const base of DATA_BASES) {
     try {
       const res = await fetch(`${base}/index.json`);
-      if (res.ok) return res.json();
+      // Await here so a 200 that is not JSON (an HTML fallback page) is caught
+      // and the next base is tried, as fetchJson in app.js does.
+      if (res.ok) return await res.json();
     } catch {
       /* try the next base */
     }
