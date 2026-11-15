@@ -30,12 +30,13 @@ from .site_shell import BASE_URL, CATEGORY_LABELS, CATEGORY_ORDER, _breadcrumb, 
 _COMPARE_PICKER_URL = "/compare/agencies.json"
 _COMPARE_PICKER_INITIAL_OPTIONS = 50
 
-# Default-off: a "Last checked" row in the compare table, giving each
-# scorecard's snapshot date, plus one sentence under the table when the two
-# dates differ. "Days of service left" is counted from each scorecard's own
-# check, so two rows checked on different days are not counted from the same
-# day. Off until its copy is approved; while off, the page carries none of it.
-COMPARE_SHOWS_CHECK_DATES = False
+# A "Last checked" row in the compare table, giving each scorecard's snapshot
+# date, plus one sentence under the table when the two dates differ. "Days of
+# service left" is counted from each scorecard's own check, so two rows checked
+# on different days are not counted from the same day. On since its copy was
+# approved (2026-11-15); set False to drop it, and the page then carries none
+# of it.
+COMPARE_SHOWS_CHECK_DATES = True
 
 
 def _compare_picker_order(catalog: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -85,7 +86,7 @@ def _render_compare_page(
     realtime category renders as "Not yet published", never as a zero
     (docs/SIDE_BY_SIDE_COMPARE_DESIGN.md).
 
-    ``show_check_dates`` (default: ``COMPARE_SHOWS_CHECK_DATES``, off) adds
+    ``show_check_dates`` (default: ``COMPARE_SHOWS_CHECK_DATES``, on) adds
     the "Last checked" row and its different-days note."""
     if show_check_dates is None:
         show_check_dates = COMPARE_SHOWS_CHECK_DATES

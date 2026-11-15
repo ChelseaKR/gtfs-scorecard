@@ -460,6 +460,12 @@
             if (d <= 0) return "Expired";
             return d === 1 ? "1 day" : d + " days";
           }
+          var checkedA = isoDate(artA.snapshot_date), checkedB = isoDate(artB.snapshot_date);
+          if (checkedA || checkedB) {
+            row("Last checked",
+                el("td", checkedA ? String(artA.snapshot_date).trim() : "\u2014"),
+                el("td", checkedB ? String(artB.snapshot_date).trim() : "\u2014"));
+          }
           row("Days of service left", el("td", daysText(dA)), el("td", daysText(dB)));
           row("Fare data published", el("td", flag(dA.fares)), el("td", flag(dB.fares)));
           row("GTFS-Flex (demand-responsive)", el("td", flag(dA.flex)), el("td", flag(dB.flex)));
@@ -473,6 +479,12 @@
           tableWrap.className = "table-wrap";
           tableWrap.appendChild(table);
           result.appendChild(tableWrap);
+          if (checkedA && checkedB && checkedA.getTime() !== checkedB.getTime()) {
+            var checkedNote = el("p", "These scorecards were checked on different days, " +
+              "so each one counts its days of service left from its own check.");
+            checkedNote.className = "fineprint";
+            result.appendChild(checkedNote);
+          }
           statusEl.textContent = "Comparing " + nameA + " and " + nameB + ".";
         }).catch(function (err) {
           statusEl.textContent = "We couldn't load a scorecard for \"" + err.message +

@@ -156,15 +156,20 @@ def test_compare_load_failure_names_the_agency_not_the_parser() -> None:
     assert out == [{"error": "demo-transit"}] * 4 + ["Demo"]
 
 
-def test_compare_check_dates_are_off_by_default() -> None:
-    assert pages_tools.COMPARE_SHOWS_CHECK_DATES is False
+def test_compare_check_dates_leave_no_trace_when_switched_off(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(pages_tools, "COMPARE_SHOWS_CHECK_DATES", False)
     page = pages_tools._render_compare_page([])
     assert "Last checked" not in page
     assert "checked on different days" not in page
+    explicit_off = pages_tools._render_compare_page([], show_check_dates=False)
+    assert "Last checked" not in explicit_off
+    assert "checked on different days" not in explicit_off
 
 
-def test_compare_check_dates_when_switched_on(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(pages_tools, "COMPARE_SHOWS_CHECK_DATES", True)
+def test_compare_check_dates_are_on_by_default() -> None:
+    assert pages_tools.COMPARE_SHOWS_CHECK_DATES is True
     page = pages_tools._render_compare_page([])
     assert 'row("Last checked",' in page
     assert (
@@ -173,8 +178,8 @@ def test_compare_check_dates_when_switched_on(monkeypatch: pytest.MonkeyPatch) -
     ) in page
     # The row sits beside the day count it qualifies.
     assert page.index('row("Last checked",') < page.index('row("Days of service left"')
-    explicit_off = pages_tools._render_compare_page([], show_check_dates=False)
-    assert "Last checked" not in explicit_off
+    # The note only appears when both dates parse and differ.
+    assert "if (checkedA && checkedB && checkedA.getTime() !== checkedB.getTime())" in page
 
 
 # The hero's trend line ------------------------------------------------------
