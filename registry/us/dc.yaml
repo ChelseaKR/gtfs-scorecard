@@ -30,6 +30,7 @@ agencies:
     subdivision_name: District of Columbia
     static_gtfs_url: https://api.wmata.com/gtfs/bus-gtfs-static.zip
     mdb_id: 1846
+    feed_variant: Bus
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: "License: https://developer.wmata.com/license"
 
@@ -40,6 +41,7 @@ agencies:
     subdivision_name: District of Columbia
     static_gtfs_url: https://api.wmata.com/gtfs/rail-gtfs-static.zip
     mdb_id: 1847
+    feed_variant: Rail
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: "License: https://developer.wmata.com/license"
 

@@ -378,12 +378,16 @@ def test_gtfs_abbreviation_is_not_underlined() -> None:
         assert "text-decoration: none;" in rule.group(1), rel
 
 
-def test_interactive_app_consolidates_to_the_crawlable_directory() -> None:
+def test_interactive_app_names_itself_as_canonical() -> None:
+    # ADR 0080: the app used to declare /agencies/ as its canonical. Google
+    # ignored that and indexed /app/ under its own URL, so the page now says
+    # what is true. The old target must not come back by a partial revert.
     html = (_REPO / "web" / "app" / "index.html").read_text()
-    canonical = "https://gtfsscorecard.org/agencies/"
+    canonical = "https://gtfsscorecard.org/app/"
 
     assert html.count(f'<link rel="canonical" href="{canonical}">') == 1
     assert html.count(f'<meta property="og:url" content="{canonical}">') == 1
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/agencies/">' not in html
 
 
 def test_open_data_page_publishes_data_catalog_jsonld() -> None:
