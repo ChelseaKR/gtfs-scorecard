@@ -29,6 +29,16 @@ the declared public surface).
 
 ### Changed
 
+- **Half the agency pages name the source feed URL in search results, as a
+  test.** The queries that reach agency pages are "<agency> gtfs", the feed's
+  own URL and "official", and each page already shows its source feed link.
+  On half the pages, chosen by a hash of the agency id, the title ends
+  "GTFS feed: source URL, grade and fixes" (or a shorter form that fits) and
+  the description ends "Source feed URL, validator findings, service dates
+  and fixes." A page gets it only when it links a source feed and shows a
+  grade. The other half is unchanged, so the two can be compared in Search
+  Console 28 and 56 days after this deploys. A title still never carries the
+  grade itself (ADR 0078).
 - **Three page titles name what their searchers type.** `/program/all/` is
   titled "GTFS feed list: quality grades for N transit feeds", with N and the
   count needing attention taken from the rollup the page shows.

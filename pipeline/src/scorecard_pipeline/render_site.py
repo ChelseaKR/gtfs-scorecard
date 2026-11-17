@@ -30,7 +30,7 @@ import re
 import shutil
 import sys
 from collections import Counter
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Callable, Collection, Iterable, Iterator
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Final
@@ -3153,6 +3153,35 @@ _TITLE_SUFFIXES = (
 _TITLE_MAX = 60
 _DESC_MAX = 155
 
+#: ADR 0078, a Search Console test that starts the day it deploys: the title and description
+#: name the source feed URL the page links, because the queries that reach
+#: agency pages are "<agency> gtfs", the feed's own URL, and "official". Half
+#: the agency pages get this copy and the other half keep the copy above, so
+#: the two halves can be compared at 28 and 56 days. The words name only what
+#: the page shows: the source feed link, the grade and the fixes. A title still
+#: never carries the grade itself. The last resort is the control's own.
+_SOURCE_TITLE_SUFFIXES = (
+    " GTFS feed: source URL, grade and fixes",
+    " GTFS feed: URL, grade, fixes",
+    " GTFS feed URL and grade",
+    " GTFS feed quality",
+)
+#: Changing the salt reshuffles the halves, which ends the test. Leave it.
+_SOURCE_TITLE_TEST_SALT: Final = "agency-source-title-test-2026-11"
+
+
+def source_title_test_arm(agency_id: str) -> bool:
+    """True when ``agency_id`` is in the half that gets the source-feed copy.
+
+    The split is a hash of the id, so it is the same on every render and on
+    every machine, needs no list to keep, and places a new agency without
+    moving any other. Being in this half is necessary but not enough: the
+    page must also link a source feed and show a grade
+    (``_source_title_test_ids``).
+    """
+    digest = hashlib.sha256(f"{_SOURCE_TITLE_TEST_SALT}:{agency_id}".encode()).digest()
+    return digest[0] % 2 == 0
+
 
 def _seo_grade_facts(artifact: dict[str, Any] | None) -> tuple[str, str, str] | None:
     """(grade, score, checked date) exactly as the agency page shows them, or None.
@@ -3231,18 +3260,33 @@ def _agency_seo_metadata(
     rt_measured: bool = False,
     disambiguator: str = "",
     grade_facts: tuple[str, str, str] | None = None,
+    source_feed_copy: bool = False,
 ) -> AgencySeoMetadata:
     """Build bounded metadata while keeping any disambiguator visible.
 
     ``grade_facts`` comes from ``_seo_grade_facts``; when it is None the
     description describes the report without stating any grade.
+    ``source_feed_copy`` selects the ADR 0078 test copy, which names the
+    source feed URL. It applies only with a grade, since its title says
+    "grade"; the caller decides whether the page links a source feed.
     """
-    title, identity = _agency_title(agency_name, location_label, disambiguator)
+    source_copy = source_feed_copy and grade_facts is not None
+    title, identity = _agency_title(
+        agency_name,
+        location_label,
+        disambiguator,
+        _SOURCE_TITLE_SUFFIXES if source_copy else _TITLE_SUFFIXES,
+    )
 
     contents = (
         "validator findings, service dates, rider information, realtime, and fixes."
         if rt_measured
         else "validator findings, service dates, rider information, and fixes."
+    )
+    source_contents = (
+        "Source feed URL, validator findings, service dates, realtime and fixes."
+        if rt_measured
+        else "Source feed URL, validator findings, service dates and fixes."
     )
     desc_disambiguator = _ellipsize(disambiguator, 24)
     identity_suffix = f" [{desc_disambiguator}]" if desc_disambiguator else ""
@@ -3251,15 +3295,20 @@ def _agency_seo_metadata(
     if grade_facts is not None:
         grade, score, checked = grade_facts
         lead = f" GTFS feed: grade {grade}, {score} of 100, checked {checked}. "
-        tails = [f"See {contents}", "See the findings and fixes."]
+        first_tail = source_contents if source_copy else f"See {contents}"
+        tails = [first_tail, "See the findings and fixes."]
     else:
         lead = " GTFS feed quality report: "
         tails = [contents, "findings and fixes."]
     description = ""
+    # The test copy's longer tail is used only beside the whole name, so the
+    # test never cuts a name the control shows whole; a name too long for it
+    # takes the short tail.
+    name_floor = len(agency_name) if source_copy else min(len(agency_name), 24)
     for tail in tails:
         fixed = len(identity_suffix) + len(location_suffix) + len(lead) + len(tail)
         max_desc_name = _DESC_MAX - fixed
-        if max_desc_name >= min(len(agency_name), 24) or tail is tails[-1]:
+        if max_desc_name >= name_floor or tail is tails[-1]:
             desc_name = _ellipsize_words(agency_name, max(1, max_desc_name))
             description = f"{desc_name}{identity_suffix}{location_suffix}{lead}{tail}"
             break
@@ -3450,12 +3499,42 @@ def _apply_search_intent(
     return replace(metadata, title=title, description=description, identity=copy.identity)
 
 
+def _source_title_test_ids(
+    agency_ids: Iterable[str],
+    artifacts_by_id: dict[str, dict[str, Any]],
+    source_shown: Collection[str],
+) -> frozenset[str]:
+    """The agency pages that carry the ADR 0078 source-feed copy.
+
+    A page qualifies when its id falls in the test half, it renders a "Source
+    feed" link (``source_shown``: a redacted, authenticated or withheld URL
+    renders none), and it shows a grade. The hand-written search-intent pages
+    are left out of both halves: their copy is already chosen, and their
+    generated fallback keeps the control wording.
+    """
+    return frozenset(
+        agency_id
+        for agency_id in agency_ids
+        if source_title_test_arm(agency_id)
+        and agency_id in source_shown
+        and agency_id not in _SEARCH_INTENT_COPY
+        and _seo_grade_facts(artifacts_by_id.get(agency_id)) is not None
+    )
+
+
 def _plan_agency_seo_metadata(
     records: list[dict[str, Any]],
     artifacts_by_id: dict[str, dict[str, Any]],
     registry_by_id: dict[str, Agency],
+    source_shown: Collection[str] = frozenset(),
 ) -> dict[str, AgencySeoMetadata]:
-    """Plan unique titles, descriptions, and Dataset names for the corpus."""
+    """Plan unique titles, descriptions, and Dataset names for the corpus.
+
+    ``source_shown`` names the agency pages that render a "Source feed" link;
+    only those can carry the ADR 0078 test copy. Empty means none do. The
+    test copy is applied last (``_apply_source_title_test``), so every page in
+    the control half is exactly what it would be without the test.
+    """
     planned: dict[str, AgencySeoMetadata] = {}
     record_by_id = {str(record["id"]): record for record in records}
     for agency_id, record in record_by_id.items():
@@ -3525,7 +3604,55 @@ def _plan_agency_seo_metadata(
     if remaining:
         collisions = ", ".join(",".join(sorted(group)) for group in remaining)
         raise ValueError(f"agency SEO metadata is not unique: {collisions}")
-    return _plan_clearance_titles(planned)
+    return _apply_source_title_test(_plan_clearance_titles(planned), artifacts_by_id, source_shown)
+
+
+def _apply_source_title_test(
+    planned: dict[str, AgencySeoMetadata],
+    artifacts_by_id: dict[str, dict[str, Any]],
+    source_shown: Collection[str],
+) -> dict[str, AgencySeoMetadata]:
+    """Swap the ADR 0078 test copy into the agency pages that qualify.
+
+    Each test page is rebuilt from its own planned inputs, including any
+    disambiguator, so it stays as distinct as before. Only the agency page's
+    title, description and identity change; the clearance-log title and the
+    Dataset name stay as planned. A test page whose new copy would collide
+    with any other page keeps its planned copy, so the corpus stays unique
+    and the control half is never touched.
+    """
+    test_ids = _source_title_test_ids(planned, artifacts_by_id, source_shown)
+    trial = dict(planned)
+    for agency_id in test_ids:
+        meta = planned[agency_id]
+        artifact = artifacts_by_id[agency_id]
+        rebuilt = _agency_seo_metadata(
+            meta.agency_name or agency_id,
+            location_label=meta.location_label,
+            rt_measured=(
+                artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
+            ),
+            disambiguator=meta.disambiguator,
+            grade_facts=_seo_grade_facts(artifact),
+            source_feed_copy=True,
+        )
+        trial[agency_id] = replace(
+            meta,
+            title=rebuilt.title,
+            description=rebuilt.description,
+            identity=rebuilt.identity,
+        )
+    while True:
+        clashing = {
+            agency_id
+            for group in _metadata_collision_components(trial)
+            for agency_id in group & test_ids
+            if trial[agency_id] is not planned[agency_id]
+        }
+        if not clashing:
+            return trial
+        for agency_id in clashing:
+            trial[agency_id] = planned[agency_id]
 
 
 _CLEARANCE_SUFFIX = " GTFS clearance log"
@@ -4317,6 +4444,27 @@ def _withheld_source_ids(root: Path) -> frozenset[str] | None:
         return None
 
 
+def _source_shown_ids(
+    artifacts_by_id: dict[str, dict[str, Any]],
+    withheld_ids: frozenset[str] | None,
+    registry_by_id: dict[str, Agency],
+) -> frozenset[str]:
+    """The agency pages that will render a "Source feed" link.
+
+    The same rule as the link itself (``_public_source_url`` under
+    ``_source_withheld``), so the ADR 0078 copy never names a link the page
+    lacks.
+    """
+    return frozenset(
+        agency_id
+        for agency_id, artifact in artifacts_by_id.items()
+        if _public_source_url(
+            artifact,
+            _source_withheld(agency_id, withheld_ids, registry_by_id.get(agency_id)),
+        )
+    )
+
+
 def _license_forbids_redistribution(agency: Agency | None) -> bool:
     """True only when a record's license block says redistribution is not allowed.
 
@@ -4325,6 +4473,21 @@ def _license_forbids_redistribution(agency: Agency | None) -> bool:
     """
     block = agency.license_block if agency is not None else None
     return block is not None and block.redistribution_allowed is False
+
+
+def _source_withheld(
+    agency_id: str, withheld_ids: frozenset[str] | None, agency: Agency | None
+) -> bool:
+    """True when the agency page must not link its source feed.
+
+    ``withheld_ids`` is ``_withheld_source_ids``: ``None`` (an unreadable
+    opt-out ledger) withholds every link. The page's "Source feed" line and the
+    ADR 0078 search copy both read this, so the copy never names a link the
+    page does not show.
+    """
+    return (
+        withheld_ids is None or agency_id in withheld_ids or _license_forbids_redistribution(agency)
+    )
 
 
 def _based_on(artifact: dict[str, Any], withheld: bool = False) -> dict[str, str]:
@@ -13892,6 +14055,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         directory["agencies"],
         artifacts_by_id,
         registry_by_id,
+        source_shown=_source_shown_ids(artifacts_by_id, withheld_sources, registry_by_id),
     )
     # build_directory adds the existing catalog's size and comparison fields.
     # Copy only those established fields back; feature measurements belong to
@@ -14192,11 +14356,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                         by_id[agency_id],
                         records_by_place.get(place_key(by_id[agency_id]), []),
                     ),
-                    source_withheld=(
-                        withheld_sources is None
-                        or agency_id in withheld_sources
-                        or _license_forbids_redistribution(agency_cfg)
-                    ),
+                    source_withheld=_source_withheld(agency_id, withheld_sources, agency_cfg),
                     not_fetched_reason=not_fetched_by_id.get(agency_id),
                 ),
                 f"{BASE_URL}/agency/{agency_id}/",
