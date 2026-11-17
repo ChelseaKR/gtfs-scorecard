@@ -29,6 +29,8 @@ import re
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 
+import yaml
+
 from .config import Agency
 from .identity import normalized_mdb_id
 from .lint import is_feed_descriptor
@@ -217,6 +219,18 @@ class ProposedAgency:
     is_official: bool | None = None
 
 
+# Control characters and the Unicode line and paragraph separators. A catalog
+# cell is one line of text; none of these belongs in a name, a note or a URL,
+# and several of them are line breaks to a YAML reader.
+_LINE_BREAKS_AND_CONTROLS = re.compile(r"[\x00-\x1f\x7f-\x9f\u2028\u2029]+")
+
+
+def _single_line(value: str) -> str:
+    """A catalog value as one trimmed line: each run of control or line-break
+    characters becomes a single space."""
+    return _LINE_BREAKS_AND_CONTROLS.sub(" ", value).strip()
+
+
 def _cell(row: dict[str, str], *names: str) -> str:
     """First non-empty value among candidate column names, trimmed.
 
@@ -225,8 +239,8 @@ def _cell(row: dict[str, str], *names: str) -> str:
     """
     for name in names:
         value = row.get(name)
-        if value and value.strip():
-            return value.strip()
+        if value and (cleaned := _single_line(value)):
+            return cleaned
     return ""
 
 
@@ -952,65 +966,122 @@ def propose_agencies(
     return proposals
 
 
-def _scalar(value: str) -> str:
-    """Quote a YAML scalar only when a plain one would misparse.
+# Wide enough that PyYAML's emitter never folds a scalar onto a second line.
+_YAML_NO_WRAP = 1_000_000
 
-    A value containing ": " (e.g. "License: https://...") or other indicator
-    characters has to be quoted or YAML reads it as a nested mapping. Plain
-    values pass through so the output keeps the registry's unquoted style.
+
+def _reads_better_quoted(value: str) -> bool:
+    """The registry's own quoting habit, kept so rendered blocks match it.
+
+    PyYAML decides what *must* be quoted; this keeps quoting the values the
+    hand-written registry has always quoted (a ": " or " #" inside, a leading
+    indicator character) even where a plain scalar would parse.
     """
-    risky = (
+    return (
         ": " in value
         or " #" in value
-        or "\n" in value
         or value != value.strip()
-        or (value and value[0] in "!&*?{}[],#|>@`\"'%:-")
+        or (bool(value) and value[0] in "!&*?{}[],#|>@`\"'%:-")
     )
-    if not risky:
+
+
+def _scalar(value: str) -> str:
+    """One registry value as a single-line YAML scalar, written by PyYAML.
+
+    PyYAML's emitter decides whether a plain scalar is safe: it quotes a value
+    that holds any line break YAML recognizes (LF, CR, NEL, U+2028, U+2029),
+    any control character, or text that would read back as something other
+    than a string (``NO``, ``123``, ``null``). A value that needs quotes, or
+    that the registry has always quoted, is written double-quoted with those
+    characters as escapes, so it stays on one line and reads back unchanged.
+    Plain values pass through so the output keeps the registry's unquoted style.
+    """
+    plain = yaml.safe_dump(value, allow_unicode=True, width=_YAML_NO_WRAP)
+    if plain == f"{value}\n...\n" and not _reads_better_quoted(value):
         return value
-    escaped = value.replace("\\", "\\\\").replace('"', '\\"')
-    return f'"{escaped}"'
+    quoted = yaml.safe_dump(
+        value, allow_unicode=True, width=_YAML_NO_WRAP, default_style='"'
+    ).removesuffix("\n")
+    if "\n" in quoted:  # pragma: no cover - the width above rules folding out
+        raise ValueError("registry scalar did not serialize onto one line")
+    return quoted
 
 
-def _render_location(proposal: ProposedAgency) -> list[str]:
-    """Registry location lines, omitting the default US country."""
-    fields = (
-        ("country", proposal.country if proposal.country != "US" else ""),
-        ("subdivision_code", proposal.subdivision_code),
-        ("subdivision_name", proposal.subdivision_name),
-    )
-    return [f"    {key}: {_scalar(value)}" for key, value in fields if value]
+_RT_KIND_ORDER = ("trip_updates", "vehicle_positions", "service_alerts")
+
+
+def _proposal_entry(proposal: ProposedAgency) -> dict[str, object]:
+    """The registry entry a proposal stands for, in the registry's field order.
+
+    The default US country is omitted, as are empty optional fields.
+    """
+    entry: dict[str, object] = {
+        "id": proposal.id,
+        "name": proposal.name,
+        "static_gtfs_url": proposal.static_gtfs_url,
+    }
+    if proposal.country and proposal.country != "US":
+        entry["country"] = proposal.country
+    if proposal.subdivision_code:
+        entry["subdivision_code"] = proposal.subdivision_code
+    if proposal.subdivision_name:
+        entry["subdivision_name"] = proposal.subdivision_name
+    if proposal.mdb_id:
+        entry["mdb_id"] = proposal.mdb_id
+    entry["feed_status"] = proposal.feed_status
+    if proposal.is_official is not None:
+        entry["is_official"] = proposal.is_official
+    rt_urls = {kind: proposal.rt_urls[kind] for kind in _RT_KIND_ORDER if kind in proposal.rt_urls}
+    if rt_urls:
+        entry["rt_urls"] = rt_urls
+    if proposal.rt_note:
+        entry["rt_note"] = proposal.rt_note
+    if proposal.license_note:
+        entry["license_note"] = proposal.license_note
+    return entry
+
+
+def _render_entry(entry: dict[str, object]) -> list[str]:
+    lines: list[str] = []
+    for key, value in entry.items():
+        lead = "  - " if not lines else "    "
+        if isinstance(value, dict):
+            lines.append(f"{lead}{key}:")
+            lines.extend(f"      {kind}: {_scalar(str(url))}" for kind, url in value.items())
+        elif isinstance(value, bool):
+            lines.append(f"{lead}{key}: {'true' if value else 'false'}")
+        else:
+            lines.append(f"{lead}{key}: {_scalar(str(value))}")
+    lines.append("")
+    return lines
+
+
+class RegistryRenderError(ValueError):
+    """A rendered registry block did not read back as the entries it was written from."""
 
 
 def render_yaml(proposals: list[ProposedAgency]) -> str:
     """Render proposals as registry blocks, ready to review and merge.
 
-    Hand-rolled rather than yaml.dump so the output matches the registry's
-    existing hand-written style (block order, comment-free, two-space indent)
-    and stays diff-friendly when pasted into the intake shard.
+    The block layout is written here rather than by yaml.dump so the output
+    matches the registry's existing hand-written style (block order,
+    comment-free, two-space indent) and stays diff-friendly when pasted into
+    the intake shard. Every scalar is written by PyYAML (``_scalar``), and the
+    finished text is parsed back and compared with the entries it was written
+    from before it is returned: a block that would read as anything other than
+    exactly those fields and values raises RegistryRenderError and is never
+    handed to a caller.
     """
-    lines: list[str] = []
-    for p in proposals:
-        lines.append(f"  - id: {p.id}")
-        lines.append(f"    name: {_scalar(p.name)}")
-        lines.append(f"    static_gtfs_url: {_scalar(p.static_gtfs_url)}")
-        lines.extend(_render_location(p))
-        if p.mdb_id:
-            lines.append(f"    mdb_id: {_scalar(p.mdb_id)}")
-        lines.append(f"    feed_status: {_scalar(p.feed_status)}")
-        if p.is_official is not None:
-            lines.append(f"    is_official: {'true' if p.is_official else 'false'}")
-        if p.rt_urls:
-            lines.append("    rt_urls:")
-            for kind in ("trip_updates", "vehicle_positions", "service_alerts"):
-                if kind in p.rt_urls:
-                    lines.append(f"      {kind}: {_scalar(p.rt_urls[kind])}")
-        if p.rt_note:
-            lines.append(f"    rt_note: {_scalar(p.rt_note)}")
-        if p.license_note:
-            lines.append(f"    license_note: {_scalar(p.license_note)}")
-        lines.append("")
-    return "\n".join(lines)
+    entries = [_proposal_entry(p) for p in proposals]
+    text = "\n".join(line for entry in entries for line in _render_entry(entry))
+    if entries:
+        read_back = yaml.safe_load("agencies:\n" + text)
+        if not isinstance(read_back, dict) or read_back.get("agencies") != entries:
+            raise RegistryRenderError(
+                "a rendered registry block does not read back as the entry it was "
+                "written from; nothing was written"
+            )
+    return text
 
 
 def fetch_catalog_bytes(url: str = DEFAULT_CATALOG_URL) -> bytes:

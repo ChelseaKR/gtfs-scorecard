@@ -142,3 +142,30 @@ def test_missing_name_is_rejected() -> None:
 def test_bad_url_is_rejected_by_registry_rules() -> None:
     with pytest.raises(AgencyConfigError):
         build_submission(dict(FORM, static_gtfs_url="ftp://nope"), INTAKE_YAML)
+
+
+# The line breaks YAML recognizes besides LF. A submitted value holding one must
+# never reach the intake shard as anything but the single value it was.
+_YAML_LINE_BREAKS = ["\r", "\x85", "\u2028", "\u2029"]
+
+
+@pytest.mark.parametrize("sep", _YAML_LINE_BREAKS)
+@pytest.mark.parametrize("field", ["name", "static_gtfs_url", "vehicle_positions"])
+def test_a_line_break_in_a_name_or_url_is_rejected_at_the_form(sep: str, field: str) -> None:
+    form = FORM | {field: f"{FORM[field]}{sep}    large_feed:{sep}      true"}
+    with pytest.raises(AgencyConfigError):
+        build_submission(form, INTAKE_YAML)
+
+
+@pytest.mark.parametrize("sep", _YAML_LINE_BREAKS)
+def test_a_line_break_in_a_note_never_adds_a_registry_field(sep: str) -> None:
+    """Whether a note like this is refused or kept, it must stay one value."""
+    form = FORM | {"license_note": f"CC-BY 4.0{sep}    large_feed:{sep}      true"}
+    try:
+        sub = build_submission(form, INTAKE_YAML)
+    except AgencyConfigError:
+        return
+    entries = yaml.safe_load(sub.file_content)["agencies"]
+    (added,) = [e for e in entries if e["id"] == "fairfield-and-suisun-transit"]
+    assert set(added) == {"id", "name", "static_gtfs_url", "feed_status", "rt_urls", "license_note"}
+    assert added["license_note"] == form["license_note"]

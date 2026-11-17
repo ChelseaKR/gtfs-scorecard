@@ -204,7 +204,9 @@ def test_v2_fixture_has_exact_schema_and_maps_supported_fields() -> None:
     assert schedule.subdivision == "California"
     assert schedule.municipality == "Davis"
     assert schedule.provider == "Davis Community Transit"
-    assert schedule.name == "DCT Local,\nRegional schedule"
+    # The quoted cell spans two lines in the CSV. It is still one cell, and a
+    # catalog value is read as one line: the line break becomes a space.
+    assert schedule.name == "DCT Local, Regional schedule"
     assert schedule.direct_download == "http://example.org/dct.zip"
     assert schedule.authentication_type == "0"
     assert schedule.hosted_url.endswith("/mdb-100/latest.zip")

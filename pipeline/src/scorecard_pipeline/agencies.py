@@ -58,10 +58,35 @@ def _fail(entry_label: str, message: str, source: str = "agencies.yaml") -> NoRe
     raise AgencyConfigError(f"{source}, {entry_label}: {message}")
 
 
+# Control characters (tab, CR, LF and NEL among them) and the Unicode line and
+# paragraph separators. A registry name or URL is one line of text, and each of
+# these is a line break to some reader of it: a YAML parser, a script element,
+# a calendar or CSV client. Nothing downstream should have to handle them.
+_LINE_BREAK_OR_CONTROL = re.compile(r"[\x00-\x1f\x7f-\x9f\u2028\u2029]")
+
+
 def _require_url(entry_label: str, field: str, value: object, source: str) -> str:
     if not isinstance(value, str) or not value.startswith(("https://", "http://")):
         _fail(entry_label, f"{field} must be an http(s) URL, got {value!r}", source)
+    if _LINE_BREAK_OR_CONTROL.search(value) or " " in value:
+        _fail(
+            entry_label,
+            f"{field} must be one line with no spaces or control characters, got {value!r}",
+            source,
+        )
     return str(value)
+
+
+def _require_display_text(entry_label: str, field: str, value: str, source: str) -> None:
+    """A name shown on the site is one line of plain text, not markup."""
+    if _LINE_BREAK_OR_CONTROL.search(value):
+        _fail(
+            entry_label,
+            f"{field} must be one line with no control characters, got {value!r}",
+            source,
+        )
+    if "<" in value or ">" in value:
+        _fail(entry_label, f"{field} must not contain '<' or '>', got {value!r}", source)
 
 
 def _require_nonempty_text(entry_label: str, field: str, value: object, source: str) -> str:
@@ -286,6 +311,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         name = entry.get("name")
         if not isinstance(name, str) or not name.strip():
             _fail(label, "name is required", entry_source)
+        _require_display_text(label, "name", name.strip(), entry_source)
 
         static_url = _require_url(
             label, "static_gtfs_url", entry.get("static_gtfs_url"), entry_source
