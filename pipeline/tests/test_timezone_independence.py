@@ -163,7 +163,7 @@ def test_portfolio_digest_as_of_defaults_to_utc(isolated_repo_root: Path) -> Non
 DATE_DEFAULT_COMMANDS: list[list[str]] = [
     ["run", "--all"],
     ["try", "https://example.org/gtfs.zip"],
-    ["canary", "--candidate-version", "8.1.0"],
+    ["canary", "--candidate-version", "8.1.0", "--candidate-sha256", "ab" * 32],
     ["freshness-sweep"],
     ["alerts"],
     ["notify"],

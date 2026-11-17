@@ -15,6 +15,9 @@ on:
       candidate_version:
         description: "gtfs-validator version to shadow-score, e.g. 8.1.0"
         required: true
+      candidate_sha256:
+        description: "SHA-256 of that version's gtfs-validator-<version>-cli.jar; the jar runs only if it matches"
+        required: true
       sample_size:
         description: "agencies to dual-score (deterministic sample)"
         default: "100"
@@ -65,11 +68,13 @@ jobs:
           # Pass workflow inputs through env, not inline ${{…}} in run:, so untrusted
           # input can't be shell-injected into the runner (semgrep run-shell-injection).
           CANDIDATE_VERSION: ${{ inputs.candidate_version }}
+          CANDIDATE_SHA256: ${{ inputs.candidate_sha256 }}
           SAMPLE_SIZE: ${{ inputs.sample_size }}
           SEED: ${{ inputs.seed }}
         run: |
           uv run --with boto3 python -m scorecard_pipeline.cli canary \
             --candidate-version "$CANDIDATE_VERSION" \
+            --candidate-sha256 "$CANDIDATE_SHA256" \
             --sample-size "$SAMPLE_SIZE" \
             --seed "$SEED" \
             --out "$GITHUB_WORKSPACE/canary-report"

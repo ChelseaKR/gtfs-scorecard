@@ -55,6 +55,38 @@ def esc(text: object) -> str:
     return html.escape(str(text), quote=True)
 
 
+# JSON written inside a <script> element is read twice: first by the HTML
+# parser, which ends the element at the first "</script" it meets whatever the
+# JSON says, and then by the JSON or JavaScript parser. json.dumps only writes
+# for the second reader. These five characters are legal JSON string content
+# and are written as \u escapes instead, which every JSON and JavaScript
+# parser reads back as the same character, so the text stays one element
+# however a name, note or URL in it is spelled. "<" covers "</script" and
+# "<!--"; ">" and "&" cover readers that treat the block as markup; U+2028 and
+# U+2029 are line terminators to older JavaScript parsers. None of the five has
+# a meaning in JSON outside a string, so translating the whole text is exact.
+_SCRIPT_JSON_ESCAPES = {
+    ord("<"): "\\u003c",
+    ord(">"): "\\u003e",
+    ord("&"): "\\u0026",
+    0x2028: "\\u2028",
+    0x2029: "\\u2029",
+}
+
+
+def json_for_script(value: object, *, ensure_ascii: bool = True) -> str:
+    """Compact JSON that cannot end the ``<script>`` element it is written in.
+
+    The one way this site puts JSON into a script element: JSON-LD nodes and
+    the values inline scripts read. ``ensure_ascii=False`` keeps readable
+    non-ASCII text for the pages that already wrote it that way; the five
+    characters above are escaped either way.
+    """
+    return json.dumps(value, separators=(",", ":"), ensure_ascii=ensure_ascii).translate(
+        _SCRIPT_JSON_ESCAPES
+    )
+
+
 # Six stops, one per question, instead of a flat list of every page: find an
 # agency, review coverage, find feeds by rider-facing feature, act with a tool,
 # learn how to read the thing, and who made it. The pages those groups absorb
@@ -742,7 +774,7 @@ def bundle_offers_region(plan: dict[str, Any]) -> str:
         if node is None
         else (
             f'<script id="{BUNDLE_OFFERS_SCRIPT_ID}" type="application/ld+json">'
-            f"{json.dumps(node, separators=(',', ':'))}</script>"
+            f"{json_for_script(node)}</script>"
         )
     )
     return f"<!-- offers:begin -->\n  {inner}\n  <!-- offers:end -->"
@@ -919,7 +951,7 @@ def history_offers_region(plan: dict[str, Any]) -> str:
         if node is None
         else (
             f'<script id="{BUNDLE_OFFERS_SCRIPT_ID}" type="application/ld+json">'
-            f"{json.dumps(node, separators=(',', ':'))}</script>"
+            f"{json_for_script(node)}</script>"
         )
     )
     return f"<!-- offers:begin -->\n  {inner}\n  <!-- offers:end -->"
@@ -1053,7 +1085,7 @@ def _page(
     # from a sibling.
     nodes = [jsonld] if isinstance(jsonld, dict) else list(jsonld or [])
     ld = "".join(
-        f'\n  <script type="application/ld+json">{json.dumps(node, separators=(",", ":"))}</script>'
+        f'\n  <script type="application/ld+json">{json_for_script(node)}</script>'
         for node in nodes
         if node
     )

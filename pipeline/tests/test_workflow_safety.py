@@ -2248,3 +2248,32 @@ def test_the_watchdog_staleness_bound_fits_one_deploy_a_day() -> None:
     hours = int(bound.group(1))
     assert hours > 26
     assert f"old (>{hours}h)" in watchdog
+
+
+# Text an outside party chooses: a branch name, a pull request or issue title
+# and body, a comment, a commit message. The self-serve form opens pull
+# requests from branches named after a submitted agency, so these are the
+# values a submission could put in front of a workflow.
+_EVENT_TEXT = re.compile(
+    r"github\.(?:head_ref|event\.(?:pull_request\.(?:title|body|head\.(?:ref|label))"
+    r"|issue\.(?:title|body)|comment\.body|review\.body|head_commit\.message|commits))"
+)
+_ENV_ASSIGNMENT = re.compile(r"\s+[A-Z][A-Z0-9_]*: \$\{\{[^}]*\}\}\s*")
+
+
+def test_event_text_reaches_a_workflow_only_as_an_environment_value() -> None:
+    """Outside text is never expanded into a script, a path or an action input.
+
+    An expression written inline in a ``run:`` body is pasted into the script
+    before the shell reads it. Passed through ``env:`` it arrives as data. This
+    walks every workflow and the Action for the first shape.
+    """
+    files = [ROOT / "action.yml", *sorted((ROOT / ".github" / "workflows").glob("*.yml"))]
+    assert len(files) > 10
+    offenders = [
+        f"{path.relative_to(ROOT)}:{number}: {line.strip()}"
+        for path in files
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1)
+        if "${{" in line and _EVENT_TEXT.search(line) and not _ENV_ASSIGNMENT.fullmatch(line)
+    ]
+    assert not offenders, "pass these through env: instead: " + "; ".join(offenders)

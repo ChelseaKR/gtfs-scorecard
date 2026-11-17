@@ -208,6 +208,7 @@ commands below are for a fork or clean rebuild. The service opens the pull
 request on the submitter's behalf so a person still reviews every addition.
 
 ```sh
+scripts/build-lambda-package.sh infra/submit
 cd infra/submit
 terraform init
 terraform apply -var github_repo=ChelseaKR/gtfs-scorecard -var github_token=<PAT>
@@ -216,6 +217,31 @@ terraform apply -var github_repo=ChelseaKR/gtfs-scorecard -var github_token=<PAT
 The `submit_url` output is the endpoint; wire it into the form's config the same
 way the subscribe URL is wired. The `github_token` is a fine-grained PAT that can
 open pull requests on this repo.
+
+The handler and the pipeline code it imports ship in one package, so a change to
+either `infra/submit/handler.py` or `pipeline/src/scorecard_pipeline/submissions.py`
+reaches the live endpoint only after the package is rebuilt and applied again.
+Read the plan before approving it: for a code-only change it should update the
+function and nothing else.
+
+What the endpoint checks, in order (ADR 0079):
+
+1. The request body is at most 8 KB.
+2. Every field is one the form has, is text, is within its length limit, and
+   holds only the characters that field takes. Feed URLs must be `http` or
+   `https` on a public host name.
+3. The daily limits: `client_daily_cap` submissions per client (default 3) and
+   `global_daily_cap` in total (default 20), per UTC day. Both are Terraform
+   variables. The counts live in the shared `gtfs-scorecard-ratelimit` table
+   (`ratelimit_table`), the same one `infra/alerts` and `infra/instant-score`
+   use, under this endpoint's own key prefix. A client is counted by a hash of
+   its address and the day, and the row expires within two days.
+4. Only then is the GitHub token used.
+
+If the table is missing or cannot be reached, the endpoint answers that online
+submission is paused and points to `docs/add-your-agency.md`. It does not open
+pull requests it cannot count. The API Gateway stage also throttles to one
+request per second.
 
 ## 4. Fan-out compute (`infra/compute`, Year 2)
 

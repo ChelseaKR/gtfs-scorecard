@@ -7,9 +7,11 @@ re-validating GTFS from scratch (see CLAUDE.md, "Data sources").
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -30,6 +32,30 @@ VALIDATOR_JAR_URL = (
     "https://github.com/MobilityData/gtfs-validator/releases/download/"
     "v{version}/gtfs-validator-{version}-cli.jar"
 )
+
+#: SHA-256 of the validator CLI jar, by version. The jar is run as a program,
+#: in this project's daily job and in the workflow of everyone who uses the
+#: Action, so only bytes that match an entry here are ever run: a version with
+#: no entry is refused, and so is a jar whose digest differs (ADR 0079).
+#:
+#: To move the pin to a new release (the steps are also in docs/rubric.md,
+#: "Governed upgrades"):
+#:   1. Download gtfs-validator-<X.Y.Z>-cli.jar from the MobilityData release
+#:      page and run ``shasum -a 256`` on it. Compare the result with the
+#:      ``sha256:`` digest GitHub shows beside the asset on that page.
+#:   2. Run the canary with that digest:
+#:      ``scorecard canary --candidate-version <X.Y.Z> --candidate-sha256 <digest>``.
+#:   3. In the upgrade commit, add the ``"<X.Y.Z>": "<digest>"`` entry here,
+#:      set VALIDATOR_VERSION, and change the jar name and digest in
+#:      infra/compute/Dockerfile and infra/instant-score/Dockerfile.
+#:      tests/test_validator_pin.py fails until all three agree.
+#: Keep the entries for versions that published artifacts record, so
+#: ``scorecard reproduce`` can still run the validator a past grade used.
+VALIDATOR_JAR_SHA256: dict[str, str] = {
+    "8.0.1": "19293ddd9b6f954f216d4f12054bd8a3232921751c4484339e339764a91000e2",
+}
+
+_SHA256_HEX = re.compile(r"[0-9a-f]{64}")
 
 SEVERITIES = ("ERROR", "WARNING", "INFO")
 
@@ -106,18 +132,101 @@ def _java_binary() -> str:
     raise FileNotFoundError("No java binary found; set SCORECARD_JAVA")
 
 
-def ensure_validator(version: str = VALIDATOR_VERSION) -> Path:
-    """Download the validator CLI jar into the cache if not already present."""
+class ValidatorIntegrityError(RuntimeError):
+    """The validator jar is not the pinned release, so it was not run.
+
+    Raised before any ``java -jar``: for a version with no pinned digest, for a
+    download whose bytes do not match, and for a cached jar that no longer
+    does. There is no fallback to running the jar anyway.
+    """
+
+
+def expected_jar_sha256(version: str, sha256: str | None = None) -> str:
+    """The digest the jar for ``version`` must have, or a refusal.
+
+    A pinned version always uses its pin. ``sha256`` is how a caller vouches
+    for a version that is not pinned yet (the canary's candidate); it can add a
+    digest for an unpinned version and can never replace a pinned one.
+    """
+    pinned = VALIDATOR_JAR_SHA256.get(version)
+    if sha256 is None:
+        if pinned is None:
+            raise ValidatorIntegrityError(
+                f"gtfs-validator {version} has no pinned SHA-256, so its jar will not be "
+                "downloaded or run. Pinned versions: "
+                f"{', '.join(sorted(VALIDATOR_JAR_SHA256))}. To try another version, pass its "
+                "digest explicitly (scorecard canary --candidate-sha256); see the note on "
+                "VALIDATOR_JAR_SHA256 in validate.py."
+            )
+        return pinned
+    supplied = sha256.strip().lower()
+    if not _SHA256_HEX.fullmatch(supplied):
+        raise ValidatorIntegrityError(
+            f"the SHA-256 given for gtfs-validator {version} is not 64 hexadecimal characters"
+        )
+    if pinned is not None and supplied != pinned:
+        raise ValidatorIntegrityError(
+            f"gtfs-validator {version} is pinned to a different SHA-256 than the one given; "
+            "a pinned digest cannot be replaced from the command line"
+        )
+    return supplied
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+# Cached jars already checked in this process, keyed by path, size and
+# modification time, so a run that validates many feeds hashes the jar once.
+_VERIFIED_JARS: dict[tuple[str, int, int], str] = {}
+
+
+def _verify_cached_jar(jar: Path, version: str, expected: str) -> None:
+    stat = jar.stat()
+    key = (str(jar), stat.st_size, stat.st_mtime_ns)
+    actual = _VERIFIED_JARS.get(key)
+    if actual is None:
+        actual = _file_sha256(jar)
+        _VERIFIED_JARS[key] = actual
+    if actual != expected:
+        raise ValidatorIntegrityError(
+            f"the cached gtfs-validator {version} jar at {jar} has SHA-256 {actual}, not the "
+            f"expected {expected}. It was not run. Delete the file to download it again."
+        )
+
+
+def ensure_validator(version: str = VALIDATOR_VERSION, *, sha256: str | None = None) -> Path:
+    """Return the validator CLI jar for ``version``, verified against its digest.
+
+    The jar is downloaded into the cache if it is not already there. Either
+    way its SHA-256 is compared with the pinned digest (``expected_jar_sha256``)
+    before the path is returned, and a mismatch raises ValidatorIntegrityError:
+    a downloaded body that does not match is never written to the cache, and a
+    cached file that does not match is never handed to ``java``.
+    """
+    expected = expected_jar_sha256(version, sha256)
     jar = cache_dir() / f"gtfs-validator-{version}-cli.jar"
     if jar.exists():
+        _verify_cached_jar(jar, version, expected)
         return jar
     jar.parent.mkdir(parents=True, exist_ok=True)
     url = VALIDATOR_JAR_URL.format(version=version)
     log.info("downloading gtfs-validator %s", version)
     body = safe_get(url, headers={"User-Agent": USER_AGENT}, timeout=300)
+    actual = hashlib.sha256(body).hexdigest()
+    if actual != expected:
+        raise ValidatorIntegrityError(
+            f"the gtfs-validator {version} jar downloaded from {url} has SHA-256 {actual}, "
+            f"not the expected {expected}. It was not saved or run."
+        )
     tmp = jar.with_suffix(".part")
     tmp.write_bytes(body)
     tmp.replace(jar)
+    _verify_cached_jar(jar, version, expected)
     return jar
 
 
@@ -308,11 +417,14 @@ def run_validator(
     version: str = VALIDATOR_VERSION,
     *,
     large_feed: bool = False,
+    jar_sha256: str | None = None,
 ) -> Path:
     """Run the validator on a GTFS zip; return the path to report.json.
 
     ``version`` defaults to the pinned production validator; the canary shadow
-    run (canary.py) passes a candidate version to dual-score the same feed.
+    run (canary.py) passes a candidate version to dual-score the same feed,
+    with ``jar_sha256`` as the digest that candidate's jar must have. The jar
+    is verified against its digest before it is run (``ensure_validator``).
     ``country_code`` is the feed's assigned ISO 3166-1 alpha-2 country. The
     Java CLI expects its lower-case form; rejecting an unassigned code here
     keeps every caller on the same validator-country contract. ``large_feed``
@@ -321,7 +433,7 @@ def run_validator(
     runner's default; ordinary feeds keep the default heap.
     """
     country = validator_country_code(country_code)
-    jar = ensure_validator(version)
+    jar = ensure_validator(version, sha256=jar_sha256)
     output_dir.mkdir(parents=True, exist_ok=True)
     heap_flags = [f"-Xmx{large_feed_heap()}"] if large_feed else []
     cmd = [

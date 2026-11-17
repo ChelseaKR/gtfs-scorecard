@@ -21,7 +21,7 @@ scorecard coverage-check [--save]                 # weekly plain-language covera
 scorecard rollups                                 # portfolio rollup artifacts
 scorecard campaign --rollup id --kind calendar-renewal  # bounded support worklist
 scorecard sensitivity [--factor 0.2]              # rubric weight-sensitivity study
-scorecard canary --candidate-version 8.1.0        # validator-upgrade impact report
+scorecard canary --candidate-version 8.1.0 --candidate-sha256 <hex>  # validator-upgrade report
 scorecard reproduce unitrans 2026-06-11            # re-derive a published grade (FIX-02)
 scorecard evidence-packet artifact.json [--format markdown]  # vendor remediation record
 scorecard fix-outcomes [--format markdown]          # observed resolution and recurrence
@@ -4375,6 +4375,7 @@ def _cmd_canary(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
         seed=args.seed,
         date=args.date,
         out_dir=Path(args.out) if args.out else None,
+        candidate_sha256=args.candidate_sha256,
     )
     print(md_path)
     print(json_path)
@@ -5485,6 +5486,15 @@ def main(argv: list[str] | None = None) -> int:
         "--candidate-version",
         required=True,
         help="gtfs-validator version to shadow-score against the pinned one, e.g. 8.1.0",
+    )
+    canary.add_argument(
+        "--candidate-sha256",
+        required=True,
+        help=(
+            "SHA-256 of the candidate's gtfs-validator-<version>-cli.jar. The jar is run "
+            "only if its bytes match; get the digest from the release page and check it "
+            "against your own download (see VALIDATOR_JAR_SHA256 in validate.py)"
+        ),
     )
     canary.add_argument(
         "--sample-size",

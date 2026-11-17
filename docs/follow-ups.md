@@ -373,3 +373,22 @@ does not hold. None was edited; all need a curator decision.
 **Abashiri Bus** is the opposite case and worth a recheck: source and license
 are clean, and only `feed_info.feed_end_date` (2026-07-31) blocks it while its
 `calendar_dates` run to 2026-11-23.
+
+## Keep the submission endpoint's token in a secrets store
+
+**Status: open, noted 2026-11-17 (ADR 0079).** `infra/submit` passes the
+fine-grained GitHub token to the function as an environment variable, which
+also places the value in that module's Terraform state. The endpoint's input
+checks and daily limits do not depend on this; it is a separate tidy-up that
+needs a new token, so it was left out of that change.
+
+Steps:
+
+1. Create a new fine-grained token limited to this repository, with contents
+   and pull requests write and nothing else.
+2. Store it as a SecureString parameter in SSM Parameter Store.
+3. In `infra/submit/main.tf`, replace the `github_token` variable with the
+   parameter's name, grant the function `ssm:GetParameter` on that one
+   parameter, and read it once per cold start in `handler.py`.
+4. Apply, confirm a test submission opens a pull request, then revoke the old
+   token.

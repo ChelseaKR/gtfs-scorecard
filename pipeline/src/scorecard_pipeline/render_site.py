@@ -134,6 +134,7 @@ from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
     _repo_root,
     bundle_offer_nodes,
     esc,
+    json_for_script,
     sync_static_navs,
 )
 from .timemachine import Event, grade_story, history_events
@@ -2381,7 +2382,7 @@ def _agency_map_script(geo_url: str) -> str:
     row focusable, focusing it brushes its line, and Enter or Space pins the
     selection exactly as a click does. MapLibre and the route geometry load only
     after an explicit request, so the optional canvas cannot block the scorecard."""
-    js = _AGENCY_MAP_JS.replace("__GEO_URL_JSON__", json.dumps(geo_url))
+    js = _AGENCY_MAP_JS.replace("__GEO_URL_JSON__", json_for_script(geo_url))
     return (
         "    <script>\n"
         "      (function () {\n"
@@ -9395,9 +9396,9 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         else ""
     )
     grade_opts = "".join(f'<option value="{g}">Grade {g}</option>' for g in _MAP_GRADE_COLOR)
-    country_labels_json = json.dumps(
-        {code: name for code, name in countries}, ensure_ascii=False, separators=(",", ":")
-    ).replace("</", "<\\/")
+    country_labels_json = json_for_script(
+        {code: name for code, name in countries}, ensure_ascii=False
+    )
     initial_count = min(count, _MAP_TABLE_INITIAL_ROWS)
     needs_complete_load = count > _MAP_TABLE_INITIAL_ROWS
     list_button_hidden = "" if needs_complete_load else " hidden"
@@ -10038,8 +10039,8 @@ def _routes_map_script() -> str:
     zoom controls, because the operable equivalent is the agencies list and the
     per-agency route tables linked above it. prefers-reduced-motion is honored
     (no animated fly-to on click)."""
-    type_expr = json.dumps(_route_type_color_expr(), separators=(",", ":"))
-    grade_expr = json.dumps(_grade_color_expr(), separators=(",", ":"))
+    type_expr = json_for_script(_route_type_color_expr())
+    grade_expr = json_for_script(_grade_color_expr())
     return f"""    <script src="https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.js"></script>
     <script src="https://unpkg.com/pmtiles@{_PMTILES_LIB_VERSION}/dist/pmtiles.js"></script>
     <script>

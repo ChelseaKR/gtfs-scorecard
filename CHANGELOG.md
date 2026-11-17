@@ -29,6 +29,24 @@ the declared public surface).
 
 ### Changed
 
+- **`scorecard canary` takes the candidate jar's digest.** `--candidate-sha256`
+  is required, and `validator-canary.yml` has a matching required input. The
+  candidate's jar runs only if its SHA-256 matches (ADR 0079). The steps for
+  moving the validator pin are in `docs/rubric.md` under "Governed upgrades".
+- **The registry loader refuses a name or URL that is not one line.** A name
+  holding a control character, a line or paragraph separator, `<` or `>`, and a
+  URL holding a control character or a space, now fail `parse_agencies` with
+  the field named. No current entry is affected. A Mobility Database catalog
+  cell is read as one line, so a name that spans two CSV lines now carries a
+  space where the line break was.
+- **The self-serve form states its limits.** It accepts 3 submissions per
+  client and 20 in total per UTC day, a request body up to 8 KB, and feed URLs
+  on a public host name over `http` or `https`. Past a limit, or when the
+  limits cannot be checked, the reply says so and links the manual
+  walkthrough. Submitted values appear in the pull request body as code spans,
+  and the commit message names the derived id. The two limits are Terraform
+  variables on `infra/submit`, which needs a rebuild and apply to take effect
+  (`docs/deploy.md`, section 3).
 - **The compare table now shows when each scorecard was checked.**
   `pages_tools.COMPARE_SHOWS_CHECK_DATES` is on: a "Last checked" row sits
   beside "Days of service left", and when the two dates differ a sentence under
@@ -322,6 +340,24 @@ the declared public surface).
   above the footer.
 
 ### Security
+
+- **Input and supply-chain hardening at four boundaries (ADR 0079).**
+  - JSON written into a `<script>` element (JSON-LD and the values inline
+    scripts read) goes through one serializer, `site_shell.json_for_script`,
+    which writes `<`, `>`, `&`, U+2028 and U+2029 as `\u` escapes. Rendered
+    output is otherwise unchanged.
+  - Registry blocks proposed by discovery and by the self-serve form are
+    written with PyYAML scalars, so every value stays a single scalar on one
+    line, and each block is parsed back and compared with its source before it
+    is returned.
+  - The gtfs-validator jar is verified against a SHA-256 pinned beside
+    `VALIDATOR_VERSION` before it is run, in the daily job and in the Action.
+    A mismatch, or a version with no pinned digest, stops the run. The check
+    reaches people using the Action with the next tagged release.
+  - The self-serve endpoint validates every submitted field (type, length,
+    allowed characters, URL scheme and host), caps the request size, and
+    applies a per-client and a global daily limit before it uses its GitHub
+    token. Its API Gateway throttle is one request per second.
 
 - **Container images clear ten fixable HIGH CVEs that failed the Trivy
   scan at 01:03 UTC on 2026-11-14.** All ten are Amazon Linux 2023 base

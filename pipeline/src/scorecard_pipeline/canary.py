@@ -36,7 +36,9 @@ from .score import GRADE_BANDS, build_scorecard, score_feed_content
 from .validate import (
     VALIDATOR_VERSION,
     ValidationReport,
+    ValidatorIntegrityError,
     country_scoped_output_dir,
+    expected_jar_sha256,
     parse_report,
     run_validator,
 )
@@ -102,7 +104,10 @@ def _scored_result(
 
 
 def shadow_score_agency(
-    agency: Agency, date: dt.date, candidate_version: str
+    agency: Agency,
+    date: dt.date,
+    candidate_version: str,
+    candidate_sha256: str | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Score one agency's feed with both validator versions; return
     (baseline, candidate) result dicts over identical feed bytes.
@@ -152,6 +157,7 @@ def shadow_score_agency(
             cand_dir,
             country_code=agency.country,
             version=candidate_version,
+            jar_sha256=candidate_sha256,
         )
     candidate_report = parse_report(cand_path)
 
@@ -392,14 +398,23 @@ def run_canary(
     seed: int = 0,
     date: dt.date | None = None,
     out_dir: Path | None = None,
+    candidate_sha256: str | None = None,
 ) -> tuple[Path, Path]:
     """Shadow-score the sample with both validator versions and write the
     impact report; returns (markdown_path, json_path).
+
+    ``candidate_sha256`` is the digest the candidate's jar must have. The
+    candidate is not pinned yet, so without it the jar is refused before any
+    agency is scored rather than skipped agency by agency.
 
     One agency's unreachable feed or failed validation must not sink the whole
     canary: failures are logged, listed in the report as skipped, and the
     comparison proceeds over the agencies that did score.
     """
+    # Refuse a candidate with no digest, or a malformed one, before any agency
+    # is fetched. A jar that fails its digest check stops the run below for the
+    # same reason: it is not one agency's failure, so it is not a skip.
+    expected_jar_sha256(candidate_version, candidate_sha256)
     as_of = date or utc_today()
     sample = sample_agencies(
         sorted(agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed),
@@ -411,7 +426,11 @@ def run_canary(
     skipped: list[str] = []
     for agency_id in sample:
         try:
-            base, cand = shadow_score_agency(AGENCIES[agency_id], as_of, candidate_version)
+            base, cand = shadow_score_agency(
+                AGENCIES[agency_id], as_of, candidate_version, candidate_sha256
+            )
+        except ValidatorIntegrityError:
+            raise
         except Exception as exc:
             log.warning("%s: skipped in canary run (%s)", agency_id, exc)
             skipped.append(agency_id)

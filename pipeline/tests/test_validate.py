@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -125,6 +127,7 @@ def test_ensure_validator_reuses_cached_jar(
         raise AssertionError("must not download when the jar is already cached")
 
     monkeypatch.setattr(validate, "safe_get", explode)
+    monkeypatch.setitem(validate.VALIDATOR_JAR_SHA256, "9.9.9", _sha256(b"cached"))
     assert validate.ensure_validator("9.9.9") == jar
 
 
@@ -132,11 +135,116 @@ def test_ensure_validator_downloads_when_missing(
     monkeypatch: pytest.MonkeyPatch, isolated_repo_root: Path
 ) -> None:
     monkeypatch.setattr(validate, "safe_get", lambda *_a, **_k: b"JARBYTES")
+    monkeypatch.setitem(validate.VALIDATOR_JAR_SHA256, "9.9.9", _sha256(b"JARBYTES"))
     jar = validate.ensure_validator("9.9.9")
     assert jar.exists()
     assert jar.read_bytes() == b"JARBYTES"
     # The temp .part file is renamed into place, not left behind.
     assert not jar.with_suffix(".part").exists()
+
+
+# --- the jar is verified against a pinned SHA-256 before it is ever run -------
+
+
+def _sha256(body: bytes) -> str:
+    return hashlib.sha256(body).hexdigest()
+
+
+def test_the_production_validator_version_is_pinned_to_a_digest() -> None:
+    digest = validate.VALIDATOR_JAR_SHA256[validate.VALIDATOR_VERSION]
+    assert re.fullmatch(r"[0-9a-f]{64}", digest)
+    assert validate.expected_jar_sha256(validate.VALIDATOR_VERSION) == digest
+
+
+def test_a_download_that_does_not_match_the_pin_is_refused_and_not_saved(
+    monkeypatch: pytest.MonkeyPatch, isolated_repo_root: Path
+) -> None:
+    monkeypatch.setattr(validate, "safe_get", lambda *_a, **_k: b"NOT THE RELEASED JAR")
+    monkeypatch.setitem(validate.VALIDATOR_JAR_SHA256, "9.9.9", _sha256(b"JARBYTES"))
+
+    with pytest.raises(validate.ValidatorIntegrityError, match="not saved or run"):
+        validate.ensure_validator("9.9.9")
+
+    jar = cache_dir() / "gtfs-validator-9.9.9-cli.jar"
+    assert not jar.exists()
+    assert not jar.with_suffix(".part").exists()
+
+
+def test_a_cached_jar_that_does_not_match_the_pin_is_refused(
+    monkeypatch: pytest.MonkeyPatch, isolated_repo_root: Path
+) -> None:
+    jar = cache_dir() / "gtfs-validator-9.9.9-cli.jar"
+    jar.parent.mkdir(parents=True, exist_ok=True)
+    jar.write_bytes(b"swapped after it was cached")
+    monkeypatch.setitem(validate.VALIDATOR_JAR_SHA256, "9.9.9", _sha256(b"JARBYTES"))
+
+    def explode(*_a: object, **_k: object) -> bytes:
+        raise AssertionError("a cached jar that fails its check is not silently replaced")
+
+    monkeypatch.setattr(validate, "safe_get", explode)
+    with pytest.raises(validate.ValidatorIntegrityError, match="It was not run"):
+        validate.ensure_validator("9.9.9")
+
+
+def test_a_cached_jar_is_checked_again_after_it_changes_on_disk(
+    monkeypatch: pytest.MonkeyPatch, isolated_repo_root: Path
+) -> None:
+    jar = cache_dir() / "gtfs-validator-9.9.9-cli.jar"
+    jar.parent.mkdir(parents=True, exist_ok=True)
+    jar.write_bytes(b"JARBYTES")
+    monkeypatch.setitem(validate.VALIDATOR_JAR_SHA256, "9.9.9", _sha256(b"JARBYTES"))
+    assert validate.ensure_validator("9.9.9") == jar
+
+    jar.write_bytes(b"JARBYTES, then something else")
+    with pytest.raises(validate.ValidatorIntegrityError):
+        validate.ensure_validator("9.9.9")
+
+
+def test_a_version_with_no_pinned_digest_is_refused_before_any_download(
+    monkeypatch: pytest.MonkeyPatch, isolated_repo_root: Path
+) -> None:
+    def explode(*_a: object, **_k: object) -> bytes:
+        raise AssertionError("nothing is downloaded for a version with no digest")
+
+    monkeypatch.setattr(validate, "safe_get", explode)
+    with pytest.raises(validate.ValidatorIntegrityError, match="no pinned SHA-256"):
+        validate.ensure_validator("9.9.9")
+
+
+def test_a_caller_can_vouch_for_an_unpinned_version_with_its_digest(
+    monkeypatch: pytest.MonkeyPatch, isolated_repo_root: Path
+) -> None:
+    monkeypatch.setattr(validate, "safe_get", lambda *_a, **_k: b"CANDIDATE")
+    jar = validate.ensure_validator("9.9.9", sha256=_sha256(b"CANDIDATE").upper())
+    assert jar.read_bytes() == b"CANDIDATE"
+
+    with pytest.raises(validate.ValidatorIntegrityError, match="64 hexadecimal"):
+        validate.ensure_validator("9.9.8", sha256="abc123")
+
+
+def test_a_supplied_digest_cannot_replace_a_pinned_one(
+    monkeypatch: pytest.MonkeyPatch, isolated_repo_root: Path
+) -> None:
+    monkeypatch.setattr(validate, "safe_get", lambda *_a, **_k: b"SOMETHING ELSE")
+    with pytest.raises(validate.ValidatorIntegrityError, match="cannot be replaced"):
+        validate.ensure_validator(validate.VALIDATOR_VERSION, sha256=_sha256(b"SOMETHING ELSE"))
+    assert not (cache_dir() / f"gtfs-validator-{validate.VALIDATOR_VERSION}-cli.jar").exists()
+
+
+def test_run_validator_never_starts_java_for_a_jar_that_fails_its_check(
+    monkeypatch: pytest.MonkeyPatch, isolated_repo_root: Path, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(validate, "safe_get", lambda *_a, **_k: b"NOT THE RELEASED JAR")
+    monkeypatch.setattr(validate, "_java_binary", lambda: "java")
+
+    def no_java(*_a: object, **_k: object) -> None:
+        raise AssertionError("java must not be started for an unverified jar")
+
+    monkeypatch.setattr(subprocess, "run", no_java)
+    gtfs = tmp_path / "g.zip"
+    gtfs.write_text("")
+    with pytest.raises(validate.ValidatorIntegrityError):
+        validate.run_validator(gtfs, tmp_path / "out")
 
 
 def _stub_runner(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:

@@ -291,7 +291,7 @@ def _block_edits(lines: list[str], begin: int, end: int, item: Repoint) -> dict[
     quote = "'" if existing.strip().startswith("'") else ""
     new_id = _mdb_id_in_style(existing, item.successor_mdb_id)
     edits = {
-        url_index: f"{url.group(1)}static_gtfs_url: {item.successor_url}",
+        url_index: f"{url.group(1)}static_gtfs_url: {_scalar(item.successor_url)}",
         mdb_index: f"{mdb.group(1)}mdb_id: {quote}{new_id}{quote}",
     }
     # A note the catalog wrote describes the retired record's terms. Follow it
