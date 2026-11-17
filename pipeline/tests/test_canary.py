@@ -29,10 +29,18 @@ from scorecard_pipeline.canary import (
 )
 from scorecard_pipeline.config import Agency
 from scorecard_pipeline.fetch import FetchResult
-from scorecard_pipeline.validate import VALIDATOR_VERSION, NoticeGroup, ValidationReport
+from scorecard_pipeline.validate import (
+    VALIDATOR_JAR_SHA256,
+    VALIDATOR_VERSION,
+    NoticeGroup,
+    ValidationReport,
+    ValidatorIntegrityError,
+)
 from scorecard_pipeline.vcache import load_cached, store_cached
 
 AS_OF = dt.date(2026, 7, 2)
+# A well-formed digest for the unpinned candidate version these tests name.
+CANDIDATE_SHA256 = "ab" * 32
 
 # ---------------------------------------------------------------------------
 # Sampling
@@ -277,6 +285,7 @@ def _fake_run_validator(
         output_dir: Path,
         country_code: str = "us",
         version: str = VALIDATOR_VERSION,
+        jar_sha256: str | None = None,
     ) -> Path:
         calls.append(version)
         notices = [{"code": "old_code", "severity": "WARNING", "totalNotices": 3}]
@@ -354,6 +363,7 @@ def test_shadow_score_agency_country_scopes_cache_and_raw_reports(
         output_dir: Path,
         country_code: str = "US",
         version: str = VALIDATOR_VERSION,
+        jar_sha256: str | None = None,
     ) -> Path:
         calls.append((country_code, version, output_dir.name))
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -396,15 +406,21 @@ def test_run_canary_writes_report_and_tolerates_failures(
     monkeypatch.setattr(canary, "AGENCIES", agencies)
 
     def fake_shadow(
-        agency: Agency, date: dt.date, candidate_version: str
+        agency: Agency,
+        date: dt.date,
+        candidate_version: str,
+        candidate_sha256: str | None = None,
     ) -> tuple[dict[str, Any], dict[str, Any]]:
+        assert candidate_sha256 == CANDIDATE_SHA256
         if agency.id == "beta":
             raise RuntimeError("origin unreachable")
         return _result(agency.id, "B", 85.0), _result(agency.id, "B", 84.0)
 
     monkeypatch.setattr(canary, "shadow_score_agency", fake_shadow)
 
-    md_path, json_path = run_canary("8.1.0", date=AS_OF, out_dir=tmp_path / "report")
+    md_path, json_path = run_canary(
+        "8.1.0", date=AS_OF, out_dir=tmp_path / "report", candidate_sha256=CANDIDATE_SHA256
+    )
 
     payload = json.loads(json_path.read_text())
     assert payload["agencies_compared"] == 1
@@ -425,9 +441,12 @@ def test_run_canary_defaults_to_data_canary_dir(
     monkeypatch.setattr(
         canary,
         "shadow_score_agency",
-        lambda agency, date, version: (_result("solo", "A", 95.0), _result("solo", "A", 95.0)),
+        lambda agency, date, version, sha256=None: (
+            _result("solo", "A", 95.0),
+            _result("solo", "A", 95.0),
+        ),
     )
-    md_path, _json_path = run_canary("8.1.0", date=AS_OF)
+    md_path, _json_path = run_canary("8.1.0", date=AS_OF, candidate_sha256=CANDIDATE_SHA256)
     assert md_path.parent == isolated_repo_root / "data" / "canary"
 
 
@@ -464,6 +483,8 @@ def test_cli_canary_parses_args_and_dispatches(
             "canary",
             "--candidate-version",
             "8.1.0",
+            "--candidate-sha256",
+            CANDIDATE_SHA256,
             "--sample-size",
             "7",
             "--seed",
@@ -481,16 +502,92 @@ def test_cli_canary_parses_args_and_dispatches(
         "seed": 3,
         "date": AS_OF,
         "out_dir": tmp_path / "out",
+        "candidate_sha256": CANDIDATE_SHA256,
     }
     out = capsys.readouterr().out
     assert "r.md" in out
     assert "r.json" in out
 
 
-def test_cli_canary_rejects_the_already_pinned_version(isolated_repo_root: Path) -> None:
+def test_cli_canary_rejects_the_already_pinned_version(
+    isolated_repo_root: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     from scorecard_pipeline import cli
 
     _write_registry(isolated_repo_root)
     with pytest.raises(SystemExit) as excinfo:
-        cli.main(["canary", "--candidate-version", VALIDATOR_VERSION])
+        cli.main(
+            [
+                "canary",
+                "--candidate-version",
+                VALIDATOR_VERSION,
+                "--candidate-sha256",
+                VALIDATOR_JAR_SHA256[VALIDATOR_VERSION],
+            ]
+        )
     assert excinfo.value.code == 2
+    assert "already the pinned version" in capsys.readouterr().err
+
+
+def test_run_canary_refuses_a_candidate_with_no_digest_before_scoring(
+    monkeypatch: pytest.MonkeyPatch, isolated_repo_root: Path
+) -> None:
+    def must_not_score(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("no agency may be scored for an unverifiable validator")
+
+    monkeypatch.setattr(canary, "shadow_score_agency", must_not_score)
+    with pytest.raises(ValidatorIntegrityError, match="no pinned SHA-256"):
+        run_canary("8.1.0", date=AS_OF)
+    with pytest.raises(ValidatorIntegrityError, match="64 hexadecimal"):
+        run_canary("8.1.0", date=AS_OF, candidate_sha256="not-a-digest")
+
+
+def test_run_canary_stops_when_the_candidate_jar_fails_its_digest(
+    monkeypatch: pytest.MonkeyPatch, isolated_repo_root: Path, tmp_path: Path
+) -> None:
+    """A jar that fails verification is not one agency's failure, so not a skip."""
+    monkeypatch.setattr(
+        canary,
+        "AGENCIES",
+        {
+            "alpha": Agency(
+                id="alpha", name="Alpha", static_gtfs_url="https://alpha.example/gtfs.zip"
+            )
+        },
+    )
+
+    def fails_verification(*_args: object, **_kwargs: object) -> None:
+        raise ValidatorIntegrityError("digest mismatch")
+
+    monkeypatch.setattr(canary, "shadow_score_agency", fails_verification)
+    with pytest.raises(ValidatorIntegrityError, match="digest mismatch"):
+        run_canary("8.1.0", date=AS_OF, out_dir=tmp_path, candidate_sha256=CANDIDATE_SHA256)
+    assert not list(tmp_path.iterdir())
+
+
+def test_shadow_score_passes_the_candidate_digest_to_the_candidate_run_only(
+    make_gtfs_zip: Callable[..., Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    zip_path = make_gtfs_zip(FEED_FILES)
+    seen: list[tuple[str, str | None]] = []
+
+    def validate(
+        _gtfs_zip: Path,
+        output_dir: Path,
+        country_code: str = "US",
+        version: str = VALIDATOR_VERSION,
+        jar_sha256: str | None = None,
+    ) -> Path:
+        seen.append((version, jar_sha256))
+        output_dir.mkdir(parents=True, exist_ok=True)
+        report = output_dir / "report.json"
+        report.write_text(json.dumps({"summary": {"validatorVersion": version}, "notices": []}))
+        return report
+
+    monkeypatch.setattr(canary, "fetch_static", _fake_fetch(zip_path))
+    monkeypatch.setattr(canary, "run_validator", validate)
+    agency = Agency(id="demo", name="Demo", static_gtfs_url="https://demo.example/gtfs.zip")
+
+    shadow_score_agency(agency, AS_OF, "8.1.0", CANDIDATE_SHA256)
+
+    assert seen == [(VALIDATOR_VERSION, None), ("8.1.0", CANDIDATE_SHA256)]

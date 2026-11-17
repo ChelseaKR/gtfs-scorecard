@@ -422,13 +422,32 @@ The measuring stick never changes blind. Every validator release adds, removes,
 or reclassifies notices, which moves grades for every tracked agency at once —
 so a `VALIDATOR_VERSION` bump (or a rubric-weight change) must attach a canary
 impact report before it lands. Run `scorecard canary --candidate-version
-<X.Y.Z>` (or dispatch the `validator-canary.yml` workflow): it dual-scores a
+<X.Y.Z> --candidate-sha256 <digest>` (or dispatch the `validator-canary.yml`
+workflow, which asks for the same two values): it dual-scores a
 deterministic ~100-agency sample with the pinned and candidate validators over
 identical feed bytes, and publishes the grade-shift histogram, the agencies
 that changed band, and the notice-code drivers, plus a ready-to-paste
 `METHODOLOGY_CHANGELOG` entry (`score.py`). Prepending that dated entry in the
 same commit keeps every historical grade discontinuity attributable: a trend
 reader can always tell a feed change apart from a methodology change.
+
+The validator jar is pinned by version and by SHA-256 (ADR 0078). The scorer
+checks the digest every time before it runs the jar, in the daily job and in
+the GitHub Action alike, and stops if the bytes differ or the version has no
+pinned digest. Moving the pin to a new release takes three steps:
+
+1. Download `gtfs-validator-<X.Y.Z>-cli.jar` from the MobilityData release page
+   and run `shasum -a 256` on it. Compare the result with the `sha256:` digest
+   GitHub lists beside the asset on that page.
+2. Run the canary with that digest, as above, and attach its report.
+3. In the upgrade commit, add the version and digest to `VALIDATOR_JAR_SHA256`
+   in `pipeline/src/scorecard_pipeline/validate.py`, set `VALIDATOR_VERSION`,
+   and change the jar name and digest in `infra/compute/Dockerfile` and
+   `infra/instant-score/Dockerfile`. `pipeline/tests/test_validator_pin.py`
+   fails until all three agree.
+
+Keep the digests of versions that published artifacts record, so
+`scorecard reproduce` can still run the validator a past grade used.
 
 Rubric 1.2's capability-aware Realtime correction has a checked
 [fixed-corpus impact report](rubric-impact-1.2.md): a replay over 31 published
