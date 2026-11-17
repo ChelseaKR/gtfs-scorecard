@@ -22,6 +22,7 @@ import datetime as dt
 import hashlib
 import html as html_lib
 import io
+import itertools
 import json
 import logging
 import math
@@ -12668,27 +12669,181 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
     )
 
 
-def _trend_chart_and_table(points: list[dict[str, Any]]) -> tuple[str, str]:
-    """Sparkline and by-date table for a series of two or more points."""
+_TREND_MONTHS: Final = (
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+)
+# The line is inset from the plot's left and right edges by this share of its
+# width, so the first and last value labels sit inside the plot.
+_TREND_X_INSET: Final = 4.0
+# Above this many points a dot per date is clutter; only the ends get one.
+_TREND_MAX_DOTS: Final = 31
+
+
+def _trend_axis_window(lo: float, hi: float) -> tuple[int, int, int]:
+    """The corpus chart's score axis as whole numbers: (bottom, top, tick step).
+
+    The window is centered on the data and at least four points tall. An axis
+    fitted to the data's own minimum and maximum makes a move of a few tenths
+    fill the whole plot; this one keeps it visible and in proportion. It stays
+    inside 0..100.
+    """
+    mid = (lo + hi) / 2
+    half = max(2.0, (hi - lo) / 2 + 0.5)
+    bottom, top = math.floor(mid - half), math.ceil(mid + half)
+    span = top - bottom
+    step = 1 if span <= 6 else 2 if span <= 12 else 5 if span <= 30 else 10
+    bottom = (bottom // step) * step
+    top = -((-top) // step) * step
+    if bottom < 0:
+        bottom, top = 0, min(100, top - bottom)
+    if top > 100:
+        bottom, top = max(0, bottom - (top - 100)), 100
+    return bottom, top, step
+
+
+def _trend_x_positions(points: list[dict[str, Any]]) -> tuple[list[float], list[dt.date] | None]:
+    """Each point's place along the date axis, 0 to 1, and the parsed dates.
+
+    Points are placed by calendar date, so a gap between checks shows as a
+    gap. If any date does not parse, or the dates are not strictly increasing,
+    the points are spaced evenly and no dates are returned.
+    """
+    n = len(points)
+    even = [i / (n - 1) for i in range(n)]
+    try:
+        dates = [dt.date.fromisoformat(str(p["date"])[:10]) for p in points]
+    except ValueError:
+        return even, None
+    if any(later <= earlier for earlier, later in itertools.pairwise(dates)):
+        return even, None
+    total = (dates[-1] - dates[0]).days
+    return [(d - dates[0]).days / total for d in dates], dates
+
+
+def _trend_date_labels(
+    points: list[dict[str, Any]], xs: list[float], dates: list[dt.date] | None
+) -> list[tuple[float, str]]:
+    """The date-axis labels as (position 0 to 1, text): always the first and
+    last date, plus the dates between that leave room for a label each side."""
+    last = len(points) - 1
+    if dates is None:
+        return [(xs[0], str(points[0]["date"])), (xs[last], str(points[last]["date"]))]
+    with_year = dates[0].year != dates[last].year
+    gap = 0.45 if with_year else 0.22
+
+    def text(d: dt.date) -> str:
+        short = f"{_TREND_MONTHS[d.month - 1]} {d.day}"
+        return f"{short}, {d.year}" if with_year else short
+
+    chosen = [0]
+    for i in range(1, last):
+        if xs[i] - xs[chosen[-1]] >= gap and xs[last] - xs[i] >= gap:
+            chosen.append(i)
+    chosen.append(last)
+    return [(xs[i], text(dates[i])) for i in chosen]
+
+
+def _corpus_trend_chart(points: list[dict[str, Any]], *, aria_label: str) -> tuple[str, int, int]:
+    """The corpus average as a small line chart with a drawn score axis.
+
+    Returns the chart's HTML and the axis bottom and top. The SVG carries the
+    geometry only (gridlines, line, dots) and stretches to its box, with
+    strokes that keep their width; every number on the chart is HTML text
+    placed by percentage, so it keeps its size on a narrow screen. The SVG
+    stays ``role="img"`` with the whole series in its label, each date has a
+    native hover readout, and the by-date table is the operable equivalent,
+    so the tick and value labels are hidden from assistive technology.
+    """
     scores = [float(p["average_score"]) for p in points]
-    lo, hi = min(scores), max(scores)
-    # The shared sparkline, autoscaled to the data range (y_min/y_max) so a
-    # few-point move is visible: a dot at each date carries a native hover
-    # tooltip (date and average), matching the per-agency chart, and the
-    # numbers also live in the aria-label and the by-date table below.
-    spark = _spark_svg(
-        [(str(p["date"]), p["average_score"]) for p in points],
-        aria_label=f"Covered-corpus average score by date (axis {lo:.1f} to {hi:.1f})",
-        w=640,
-        h=120,
-        pad=12,
-        y_min=lo,
-        y_max=hi,
+    bottom, top, step = _trend_axis_window(min(scores), max(scores))
+    xs, dates = _trend_x_positions(points)
+    last = len(points) - 1
+
+    def px(x: float) -> float:
+        return _TREND_X_INSET + x * (100 - 2 * _TREND_X_INSET)
+
+    def py(value: float) -> float:
+        return (top - value) / (top - bottom) * 100
+
+    ticks = list(range(bottom, top + 1, step))
+    grid = "".join(
+        f'<line class="trend-grid" x1="0" x2="100" y1="{py(t):.2f}" y2="{py(t):.2f}"/>'
+        for t in ticks
     )
-    # A visible range caption, since the line is autoscaled with no drawn axis;
-    # aria-hidden because the aria-label and table already carry these numbers.
+    line = " ".join(f"{px(x):.2f},{py(s):.2f}" for x, s in zip(xs, scores, strict=True))
+    # A dot is a near-zero-length stroke with a round cap: it stays a circle
+    # however the box is stretched. Each visible dot sits on a ring in the
+    # page color so it reads apart from the line through it.
+    dotted = range(len(points)) if len(points) <= _TREND_MAX_DOTS else (0, last)
+    dots = "".join(
+        f'<path class="trend-pt-ring{" trend-pt-last" if i == last else ""}" '
+        f'd="M{px(xs[i]):.2f} {py(scores[i]):.2f}h0.01"/>'
+        f'<path class="trend-pt{" trend-pt-last" if i == last else ""}" '
+        f'd="M{px(xs[i]):.2f} {py(scores[i]):.2f}h0.01"/>'
+        for i in dotted
+    )
+    hits = "".join(
+        f'<path class="trend-dot trend-hit" d="M{px(x):.2f} {py(s):.2f}h0.01">'
+        f"<title>{esc(str(p['date']))}: {esc(str(p['average_score']))}</title></path>"
+        for p, x, s in zip(points, xs, scores, strict=True)
+    )
+    series = "; ".join(f"{p['date']} {p['average_score']}" for p in points)
+    svg = (
+        '<svg class="trend-plot-svg" viewBox="0 0 100 100" preserveAspectRatio="none" '
+        f'role="img" aria-label="{esc(aria_label)}: {esc(series)}">'
+        f'{grid}<polyline class="trend-line" points="{line}"/>{dots}{hits}</svg>'
+    )
+    y_labels = "".join(
+        f'<span class="trend-ytick" style="top:{py(t):.2f}%">{t}</span>' for t in ticks
+    )
+
+    # Only the first and last values are printed on the chart. Each sits on the
+    # side of its dot the line does not leave from: above when the neighboring
+    # point is lower or level, below when it is higher.
+    def value_label(i: int, neighbor: int, extra: str) -> str:
+        side = "trend-val-below" if scores[neighbor] > scores[i] else "trend-val-above"
+        return (
+            f'<span class="trend-val {side}{extra}" '
+            f'style="left:{px(xs[i]):.2f}%;top:{py(scores[i]):.2f}%">'
+            f"{esc(str(points[i]['average_score']))}</span>"
+        )
+
+    values = value_label(0, 1, "") + value_label(last, last - 1, " trend-val-last")
+    x_labels = "".join(
+        f'<span style="left:{px(x):.2f}%">{esc(text)}</span>'
+        for x, text in _trend_date_labels(points, xs, dates)
+    )
+    chart = (
+        '<div class="trend-chart corpus-trend">'
+        f'<div class="trend-plot">{svg}'
+        f'<div class="trend-labels" aria-hidden="true">{y_labels}{values}</div></div>'
+        f'<div class="trend-xaxis" aria-hidden="true">{x_labels}</div>'
+        "</div>"
+    )
+    return chart, bottom, top
+
+
+def _trend_chart_and_table(points: list[dict[str, Any]]) -> tuple[str, str]:
+    """Line chart and by-date table for a series of two or more points."""
+    # A line chart with a drawn score axis and date axis. A dot at each date
+    # carries a native hover tooltip (date and average), and the numbers also
+    # live in the aria-label and the by-date table below.
+    spark, lo, hi = _corpus_trend_chart(points, aria_label="Covered-corpus average score by date")
+    # A range caption that names the full dates, since the date axis prints
+    # short ones; aria-hidden because the aria-label and table carry them.
     axis = (
-        f'<p class="trend-axis" aria-hidden="true">Score axis {lo:.0f} to {hi:.0f}. '
+        f'<p class="trend-axis" aria-hidden="true">Score axis {lo} to {hi}. '
         f"{esc(str(points[0]['date']))} to {esc(str(points[-1]['date']))}.</p>"
     )
     rescored_col = any("rescored_agency_count" in p for p in points)
@@ -12709,7 +12864,7 @@ def _trend_chart_and_table(points: list[dict[str, Any]]) -> tuple[str, str]:
     )
     chart = (
         '<section class="feed-details"><h2 class="section-title">Covered-corpus average '
-        f"score</h2><p>{spark}</p>{axis}</section>"
+        f"score</h2>{spark}{axis}</section>"
     )
     return chart, table
 

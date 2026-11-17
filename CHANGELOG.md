@@ -29,6 +29,15 @@ the declared public surface).
 
 ### Changed
 
+- **The corpus average chart on the coverage overview has axes.** The chart
+  under "Covered-corpus average score" on `/pulse/` was a bare line stretched
+  to its own minimum and maximum, so a move of 0.8 points filled the whole
+  plot and no number could be read from it. It now draws a whole-number score
+  axis at least four points tall, a date axis with points placed by calendar
+  date (a gap between checks shows as a gap), and the first and last values.
+  The numbers on the chart are text, so they keep their size on a phone. The
+  image label, the hover readout for each date and the by-date table are
+  unchanged, and no score or grade changes.
 - **`scorecard canary` takes the candidate jar's digest.** `--candidate-sha256`
   is required, and `validator-canary.yml` has a matching required input. The
   candidate's jar runs only if its SHA-256 matches (ADR 0079). The steps for
