@@ -15,7 +15,15 @@ from typing import Any
 
 from .metrics import SERVICE_HORIZON_REVIEW_YEARS
 from .score import PARTIAL_FRESHNESS_QUALIFIER
-from .site_shell import BASE_URL, CATEGORY_LABELS, CATEGORY_ORDER, _breadcrumb, _page, esc
+from .site_shell import (
+    BASE_URL,
+    CATEGORY_LABELS,
+    CATEGORY_ORDER,
+    _breadcrumb,
+    _page,
+    esc,
+    json_for_script,
+)
 
 # Where the compare page reads the rest of its picker list from, and how many
 # agencies its two <select>s carry in the document itself.
@@ -119,9 +127,7 @@ def _render_compare_page(
     work: choose two agencies to get a shareable link, or open each scorecard from the
     <a href="/agencies/">agency directory</a>."""
     )
-    labels = json.dumps(
-        [[key, CATEGORY_LABELS[key]] for key in CATEGORY_ORDER], separators=(",", ":")
-    )
+    labels = json_for_script([[key, CATEGORY_LABELS[key]] for key in CATEGORY_ORDER])
     checked_row_js = (
         """
           var checkedA = isoDate(artA.snapshot_date), checkedB = isoDate(artB.snapshot_date);
@@ -193,7 +199,7 @@ def _render_compare_page(
       (function () {{
         var CATS = {labels};
         var HORIZON_YEARS = {SERVICE_HORIZON_REVIEW_YEARS};
-        var PARTIAL = {json.dumps(PARTIAL_FRESHNESS_QUALIFIER)};
+        var PARTIAL = {json_for_script(PARTIAL_FRESHNESS_QUALIFIER)};
         var PICKER_URL = "{_COMPARE_PICKER_URL}";
         var SHOWN = {shown};
         var selA = document.getElementById("compare-a");
