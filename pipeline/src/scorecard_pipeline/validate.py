@@ -36,7 +36,7 @@ VALIDATOR_JAR_URL = (
 #: SHA-256 of the validator CLI jar, by version. The jar is run as a program,
 #: in this project's daily job and in the workflow of everyone who uses the
 #: Action, so only bytes that match an entry here are ever run: a version with
-#: no entry is refused, and so is a jar whose digest differs (ADR 0078).
+#: no entry is refused, and so is a jar whose digest differs (ADR 0079).
 #:
 #: To move the pin to a new release (the steps are also in docs/rubric.md,
 #: "Governed upgrades"):

@@ -431,7 +431,7 @@ that changed band, and the notice-code drivers, plus a ready-to-paste
 same commit keeps every historical grade discontinuity attributable: a trend
 reader can always tell a feed change apart from a methodology change.
 
-The validator jar is pinned by version and by SHA-256 (ADR 0078). The scorer
+The validator jar is pinned by version and by SHA-256 (ADR 0079). The scorer
 checks the digest every time before it runs the jar, in the daily job and in
 the GitHub Action alike, and stops if the bytes differ or the version has no
 pinned digest. Moving the pin to a new release takes three steps:

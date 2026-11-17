@@ -10,7 +10,7 @@ Packaging: the deploy bundles the scorecard_pipeline package alongside this
 handler (see infra/submit/main.tf). Only the standard library is used here so
 the Lambda needs no third-party HTTP client.
 
-Order of checks, cheapest and most local first (ADR 0078): body size, JSON
+Order of checks, cheapest and most local first (ADR 0079): body size, JSON
 shape, every field against the form's rules, the daily limits, and only then
 any call that uses the GitHub token. A request that fails an earlier check
 never reaches a later one.

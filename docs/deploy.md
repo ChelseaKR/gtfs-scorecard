@@ -224,7 +224,7 @@ reaches the live endpoint only after the package is rebuilt and applied again.
 Read the plan before approving it: for a code-only change it should update the
 function and nothing else.
 
-What the endpoint checks, in order (ADR 0078):
+What the endpoint checks, in order (ADR 0079):
 
 1. The request body is at most 8 KB.
 2. Every field is one the form has, is text, is within its length limit, and

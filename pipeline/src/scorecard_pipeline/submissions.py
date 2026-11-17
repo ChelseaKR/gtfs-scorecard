@@ -18,7 +18,7 @@ build_submission and talks to the GitHub API.
 The form is public and anonymous, so its rules are narrower than the
 registry's. A maintainer can add by hand an entry the form would refuse (a
 feed served from an IP address, a name with unusual punctuation); the form
-only has to accept what an ordinary agency submits (ADR 0078).
+only has to accept what an ordinary agency submits (ADR 0079).
 """
 
 from __future__ import annotations
