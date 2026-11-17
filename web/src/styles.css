@@ -2237,8 +2237,79 @@ main:focus { outline: none; }
   letter-spacing: 0.03em;
   color: var(--ink-soft);
 }
-/* Range caption under the autoscaled national trend line (which has no drawn axis). */
+/* Range caption under the corpus trend chart: the axis range and the full dates. */
 .trend-axis { font-size: 0.8rem; color: var(--ink-soft); margin: 0.3rem 0 0; }
+/* The corpus average chart (coverage overview), inside the same card as the
+   per-agency trend. The SVG holds the geometry only and stretches to the plot
+   box, with strokes that keep their width; every number is HTML text placed
+   by percentage, so it keeps its size on a phone. The plot's left margin is
+   the score-axis gutter. */
+/* Time runs left to right on the date axis in every locale, so the chart is
+   laid out left to right whatever the page direction. */
+.trend-chart.corpus-trend {
+  direction: ltr;
+  max-width: 40rem;
+  margin: 0.6rem 0 0.5rem;
+  padding: 1.1rem 1rem 0.7rem;
+}
+.trend-plot {
+  position: relative;
+  height: 11rem;
+  margin: 0 0.5rem 0 1.9rem;
+}
+.trend-plot-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.trend-grid,
+.trend-line,
+.trend-pt,
+.trend-pt-ring,
+.trend-hit { fill: none; vector-effect: non-scaling-stroke; }
+.trend-grid { stroke: var(--line); stroke-width: 1; }
+.trend-line { stroke: currentColor; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.trend-pt,
+.trend-pt-ring,
+.trend-hit { stroke-linecap: round; }
+.trend-pt { stroke: currentColor; stroke-width: 8; }
+.trend-pt.trend-pt-last { stroke-width: 11; }
+.trend-pt-ring { stroke: var(--card); stroke-width: 12; }
+.trend-pt-ring.trend-pt-last { stroke-width: 15; }
+/* The hover target for a date's readout: wider than the dot it covers. */
+.trend-hit { stroke: transparent; stroke-width: 24; pointer-events: stroke; }
+.trend-ytick,
+.trend-val,
+.trend-xaxis { font-size: 0.8rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.trend-ytick {
+  position: absolute;
+  inset-inline-end: 100%;
+  margin-inline-end: 0.5rem;
+  transform: translateY(-50%);
+  color: var(--ink-soft);
+}
+.trend-val {
+  position: absolute;
+  padding: 0.1rem 0.25rem;
+  border-radius: 3px;
+  background: var(--card);
+  color: var(--ink-soft);
+  font-weight: 600;
+  pointer-events: none;
+}
+.trend-val-above { transform: translate(-50%, -100%); margin-top: -0.6rem; }
+.trend-val-below { transform: translate(-50%, 0); margin-top: 0.6rem; }
+.trend-val-last { color: var(--ink); font-weight: 700; font-size: 0.9rem; }
+.trend-xaxis {
+  position: relative;
+  height: 1.3rem;
+  margin: 0.45rem 0.5rem 0 1.9rem;
+  color: var(--ink-soft);
+}
+.trend-xaxis span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
 .trend-sub { font-size: 1rem; margin: 0 0 0.6rem; }
 .delta-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; max-width: 26rem; }
 /* Findings absent from a later compatible check; no causal attribution. */

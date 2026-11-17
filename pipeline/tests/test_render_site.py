@@ -7010,6 +7010,125 @@ def test_trend_without_rescored_file_is_unchanged() -> None:
     assert "rescored" not in html.lower()
 
 
+def _corpus_points(*pairs: tuple[str, float]) -> list[dict[str, Any]]:
+    return [{"date": date, "average_score": score} for date, score in pairs]
+
+
+def test_corpus_trend_chart_draws_a_score_axis_and_places_points_by_date() -> None:
+    from scorecard_pipeline.render_site import _corpus_trend_chart
+
+    points = _corpus_points(
+        ("2026-11-09", 71.9), ("2026-11-10", 71.8), ("2026-11-15", 71.1), ("2026-11-17", 71.2)
+    )
+    html, bottom, top = _corpus_trend_chart(points, aria_label="Average by date")
+    # A whole-number axis at least four points tall around the data, with a
+    # gridline and a printed tick at each step.
+    assert (bottom, top) == (69, 74)
+    assert html.count('class="trend-grid"') == 6
+    for tick in range(69, 75):
+        assert f'class="trend-ytick" style="top:{(74 - tick) * 20:.2f}%">{tick}</span>' in html
+    # The picture is one image whose label carries the whole series, and each
+    # date has a native hover readout.
+    assert (
+        'role="img" aria-label="Average by date: 2026-11-09 71.9; 2026-11-10 71.8; '
+        '2026-11-15 71.1; 2026-11-17 71.2"'
+    ) in html
+    assert html.count("<title>") == 4
+    assert "<title>2026-11-15: 71.1</title>" in html
+    # Points sit by calendar date, not by position in the list: Nov 15 is six
+    # of the eight days along, inside the 4% inset on each side.
+    assert 'class="trend-dot trend-hit" d="M73.00 58.00h0.01"' in html
+    # Every point has a dot, the last one emphasized.
+    assert html.count('class="trend-pt"') == 3
+    assert html.count('class="trend-pt trend-pt-last"') == 1
+    # Only the first and last values are printed. Each sits away from the
+    # line: above when the neighboring point is lower, below when higher.
+    assert html.count('class="trend-val ') == 2
+    assert 'class="trend-val trend-val-above" style="left:4.00%;top:42.00%">71.9</span>' in html
+    assert (
+        'class="trend-val trend-val-above trend-val-last" '
+        'style="left:96.00%;top:56.00%">71.2</span>'
+    ) in html
+    # Short dates on the axis: both ends, and those between with room.
+    assert '<span style="left:4.00%">Nov 9</span>' in html
+    assert '<span style="left:73.00%">Nov 15</span>' in html
+    assert '<span style="left:96.00%">Nov 17</span>' in html
+    assert "Nov 10" not in html
+    # The printed numbers repeat the image label and the table, so assistive
+    # technology skips them.
+    assert '<div class="trend-labels" aria-hidden="true">' in html
+    assert '<div class="trend-xaxis" aria-hidden="true">' in html
+
+
+def test_corpus_trend_chart_puts_a_value_below_a_dot_the_line_rises_from() -> None:
+    from scorecard_pipeline.render_site import _corpus_trend_chart
+
+    html, _bottom, _top = _corpus_trend_chart(
+        _corpus_points(("2026-01-05", 70.4), ("2026-01-06", 71.0)), aria_label="x"
+    )
+    assert 'class="trend-val trend-val-below" ' in html
+    assert 'class="trend-val trend-val-above trend-val-last" ' in html
+
+
+@pytest.mark.parametrize(
+    ("lo", "hi", "window"),
+    [
+        (71.1, 71.9, (69, 74, 1)),  # a move of tenths gets a four-point window
+        (70.0, 70.0, (68, 72, 1)),  # a flat series is centered
+        (99.2, 99.6, (95, 100, 1)),  # never above 100
+        (0.2, 0.9, (0, 5, 1)),  # never below 0
+        (62.0, 71.0, (60, 72, 2)),  # wider moves get coarser steps
+        (55.0, 83.0, (50, 85, 5)),
+        (10.0, 90.0, (0, 100, 10)),
+    ],
+)
+def test_trend_axis_window(lo: float, hi: float, window: tuple[int, int, int]) -> None:
+    from scorecard_pipeline.render_site import _trend_axis_window
+
+    assert _trend_axis_window(lo, hi) == window
+
+
+def test_corpus_trend_chart_falls_back_to_even_spacing_for_unusable_dates() -> None:
+    from scorecard_pipeline.render_site import _corpus_trend_chart
+
+    # A date that does not parse, and dates that do not increase, both space
+    # the points evenly and print the raw first and last dates.
+    for dates in (("2026-11-09", "soon", "2026-11-17"), ("2026-11-09", "2026-11-09", "2026-11-17")):
+        points = _corpus_points(*zip(dates, (71.0, 71.5, 72.0), strict=True))
+        html, _bottom, _top = _corpus_trend_chart(points, aria_label="x")
+        assert 'class="trend-dot trend-hit" d="M50.00 ' in html
+        assert '<span style="left:4.00%">2026-11-09</span>' in html
+        assert '<span style="left:96.00%">2026-11-17</span>' in html
+        assert "Nov" not in html
+
+
+def test_corpus_trend_chart_thins_dots_and_dates_on_a_long_series() -> None:
+    from scorecard_pipeline.render_site import _corpus_trend_chart
+
+    start = dt.date(2026, 11, 20)
+    points = _corpus_points(
+        *((str(start + dt.timedelta(days=i)), 70.0 + i / 10) for i in range(60))
+    )
+    html, _bottom, _top = _corpus_trend_chart(points, aria_label="x")
+    # Past 31 points only the ends keep a dot; every date keeps its readout.
+    assert html.count('class="trend-pt"') == 1
+    assert html.count('class="trend-pt trend-pt-last"') == 1
+    assert html.count("<title>") == 60
+    # A series that crosses a year end prints the year, on fewer labels.
+    assert ">Nov 20, 2026</span>" in html
+    assert ">Jan 18, 2027</span>" in html
+    assert html.count(", 202") == 3
+
+
+def test_trend_sections_show_the_axis_range_under_the_chart() -> None:
+    from scorecard_pipeline.render_site import _trend_sections
+
+    html = _trend_sections(_NATIVE_POINTS, _NATIVE_SUMMARY, [])
+    assert '<div class="trend-chart corpus-trend">' in html
+    assert "Covered-corpus average score by date: 2026-10-02 70.0; 2026-10-03 70.0" in html
+    assert "Score axis 68 to 72. 2026-10-02 to 2026-10-03." in html
+
+
 def _compact_rollup(count: int) -> dict[str, Any]:
     grades = ["A", "B", "C", "D", "F"]
     members = []
