@@ -31,7 +31,7 @@ from urllib.parse import urlsplit
 import yaml
 
 from .agencies import AgencyConfigError, parse_agencies
-from .mobilitydb import ProposedAgency, render_yaml, slugify
+from .mobilitydb import ProposedAgency, RegistryRenderError, render_yaml, slugify
 
 RT_FIELDS = ("trip_updates", "vehicle_positions", "service_alerts")
 URL_FIELDS = ("static_gtfs_url", *RT_FIELDS)
@@ -335,7 +335,15 @@ def build_submission(
         rt_note=str(entry.get("rt_note") or ""),
         license_note=str(entry.get("license_note") or ""),
     )
-    block = render_yaml([proposal])
+    try:
+        block = render_yaml([proposal])
+    except RegistryRenderError as exc:
+        # The writer refused its own output. Answer the submitter in a sentence
+        # rather than let the refusal surface as a server error.
+        raise AgencyConfigError(
+            "That submission could not be written as a registry entry. "
+            "Please use the manual walkthrough instead."
+        ) from exc
     file_content = existing_yaml.rstrip("\n") + "\n" + block
 
     # Everything submitted is written into the pull request as a code span.

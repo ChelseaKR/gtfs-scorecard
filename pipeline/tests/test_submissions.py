@@ -8,12 +8,14 @@ from pathlib import Path
 import pytest
 import yaml
 
+from scorecard_pipeline import submissions
 from scorecard_pipeline.agencies import (
     AgencyConfigError,
     parse_agencies,
     registry_paths,
 )
 from scorecard_pipeline.config import Agency
+from scorecard_pipeline.mobilitydb import RegistryRenderError
 from scorecard_pipeline.submissions import (
     _FIELD_CHECKS,
     _FIELD_LABELS,
@@ -481,3 +483,14 @@ def test_pull_request_text_carries_submitted_values_only_as_code_spans() -> None
 
 def test_every_accepted_field_has_a_limit_a_label_and_a_checker() -> None:
     assert set(_FIELD_CHECKS) == set(FIELD_MAX_LENGTH) == set(_FIELD_LABELS)
+
+
+def test_a_block_the_writer_refuses_is_answered_as_a_rejected_submission(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def refuse(_proposals: object) -> str:
+        raise RegistryRenderError("does not read back")
+
+    monkeypatch.setattr(submissions, "render_yaml", refuse)
+    with pytest.raises(AgencyConfigError, match="could not be written as a registry entry"):
+        build_submission(FORM, INTAKE_YAML)
