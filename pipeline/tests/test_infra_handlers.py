@@ -201,14 +201,273 @@ def test_submit_rejects_wrong_secret(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_submit_accepts_correct_secret_and_routes_to_pr(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("SUBMIT_SHARED_SECRET", "s3cret")
     monkeypatch.setattr(submit, "_open_pull_request", lambda form: "https://github.com/x/pull/1")
-    event = {
-        "requestContext": {"http": {"method": "POST"}},
-        "headers": {"x-submit-token": "s3cret"},
-        "body": "{}",
-    }
+    monkeypatch.setattr(submit, "_limits_table", FakeLimitsTable)
+    event = _submit_event(SUBMIT_FORM, headers={"x-submit-token": "s3cret"})
     resp = submit.handler(event, None)
     assert resp["statusCode"] == 200
     assert "pull/1" in resp["body"]
+
+
+# --- submit: size cap, strict fields, daily limits ---
+
+SUBMIT_FORM = {"name": "New Transit", "static_gtfs_url": "https://example.org/new.zip"}
+
+
+class FakeConditionalCheckFailed(Exception):
+    """What boto3 raises when a ConditionExpression is false."""
+
+    def __init__(self, code: str = "ConditionalCheckFailedException") -> None:
+        super().__init__(code)
+        self.response = {"Error": {"Code": code}}
+
+
+class FakeLimitsTable:
+    """The rate-limit table's conditional counter, in memory."""
+
+    def __init__(self) -> None:
+        self.counts: dict[str, int] = {}
+        self.expires: dict[str, int] = {}
+
+    def update_item(
+        self,
+        *,
+        Key: dict[str, str],
+        UpdateExpression: str,
+        ConditionExpression: str,
+        ExpressionAttributeNames: dict[str, str],
+        ExpressionAttributeValues: dict[str, int],
+    ) -> None:
+        assert UpdateExpression.startswith("ADD #c :one")
+        assert ConditionExpression == "attribute_not_exists(#c) OR #c < :cap"
+        key = Key["key"]
+        if self.counts.get(key, 0) >= ExpressionAttributeValues[":cap"]:
+            raise FakeConditionalCheckFailed
+        self.counts[key] = self.counts.get(key, 0) + ExpressionAttributeValues[":one"]
+        self.expires.setdefault(key, ExpressionAttributeValues[":exp"])
+
+
+def _submit_event(
+    form: object,
+    *,
+    ip: str | None = "203.0.113.7",
+    headers: dict[str, str] | None = None,
+    body: str | None = None,
+) -> dict[str, Any]:
+    http: dict[str, Any] = {"method": "POST"}
+    if ip is not None:
+        http["sourceIp"] = ip
+    return {
+        "requestContext": {"http": http},
+        "headers": headers or {},
+        "body": json.dumps(form) if body is None else body,
+    }
+
+
+@pytest.fixture
+def submit_env(monkeypatch: pytest.MonkeyPatch) -> tuple[FakeLimitsTable, list[dict[str, str]]]:
+    """A limits table and a recorder in place of the GitHub conversation."""
+    table = FakeLimitsTable()
+    opened: list[dict[str, str]] = []
+
+    def open_pull_request(form: dict[str, str]) -> str:
+        opened.append(form)
+        return f"https://github.com/owner/repo/pull/{len(opened)}"
+
+    monkeypatch.delenv("SUBMIT_SHARED_SECRET", raising=False)
+    monkeypatch.delenv("SUBMIT_CLIENT_DAILY_CAP", raising=False)
+    monkeypatch.delenv("SUBMIT_GLOBAL_DAILY_CAP", raising=False)
+    monkeypatch.setattr(submit, "_limits_table", lambda: table)
+    monkeypatch.setattr(submit, "_open_pull_request", open_pull_request)
+    return table, opened
+
+
+def test_submit_passes_only_validated_fields_to_the_pull_request(
+    submit_env: tuple[FakeLimitsTable, list[dict[str, str]]],
+) -> None:
+    _table, opened = submit_env
+    form = SUBMIT_FORM | {"name": "  New Transit ", "rt_note": ""}
+    resp = submit.handler(_submit_event(form), None)
+    assert resp["statusCode"] == 200
+    assert opened == [SUBMIT_FORM]
+
+
+def test_submit_refuses_an_oversized_body_before_anything_else(
+    submit_env: tuple[FakeLimitsTable, list[dict[str, str]]],
+) -> None:
+    table, opened = submit_env
+    padded = json.dumps(SUBMIT_FORM | {"license_note": "a" * submit.MAX_BODY_BYTES})
+    resp = submit.handler(_submit_event(None, body=padded), None)
+    assert resp["statusCode"] == 413
+    # Multi-byte text is measured in bytes, not characters.
+    wide = json.dumps({"name": "東" * (submit.MAX_BODY_BYTES // 3 + 1)}, ensure_ascii=False)
+    assert len(wide) < submit.MAX_BODY_BYTES
+    assert submit.handler(_submit_event(None, body=wide), None)["statusCode"] == 413
+    assert opened == []
+    assert table.counts == {}
+
+
+def test_submit_reads_a_base64_body_under_the_same_cap(
+    submit_env: tuple[FakeLimitsTable, list[dict[str, str]]],
+) -> None:
+    _table, opened = submit_env
+    encode = submit.base64.b64encode
+    event = _submit_event(None, body=encode(json.dumps(SUBMIT_FORM).encode()).decode())
+    event["isBase64Encoded"] = True
+    assert submit.handler(event, None)["statusCode"] == 200
+    assert opened == [SUBMIT_FORM]
+
+    big = _submit_event(None, body=encode(b"a" * (submit.MAX_BODY_BYTES + 1)).decode())
+    big["isBase64Encoded"] = True
+    assert submit.handler(big, None)["statusCode"] == 413
+    broken = _submit_event(None, body="not base64!!")
+    broken["isBase64Encoded"] = True
+    assert submit.handler(broken, None)["statusCode"] == 400
+    assert len(opened) == 1
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "not json",
+        "[]",
+        "null",
+        "7",
+        '"name"',
+        "[" * 5000,
+        '{"name": "New Transit", "static_gtfs_url": "https://example.org/new.zip", "extra": "x"}',
+        '{"name": ["New Transit"], "static_gtfs_url": "https://example.org/new.zip"}',
+        '{"name": "New Transit", "static_gtfs_url": "ftp://example.org/new.zip"}',
+        '{"name": "New <b>Transit</b>", "static_gtfs_url": "https://example.org/new.zip"}',
+        '{"name": "New Transit"}',
+        "{}",
+    ],
+)
+def test_submit_refuses_a_malformed_submission_without_counting_it(
+    submit_env: tuple[FakeLimitsTable, list[dict[str, str]]], body: str
+) -> None:
+    table, opened = submit_env
+    resp = submit.handler(_submit_event(None, body=body), None)
+    assert resp["statusCode"] == 400
+    assert json.loads(resp["body"])["ok"] is False
+    assert opened == []
+    assert table.counts == {}
+
+
+def test_submit_caps_one_client_per_day(
+    submit_env: tuple[FakeLimitsTable, list[dict[str, str]]],
+) -> None:
+    _table, opened = submit_env
+    statuses = [
+        submit.handler(_submit_event(SUBMIT_FORM, ip="203.0.113.7"), None)["statusCode"]
+        for _ in range(submit.DEFAULT_CLIENT_DAILY_CAP + 2)
+    ]
+    assert statuses == [200] * submit.DEFAULT_CLIENT_DAILY_CAP + [429, 429]
+    assert len(opened) == submit.DEFAULT_CLIENT_DAILY_CAP
+    # Another client still has its own allowance.
+    assert submit.handler(_submit_event(SUBMIT_FORM, ip="198.51.100.9"), None)["statusCode"] == 200
+
+
+def test_submit_caps_all_clients_together_per_day(
+    submit_env: tuple[FakeLimitsTable, list[dict[str, str]]], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    table, opened = submit_env
+    monkeypatch.setenv("SUBMIT_GLOBAL_DAILY_CAP", "4")
+    statuses = [
+        submit.handler(_submit_event(SUBMIT_FORM, ip=f"203.0.113.{n}"), None)["statusCode"]
+        for n in range(1, 8)
+    ]
+    assert statuses == [200, 200, 200, 200, 429, 429, 429]
+    assert len(opened) == 4
+    (global_key,) = [key for key in table.counts if key.startswith("submit#all#")]
+    assert table.counts[global_key] == 4
+
+
+def test_a_client_over_its_own_cap_does_not_use_up_the_global_one(
+    submit_env: tuple[FakeLimitsTable, list[dict[str, str]]],
+) -> None:
+    table, _opened = submit_env
+    for _ in range(submit.DEFAULT_CLIENT_DAILY_CAP + 10):
+        submit.handler(_submit_event(SUBMIT_FORM, ip="203.0.113.7"), None)
+    (global_key,) = [key for key in table.counts if key.startswith("submit#all#")]
+    assert table.counts[global_key] == submit.DEFAULT_CLIENT_DAILY_CAP
+
+
+def test_requests_with_no_source_address_share_one_allowance(
+    submit_env: tuple[FakeLimitsTable, list[dict[str, str]]],
+) -> None:
+    statuses = [
+        submit.handler(_submit_event(SUBMIT_FORM, ip=None), None)["statusCode"]
+        for _ in range(submit.DEFAULT_CLIENT_DAILY_CAP + 1)
+    ]
+    assert statuses == [200] * submit.DEFAULT_CLIENT_DAILY_CAP + [429]
+
+
+def test_submit_limit_keys_hold_no_address_and_expire(
+    submit_env: tuple[FakeLimitsTable, list[dict[str, str]]],
+) -> None:
+    table, _opened = submit_env
+    before = int(time.time())
+    submit.handler(_submit_event(SUBMIT_FORM, ip="203.0.113.7"), None)
+    assert len(table.counts) == 2
+    for key, expires_at in table.expires.items():
+        assert key.startswith(("submit#client#", "submit#all#"))
+        assert "203.0.113.7" not in key
+        assert before < expires_at <= before + 2 * 86400
+    day_one = submit._client_key(_submit_event(SUBMIT_FORM), "2026-11-17")
+    day_two = submit._client_key(_submit_event(SUBMIT_FORM), "2026-11-18")
+    assert day_one.rsplit("#", 1)[1] != day_two.rsplit("#", 1)[1]
+
+
+def test_submit_is_refused_when_the_limits_cannot_be_checked(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    opened: list[dict[str, str]] = []
+
+    def open_pull_request(form: dict[str, str]) -> str:
+        opened.append(form)
+        return "https://github.com/owner/repo/pull/1"
+
+    monkeypatch.delenv("SUBMIT_SHARED_SECRET", raising=False)
+    monkeypatch.setattr(submit, "_open_pull_request", open_pull_request)
+
+    # No table configured at all.
+    monkeypatch.delenv("RATELIMIT_TABLE", raising=False)
+    resp = submit.handler(_submit_event(SUBMIT_FORM), None)
+    assert resp["statusCode"] == 503
+    assert "paused" in json.loads(resp["body"])["error"]
+
+    # A table that answers with an error other than "cap reached".
+    class Throttled:
+        def update_item(self, **_kwargs: Any) -> None:
+            raise FakeConditionalCheckFailed("ProvisionedThroughputExceededException")
+
+    monkeypatch.setattr(submit, "_limits_table", Throttled)
+    assert submit.handler(_submit_event(SUBMIT_FORM), None)["statusCode"] == 503
+
+    class Unreachable:
+        def update_item(self, **_kwargs: Any) -> None:
+            raise OSError("network unreachable")
+
+    monkeypatch.setattr(submit, "_limits_table", Unreachable)
+    assert submit.handler(_submit_event(SUBMIT_FORM), None)["statusCode"] == 503
+    assert opened == []
+
+
+@pytest.mark.parametrize("value", ["", "0", "-3", "many", "2.5"])
+def test_a_cap_that_is_not_a_positive_whole_number_falls_back_to_the_default(
+    monkeypatch: pytest.MonkeyPatch, value: str
+) -> None:
+    monkeypatch.setenv("SUBMIT_CLIENT_DAILY_CAP", value)
+    assert submit._cap("SUBMIT_CLIENT_DAILY_CAP", 3) == 3
+
+
+def test_submit_module_grants_only_the_counter_update_and_sets_the_limits() -> None:
+    terraform = (REPO / "infra/submit/main.tf").read_text(encoding="utf-8")
+    assert 'Action   = ["dynamodb:UpdateItem"]' in terraform
+    assert "Resource = data.aws_dynamodb_table.ratelimit.arn" in terraform
+    for name in ("RATELIMIT_TABLE", "SUBMIT_CLIENT_DAILY_CAP", "SUBMIT_GLOBAL_DAILY_CAP"):
+        assert name in terraform
+    assert terraform.count("dynamodb:") == 1
 
 
 def test_submit_tracked_ids_reads_only_valid_published_ids(
@@ -286,6 +545,20 @@ def test_submit_pull_request_updates_only_the_intake_shard(
         ("GET", "/repos/owner/repo/contents/registry/intake.yaml?ref=main"),
         ("PUT", "/repos/owner/repo/contents/registry/intake.yaml"),
     ]
+    # Every request path is built from configuration alone. What was submitted
+    # travels only inside JSON bodies, and the one name derived from it (the
+    # branch) is a slug.
+    assert [call[:2] for call in calls] == [
+        ("GET", "/repos/owner/repo/contents/registry/intake.yaml?ref=main"),
+        ("GET", "/repos/owner/repo/git/ref/heads/main"),
+        ("POST", "/repos/owner/repo/git/refs"),
+        ("PUT", "/repos/owner/repo/contents/registry/intake.yaml"),
+        ("POST", "/repos/owner/repo/pulls"),
+    ]
+    payloads = {path: payload for _method, path, payload in calls if payload}
+    assert payloads["/repos/owner/repo/git/refs"]["ref"] == "refs/heads/submit-new-transit"
+    assert payloads["/repos/owner/repo/pulls"]["head"] == "submit-new-transit"
+    assert payloads["/repos/owner/repo/pulls"]["base"] == "main"
 
 
 # --- instant-score: validate_score_request ---

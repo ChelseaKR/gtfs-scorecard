@@ -81,6 +81,38 @@ variable "submit_shared_secret" {
   sensitive   = true
 }
 
+variable "ratelimit_table" {
+  description = "Shared rate-limit table (predates this module, like infra/alerts and infra/instant-score). The handler counts each day's submissions in it under its own key prefix and refuses submissions when it cannot."
+  type        = string
+  default     = "gtfs-scorecard-ratelimit"
+}
+
+variable "client_daily_cap" {
+  description = "Submissions one client may make per UTC day. Each accepted one opens a pull request."
+  type        = number
+  default     = 3
+
+  validation {
+    condition     = var.client_daily_cap >= 1 && floor(var.client_daily_cap) == var.client_daily_cap
+    error_message = "client_daily_cap must be a whole number of at least 1."
+  }
+}
+
+variable "global_daily_cap" {
+  description = "Submissions accepted from all clients together per UTC day."
+  type        = number
+  default     = 20
+
+  validation {
+    condition     = var.global_daily_cap >= 1 && floor(var.global_daily_cap) == var.global_daily_cap
+    error_message = "global_daily_cap must be a whole number of at least 1."
+  }
+}
+
+data "aws_dynamodb_table" "ratelimit" {
+  name = var.ratelimit_table
+}
+
 data "archive_file" "submit" {
   type        = "zip"
   source_dir  = "${path.module}/build"
@@ -104,6 +136,23 @@ resource "aws_iam_role_policy_attachment" "logs" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+# The daily limits are one conditional counter update per request, nothing else.
+resource "aws_iam_role_policy" "submit" {
+  name = "${var.project}-submit"
+  role = aws_iam_role.submit.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "RateLimit"
+        Effect   = "Allow"
+        Action   = ["dynamodb:UpdateItem"]
+        Resource = data.aws_dynamodb_table.ratelimit.arn
+      }
+    ]
+  })
+}
+
 resource "aws_lambda_function" "submit" {
   function_name    = "${var.project}-submit"
   role             = aws_iam_role.submit.arn
@@ -116,11 +165,14 @@ resource "aws_lambda_function" "submit" {
 
   environment {
     variables = {
-      GITHUB_REPO          = var.github_repo
-      GITHUB_TOKEN         = var.github_token
-      ALLOW_ORIGIN         = var.allow_origin
-      BASE_BRANCH          = "main"
-      SUBMIT_SHARED_SECRET = var.submit_shared_secret
+      GITHUB_REPO             = var.github_repo
+      GITHUB_TOKEN            = var.github_token
+      ALLOW_ORIGIN            = var.allow_origin
+      BASE_BRANCH             = "main"
+      SUBMIT_SHARED_SECRET    = var.submit_shared_secret
+      RATELIMIT_TABLE         = var.ratelimit_table
+      SUBMIT_CLIENT_DAILY_CAP = tostring(var.client_daily_cap)
+      SUBMIT_GLOBAL_DAILY_CAP = tostring(var.global_daily_cap)
     }
   }
 }
@@ -150,9 +202,12 @@ resource "aws_apigatewayv2_stage" "default" {
   name        = "$default"
   auto_deploy = true
 
+  # A form that sees a few submissions a week. The gateway limit only has to
+  # keep a burst from reaching the function; the daily limits in handler.py
+  # decide how many pull requests can be opened.
   default_route_settings {
-    throttling_rate_limit  = 5
-    throttling_burst_limit = 10
+    throttling_rate_limit  = 1
+    throttling_burst_limit = 5
   }
 }
 
