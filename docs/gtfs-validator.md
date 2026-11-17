@@ -1,9 +1,9 @@
 ---
 date_published: "2026-10-22"
-date_modified: "2026-10-22"
+date_modified: "2026-11-17"
 ---
 
-# GTFS validator and the scorecard grade
+# GTFS validator: check a feed and read the results
 
 If you look after a transit agency's GTFS feed, you may be searching for a GTFS feed validator. The canonical one is the [MobilityData GTFS validator](https://gtfs-validator.mobilitydata.org/). The scorecard does not replace it. It scores on top of that validator rather than re-validating feeds.
 

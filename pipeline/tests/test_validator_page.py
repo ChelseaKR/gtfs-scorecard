@@ -245,7 +245,7 @@ def test_title_and_description_are_unique_among_all_pages(
 
 def test_a_title_over_60_characters_is_caught() -> None:
     high = _SEO["title_length"][1]
-    real = f"{_title('<title>GTFS validator and the scorecard grade — GTFS Scorecard</title>')}"
+    real = f"{_title('<title>GTFS validator: check a feed and read the results</title>')}"
     assert len(real) <= high
     sabotaged = real + " and a long tail that overruns the limit"
     assert len(sabotaged) > high  # the sabotage applied

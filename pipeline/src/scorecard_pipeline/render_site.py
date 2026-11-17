@@ -6706,6 +6706,31 @@ def _rollup_description(name: str, agency_count: int, needs_attention: int) -> s
     return f"{name}: GTFS grades for {agency_count} {noun}, {attention}, plus the fixes they share."
 
 
+def _all_rollup_search_copy(agency_count: int, needs_attention: int) -> tuple[str, str]:
+    """(title, description) for /program/all/, the one list of every tracked feed.
+
+    ADR 0081: people reach this page searching for a list of GTFS feeds, so
+    the title says "GTFS feed list" first. Both counts are the ones the page
+    shows, from the same rollup payload, so they change with the corpus and
+    are never written by hand. State and country rollups keep
+    ``_rollup_description``.
+    """
+    noun = "transit feed" if agency_count == 1 else "transit feeds"
+    title = f"GTFS feed list: quality grades for {agency_count:,} {noun}"
+    if needs_attention == 0:
+        attention = "none need attention"
+    elif needs_attention == 1:
+        attention = "1 needs attention"
+    else:
+        attention = f"{needs_attention:,} need attention"
+    listed = "transit GTFS feed" if agency_count == 1 else "transit GTFS feeds"
+    description = (
+        f"All {agency_count:,} tracked {listed} in one list, each with its quality grade; "
+        f"{attention}, plus the fixes they share."
+    )
+    return title, description
+
+
 # A rollup with more members than this renders its member lists compactly: one
 # link per agency under a heading per grade, with no per-row heading, grade chip,
 # snapshot date or #finding= handoff link (query form until ADR 0074). Those extras multiplied by every
@@ -6803,6 +6828,12 @@ def _render_rollup(
         _whole_number(rollup.get("agency_count")),
         _whole_number(rollup.get("needs_attention")),
     )
+    title = f"{rname}: GTFS quality scores — GTFS Scorecard"
+    if rid == "all":
+        title, desc = _all_rollup_search_copy(
+            _whole_number(rollup.get("agency_count")),
+            _whole_number(rollup.get("needs_attention")),
+        )
     compact = _is_large_rollup(rollup)
     if compact:
         members_heading = "Feed scorecards by grade: attention first, then alphabetical"
@@ -6891,7 +6922,7 @@ def _render_rollup(
     {_program_offer_section(offer)}"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
-        title=f"{rname}: GTFS quality scores — GTFS Scorecard",
+        title=title,
         description=desc,
         canonical=canonical,
         body=body,
@@ -7759,8 +7790,8 @@ def _render_crosswalk_page(document: _AuthoredMarkdown) -> str:
 
 #: Meta description for /gtfs-validator/ (50-155 characters by site-seo.json).
 VALIDATOR_PAGE_DESCRIPTION = (
-    "How the GTFS Scorecard works with the MobilityData GTFS validator: how to check "
-    "a feed, what the grade adds to validator notices, and its limits."
+    "How the MobilityData GTFS validator checks a feed, what its notices mean in plain "
+    "English, and what the scorecard grade adds."
 )
 
 
@@ -7775,8 +7806,12 @@ def _render_validator_page(document: _AuthoredMarkdown) -> str:
     the same rule the crosswalk follows, never the render clock."""
     canonical = f"{BASE_URL}/gtfs-validator/"
     body_html, title_text = _md_to_html(document.body)
-    title_text = title_text or "GTFS validator and the scorecard grade"
+    title_text = title_text or "GTFS validator: check a feed and read the results"
     desc = VALIDATOR_PAGE_DESCRIPTION
+    # ADR 0081: this is the one page meant to answer "gtfs validator", so its
+    # title is the document's H1 and drops the site name when both will not fit.
+    branded = f"{title_text} — GTFS Scorecard"
+    page_title = branded if len(branded) <= _TITLE_MAX else title_text
     body_html = _insert_authored_dates(body_html, document)
     crumb = _breadcrumb([("Home", "/"), ("Tools", "/tools/"), ("GTFS validator", None)])
     body = f"""    {crumb}
@@ -7789,7 +7824,7 @@ def _render_validator_page(document: _AuthoredMarkdown) -> str:
     jsonld["datePublished"] = document.date_published
     jsonld["dateModified"] = document.date_modified
     return _page(
-        title=f"{title_text} — GTFS Scorecard",
+        title=page_title,
         description=desc,
         canonical=canonical,
         body=body,
@@ -8583,7 +8618,8 @@ def _render_guide() -> str:
     <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed.
     It lists your stops, routes, and schedule. This tool is scheduled to download that feed once a day,
     run the canonical validator used across the GTFS ecosystem, and turn the result into a grade and a
-    short list of fixes. The <a href="/status/">status page</a> shows when that work actually completed.
+    short list of fixes. The <a href="/gtfs-validator/">GTFS validator guide</a> explains what that
+    validator checks and what the grade adds. The <a href="/status/">status page</a> shows when that work actually completed.
     It does not inspect your vehicles or judge your service, only the data file.
     New to the terms? Jump to the <a href="#glossary">glossary</a>.</p>
     <p>The grade blends four things: <strong>Correctness</strong> (does the data follow the rules),
@@ -9212,7 +9248,8 @@ def _render_focus_page(
     <p class="page-lede">MobilityData's canonical validator answers whether a feed
     follows the specification. A feed can answer yes and still strand a rider.
     These lenses ask the second question, about the places riders actually reach
-    an agency through.</p>
+    an agency through. For the first question, see the
+    <a href="/gtfs-validator/">GTFS validator guide</a>.</p>
     <ul class="findings">{area_items(beyond_areas)}</ul>
     <h2 class="section-title">Optional GTFS features</h2>
     <ul class="findings">{area_items(universal_areas)}</ul>
@@ -11192,13 +11229,28 @@ def _render_ntd_state_page(state: str, rows: list[StateFeedRow]) -> str:
         about={"@type": "Thing", "name": "GTFS shapes.txt NTD requirement"},
     )
     return _page(
-        title=f"{state} NTD shapes.txt readiness",
+        title=_ntd_state_title(state),
         description=description,
         canonical=canonical,
         wide=True,
         body=body,
         jsonld=jsonld,
     )
+
+
+def _ntd_state_title(state: str) -> str:
+    """The NTD state page title: what an agency searching for it types first.
+
+    ADR 0081: "<state> transit GTFS for NTD" names the search, and the tail
+    names the two checks the page lists. A state name too long for the full
+    tail takes the shorter one; the page never claims a check it does not run.
+    """
+    for tail in (": shapes.txt and agency_id", ": shapes.txt check"):
+        title = f"{state} transit GTFS for NTD{tail}"
+        if len(title) <= _TITLE_MAX:
+            return title
+    stem = " transit GTFS for NTD"
+    return f"{_ellipsize_words(state, _TITLE_MAX - len(stem))}{stem}"
 
 
 def _write_ntd_state_pages(
