@@ -37,12 +37,12 @@ completed before this report claims assistive-technology verification.
 | 2.1.2 No Keyboard Trap | A | Supports | Menus/panels close on Escape and return focus. |
 | 2.2.1 / 2.2.2 Timing, Moving Content | A | Supports | No time limits; animation respects `prefers-reduced-motion`. |
 | 2.3.1 Three Flashes | A | Supports | No flashing content. |
-| 2.4.1 Bypass Blocks | A | Supports | "Skip to content" link plus landmark regions on every page. |
+| 2.4.1 Bypass Blocks | A | Supports | "Skip to main content" link plus landmark regions on every page. |
 | 2.4.2 Page Titled | A | Supports | Unique, descriptive `<title>` per page. |
 | 2.4.3 Focus Order | A | Supports | Logical focus order; drop panels follow their trigger. |
 | 2.4.4 Link Purpose (In Context) | A | Supports | Self-describing link text or `aria-label`; external links flagged. |
 | 2.5.1–2.5.4 Pointer / Motion | A | Supports | No path-based or motion-actuated gestures required. |
-| 3.1.1 Language of Page | A | Supports | `<html lang="en">`. |
+| 3.1.1 Language of Page | A | Supports | `<html lang="en">`; `<html lang="es">` on `/es/`. |
 | 3.2.1 / 3.2.2 On Focus / On Input | A | Supports | No context change on focus or input. |
 | 3.3.1 Error Identification | A | Supports | Forms identify errors in text, set aria-invalid, and move focus to the offending field. |
 | 3.3.2 Labels or Instructions | A | Supports | Form fields have visible labels and instructions. |
@@ -59,7 +59,7 @@ completed before this report claims assistive-technology verification.
 | 2.4.5 Multiple Ways | AA | Supports | Primary nav, breadcrumbs, search, agency index, map, and footer links. |
 | 2.4.6 Headings and Labels | AA | Supports | Descriptive headings and labels throughout. |
 | 2.4.7 Focus Visible | AA | Supports | `:focus-visible` outlines >= 3px with >= 3:1 contrast (also meets 2.4.13 AAA). |
-| 3.1.2 Language of Parts | AA | Supports | Content is English; no foreign-language passages. |
+| 3.1.2 Language of Parts | AA | Supports | `/es/` is Spanish, and the English on it (the link to the English site, the footer's language link, the theme control) carries `lang="en"`. Every other page is English. |
 | 3.2.3 Consistent Navigation | AA | Supports | The wayfinding nav is identical across app and prerendered pages. |
 | 3.2.4 Consistent Identification | AA | Supports | Components reused with consistent names/icons. |
 | 3.3.3 Error Suggestion | AA | Supports | Forms suggest the correction (e.g. the URL must start with http(s)). |
@@ -119,7 +119,7 @@ completed before this report claims assistive-technology verification.
 | 302.4 Without Hearing | Not Applicable | No audio. |
 | 302.5 With Limited Hearing | Not Applicable | No audio. |
 | 302.6 Without Speech | Not Applicable | No speech input required. |
-| 302.7 With Limited Manipulation | Supports | Keyboard operable; >= 44px targets (one documented map exception). |
+| 302.7 With Limited Manipulation | Supports | Keyboard operable. Buttons, chips, selects, text fields and nav and footer links are >= 44px (one documented map exception). Text links that stand alone in a list or table row are 16 to 20px tall, and the `/es/` agency lookup uses browser-default controls 21px tall; both meet the 24px minimum of WCAG 2.2 2.5.8 by size or spacing. |
 | 302.8 With Limited Reach and Strength | Supports | No timed or force-based interactions. |
 | 302.9 Minimize Photosensitive Seizure | Supports | No flashing (2.3.1). |
 | 302.10 With Limited Cognition | Supports | Plain-language summaries, glossary, consistent navigation. |
@@ -147,6 +147,9 @@ Not Applicable. The product is web content and software; it ships no hardware.
 
 ## Revision history
 
+- 2026-11-17 — Corrected four remarks after a keyboard, zoom and contrast sweep
+  of the live site: the skip link's label (2.4.1), the page language and the
+  language of parts on `/es/` (3.1.1, 3.1.2), and target sizes (302.7).
 - 2026-07-13 — Corrected the evaluation-method description, recorded the 200%
   text-resize check, and kept screen-reader testing explicitly pending.
 - 2026-06-22 — Initial 508-edition report. Companion to `docs/accessibility.md`
