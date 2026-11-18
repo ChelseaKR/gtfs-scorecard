@@ -30,6 +30,7 @@
   },
   "urls": [
     {"url": "http://127.0.0.1:8080/", "wait": 2500},
+    "http://127.0.0.1:8080/404.html",
     {"url": "http://127.0.0.1:8080/agencies/", "timeout": 120000},
     "http://127.0.0.1:8080/agency/unitrans/",
     "http://127.0.0.1:8080/agency/yolobus/",

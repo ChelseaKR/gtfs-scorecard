@@ -639,10 +639,19 @@ def _config_path_lists(
 
 
 def _validate_path_pattern(pattern: str, key: str) -> None:
+    """A pattern names a folder page (`/bundle/setup/`, `/agency/*/brief/`) or
+    one HTML file at a fixed path (`/404.html`).
+
+    The file form exists for the page the host serves at a missing address,
+    which is a file at the site root and has no folder form. It is a whole
+    path, never a wildcard file name: `*` still only stands for one complete
+    path segment."""
     _public_path(pattern, key, allow_fragment=False)
     parts = pattern.strip("/").split("/")
+    names_a_folder = pattern.endswith("/")
+    names_an_html_file = not names_a_folder and parts[-1].endswith(".html")
     if (
-        not pattern.endswith("/")
+        not (names_a_folder or names_an_html_file)
         or any(part != "*" and "*" in part for part in parts)
         or any(char in pattern for char in "[]?")
     ):

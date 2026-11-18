@@ -17,6 +17,70 @@ ORIGIN = "https://example.test"
 # one destination host, nothing else naming a telemetry host.
 MEASURE_HOST = "https://measure.example.test"
 MEASURE_TAG = '<script src="/src/measure.js" defer></script>'
+
+
+def _with_not_found_page(tmp_path: Path, *, noindex: bool) -> tuple[Path, Path]:
+    """The valid fixture plus a root-level 404.html the config names as noindex."""
+    site, config = _write_fixture(tmp_path)
+    _write_text(
+        site,
+        "404.html",
+        _page(
+            "/404.html",
+            "Page not found",
+            "Nothing is published at this address.",
+            body='<a href="/">Home</a>',
+            noindex=noindex,
+        ),
+    )
+    raw = json.loads(config.read_text(encoding="utf-8"))
+    raw["noindex_path_patterns"].append("/404.html")
+    config.write_text(json.dumps(raw), encoding="utf-8")
+    return site, config
+
+
+def test_a_noindex_pattern_can_name_one_html_file_at_the_site_root(tmp_path: Path) -> None:
+    """The host's missing-address page is a file, `/404.html`, not a folder.
+
+    A pattern had to end in `/`, so that page could not be listed as noindex,
+    and an unlisted page carrying a robots meta is itself a finding.
+    """
+    site, config = _with_not_found_page(tmp_path, noindex=True)
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    payload = json.loads(report.read_text(encoding="utf-8"))
+    assert payload["summary"]["noindex_pages"] == 3
+    assert payload["summary"]["indexable_pages"] == 5
+
+
+def test_a_listed_html_file_that_is_indexable_is_a_finding(tmp_path: Path) -> None:
+    site, config = _with_not_found_page(tmp_path, noindex=False)
+    report = tmp_path / "report.json"
+
+    assert _run(site, config, report).returncode == 1
+    assert "noindex.missing" in _codes(report)
+
+
+@pytest.mark.parametrize(
+    "pattern",
+    ["/404", "/404.htm", "/*.html", "/drafts/*.html", "/notes.txt", "/404.html/extra"],
+)
+def test_a_file_pattern_is_one_html_file_and_nothing_looser(tmp_path: Path, pattern: str) -> None:
+    """The one new form is a fixed `.html` path. No wildcard file names."""
+    site, config = _write_fixture(tmp_path)
+    raw = json.loads(config.read_text(encoding="utf-8"))
+    raw["noindex_path_patterns"].append(pattern)
+    config.write_text(json.dumps(raw), encoding="utf-8")
+
+    result = _run(site, config, tmp_path / "report.json")
+
+    assert result.returncode == 2
+    assert "invalid path pattern" in (result.stdout + result.stderr)
+
+
 # ADR 0056: every measured page carries the footer opt-out control.
 OPT_OUT = "<span data-analytics-toggle>Opt out of analytics</span>"
 MEASURE_SHIM = f'/* fixture shim */\nvar HOST = "{MEASURE_HOST}";\n'
