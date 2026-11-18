@@ -2731,8 +2731,11 @@ main:focus { outline: none; }
   text-transform: uppercase; color: var(--amber);
   display: flex; align-items: center; gap: .55rem; margin: 0 0 1rem;
 }
+/* The status dot blinks twice as the board arrives, then holds steady. It has
+   no pause control, so it must not blink for more than five seconds on its
+   own (WCAG 2.2.2); tests/test_motion_stops.py holds that for every animation. */
 .board-kicker .blip { width: 8px; height: 8px; border-radius: 50%; background: var(--amber);
-  box-shadow: 0 0 9px var(--amber); animation: blip 2s steps(1) infinite; }
+  box-shadow: 0 0 9px var(--amber); animation: blip 2s steps(1) 2; }
 @keyframes blip { 50% { opacity: .25; } }
 .board-title { font-family: var(--font-display); font-weight: 900;
   font-size: clamp(2rem, 5.5vw, 3.4rem); line-height: .98; letter-spacing: -.02em; margin: 0 0 .2rem; }
