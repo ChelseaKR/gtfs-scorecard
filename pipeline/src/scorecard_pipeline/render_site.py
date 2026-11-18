@@ -7857,7 +7857,7 @@ def _render_spanish_rider_page() -> str:
       <li><a href="/">GTFS Scorecard</a></li>
       <li><span aria-current="page">Espa&ntilde;ol</span></li>
     </ol></nav>
-    <p><a href="/" hreflang="en">Read this site in English</a></p>
+    <p><a href="/" hreflang="en" lang="en">Read this site in English</a></p>
     <h1 class="page-title">{esc(text["spanish_page_title"])}</h1>
     <p class="page-lede">{esc(text["spanish_page_lede"])}</p>
 

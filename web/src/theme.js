@@ -68,6 +68,11 @@
   /** Build the labeled menu control and wire it up. @param {HTMLElement} host */
   function mount(host) {
     host.classList.add("theme-control");
+    // The labels below are English on every page. On a page in another
+    // language the control says so, and a screen reader switches voice for it
+    // instead of reading English by the rules of that language (WCAG 3.1.2).
+    var pageLang = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
+    if (pageLang.slice(0, 2) !== "en") host.setAttribute("lang", "en");
     var current = saved();
 
     var btn = document.createElement("button");
