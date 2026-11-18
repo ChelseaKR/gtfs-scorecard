@@ -35,6 +35,31 @@ function setStatus(message, kind) {
   status.className = `form-status form-status-${kind}`;
 }
 
+/** Mark one field as the field in error and tie the status message to it.
+ *  With the message named in aria-describedby, a screen reader reads it
+ *  together with the field once focus lands there, instead of leaving it in
+ *  a live region that the move of focus can talk over.
+ *  @param {HTMLElement | null | undefined} field */
+function flagInvalid(field) {
+  if (!field) return;
+  field.setAttribute("aria-invalid", "true");
+  const ids = (field.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+  if (!ids.includes(status.id)) ids.push(status.id);
+  field.setAttribute("aria-describedby", ids.join(" "));
+}
+
+/** Undo flagInvalid on every field, before the form is checked again. */
+function clearInvalid() {
+  for (const field of form.querySelectorAll("[aria-invalid]")) {
+    field.removeAttribute("aria-invalid");
+    const ids = (field.getAttribute("aria-describedby") || "")
+      .split(/\s+/)
+      .filter((id) => id && id !== status.id);
+    if (ids.length) field.setAttribute("aria-describedby", ids.join(" "));
+    else field.removeAttribute("aria-describedby");
+  }
+}
+
 /** Only return http(s) URLs; "#" otherwise. @param {string} url */
 function safeUrl(url) {
   try {
@@ -79,11 +104,7 @@ form.addEventListener("submit", async (event) => {
   const typedFields = /** @type {HTMLInputElement[]} */ (
     Array.from(form.querySelectorAll('input[type="url"], input[type="email"]'))
   );
-  nameField?.removeAttribute("aria-invalid");
-  countryField?.removeAttribute("aria-invalid");
-  subdivisionCodeField?.removeAttribute("aria-invalid");
-  subdivisionNameField?.removeAttribute("aria-invalid");
-  for (const field of typedFields) field.removeAttribute("aria-invalid");
+  clearInvalid();
   // A name of only spaces is empty: the submission service strips it and
   // rejects the form, so catch it here and point at the field instead.
   data.name = String(data.name || "").trim();
@@ -91,7 +112,7 @@ form.addEventListener("submit", async (event) => {
   if (!data.name || !data.static_gtfs_url) {
     setStatus("Please give at least an agency name and a GTFS Schedule URL.", "err");
     const missing = data.name ? urlField : nameField;
-    missing?.setAttribute("aria-invalid", "true");
+    flagInvalid(missing);
     missing?.focus();
     return;
   }
@@ -102,20 +123,20 @@ form.addEventListener("submit", async (event) => {
       const example = field.type === "email" ? "name@agency.gov" : "https://example.gov/feed";
       const kind = field.type === "email" ? "email address" : "URL";
       setStatus(`Enter a complete ${kind}, like ${example}.`, "err");
-      field.setAttribute("aria-invalid", "true");
+      flagInvalid(field);
       field.focus();
       return;
     }
   }
   if (!data.country) {
     setStatus("Please give the agency's two-letter country code.", "err");
-    countryField?.setAttribute("aria-invalid", "true");
+    flagInvalid(countryField);
     countryField?.focus();
     return;
   }
   if (countryField && !countryField.validity.valid) {
     setStatus("Enter a two-letter ISO country code, like US or CA.", "err");
-    countryField.setAttribute("aria-invalid", "true");
+    flagInvalid(countryField);
     countryField.focus();
     return;
   }
@@ -128,7 +149,7 @@ form.addEventListener("submit", async (event) => {
       "err"
     );
     const missing = subdivisionCode ? subdivisionNameField : subdivisionCodeField;
-    missing?.setAttribute("aria-invalid", "true");
+    flagInvalid(missing);
     missing?.focus();
     return;
   }

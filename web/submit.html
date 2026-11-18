@@ -77,8 +77,9 @@
       <p class="field">
         <label for="static_gtfs_url">GTFS Schedule URL <span class="req">(required)</span></label>
         <input id="static_gtfs_url" name="static_gtfs_url" type="url" required
+          aria-describedby="static-gtfs-url-hint"
           placeholder="https://.../google_transit.zip">
-        <span class="hint">A direct link to your GTFS .zip. If you are not sure, your
+        <span class="hint" id="static-gtfs-url-hint">A direct link to your GTFS .zip. If you are not sure, your
         scheduling vendor or your page on the Mobility Database has it.</span>
       </p>
       <fieldset class="field">
@@ -86,20 +87,21 @@
         <label for="country">Country code</label>
         <input id="country" name="country" type="text" required maxlength="2"
           pattern="[A-Za-z]{2}" autocomplete="off" autocapitalize="characters"
-          spellcheck="false" placeholder="e.g. US or CA">
-        <span class="hint">Use the two-letter ISO country code. This identifies the feed's
+          spellcheck="false" aria-describedby="country-hint" placeholder="e.g. US or CA">
+        <span class="hint" id="country-hint">Use the two-letter ISO country code. This identifies the feed's
         primary catalog location; it does not limit a service that crosses a border.</span>
         <label for="subdivision_code">Subdivision code</label>
         <input id="subdivision_code" name="subdivision_code" type="text" maxlength="7"
-          pattern="[A-Za-z]{2}-[A-Za-z0-9]{1,3}" placeholder="e.g. CA-ON">
+          pattern="[A-Za-z]{2}-[A-Za-z0-9]{1,3}" aria-describedby="subdivision-hint"
+          placeholder="e.g. CA-ON">
         <label for="subdivision_name">Subdivision name</label>
         <input id="subdivision_name" name="subdivision_name" type="text"
-          placeholder="e.g. Ontario">
-        <span class="hint">Subdivision is optional for national, cross-border, city-state, or
+          aria-describedby="subdivision-hint" placeholder="e.g. Ontario">
+        <span class="hint" id="subdivision-hint">Subdivision is optional for national, cross-border, city-state, or
         genuinely unlocated feeds. If you provide it, include both the ISO 3166-2 code and the
         local practitioner-facing name.</span>
       </fieldset>
-      <fieldset class="field">
+      <fieldset class="field" aria-describedby="realtime-hint">
         <legend><abbr title="GTFS Realtime">GTFS-Realtime</abbr> URLs (optional)</legend>
         <label for="trip_updates">Trip updates</label>
         <input id="trip_updates" name="trip_updates" type="url" placeholder="https://.../TripUpdates.pb">
@@ -107,7 +109,7 @@
         <input id="vehicle_positions" name="vehicle_positions" type="url" placeholder="https://.../VehiclePositions.pb">
         <label for="service_alerts">Service alerts</label>
         <input id="service_alerts" name="service_alerts" type="url" placeholder="https://.../ServiceAlerts.pb">
-        <span class="hint">Leave these blank if you do not publish realtime. That is not
+        <span class="hint" id="realtime-hint">Leave these blank if you do not publish realtime. That is not
         counted against your grade.</span>
       </fieldset>
       <p class="field">

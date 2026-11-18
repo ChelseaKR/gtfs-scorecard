@@ -70,16 +70,16 @@
       <p class="field">
         <label for="email">Your email <span class="req">(required)</span></label>
         <input id="email" name="email" type="email" required autocomplete="email"
-          placeholder="you@agency.gov">
-        <span class="hint">We send a confirmation link first. Nothing is sent until
+          aria-describedby="email-hint" placeholder="you@agency.gov">
+        <span class="hint" id="email-hint">We send a confirmation link first. Nothing is sent until
         you click it.</span>
       </p>
       <p class="field">
         <label for="agency">Which agency?</label>
-        <select id="agency" name="agency">
+        <select id="agency" name="agency" aria-describedby="agency-hint">
           <option value="">All agencies</option>
         </select>
-        <span class="hint">Pick one, or watch every tracked agency (useful if you
+        <span class="hint" id="agency-hint">Pick one, or watch every tracked agency (useful if you
         support a group of them).</span>
       </p>
       <fieldset class="field">

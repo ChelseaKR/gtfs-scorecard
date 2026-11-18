@@ -172,6 +172,45 @@ def test_agency_submission_focuses_the_first_invalid_field(page: Page, base_url:
     assert page.evaluate("() => document.activeElement.id") == "static_gtfs_url"
 
 
+def test_submission_error_is_read_with_the_field_until_it_is_fixed(
+    page: Page, base_url: str
+) -> None:
+    """The message in the status line is the invalid field's description.
+
+    Focus moves to the field when a check fails. Without the tie, the message
+    sits in a live region at the foot of the form, where the announcement of
+    the focus move can talk over it.
+    """
+    page.goto(f"{base_url}/submit.html")
+    page.get_by_role("button", name="Submit my agency").click()
+    name = page.locator("#name")
+    expect(name).to_have_attribute("aria-describedby", "form-status")
+    expect(name).to_have_accessible_description(
+        "Please give at least an agency name and a GTFS Schedule URL."
+    )
+
+    name.fill("Example Transit")
+    page.locator("#static_gtfs_url").fill("not a URL")
+    page.get_by_role("button", name="Submit my agency").click()
+    # The corrected field lets go of the message; the next one picks it up,
+    # after its own hint.
+    assert name.get_attribute("aria-describedby") is None
+    url = page.locator("#static_gtfs_url")
+    expect(url).to_have_attribute("aria-describedby", "static-gtfs-url-hint form-status")
+    expect(url).to_have_accessible_description(re.compile(r"direct link.*Enter a complete URL"))
+
+
+def test_submission_hints_are_read_with_their_fields(page: Page, base_url: str) -> None:
+    page.goto(f"{base_url}/submit.html")
+    expect(page.locator("#country")).to_have_accessible_description(
+        re.compile(r"^Use the two-letter ISO country code")
+    )
+    for field in ("#subdivision_code", "#subdivision_name"):
+        expect(page.locator(field)).to_have_accessible_description(
+            re.compile(r"^Subdivision is optional")
+        )
+
+
 def test_submission_requires_a_complete_subdivision_pair(page: Page, base_url: str) -> None:
     page.goto(f"{base_url}/submit.html")
     page.locator("#name").fill("Example Transit")
