@@ -224,7 +224,7 @@ variable "stripe_price_ids_are_live" {
 }
 
 variable "google_ads_conversion_action" {
-  description = "Google Ads conversion action resource name (\"customers/<id>/conversionActions/<id>\"). Blank keeps conversion_tracking.py's seam a no-op. Set to the real one created 2026-09-15 (\"Enhanced conversions for leads\", Purchases, primary, data-driven attribution, 90-day click-through) -- see docs/paid-search-readiness.md."
+  description = "Google Ads conversion action resource name (\"customers/<id>/conversionActions/<id>\"). Blank keeps conversion_tracking.py's seam a no-op. Set to the real one created 2026-09-15 (\"Enhanced conversions for leads\", Purchases, primary, data-driven attribution, 90-day click-through) -- see docs/google-ads-upload-setup.md."
   type        = string
   default     = "customers/2688527650/conversionActions/7769927171"
 }

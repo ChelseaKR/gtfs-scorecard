@@ -1,8 +1,8 @@
 # Google Ads conversion upload: owner setup
 
-Extends [`docs/paid-search-readiness.md`](paid-search-readiness.md) §3
-(the conversion-tracking seam) and its owner step 10 (the upload job that
-step deliberately deferred). That job now exists:
+Extends the conversion-tracking seam
+(`infra/program-bundle/conversion_tracking.py`) with the upload job its
+first design deferred. That job now exists:
 `infra/program-bundle/ads_conversion_upload_handler.py`, a Lambda
 EventBridge invokes daily. This page is the ordered list of things an owner
 does outside this repository to turn it on, plus where each resulting
@@ -200,7 +200,7 @@ to turn the daily schedule on.
 
 ### 9. What "working" looks like afterward, and the accuracy caveat already on record
 
-Per `docs/paid-search-readiness.md` §7 step 8: expect a lower match rate
+Expect a lower match rate
 than a typical Enhanced Conversions setup, because this site captures no
 `gclid` (its measurement drops the query string, and GA4 runs with ad storage
 denied, per ADR 0056) — Google matches on the hashed email alone
