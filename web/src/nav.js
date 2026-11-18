@@ -37,12 +37,19 @@
     if (isOpen() && e.target instanceof Node && !header.contains(e.target)) close();
   });
   // Tabbing on past the last control would leave the open panel covering the
-  // top of the page, with the newly focused control behind it. Close as focus
-  // goes anywhere outside the header (WCAG 2.4.11). A null relatedTarget means
-  // focus left the window, which is not a reason to close.
+  // top of the page, with the newly focused control behind it. Close as the
+  // reader tabs out of the header (WCAG 2.4.11). Only a Tab press counts: the
+  // app moves focus to the main region when its data arrives, and a menu the
+  // reader opened before then must not close under them. A null relatedTarget
+  // means focus left the window, which is not a reason to close either.
+  var tabbedOut = false;
+  header.addEventListener("keydown", function (e) {
+    tabbedOut = e.key === "Tab";
+  });
   header.addEventListener("focusout", function (e) {
     var next = e.relatedTarget;
-    if (isOpen() && next instanceof Node && !header.contains(next)) close();
+    if (tabbedOut && isOpen() && next instanceof Node && !header.contains(next)) close();
+    tabbedOut = false;
   });
 })();
 

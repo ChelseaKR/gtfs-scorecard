@@ -78,6 +78,10 @@ the declared public surface).
   found.", one sentence, and links to the agency directory, the search and the
   home page. It is `noindex` and not in the sitemap. The landing page's skip
   link now reads "Skip to main content", as it does on every other page.
+- **The open menu no longer closes when a script moves focus.** Since the
+  sweep fixes, the menu closed whenever focus left the header. On `/app/` the
+  app moves focus to the main region when its data arrives, so a menu opened
+  before then snapped shut. It now closes only when the reader tabs out.
 - **Keyboard, zoom and contrast fixes from an accessibility sweep of the live
   site (2026-11-17).** None changes a score, a grade, a URL or a sentence on a
   page.

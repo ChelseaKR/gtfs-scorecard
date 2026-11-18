@@ -152,3 +152,24 @@ def test_open_menu_closes_when_focus_moves_past_it(
         }"""
     )
     assert on_top, "the control that took focus is still behind the menu panel"
+
+
+@pytest.mark.parametrize(
+    ("path", "button"),
+    [(PAGE_PATH, ".nav-menu-btn"), ("/", ".home-menu-toggle")],
+)
+def test_open_menu_stays_open_when_a_script_moves_focus(
+    page: Page, base_url: str, path: str, button: str
+) -> None:
+    # The app puts focus on its main region when its data arrives. If the
+    # reader opened the menu first, that must not close it under their
+    # finger: only their own Tab out of the header does.
+    page.set_viewport_size({"width": 320, "height": 640})
+    page.goto(f"{base_url}{path}")
+    toggle = page.locator(button)
+    toggle.click()
+    expect(toggle).to_have_attribute("aria-expanded", "true")
+
+    page.evaluate("() => document.querySelector('main').focus()")
+    assert page.evaluate("() => document.activeElement.tagName") == "MAIN"
+    expect(toggle).to_have_attribute("aria-expanded", "true")

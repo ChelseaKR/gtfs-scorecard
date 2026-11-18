@@ -2048,10 +2048,16 @@
       if (isOpen() && event.target instanceof Node && !topbar.contains(event.target)) closeMenu(false);
     });
     // Tabbing past the last control would leave the open panel over the page
-    // with the focused control behind it, so close as focus leaves the bar.
+    // with the focused control behind it, so close as the reader tabs out of
+    // the bar. Only a Tab press counts; a script moving focus does not.
+    var tabbedOut = false;
+    topbar.addEventListener("keydown", function (event) {
+      tabbedOut = event.key === "Tab";
+    });
     topbar.addEventListener("focusout", function (event) {
       var next = event.relatedTarget;
-      if (isOpen() && next instanceof Node && !topbar.contains(next)) closeMenu(false);
+      if (tabbedOut && isOpen() && next instanceof Node && !topbar.contains(next)) closeMenu(false);
+      tabbedOut = false;
     });
     var mobile = window.matchMedia("(max-width: 1120px)");
     function resetAtDesktop(event) {

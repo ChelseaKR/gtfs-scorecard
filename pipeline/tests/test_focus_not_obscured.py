@@ -94,6 +94,10 @@ def test_open_menu_closes_when_focus_leaves_the_header() -> None:
     assert handler, "nav.js does not watch focus leaving the header"
     body = handler.group(1)
     assert "relatedTarget" in body and "header.contains" in body and "close()" in body
+    # Only a Tab press closes it. The app moves focus to the main region when
+    # its data arrives, and a menu opened before then must not snap shut.
+    assert "tabbedOut" in body
+    assert re.search(r'header\.addEventListener\("keydown"[^}]*e\.key === "Tab"', source, re.S)
 
 
 def test_landing_menu_closes_when_focus_leaves_the_bar() -> None:
@@ -107,3 +111,5 @@ def test_landing_menu_closes_when_focus_leaves_the_bar() -> None:
     assert handler, "the landing page does not watch focus leaving its menu bar"
     body = handler.group(1)
     assert "relatedTarget" in body and "topbar.contains" in body and "closeMenu(false)" in body
+    assert "tabbedOut" in body
+    assert re.search(r'topbar\.addEventListener\("keydown"[^}]*event\.key === "Tab"', source, re.S)
