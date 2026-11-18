@@ -2047,6 +2047,12 @@
     document.addEventListener("click", function (event) {
       if (isOpen() && event.target instanceof Node && !topbar.contains(event.target)) closeMenu(false);
     });
+    // Tabbing past the last control would leave the open panel over the page
+    // with the focused control behind it, so close as focus leaves the bar.
+    topbar.addEventListener("focusout", function (event) {
+      var next = event.relatedTarget;
+      if (isOpen() && next instanceof Node && !topbar.contains(next)) closeMenu(false);
+    });
     var mobile = window.matchMedia("(max-width: 1120px)");
     function resetAtDesktop(event) {
       if (!event.matches) closeMenu(false);

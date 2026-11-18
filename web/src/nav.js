@@ -36,6 +36,14 @@
   document.addEventListener("click", function (e) {
     if (isOpen() && e.target instanceof Node && !header.contains(e.target)) close();
   });
+  // Tabbing on past the last control would leave the open panel covering the
+  // top of the page, with the newly focused control behind it. Close as focus
+  // goes anywhere outside the header (WCAG 2.4.11). A null relatedTarget means
+  // focus left the window, which is not a reason to close.
+  header.addEventListener("focusout", function (e) {
+    var next = e.relatedTarget;
+    if (isOpen() && next instanceof Node && !header.contains(next)) close();
+  });
 })();
 
 /* Offline support (ideation EXP-20). nav.js is the one script every page

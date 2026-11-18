@@ -22,6 +22,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 APP_CSS = ROOT / "web" / "src" / "styles.css"
+NAV_JS = ROOT / "web" / "src" / "nav.js"
+LANDING = ROOT / "web" / "index.html"
 
 # The tallest the header gets: 64px of content plus its 3px rule, at a 16px
 # root. Stated in rem so the comparison follows the reader's text size.
@@ -77,3 +79,31 @@ def test_scrolling_to_a_target_stops_below_the_sticky_header() -> None:
         "in-page link target scrolls to the top edge, under the sticky header"
     )
     assert _rem(padding[-1]) >= HEADER_HEIGHT_REM
+
+
+def test_open_menu_closes_when_focus_leaves_the_header() -> None:
+    # On a narrow screen the open menu is a panel over the top of the page.
+    # Tab past its last control and focus lands on something behind the panel.
+    # Escape would uncover it, but Escape also pulls focus back to the menu
+    # button, so the reader cannot see where they are without losing their
+    # place. The menu has to close as focus leaves.
+    source = NAV_JS.read_text(encoding="utf-8")
+    handler = re.search(
+        r'header\.addEventListener\("focusout", function \(e\) \{(.*?)\n  \}\);', source, re.S
+    )
+    assert handler, "nav.js does not watch focus leaving the header"
+    body = handler.group(1)
+    assert "relatedTarget" in body and "header.contains" in body and "close()" in body
+
+
+def test_landing_menu_closes_when_focus_leaves_the_bar() -> None:
+    # The landing page carries its own menu script; same panel, same rule.
+    source = LANDING.read_text(encoding="utf-8")
+    handler = re.search(
+        r'topbar\.addEventListener\("focusout", function \(event\) \{(.*?)\n    \}\);',
+        source,
+        re.S,
+    )
+    assert handler, "the landing page does not watch focus leaving its menu bar"
+    body = handler.group(1)
+    assert "relatedTarget" in body and "topbar.contains" in body and "closeMenu(false)" in body

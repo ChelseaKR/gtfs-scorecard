@@ -112,3 +112,43 @@ def test_in_page_link_target_clears_the_header(shell_page: Page) -> None:
     assert state["headingTop"] >= state["headerBottom"], (
         f"#{target_id} landed under the sticky header: {state}"
     )
+
+
+@pytest.mark.parametrize(
+    ("path", "button", "panel_host"),
+    [(PAGE_PATH, ".nav-menu-btn", ".site-header"), ("/", ".home-menu-toggle", ".topbar")],
+)
+def test_open_menu_closes_when_focus_moves_past_it(
+    page: Page, base_url: str, path: str, button: str, panel_host: str
+) -> None:
+    # On a narrow screen the open menu is a panel over the top of the page.
+    # Tabbing past its last control used to leave it open, with the focused
+    # control behind it.
+    page.set_viewport_size({"width": 320, "height": 640})
+    page.emulate_media(reduced_motion="reduce")
+    page.goto(f"{base_url}{path}")
+    toggle = page.locator(button)
+    toggle.focus()
+    page.keyboard.press("Enter")
+    expect(toggle).to_have_attribute("aria-expanded", "true")
+
+    for _ in range(14):
+        page.keyboard.press("Tab")
+        outside = page.evaluate(
+            "(host) => !document.activeElement.closest(host)",
+            panel_host,
+        )
+        if outside:
+            break
+    else:
+        pytest.fail("focus never left the open menu")
+    expect(toggle).to_have_attribute("aria-expanded", "false")
+    on_top = page.evaluate(
+        """() => {
+          const el = document.activeElement;
+          const r = el.getBoundingClientRect();
+          const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          return !!top && (el.contains(top) || top.contains(el));
+        }"""
+    )
+    assert on_top, "the control that took focus is still behind the menu panel"
