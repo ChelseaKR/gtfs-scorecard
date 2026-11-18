@@ -72,6 +72,12 @@ the declared public surface).
 
 ### Fixed
 
+- **A missing address now gets the site's own page.** GitHub Pages was serving
+  its stock "404 File not found" page, with no site navigation and no page
+  language. `render_site` now writes `404.html` on the shared shell: "Page not
+  found.", one sentence, and links to the agency directory, the search and the
+  home page. It is `noindex` and not in the sitemap. The landing page's skip
+  link now reads "Skip to main content", as it does on every other page.
 - **Keyboard, zoom and contrast fixes from an accessibility sweep of the live
   site (2026-11-17).** None changes a score, a grade, a URL or a sentence on a
   page.
