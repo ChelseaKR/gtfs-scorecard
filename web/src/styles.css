@@ -391,11 +391,14 @@ a:hover { color: var(--green-bright); }
   border: 0;
 }
 
+/* The skip link slides in at the top of the page, where the sticky header
+   sits (z-index 100), so it has to stack above the header or it is focused
+   and invisible. tests/test_focus_not_obscured.py holds the order. */
 .skip-link {
   position: absolute;
   left: 0.75rem;
   top: -3.5rem;
-  z-index: 10;
+  z-index: 110;
   background: var(--ink);
   color: var(--paper);
   padding: 0.6rem 1rem;
@@ -686,7 +689,9 @@ a:hover { color: var(--green-bright); }
    ~1.6:1. The band uses the signal amber instead (>=9:1 on pine in every theme,
    matching the landing page's --focus-ring: var(--amber)). Scoped to the
    controls that actually sit on pine, so the theme dropdown's items — which open
-   on a light --card surface and keep the blue ring — are left untouched. */
+   on a light --card surface and keep the blue ring — are left untouched. The
+   skip link is in the list because it lands on top of the header. */
+.skip-link:focus-visible,
 .site-header .brand:focus-visible,
 .nav-stop:focus-visible,
 .nav-menu-btn:focus-visible,
@@ -3570,6 +3575,12 @@ body {
   z-index: 100;
   box-shadow: 0 8px 24px rgb(5 22 16 / 0.18);
 }
+/* The header stays on screen, so anything the browser scrolls to must stop
+   below it: a control reached with Shift+Tab, an in-page link target, the
+   main region after the skip link. Without this the browser parks the target
+   at the top edge, under the header (WCAG 2.4.11). The header is at most
+   4.2rem tall; 5rem leaves a little air. */
+html { scroll-padding-top: 5rem; }
 
 main {
   padding-top: clamp(1.8rem, 4vw, 3rem);
