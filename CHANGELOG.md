@@ -29,6 +29,15 @@ the declared public surface).
 
 ### Changed
 
+- **Three page titles name what their searchers type.** `/program/all/` is
+  titled "GTFS feed list: quality grades for N transit feeds", with N and the
+  count needing attention taken from the rollup the page shows.
+  `/gtfs-validator/` is titled "GTFS validator: check a feed and read the
+  results", and `/about/`, `/how-to-read/`, `/check/` and `/focus/` each link
+  it once as the "GTFS validator guide". NTD state pages are titled
+  "<state> transit GTFS for NTD: shapes.txt and agency_id", or
+  "...: shapes.txt check" for a long state name. State and country rollup
+  titles and the home title are unchanged (ADR 0081).
 - **The sitemap lists a clearance log only once it has earned a search
   impression.** 812 of the 1,171 clearance logs in the sitemap had no
   impression in the 90 days to 2026-11-15. A log is now listed when it is

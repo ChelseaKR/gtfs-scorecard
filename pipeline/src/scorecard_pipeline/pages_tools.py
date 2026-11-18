@@ -1068,7 +1068,8 @@ def _render_check_page() -> str:
     instead: <a href="/try.html">request a full score</a>.</p></noscript>
     <p class="fineprint">A preview, not the full validation. The canonical
     <a href="https://github.com/MobilityData/gtfs-validator">MobilityData validator</a>
-    stays the authority; <a href="/try.html">request a full score</a> to run it over the whole
+    stays the authority, and the <a href="/gtfs-validator/">GTFS validator guide</a> explains
+    its results; <a href="/try.html">request a full score</a> to run it over the whole
     feed, and <a href="/subscribe.html">subscribe</a> to hear before a published feed
     expires.</p>
 {_CHECK_PAGE_SCRIPT.replace("__FFLATE__", _FFLATE_VERSION)}"""
@@ -1112,7 +1113,7 @@ _TOOLS = [
     ),
     (
         "/gtfs-validator/",
-        "GTFS validator and the scorecard grade",
+        "GTFS validator: check a feed and read the results",
         "How the scorecard works with the MobilityData validator, how to check a feed, and what the grade does not claim.",
         "No account",
     ),
