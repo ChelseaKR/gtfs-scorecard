@@ -72,6 +72,28 @@ the declared public surface).
 
 ### Fixed
 
+- **Keyboard, zoom and contrast fixes from an accessibility sweep of the live
+  site (2026-11-17).** None changes a score, a grade, a URL or a sentence on a
+  page.
+  - The sticky header no longer hides what a keyboard reader is on: the skip
+    link is drawn above it, and a control reached with Shift+Tab or an in-page
+    link stops below it.
+  - On a narrow screen the open menu closes when focus moves past it.
+  - The landing page's focus ring shows on the pine "Where the scorecard fits"
+    band and on the light pilot band.
+  - The status dot on a scorecard blinks twice and then holds steady.
+  - On the three forms, hints and error messages are read with the fields they
+    are about.
+  - Placeholder text and the edges of text fields clear their contrast bars in
+    the light and dark themes. `check_contrast.py` now also holds field edges
+    to 3:1.
+  - At 320px a long address no longer widens the page, and the scorecard's
+    finding picker shows its links in full.
+  - The by-date table on `/pulse/` has a name and scoped headers, and two
+    tables that scroll sideways on a narrow screen can be reached from the
+    keyboard.
+  - On `/es/`, the English link text and the theme control are marked as
+    English.
 - **The compare table reads a feed's service window the way its scorecard does.**
   "Days of service left" printed the raw countdown, so a feed published to an
   end date more than ten years out showed a five-digit day count where its
