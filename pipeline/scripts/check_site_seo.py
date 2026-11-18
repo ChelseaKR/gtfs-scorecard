@@ -32,6 +32,7 @@ _CONFIG_KEYS = {
     "conditional_noindex_path_patterns",
     "lastmod_required_path_patterns",
     "lastmod_shown_path_patterns",
+    "sitemap_optional_path_patterns",
     "canonical_aliases",
     "hreflang_groups",
     "required_json_ld_types",
@@ -143,6 +144,8 @@ class Config:
     # Sitemap <lastmod> rules (see _validate_sitemap_lastmods). Both optional.
     lastmod_required_path_patterns: tuple[str, ...] = ()
     lastmod_shown_path_patterns: tuple[str, ...] = ()
+    # Indexable pages the sitemap may leave out (ADR 0080). Optional.
+    sitemap_optional_path_patterns: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, order=True)
@@ -488,10 +491,14 @@ def _public_path(value: str, key: str, *, allow_fragment: bool, allow_query: boo
         raise ConfigError(f"{key!r} must not contain a fragment: {value!r}")
 
 
-def _path_mapping(config: dict[str, Any], key: str, *, allow_fragment: bool) -> dict[str, str]:
+def _path_mapping(
+    config: dict[str, Any], key: str, *, allow_fragment: bool, allow_empty: bool = False
+) -> dict[str, str]:
     raw = config[key]
-    if not isinstance(raw, dict) or not raw:
-        raise ConfigError(f"{key!r} must be a non-empty object")
+    if not isinstance(raw, dict) or (not raw and not allow_empty):
+        raise ConfigError(
+            f"{key!r} must be an object" if allow_empty else f"{key!r} must be a non-empty object"
+        )
     result: dict[str, str] = {}
     for source, target in raw.items():
         if not isinstance(source, str) or not isinstance(target, str):
@@ -526,6 +533,7 @@ _OPTIONAL_CONFIG_KEYS = {
     "conditional_noindex_path_patterns",
     "lastmod_required_path_patterns",
     "lastmod_shown_path_patterns",
+    "sitemap_optional_path_patterns",
 }
 
 
@@ -804,7 +812,12 @@ def load_config(path: Path) -> Config:
     measurement_script, measurement_host = _measurement_settings(raw)
     measurement_ga4_host, measurement_ga4_id = _ga4_settings(raw)
 
-    canonical_aliases = _path_mapping(raw, "canonical_aliases", allow_fragment=False)
+    # A site may have no canonical alias at all (ADR 0080: /app/ was the only
+    # one, and it now names itself), so this mapping may be empty. The key
+    # stays required, so dropping it by accident is still a config error.
+    canonical_aliases = _path_mapping(
+        raw, "canonical_aliases", allow_fragment=False, allow_empty=True
+    )
     redirect_aliases = _path_mapping(raw, "redirect_aliases", allow_fragment=True)
     overlap = sorted(canonical_aliases.keys() & redirect_aliases.keys())
     if overlap:
@@ -824,6 +837,9 @@ def load_config(path: Path) -> Config:
             raw, "lastmod_required_path_patterns"
         ),
         lastmod_shown_path_patterns=_optional_path_patterns(raw, "lastmod_shown_path_patterns"),
+        sitemap_optional_path_patterns=_optional_path_patterns(
+            raw, "sitemap_optional_path_patterns"
+        ),
         canonical_aliases=canonical_aliases,
         hreflang_groups=_hreflang_groups(raw),
         required_json_ld_types=_required_json_ld_types(raw),
@@ -2000,10 +2016,33 @@ def _sitemap_tag(local_name: str) -> str:
 def _expected_sitemap_urls(
     pages: dict[str, Page], config: Config, redirect_aliases: dict[str, str]
 ) -> set[str]:
+    """Every indexable page's canonical URL: what the sitemap may list."""
     return {
         _absolute(config, _intended_canonical_path(page, config))
         for page in pages.values()
         if page.public_path not in redirect_aliases and not _page_is_noindex(page, config)
+    }
+
+
+def _required_sitemap_urls(
+    pages: dict[str, Page], config: Config, redirect_aliases: dict[str, str]
+) -> set[str]:
+    """The indexable pages the sitemap must list.
+
+    A page under ``sitemap_optional_path_patterns`` may be listed or left out:
+    ADR 0080 lists a clearance log only once it has earned a search
+    impression, while every one stays indexable. Being optional never makes a
+    noindex page listable; ``_expected_sitemap_urls`` still bounds the sitemap.
+    """
+    return {
+        _absolute(config, _intended_canonical_path(page, config))
+        for page in pages.values()
+        if page.public_path not in redirect_aliases
+        and not _page_is_noindex(page, config)
+        and not any(
+            _matches_path_pattern(page.public_path, pattern)
+            for pattern in config.sitemap_optional_path_patterns
+        )
     }
 
 
@@ -2185,7 +2224,8 @@ def _validate_sitemap(
             )
     actual = set(locations)
     expected = _expected_sitemap_urls(pages, config, redirect_aliases)
-    for location in sorted(expected - actual):
+    required = _required_sitemap_urls(pages, config, redirect_aliases)
+    for location in sorted(required - actual):
         findings.append(
             Finding("sitemap.missing_url", relative_path, f"missing canonical URL: {location}")
         )

@@ -31,9 +31,10 @@
     "/agencies/page/*/",
     "/agency/*/fixes/"
   ],
-  "canonical_aliases": {
-    "/app/": "/agencies/"
-  },
+  "sitemap_optional_path_patterns": [
+    "/agency/*/fixes/"
+  ],
+  "canonical_aliases": {},
   "hreflang_groups": [
     {
       "en": "/",

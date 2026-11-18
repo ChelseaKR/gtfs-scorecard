@@ -29,6 +29,21 @@ the declared public surface).
 
 ### Changed
 
+- **The sitemap lists a clearance log only once it has earned a search
+  impression.** 812 of the 1,171 clearance logs in the sitemap had no
+  impression in the 90 days to 2026-11-15. A log is now listed when it is
+  indexable and on `data/clearance-logs-in-sitemap.json`, which
+  `pipeline/scripts/clearance_log_sitemap_list.py` writes from a Search
+  Console export. Every other log stays indexable and linked; nothing is
+  noindexed. The structural SEO check gains `sitemap_optional_path_patterns`
+  so the deploy accepts an indexable page that is left out, and accepts an
+  empty `canonical_aliases` map (ADR 0080).
+- **The two WMATA scorecards say which feed they are.** They are WMATA's bus
+  feed and its rail feed, and both titles read "Washington Metropolitan
+  Area… [MDB 184x]". They now read "[Bus]" and "[Rail]". No score changes.
+- **`/app/` names itself as its canonical address.** It declared `/agencies/`,
+  which Google ignored. It is now in the sitemap, and readers without
+  JavaScript get a heading above the link to the static directory.
 - **The corpus average chart on the coverage overview has axes.** The chart
   under "Covered-corpus average score" on `/pulse/` was a bare line stretched
   to its own minimum and maximum, so a move of 0.8 points filled the whole

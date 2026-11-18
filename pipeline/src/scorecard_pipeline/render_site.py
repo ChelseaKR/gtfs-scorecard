@@ -4840,6 +4840,48 @@ def fixlog_is_indexable(receipts: list[dict[str, str]]) -> bool:
     return len(receipts) >= FIXLOG_INDEX_MIN_RECEIPTS
 
 
+#: ADR 0080: the clearance logs that earned a search impression, written by
+#: scripts/clearance_log_sitemap_list.py from a Search Console export.
+CLEARANCE_SITEMAP_LIST = Path("data") / "clearance-logs-in-sitemap.json"
+
+
+def load_clearance_sitemap_ids(root: Path) -> frozenset[str] | None:
+    """Agency ids whose clearance log the sitemap may list, or ``None``.
+
+    ``None`` (no list, or one that cannot be read) lists every indexable log,
+    which is the rule before ADR 0080, so losing the file never drops a page
+    from the sitemap that the old rule would list.
+    """
+    path = root / CLEARANCE_SITEMAP_LIST
+    try:
+        data = json.loads(path.read_text())
+    except FileNotFoundError:
+        return None
+    except (OSError, ValueError) as exc:
+        print(f"warning: {path} unreadable, listing every indexable log: {exc}", file=sys.stderr)
+        return None
+    ids = data.get("agency_ids") if isinstance(data, dict) else None
+    if not isinstance(ids, list) or not all(isinstance(i, str) for i in ids):
+        print(
+            f"warning: {path} has no agency_ids list; listing every indexable log", file=sys.stderr
+        )
+        return None
+    return frozenset(ids)
+
+
+def fixlog_in_sitemap(
+    agency_id: str, receipts: list[dict[str, str]], listed: frozenset[str] | None
+) -> bool:
+    """Whether the sitemap lists this clearance log (ADR 0080).
+
+    Only an indexable log is ever listed. Of those, only one that earned a
+    search impression is, when the list is available. A log left out stays
+    indexable and linked from its scorecard and the directory: this is a
+    sitemap rule, never a noindex.
+    """
+    return fixlog_is_indexable(receipts) and (listed is None or agency_id in listed)
+
+
 def _render_fixlog_page(
     artifact: dict[str, Any],
     receipts: list[dict[str, str]],
@@ -13443,6 +13485,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/try.html",
         f"{BASE_URL}/subscribe.html",
         f"{BASE_URL}/agencies/",
+        # The interactive directory names itself as canonical (ADR 0080):
+        # Google kept /app/ as its own canonical over the declared /agencies/.
+        f"{BASE_URL}/app/",
     ]
     sitemap_lastmods: dict[str, str] = {}
     FIX_CODES_WITH_PAGES.clear()  # rebuilt below; never carry state across calls
@@ -13621,7 +13666,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     _remove_stale_agency_index_pages(agency_page_root)
     # Clearance logs, read once and shared with the per-agency loop below. The
     # directory links only to a log that will be written and is indexable (in the
-    # sitemap), and only for an agency whose scorecard is rendered, so a listing
+    # sitemap once it has earned an impression, ADR 0080), and only for an agency whose scorecard is rendered, so a listing
     # link can never point at a page that does not exist.
     fixlog_receipts: dict[str, list[dict[str, str]]] = {
         agency_id: load_fixlog(art / agency_id)
@@ -13631,6 +13676,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     fixlog_ids = frozenset(
         agency_id for agency_id, found in fixlog_receipts.items() if fixlog_is_indexable(found)
     )
+    clearance_sitemap_ids = load_clearance_sitemap_ids(root)
     agency_count = len(index.get("agencies") or {})
     agency_page_count = max(1, math.ceil(agency_count / _AGENCY_INDEX_PAGE_SIZE))
     for page_number in range(1, agency_page_count + 1):
@@ -14159,10 +14205,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                         by_id[agency_id],
                         seo_metadata=agency_seo_metadata[agency_id],
                     ),
-                    # A thin log is noindex and kept out of the sitemap.
+                    # A thin log is noindex and kept out of the sitemap, and an
+                    # indexable one is listed only once it has earned a search
+                    # impression (ADR 0080).
                     (
                         f"{BASE_URL}/agency/{agency_id}/fixes/"
-                        if fixlog_is_indexable(receipts)
+                        if fixlog_in_sitemap(agency_id, receipts, clearance_sitemap_ids)
                         else None
                     ),
                     # The newest clearance the page lists, never the build date.

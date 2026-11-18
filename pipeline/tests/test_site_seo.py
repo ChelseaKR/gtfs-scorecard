@@ -1579,6 +1579,89 @@ def test_strict_config_error_writes_schema_v1_report(tmp_path: Path) -> None:
     assert error_report["errors"][0]["code"] == "config.invalid"
 
 
+def test_the_repository_config_is_one_the_checker_accepts(tmp_path: Path) -> None:
+    """The committed site-seo.json must load. A config error exits 2 and stops
+    the deploy before any page is checked, and no PR check renders with it."""
+    site = tmp_path / "site"
+    site.mkdir()
+    report = tmp_path / "report.json"
+
+    result = _run(site, ROOT / "site-seo.json", report)
+
+    payload = json.loads(report.read_text(encoding="utf-8"))
+    assert result.returncode != 2, result.stderr + result.stdout
+    assert payload["status"] != "error"
+
+
+def test_a_site_may_have_no_canonical_alias(tmp_path: Path) -> None:
+    """ADR 0080: /app/ was the only alias. An empty map is valid, and a page
+    that still points its canonical elsewhere is then a mismatch."""
+    site, config = _write_fixture(tmp_path)
+    payload = json.loads(config.read_text(encoding="utf-8"))
+    payload["canonical_aliases"] = {}
+    config.write_text(json.dumps(payload), encoding="utf-8")
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "metadata.canonical_mismatch" in _codes(report)
+
+
+def test_a_self_canonical_app_shell_passes_with_its_noscript_heading(tmp_path: Path) -> None:
+    """ADR 0080: /app/ names itself, is listed in the sitemap, and carries its
+    one h1 in <noscript>, since the app writes its own heading at runtime."""
+    site, config = _write_fixture(tmp_path)
+    payload = json.loads(config.read_text(encoding="utf-8"))
+    payload["canonical_aliases"] = {}
+    config.write_text(json.dumps(payload), encoding="utf-8")
+    _write_text(
+        site,
+        "app/index.html",
+        _page(
+            "/app/",
+            "Interactive agency search",
+            "Interactive search description",
+            h1=None,
+            body=(
+                "<main><noscript><h1>Search the agency scorecards</h1></noscript>"
+                '<a href="/app/#/agency/demo">Open demo</a></main>'
+            ),
+        ),
+    )
+    _replace(
+        site / "sitemap.xml",
+        f"<url><loc>{ORIGIN}/target/</loc>",
+        f"<url><loc>{ORIGIN}/app/</loc></url><url><loc>{ORIGIN}/target/</loc>",
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 0, report.read_text(encoding="utf-8")
+    # Negative control: without the heading the same page is reported.
+    _replace(site / "app/index.html", "<h1>Search the agency scorecards</h1>", "")
+    assert _run(site, config, report).returncode == 1
+    assert any(code.endswith(".h1_missing") for code in _codes(report))
+
+
+@pytest.mark.parametrize(
+    ("key", "value"),
+    [("redirect_aliases", {}), ("canonical_aliases", []), ("canonical_aliases", None)],
+)
+def test_alias_maps_are_still_validated(tmp_path: Path, key: str, value: Any) -> None:
+    """Negative control: only an empty canonical alias object is allowed."""
+    site, config = _write_fixture(tmp_path)
+    payload = json.loads(config.read_text(encoding="utf-8"))
+    payload[key] = value
+    config.write_text(json.dumps(payload), encoding="utf-8")
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 2
+
+
 def test_hreflang_config_rejects_casefolded_duplicate_languages(tmp_path: Path) -> None:
     site, config = _write_fixture(tmp_path)
     payload = json.loads(config.read_text(encoding="utf-8"))
@@ -1643,7 +1726,11 @@ def test_repository_config_keeps_aliases_and_exemptions_narrow() -> None:
     assert "duplicate_metadata_exempt_prefixes" not in config
     assert config["fragment_exempt_prefixes"] == ["/app/"]
     assert config["retained_redirects_path"] == "_meta/retained-agency-redirects.json"
-    assert config["canonical_aliases"] == {"/app/": "/agencies/"}
+    # ADR 0080: /app/ names itself as canonical, so no page is an alias now.
+    assert config["canonical_aliases"] == {}
+    # ADR 0080: an indexable clearance log may be left out of the sitemap
+    # until it earns an impression. No other page family may be.
+    assert config["sitemap_optional_path_patterns"] == ["/agency/*/fixes/"]
     assert config["hreflang_groups"] == [{"en": "/", "es": "/es/"}]
     # Every page family whose structured data is load-bearing, and no other.
     # Widened deliberately: a rollup publishes a Dataset and the page it lists
@@ -1914,6 +2001,89 @@ def test_robots_meta_outside_any_pattern_is_still_unexpected(tmp_path: Path) -> 
 
     assert result.returncode == 1
     assert "noindex.unexpected" in _codes(report)
+
+
+def _make_clearance_logs_sitemap_optional(config: Path) -> None:
+    raw = json.loads(config.read_text(encoding="utf-8"))
+    raw["sitemap_optional_path_patterns"] = ["/agency/*/fixes/"]
+    config.write_text(json.dumps(raw), encoding="utf-8")
+
+
+def _drop_full_log_from_sitemap(site: Path) -> None:
+    _replace(
+        site / "sitemap.xml",
+        f"<url><loc>{ORIGIN}/agency/demo/fixes/</loc><lastmod>2026-07-29</lastmod></url>",
+        "",
+    )
+
+
+def test_a_sitemap_optional_page_may_be_left_out_of_the_sitemap(tmp_path: Path) -> None:
+    """ADR 0080: an indexable clearance log without an impression is not listed."""
+    site, config = _write_fixture(tmp_path)
+    _write_clearance_logs(site, config)
+    _make_clearance_logs_sitemap_optional(config)
+    _drop_full_log_from_sitemap(site)
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 0, report.read_text(encoding="utf-8")
+    assert _codes(report) == set()
+
+
+def test_negative_control_without_the_rule_a_missing_log_fails(tmp_path: Path) -> None:
+    """The same site without the optional rule is the 2026-10-06 freeze."""
+    site, config = _write_fixture(tmp_path)
+    _write_clearance_logs(site, config)
+    _drop_full_log_from_sitemap(site)
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "sitemap.missing_url" in _codes(report)
+
+
+def test_a_sitemap_optional_page_still_listed_is_accepted(tmp_path: Path) -> None:
+    """Listing an optional page is fine; leaving it out is fine too."""
+    site, config = _write_fixture(tmp_path)
+    _write_clearance_logs(site, config)
+    _make_clearance_logs_sitemap_optional(config)
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 0, report.read_text(encoding="utf-8")
+
+
+def test_sitemap_optional_never_lets_a_noindex_page_into_the_sitemap(tmp_path: Path) -> None:
+    site, config = _write_fixture(tmp_path)
+    _write_clearance_logs(site, config)
+    _make_clearance_logs_sitemap_optional(config)
+    _replace(
+        site / "sitemap.xml",
+        f"<loc>{ORIGIN}/agency/demo/fixes/</loc>",
+        f"<loc>{ORIGIN}/agency/other/fixes/</loc>",
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "sitemap.unexpected_url" in _codes(report)
+    assert "sitemap.missing_url" not in _codes(report)
+
+
+def test_sitemap_optional_patterns_are_validated(tmp_path: Path) -> None:
+    site, config = _write_fixture(tmp_path)
+    raw = json.loads(config.read_text(encoding="utf-8"))
+    raw["sitemap_optional_path_patterns"] = ["agency/*/fixes/"]
+    config.write_text(json.dumps(raw), encoding="utf-8")
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode != 0
 
 
 def test_conditional_noindex_pattern_cannot_also_be_a_noindex_pattern(tmp_path: Path) -> None:
