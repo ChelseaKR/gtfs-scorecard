@@ -22,6 +22,7 @@ pytestmark = pytest.mark.e2e
 
 MOBILE_ROUTES = [
     "/",
+    "/404.html",
     "/app/#/",
     "/agency/abq-ride/",
     "/agency/unitrans/",

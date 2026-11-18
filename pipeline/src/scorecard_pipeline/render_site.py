@@ -7854,6 +7854,40 @@ def _render_claim_page() -> str:
     )
 
 
+def _render_not_found_page() -> str:
+    """The page the host serves for any address that does not exist.
+
+    GitHub Pages looks for ``404.html`` at the site root and serves it, with a
+    404 status, at whatever address was asked for. Without one it serves its
+    own stock page, which has none of this site's navigation and no page
+    language. This one is the shared shell and three ways to start again.
+
+    Two constraints follow from where it is served. Every address in it must
+    be absolute, because a relative one would be resolved against the missing
+    path; ``_page`` already writes its stylesheet, scripts and links that way.
+    And it is not a search result: ``noindex``, and ``render_site`` writes it
+    without a sitemap entry. Its canonical names the file itself.
+    """
+    lede = (
+        "Nothing is published at this address. The link may be out of date, "
+        "or the page may have moved."
+    )
+    body = f"""    <h1 class="page-title">Page not found.</h1>
+    <p class="page-lede">{esc(lede)}</p>
+    <p class="report-actions">
+      <a class="report-action report-action-primary" href="/agencies/">Find an agency</a>
+      <a class="report-action" href="/app/">Search scorecards</a>
+      <a class="report-action" href="/">Go to the home page</a>
+    </p>"""
+    return _page(
+        title="Page not found — GTFS Scorecard",
+        description=lede,
+        canonical=f"{BASE_URL}/404.html",
+        body=body,
+        robots="noindex,follow",
+    )
+
+
 def _render_spanish_rider_page() -> str:
     """Spanish-first agency lookup, the first localized rider-facing surface."""
     text = load_catalog("es")
@@ -13475,6 +13509,8 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write("claim/index.html", _render_claim_page(), f"{BASE_URL}/claim/")
     validate_catalogs()
     write("es/index.html", _render_spanish_rider_page(), f"{BASE_URL}/es/")
+    # No URL: the missing-address page is not a sitemap entry.
+    write("404.html", _render_not_found_page())
     for locale in SUPPORTED_LOCALES:
         write(f"locales/{locale}.json", (CATALOG_DIR / f"{locale}.json").read_text())
     for locale in APP_CATALOG_LOCALES:
