@@ -207,8 +207,11 @@
   }
   .skip:focus { left: 0; }
   :focus-visible { outline: 3px solid var(--focus-page); outline-offset: 3px; }
+  /* The ring follows the surface. These are the pine bands; everything else,
+     the light pilot band included, keeps the page ring.
+     tests/test_landing_focus_ring.py holds this list to the bands. */
   .home-header :focus-visible,
-  .movement :focus-visible,
+  .workflow-run :focus-visible,
   footer :focus-visible { outline-color: var(--focus-dark); }
   .home-header .theme-menu :focus-visible { outline-color: var(--focus-page); }
   .action-primary:focus-visible,
