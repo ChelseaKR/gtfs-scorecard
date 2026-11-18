@@ -1192,8 +1192,13 @@ def _feed_history_section(history: list[dict[str, Any]]) -> str:
         "file, newest first. A new file means the published zip changed. Grades from "
         "earlier rubric versions are shown with their rubric and are not comparable with "
         "today&rsquo;s grade or the trend above.</p>"
-        '<div class="table-wrap"><table class="route-table">'
-        '<caption class="visually-hidden">Feed history by published file</caption>'
+        # The wrapper scrolls sideways on a narrow screen and holds nothing
+        # focusable, so it is a named, focusable region: without that the
+        # columns past the edge cannot be reached from the keyboard in Safari.
+        '<div class="table-wrap" tabindex="0" role="region" '
+        'aria-labelledby="feed-history-caption"><table class="route-table">'
+        '<caption class="visually-hidden" id="feed-history-caption">'
+        "Feed history by published file</caption>"
         '<thead><tr><th scope="col">Checked</th><th scope="col">Published file</th>'
         '<th scope="col">Service dates through</th><th scope="col">Grade at the time</th>'
         f"</tr></thead><tbody>{''.join(body_rows)}</tbody></table></div>{more}</section>"
@@ -8361,8 +8366,8 @@ _SANDBOX_JS = r"""    <script>
               : changed + " of " + agencies.length +
                 " eligible feed records change letter grade under these weights.") +
             "</p>" +
-            '<div class="sandbox-table-scroll"><table class="sandbox-table">' +
-            "<caption class=\"visually-hidden\">Comparison-eligible feed records per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
+            '<div class="sandbox-table-scroll" tabindex="0" role="region" aria-labelledby="sandbox-table-caption"><table class="sandbox-table">' +
+            "<caption class=\"visually-hidden\" id=\"sandbox-table-caption\">Comparison-eligible feed records per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
             "<thead><tr><th scope=\"col\">Grade</th><th scope=\"col\">At published weights</th>" +
             "<th scope=\"col\">Your weights</th><th scope=\"col\">Change</th></tr></thead>" +
             "<tbody>" + rows + "</tbody></table></div>";
