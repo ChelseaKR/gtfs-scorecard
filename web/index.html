@@ -206,6 +206,9 @@
     font-weight: 700;
   }
   .skip:focus { left: 0; }
+  /* Placeholder text is read, so it gets a measured color rather than the
+     browser's mid gray (4.1:1 on paper). */
+  ::placeholder { color: var(--ink-soft); opacity: 1; }
   :focus-visible { outline: 3px solid var(--focus-page); outline-offset: 3px; }
   /* The ring follows the surface. These are the pine bands; everything else,
      the light pilot band included, keeps the page ring.

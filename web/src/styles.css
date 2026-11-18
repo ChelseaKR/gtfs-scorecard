@@ -379,6 +379,16 @@ a:hover { color: var(--green-bright); }
   border-radius: 3px;
 }
 
+/* A placeholder here is example copy the reader needs ("e.g. US or CA"), so
+   it is held to the text bar. The browser default is a mid gray that lands at
+   4.47:1 on the light card and 3.5:1 on the dark one. --ink-soft is measured
+   by check_contrast.py on every surface a field sits on. opacity undoes the
+   fade Firefox applies. */
+::placeholder {
+  color: var(--ink-soft);
+  opacity: 1;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
