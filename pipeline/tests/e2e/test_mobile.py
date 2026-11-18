@@ -159,6 +159,49 @@ def test_data_dense_pages_fit_320px(page: Page, base_url: str, path: str) -> Non
     assert width[1] <= width[0], f"{path}: viewport {width[0]}px, page {width[1]}px"
 
 
+def test_a_long_bare_address_does_not_widen_a_320px_page(page: Page, base_url: str) -> None:
+    """A link whose text is an address has nowhere to break unless CSS allows it.
+
+    Which pages print one depends on the day's data (a program page did on
+    2026-11-17), so the address is added here rather than waited for.
+    """
+    page.set_viewport_size({"width": 320, "height": 720})
+    page.goto(f"{base_url}/pulse/")
+    page.evaluate(
+        """() => {
+          const note = document.createElement("p");
+          note.className = "fineprint";
+          const link = document.createElement("a");
+          link.href = "#";
+          link.textContent =
+            "https://reports.example.gov/gtfs_schedule/2026/09/an-unbroken-path/feed.zip";
+          note.append(link);
+          document.querySelector("main").append(note);
+        }"""
+    )
+    width = page.evaluate(
+        "() => [document.documentElement.clientWidth, document.documentElement.scrollWidth]"
+    )
+    assert width[1] <= width[0], f"viewport {width[0]}px, page {width[1]}px"
+
+
+def test_finding_picker_shows_each_link_in_full_at_320px(page: Page, parity_base_url: str) -> None:
+    # The golden fixture's scorecards, so the picker is there whatever the
+    # committed build under web/ happens to hold.
+    page.set_viewport_size({"width": 320, "height": 720})
+    page.goto(f"{parity_base_url}/agency/yolobus/")
+    links = page.locator(".finding-picker a")
+    assert links.count() > 0, "the scorecard under test should have a finding picker"
+    cut = links.evaluate_all(
+        "els => els.filter(e => e.scrollWidth > e.clientWidth + 1).map(e => e.textContent.trim())"
+    )
+    assert not cut, f"finding picker links are cut short: {cut}"
+    width = page.evaluate(
+        "() => [document.documentElement.clientWidth, document.documentElement.scrollWidth]"
+    )
+    assert width[1] <= width[0], f"viewport {width[0]}px, page {width[1]}px"
+
+
 def test_scorecard_shows_measured_grade_immediately(page: Page, base_url: str) -> None:
     page.set_viewport_size({"width": 375, "height": 812})
     page.goto(f"{base_url}/agency/abq-ride/")

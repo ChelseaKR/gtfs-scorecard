@@ -711,7 +711,11 @@ a:hover { color: var(--green-bright); }
   outline-color: var(--amber);
 }
 
-main { padding-top: 1.6rem; }
+/* overflow-wrap: a bare address printed as a link has nowhere to break, and
+   one of them is enough to widen the whole page past a 320px screen (WCAG
+   1.4.10). break-word only acts on a string that would otherwise overflow,
+   and does not change how tables and flex rows size themselves. */
+main { padding-top: 1.6rem; overflow-wrap: break-word; }
 main:focus { outline: none; }
 .loading { color: var(--ink-soft); }
 
@@ -3315,11 +3319,11 @@ main p,
     border-top: 1px solid var(--line);
     border-inline-start: 0;
   }
-  .finding-picker a {
-    max-width: 15rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  /* The codes are what tell these links apart. Cut to fit they read "01
+     score", "02 scorecar", "03 scoreca", so on a narrow screen they wrap
+     onto more lines instead (WCAG 1.4.10). */
+  .finding-picker { flex-wrap: wrap; overflow-x: visible; }
+  .finding-picker a { white-space: normal; overflow-wrap: anywhere; }
 }
 
 /* Detailed validator evidence is important but secondary to the top fixes.
