@@ -40,6 +40,7 @@
   --ink: #20241f;
   --ink-soft: #3d4339;     /* darkened to clear AAA 7:1 on paper/card/paper-deep */
   --line: #c6ccbe;
+  --field-line: #727a6c;   /* edge of a text field: 3:1 on paper, card, paper-deep (1.4.11) */
   --green: #163a2c;        /* primary civic green, darkened to clear AAA 7:1 */
   --green-bright: #1d4633; /* darkened to clear AAA 7:1 as text */
   --grade-a: #1d5c40;
@@ -775,7 +776,7 @@ main:focus { outline: none; }
   font: inherit;
   min-height: 44px;
   padding: 0.6rem 0.85rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--card);
   color: var(--ink);
@@ -807,7 +808,7 @@ main:focus { outline: none; }
   font: inherit;
   min-height: 44px;
   padding: 0.4rem 0.6rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--card);
   color: var(--ink);
@@ -1225,7 +1226,7 @@ main:focus { outline: none; }
   width: 100%;
   min-height: 44px;
   padding: 0.5rem 0.7rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--paper);
   color: var(--ink);
@@ -1823,7 +1824,7 @@ main:focus { outline: none; }
   min-height: 44px;
   max-width: 100%;
   padding: 0.35rem 0.5rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--card);
   color: var(--ink);
@@ -2046,7 +2047,7 @@ main:focus { outline: none; }
   line-height: 1.5;
   color: var(--ink);
   background: var(--card);
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   resize: vertical;
   max-width: 100%;
@@ -2483,7 +2484,7 @@ main:focus { outline: none; }
 .cohort-note > summary { cursor: pointer; font-size: 0.8rem; color: var(--green);
   width: fit-content; }
 .note-input { display: block; width: 100%; margin: 0.4rem 0 0; font: inherit; font-size: 0.9rem;
-  padding: 0.5rem 0.6rem; border: 1.5px solid var(--line); border-radius: var(--radius);
+  padding: 0.5rem 0.6rem; border: 1.5px solid var(--field-line); border-radius: var(--radius);
   background: var(--card); color: var(--ink); resize: vertical; }
 .note-input:focus-visible { outline: 3px solid var(--green); outline-offset: 1px; }
 .shared-fixes { margin: 0; padding-left: 1.2rem; }
@@ -2555,7 +2556,7 @@ main:focus { outline: none; }
   font-size: 1rem;
   min-height: 44px;
   padding: 0.55rem 0.7rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--card);
   color: var(--ink);
@@ -2687,7 +2688,7 @@ main:focus { outline: none; }
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 0.8rem;
   padding: 0.5rem 0.6rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--card);
   color: var(--ink);
@@ -2984,6 +2985,7 @@ main p,
     --ink: #e9e4d7;
     --ink-soft: #c2c8bc;     /* lightened to clear AAA 7:1 on the dark card */
     --line: #363b34;
+    --field-line: #757d71;
     --card: #1d2125;
     --green: #7fd3a6;        /* links: light mint, AAA on the dark ground */
     --green-bright: #97e0bd;
@@ -3035,6 +3037,7 @@ main p,
   --ink: #e9e4d7;
   --ink-soft: #c2c8bc;     /* lightened so muted text clears AAA on the dark card */
   --line: #363b34;
+  --field-line: #757d71;
   --card: #1d2125;
   --green: #7fd3a6;
   --green-bright: #97e0bd;
@@ -3068,6 +3071,7 @@ main p,
   --ink: #000000;
   --ink-soft: #1a1a1a;
   --line: #555555;
+  --field-line: #555555;
   --card: #ffffff;
   --green: #0a4420;
   --green-bright: #0a4420;
@@ -3276,7 +3280,7 @@ main p,
   margin: 0.35rem 0 0.55rem;
   padding: 0.75rem;
   resize: vertical;
-  border: 1px solid var(--line);
+  border: 1px solid var(--field-line);
   border-radius: var(--radius-sm);
   background: var(--card);
   color: var(--ink);
