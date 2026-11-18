@@ -12854,12 +12854,16 @@ def _trend_chart_and_table(points: list[dict[str, Any]]) -> tuple[str, str]:
         + f"<td>{esc(p['expired_pct'])}%</td></tr>"
         for p in reversed(points)
     )
+    # The table is the chart's equivalent, so it is named by its heading and
+    # each column header is scoped, as on the site's other tables.
     table = (
-        '<section class="feed-details"><h2 class="section-title">By date</h2>'
-        '<table class="leaderboard"><thead><tr><th>Date</th><th>Avg score</th>'
-        "<th>Feeds</th>"
-        + ("<th>Of which rescored</th>" if rescored_col else "")
-        + "<th>Expired</th></tr></thead>"
+        '<section class="feed-details">'
+        '<h2 class="section-title" id="trend-by-date-h">By date</h2>'
+        '<table class="leaderboard" aria-labelledby="trend-by-date-h"><thead><tr>'
+        '<th scope="col">Date</th><th scope="col">Avg score</th>'
+        '<th scope="col">Feeds</th>'
+        + ('<th scope="col">Of which rescored</th>' if rescored_col else "")
+        + '<th scope="col">Expired</th></tr></thead>'
         f"<tbody>{rows}</tbody></table></section>"
     )
     chart = (

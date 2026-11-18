@@ -7129,6 +7129,27 @@ def test_trend_sections_show_the_axis_range_under_the_chart() -> None:
     assert "Score axis 68 to 72. 2026-10-02 to 2026-10-03." in html
 
 
+def test_trend_by_date_table_names_itself_and_scopes_its_headers() -> None:
+    """The by-date table is the equivalent of the chart, so it has to read well.
+
+    A screen reader announces a table by its name and each cell by its column
+    header. This one had neither a name nor scoped headers, unlike the other
+    tables on the site (WCAG 1.3.1).
+    """
+    from scorecard_pipeline.render_site import _trend_sections
+
+    html = _trend_sections(_NATIVE_POINTS, _NATIVE_SUMMARY, [])
+    table = html[html.index('<table class="leaderboard"', html.index(">By date</h2>")) :]
+    table = table[: table.index("</table>")]
+    opening = table[: table.index(">")]
+    labelled_by = re.search(r'aria-labelledby="([^"]+)"', opening)
+    assert labelled_by, "the by-date table has no accessible name"
+    assert f'id="{labelled_by.group(1)}">By date</h2>' in html
+    headers = re.findall(r"<th\b([^>]*)>", table)
+    assert len(headers) >= 4
+    assert all('scope="col"' in attrs for attrs in headers)
+
+
 def _compact_rollup(count: int) -> dict[str, Any]:
     grades = ["A", "B", "C", "D", "F"]
     members = []
