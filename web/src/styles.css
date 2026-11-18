@@ -40,6 +40,7 @@
   --ink: #20241f;
   --ink-soft: #3d4339;     /* darkened to clear AAA 7:1 on paper/card/paper-deep */
   --line: #c6ccbe;
+  --field-line: #727a6c;   /* edge of a text field: 3:1 on paper, card, paper-deep (1.4.11) */
   --green: #163a2c;        /* primary civic green, darkened to clear AAA 7:1 */
   --green-bright: #1d4633; /* darkened to clear AAA 7:1 as text */
   --grade-a: #1d5c40;
@@ -379,6 +380,16 @@ a:hover { color: var(--green-bright); }
   border-radius: 3px;
 }
 
+/* A placeholder here is example copy the reader needs ("e.g. US or CA"), so
+   it is held to the text bar. The browser default is a mid gray that lands at
+   4.47:1 on the light card and 3.5:1 on the dark one. --ink-soft is measured
+   by check_contrast.py on every surface a field sits on. opacity undoes the
+   fade Firefox applies. */
+::placeholder {
+  color: var(--ink-soft);
+  opacity: 1;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -391,11 +402,14 @@ a:hover { color: var(--green-bright); }
   border: 0;
 }
 
+/* The skip link slides in at the top of the page, where the sticky header
+   sits (z-index 100), so it has to stack above the header or it is focused
+   and invisible. tests/test_focus_not_obscured.py holds the order. */
 .skip-link {
   position: absolute;
   left: 0.75rem;
   top: -3.5rem;
-  z-index: 10;
+  z-index: 110;
   background: var(--ink);
   color: var(--paper);
   padding: 0.6rem 1rem;
@@ -686,7 +700,9 @@ a:hover { color: var(--green-bright); }
    ~1.6:1. The band uses the signal amber instead (>=9:1 on pine in every theme,
    matching the landing page's --focus-ring: var(--amber)). Scoped to the
    controls that actually sit on pine, so the theme dropdown's items — which open
-   on a light --card surface and keep the blue ring — are left untouched. */
+   on a light --card surface and keep the blue ring — are left untouched. The
+   skip link is in the list because it lands on top of the header. */
+.skip-link:focus-visible,
 .site-header .brand:focus-visible,
 .nav-stop:focus-visible,
 .nav-menu-btn:focus-visible,
@@ -695,7 +711,11 @@ a:hover { color: var(--green-bright); }
   outline-color: var(--amber);
 }
 
-main { padding-top: 1.6rem; }
+/* overflow-wrap: a bare address printed as a link has nowhere to break, and
+   one of them is enough to widen the whole page past a 320px screen (WCAG
+   1.4.10). break-word only acts on a string that would otherwise overflow,
+   and does not change how tables and flex rows size themselves. */
+main { padding-top: 1.6rem; overflow-wrap: break-word; }
 main:focus { outline: none; }
 .loading { color: var(--ink-soft); }
 
@@ -760,7 +780,7 @@ main:focus { outline: none; }
   font: inherit;
   min-height: 44px;
   padding: 0.6rem 0.85rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--card);
   color: var(--ink);
@@ -792,7 +812,7 @@ main:focus { outline: none; }
   font: inherit;
   min-height: 44px;
   padding: 0.4rem 0.6rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--card);
   color: var(--ink);
@@ -1210,7 +1230,7 @@ main:focus { outline: none; }
   width: 100%;
   min-height: 44px;
   padding: 0.5rem 0.7rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--paper);
   color: var(--ink);
@@ -1808,7 +1828,7 @@ main:focus { outline: none; }
   min-height: 44px;
   max-width: 100%;
   padding: 0.35rem 0.5rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--card);
   color: var(--ink);
@@ -2031,7 +2051,7 @@ main:focus { outline: none; }
   line-height: 1.5;
   color: var(--ink);
   background: var(--card);
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   resize: vertical;
   max-width: 100%;
@@ -2468,7 +2488,7 @@ main:focus { outline: none; }
 .cohort-note > summary { cursor: pointer; font-size: 0.8rem; color: var(--green);
   width: fit-content; }
 .note-input { display: block; width: 100%; margin: 0.4rem 0 0; font: inherit; font-size: 0.9rem;
-  padding: 0.5rem 0.6rem; border: 1.5px solid var(--line); border-radius: var(--radius);
+  padding: 0.5rem 0.6rem; border: 1.5px solid var(--field-line); border-radius: var(--radius);
   background: var(--card); color: var(--ink); resize: vertical; }
 .note-input:focus-visible { outline: 3px solid var(--green); outline-offset: 1px; }
 .shared-fixes { margin: 0; padding-left: 1.2rem; }
@@ -2540,7 +2560,7 @@ main:focus { outline: none; }
   font-size: 1rem;
   min-height: 44px;
   padding: 0.55rem 0.7rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--card);
   color: var(--ink);
@@ -2672,7 +2692,7 @@ main:focus { outline: none; }
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 0.8rem;
   padding: 0.5rem 0.6rem;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--field-line);
   border-radius: var(--radius);
   background: var(--card);
   color: var(--ink);
@@ -2726,8 +2746,11 @@ main:focus { outline: none; }
   text-transform: uppercase; color: var(--amber);
   display: flex; align-items: center; gap: .55rem; margin: 0 0 1rem;
 }
+/* The status dot blinks twice as the board arrives, then holds steady. It has
+   no pause control, so it must not blink for more than five seconds on its
+   own (WCAG 2.2.2); tests/test_motion_stops.py holds that for every animation. */
 .board-kicker .blip { width: 8px; height: 8px; border-radius: 50%; background: var(--amber);
-  box-shadow: 0 0 9px var(--amber); animation: blip 2s steps(1) infinite; }
+  box-shadow: 0 0 9px var(--amber); animation: blip 2s steps(1) 2; }
 @keyframes blip { 50% { opacity: .25; } }
 .board-title { font-family: var(--font-display); font-weight: 900;
   font-size: clamp(2rem, 5.5vw, 3.4rem); line-height: .98; letter-spacing: -.02em; margin: 0 0 .2rem; }
@@ -2966,6 +2989,7 @@ main p,
     --ink: #e9e4d7;
     --ink-soft: #c2c8bc;     /* lightened to clear AAA 7:1 on the dark card */
     --line: #363b34;
+    --field-line: #757d71;
     --card: #1d2125;
     --green: #7fd3a6;        /* links: light mint, AAA on the dark ground */
     --green-bright: #97e0bd;
@@ -3017,6 +3041,7 @@ main p,
   --ink: #e9e4d7;
   --ink-soft: #c2c8bc;     /* lightened so muted text clears AAA on the dark card */
   --line: #363b34;
+  --field-line: #757d71;
   --card: #1d2125;
   --green: #7fd3a6;
   --green-bright: #97e0bd;
@@ -3050,6 +3075,7 @@ main p,
   --ink: #000000;
   --ink-soft: #1a1a1a;
   --line: #555555;
+  --field-line: #555555;
   --card: #ffffff;
   --green: #0a4420;
   --green-bright: #0a4420;
@@ -3258,7 +3284,7 @@ main p,
   margin: 0.35rem 0 0.55rem;
   padding: 0.75rem;
   resize: vertical;
-  border: 1px solid var(--line);
+  border: 1px solid var(--field-line);
   border-radius: var(--radius-sm);
   background: var(--card);
   color: var(--ink);
@@ -3293,11 +3319,11 @@ main p,
     border-top: 1px solid var(--line);
     border-inline-start: 0;
   }
-  .finding-picker a {
-    max-width: 15rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  /* The codes are what tell these links apart. Cut to fit they read "01
+     score", "02 scorecar", "03 scoreca", so on a narrow screen they wrap
+     onto more lines instead (WCAG 1.4.10). */
+  .finding-picker { flex-wrap: wrap; overflow-x: visible; }
+  .finding-picker a { white-space: normal; overflow-wrap: anywhere; }
 }
 
 /* Detailed validator evidence is important but secondary to the top fixes.
@@ -3570,6 +3596,12 @@ body {
   z-index: 100;
   box-shadow: 0 8px 24px rgb(5 22 16 / 0.18);
 }
+/* The header stays on screen, so anything the browser scrolls to must stop
+   below it: a control reached with Shift+Tab, an in-page link target, the
+   main region after the skip link. Without this the browser parks the target
+   at the top edge, under the header (WCAG 2.4.11). The header is at most
+   4.2rem tall; 5rem leaves a little air. */
+html { scroll-padding-top: 5rem; }
 
 main {
   padding-top: clamp(1.8rem, 4vw, 3rem);

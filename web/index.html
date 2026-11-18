@@ -206,9 +206,15 @@
     font-weight: 700;
   }
   .skip:focus { left: 0; }
+  /* Placeholder text is read, so it gets a measured color rather than the
+     browser's mid gray (4.1:1 on paper). */
+  ::placeholder { color: var(--ink-soft); opacity: 1; }
   :focus-visible { outline: 3px solid var(--focus-page); outline-offset: 3px; }
+  /* The ring follows the surface. These are the pine bands; everything else,
+     the light pilot band included, keeps the page ring.
+     tests/test_landing_focus_ring.py holds this list to the bands. */
   .home-header :focus-visible,
-  .movement :focus-visible,
+  .workflow-run :focus-visible,
   footer :focus-visible { outline-color: var(--focus-dark); }
   .home-header .theme-menu :focus-visible { outline-color: var(--focus-page); }
   .action-primary:focus-visible,
@@ -2040,6 +2046,12 @@
     });
     document.addEventListener("click", function (event) {
       if (isOpen() && event.target instanceof Node && !topbar.contains(event.target)) closeMenu(false);
+    });
+    // Tabbing past the last control would leave the open panel over the page
+    // with the focused control behind it, so close as focus leaves the bar.
+    topbar.addEventListener("focusout", function (event) {
+      var next = event.relatedTarget;
+      if (isOpen() && next instanceof Node && !topbar.contains(next)) closeMenu(false);
     });
     var mobile = window.matchMedia("(max-width: 1120px)");
     function resetAtDesktop(event) {

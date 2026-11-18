@@ -23,6 +23,31 @@ function setStatus(message, kind) {
   status.className = `form-status form-status-${kind}`;
 }
 
+/** Mark one field as the field in error and tie the status message to it.
+ *  With the message named in aria-describedby, a screen reader reads it
+ *  together with the field once focus lands there, instead of leaving it in
+ *  a live region that the move of focus can talk over.
+ *  @param {HTMLElement | null | undefined} field */
+function flagInvalid(field) {
+  if (!field) return;
+  field.setAttribute("aria-invalid", "true");
+  const ids = (field.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+  if (!ids.includes(status.id)) ids.push(status.id);
+  field.setAttribute("aria-describedby", ids.join(" "));
+}
+
+/** Undo flagInvalid on every field, before the form is checked again. */
+function clearInvalid() {
+  for (const field of form.querySelectorAll("[aria-invalid]")) {
+    field.removeAttribute("aria-invalid");
+    const ids = (field.getAttribute("aria-describedby") || "")
+      .split(/\s+/)
+      .filter((id) => id && id !== status.id);
+    if (ids.length) field.setAttribute("aria-describedby", ids.join(" "));
+    else field.removeAttribute("aria-describedby");
+  }
+}
+
 /** Safe text escaping via the DOM (same technique as app.js's esc()). @param {unknown} text */
 function esc(text) {
   const div = document.createElement("div");
@@ -74,17 +99,16 @@ if (!TRY_URL) {
     const countryField = /** @type {HTMLInputElement} */ (
       form.querySelector("#try-country")
     );
-    urlField.removeAttribute("aria-invalid");
-    countryField.removeAttribute("aria-invalid");
+    clearInvalid();
     if (!urlField.validity.valid || !/^https?:\/\/.+/i.test(url)) {
       setStatus("The GTFS Schedule URL should start with http:// or https://.", "err");
-      urlField.setAttribute("aria-invalid", "true");
+      flagInvalid(urlField);
       urlField.focus();
       return;
     }
     if (!countryField.validity.valid || !/^[A-Z]{2}$/.test(country)) {
       setStatus("Enter a two-letter ISO country or territory code, like CA or NZ.", "err");
-      countryField.setAttribute("aria-invalid", "true");
+      flagInvalid(countryField);
       countryField.focus();
       return;
     }

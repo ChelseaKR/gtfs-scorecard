@@ -52,6 +52,31 @@ async function populateAgencies() {
   }
 }
 
+/** Mark one field as the field in error and tie the status message to it.
+ *  With the message named in aria-describedby, a screen reader reads it
+ *  together with the field once focus lands there, instead of leaving it in
+ *  a live region that the move of focus can talk over.
+ *  @param {HTMLElement | null | undefined} field */
+function flagInvalid(field) {
+  if (!field) return;
+  field.setAttribute("aria-invalid", "true");
+  const ids = (field.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+  if (!ids.includes(status.id)) ids.push(status.id);
+  field.setAttribute("aria-describedby", ids.join(" "));
+}
+
+/** Undo flagInvalid on every field, before the form is checked again. */
+function clearInvalid() {
+  for (const field of form.querySelectorAll("[aria-invalid]")) {
+    field.removeAttribute("aria-invalid");
+    const ids = (field.getAttribute("aria-describedby") || "")
+      .split(/\s+/)
+      .filter((id) => id && id !== status.id);
+    if (ids.length) field.setAttribute("aria-describedby", ids.join(" "));
+    else field.removeAttribute("aria-describedby");
+  }
+}
+
 /** @param {string} message @param {"ok"|"err"|"info"|""} kind */
 function setStatus(message, kind) {
   status.textContent = message;
@@ -72,20 +97,19 @@ if (!SUBSCRIBE_URL) {
     const email = String(data.get("email") || "").trim();
     const agency = String(data.get("agency") || "");
     const kinds = data.getAll("kinds").map(String);
-    emailInput.removeAttribute("aria-invalid");
-    for (const input of kindInputs) input.removeAttribute("aria-invalid");
+    clearInvalid();
     if (!email || !emailInput.validity.valid) {
       setStatus(
         email ? "Enter a complete email address, like you@agency.gov." : "Enter your email.",
         "err"
       );
-      emailInput.setAttribute("aria-invalid", "true");
+      flagInvalid(emailInput);
       emailInput.focus();
       return;
     }
     if (!kinds.length) {
       setStatus("Choose at least one kind of alert.", "err");
-      for (const input of kindInputs) input.setAttribute("aria-invalid", "true");
+      for (const input of kindInputs) flagInvalid(input);
       kindInputs[0]?.focus();
       return;
     }

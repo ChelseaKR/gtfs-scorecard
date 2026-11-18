@@ -7129,6 +7129,63 @@ def test_trend_sections_show_the_axis_range_under_the_chart() -> None:
     assert "Score axis 68 to 72. 2026-10-02 to 2026-10-03." in html
 
 
+def test_trend_by_date_table_names_itself_and_scopes_its_headers() -> None:
+    """The by-date table is the equivalent of the chart, so it has to read well.
+
+    A screen reader announces a table by its name and each cell by its column
+    header. This one had neither a name nor scoped headers, unlike the other
+    tables on the site (WCAG 1.3.1).
+    """
+    from scorecard_pipeline.render_site import _trend_sections
+
+    html = _trend_sections(_NATIVE_POINTS, _NATIVE_SUMMARY, [])
+    table = html[html.index('<table class="leaderboard"', html.index(">By date</h2>")) :]
+    table = table[: table.index("</table>")]
+    opening = table[: table.index(">")]
+    labelled_by = re.search(r'aria-labelledby="([^"]+)"', opening)
+    assert labelled_by, "the by-date table has no accessible name"
+    assert f'id="{labelled_by.group(1)}">By date</h2>' in html
+    headers = re.findall(r"<th\b([^>]*)>", table)
+    assert len(headers) >= 4
+    assert all('scope="col"' in attrs for attrs in headers)
+
+
+def test_tables_that_scroll_sideways_can_be_reached_and_are_named() -> None:
+    """A table wider than a narrow screen scrolls inside its wrapper.
+
+    With nothing focusable inside it, that wrapper cannot be scrolled from the
+    keyboard in a browser that does not focus scroll areas on its own (Safari),
+    so the columns past the edge cannot be read (WCAG 2.1.1). The feed history
+    table and the weights sandbox table were measured overflowing at 320px.
+    Each wrapper is now a focusable region named by its table's caption.
+    """
+    import scorecard_pipeline.render_site as rs
+
+    def wrapper_of(html: str, caption: str) -> str:
+        table_at = html.index(caption)
+        start = html.rindex("<div", 0, table_at)
+        return html[start : html.index(">", start) + 1]
+
+    history = rs._feed_history_section(
+        [
+            {"date": "2026-10-01", "grade": "B", "score": 81.0, "feed_sha256": "a" * 64},
+            {"date": "2026-10-02", "grade": "B", "score": 81.0, "feed_sha256": "a" * 64},
+        ]
+    )
+    for html, caption in (
+        (history, "Feed history by published file"),
+        (rs._SANDBOX_JS, "Comparison-eligible feed records per grade band"),
+    ):
+        opening = wrapper_of(html, caption).replace('\\"', '"')
+        assert 'tabindex="0"' in opening, opening
+        assert 'role="region"' in opening, opening
+        labelled_by = re.search(r'aria-labelledby="([^"]+)"', opening)
+        assert labelled_by, opening
+        assert re.search(
+            rf'<caption[^>]*id=\\?"{labelled_by.group(1)}\\?"[^>]*>{re.escape(caption)}', html
+        )
+
+
 def _compact_rollup(count: int) -> dict[str, Any]:
     grades = ["A", "B", "C", "D", "F"]
     members = []

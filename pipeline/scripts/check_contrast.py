@@ -4,7 +4,9 @@
 Asserts every text/background pair we touch clears AAA: 7:1 for normal text,
 4.5:1 for large text (>=18.66px bold or >=24px). Covers the default light
 palette, the landing page tokens, the OS/explicit dark theme, and the
-high-contrast theme. Run before committing the accessibility work:
+high-contrast theme. Also asserts the non-text pairs below clear 3:1 (WCAG
+1.4.11): the edge a text field is found by. Run before committing the
+accessibility work:
 
     python3 pipeline/scripts/check_contrast.py
 """
@@ -150,6 +152,17 @@ PAIRS: list[tuple[str, str, str, bool]] = [
     ("embed badge date line (soft ink) on paper", _EMBED_INK_SOFT, _EMBED_PAPER, False),
 ]
 
+# Each entry: (label, fg, bg). Parts of a control a reader needs in order to
+# find it, held to 3:1 against what they sit on (WCAG 1.4.11). A text field,
+# select or text area is filled within 1.1:1 of the page in every theme, so
+# its border is the whole boundary.
+NON_TEXT_MINIMUM = 3.0
+NON_TEXT_PAIRS: list[tuple[str, str, str]] = [
+    ("app --field-line field edge on --paper", "field-line", "paper"),
+    ("app --field-line field edge on --card", "field-line", "card"),
+    ("app --field-line field edge on --paper-deep", "field-line", "paper-deep"),
+]
+
 THEMES: dict[str, dict[str, str]] = {
     "light": {
         # app shared tokens
@@ -158,6 +171,7 @@ THEMES: dict[str, dict[str, str]] = {
         "paper": "#f2f3ee",
         "paper-deep": "#e5e8df",
         "card": "#fbfcf8",
+        "field-line": "#727a6c",
         "green": "#163a2c",
         "green-bright": "#1d4633",
         "error": "#8e2a23",
@@ -194,6 +208,7 @@ THEMES: dict[str, dict[str, str]] = {
         "paper": "#15181b",
         "paper-deep": "#0f1113",
         "card": "#1d2125",
+        "field-line": "#757d71",
         "green": "#7fd3a6",
         "green-bright": "#97e0bd",
         "error": "#f0938a",
@@ -230,6 +245,7 @@ THEMES: dict[str, dict[str, str]] = {
         "paper": "#ffffff",
         "paper-deep": "#f2f2f2",
         "card": "#ffffff",
+        "field-line": "#555555",
         "green": "#0a4420",
         "green-bright": "#0a4420",
         "error": "#7a0000",
@@ -284,13 +300,23 @@ def main() -> int:
             if not ok:
                 fails.append(f"[{theme_name}] {label} ({r:.2f} < {need})")
             print(f"{'OK ' if ok else 'FAIL'} {r:5.2f} (need {need}) {label}  [{fgh} on {bgh}]")
+        for label, fg, bg in NON_TEXT_PAIRS:
+            fgh, bgh = resolve(fg, theme), resolve(bg, theme)
+            r = ratio(fgh, bgh)
+            ok = r >= NON_TEXT_MINIMUM
+            if not ok:
+                fails.append(f"[{theme_name}] {label} ({r:.2f} < {NON_TEXT_MINIMUM})")
+            print(
+                f"{'OK ' if ok else 'FAIL'} {r:5.2f} (need {NON_TEXT_MINIMUM}) {label}  "
+                f"[{fgh} on {bgh}]"
+            )
     print()
     if fails:
         print(f"{len(fails)} FAILURES:")
         for f in fails:
             print("  -", f)
         return 1
-    print("All pairs pass AAA thresholds across every theme.")
+    print("All text pairs pass AAA and all non-text pairs pass 3:1 across every theme.")
     return 0
 
 

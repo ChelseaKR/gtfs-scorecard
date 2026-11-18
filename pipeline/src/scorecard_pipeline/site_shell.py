@@ -370,7 +370,7 @@ FOOTER_HTML_ES = f"""<footer class="site-footer">
       <a href="/accessibility/" hreflang="en">Accesibilidad (en inglés)</a> ·
       <a href="/about/#privacy" hreflang="en">Privacidad (en inglés)</a> ·
       {ANALYTICS_OPT_OUT_HTML_ES} ·
-      <a href="/" hreflang="en">English</a></p>
+      <a href="/" hreflang="en" lang="en">English</a></p>
     </div>
   </footer>"""
 

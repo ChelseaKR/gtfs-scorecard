@@ -1192,8 +1192,13 @@ def _feed_history_section(history: list[dict[str, Any]]) -> str:
         "file, newest first. A new file means the published zip changed. Grades from "
         "earlier rubric versions are shown with their rubric and are not comparable with "
         "today&rsquo;s grade or the trend above.</p>"
-        '<div class="table-wrap"><table class="route-table">'
-        '<caption class="visually-hidden">Feed history by published file</caption>'
+        # The wrapper scrolls sideways on a narrow screen and holds nothing
+        # focusable, so it is a named, focusable region: without that the
+        # columns past the edge cannot be reached from the keyboard in Safari.
+        '<div class="table-wrap" tabindex="0" role="region" '
+        'aria-labelledby="feed-history-caption"><table class="route-table">'
+        '<caption class="visually-hidden" id="feed-history-caption">'
+        "Feed history by published file</caption>"
         '<thead><tr><th scope="col">Checked</th><th scope="col">Published file</th>'
         '<th scope="col">Service dates through</th><th scope="col">Grade at the time</th>'
         f"</tr></thead><tbody>{''.join(body_rows)}</tbody></table></div>{more}</section>"
@@ -7857,7 +7862,7 @@ def _render_spanish_rider_page() -> str:
       <li><a href="/">GTFS Scorecard</a></li>
       <li><span aria-current="page">Espa&ntilde;ol</span></li>
     </ol></nav>
-    <p><a href="/" hreflang="en">Read this site in English</a></p>
+    <p><a href="/" hreflang="en" lang="en">Read this site in English</a></p>
     <h1 class="page-title">{esc(text["spanish_page_title"])}</h1>
     <p class="page-lede">{esc(text["spanish_page_lede"])}</p>
 
@@ -8361,8 +8366,8 @@ _SANDBOX_JS = r"""    <script>
               : changed + " of " + agencies.length +
                 " eligible feed records change letter grade under these weights.") +
             "</p>" +
-            '<div class="sandbox-table-scroll"><table class="sandbox-table">' +
-            "<caption class=\"visually-hidden\">Comparison-eligible feed records per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
+            '<div class="sandbox-table-scroll" tabindex="0" role="region" aria-labelledby="sandbox-table-caption"><table class="sandbox-table">' +
+            "<caption class=\"visually-hidden\" id=\"sandbox-table-caption\">Comparison-eligible feed records per grade band: the sandbox's baseline at the published weights versus your weights</caption>" +
             "<thead><tr><th scope=\"col\">Grade</th><th scope=\"col\">At published weights</th>" +
             "<th scope=\"col\">Your weights</th><th scope=\"col\">Change</th></tr></thead>" +
             "<tbody>" + rows + "</tbody></table></div>";
@@ -12854,12 +12859,16 @@ def _trend_chart_and_table(points: list[dict[str, Any]]) -> tuple[str, str]:
         + f"<td>{esc(p['expired_pct'])}%</td></tr>"
         for p in reversed(points)
     )
+    # The table is the chart's equivalent, so it is named by its heading and
+    # each column header is scoped, as on the site's other tables.
     table = (
-        '<section class="feed-details"><h2 class="section-title">By date</h2>'
-        '<table class="leaderboard"><thead><tr><th>Date</th><th>Avg score</th>'
-        "<th>Feeds</th>"
-        + ("<th>Of which rescored</th>" if rescored_col else "")
-        + "<th>Expired</th></tr></thead>"
+        '<section class="feed-details">'
+        '<h2 class="section-title" id="trend-by-date-h">By date</h2>'
+        '<table class="leaderboard" aria-labelledby="trend-by-date-h"><thead><tr>'
+        '<th scope="col">Date</th><th scope="col">Avg score</th>'
+        '<th scope="col">Feeds</th>'
+        + ('<th scope="col">Of which rescored</th>' if rescored_col else "")
+        + '<th scope="col">Expired</th></tr></thead>'
         f"<tbody>{rows}</tbody></table></section>"
     )
     chart = (
