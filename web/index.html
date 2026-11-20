@@ -32,7 +32,8 @@
 </script>
 <script src="/src/theme.js" defer></script>
 <script src="/src/measure.js" defer></script>
-<script src="/src/landing-scorecard.js?v=20261105-fragment" defer></script>
+<script src="/src/agency-combobox.js?v=20261119-agency-search" defer></script>
+<script src="/src/landing-scorecard.js?v=20261119-agency-search" defer></script>
 <script src="/src/plan-summary.js" defer></script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -461,23 +462,24 @@
   }
   .feed-results[hidden] { display: none; }
   .feed-results li + li { border-top: 1px solid var(--line-ink); }
-  .feed-results button {
-    width: 100%;
+  .feed-results [role="option"] {
     min-height: 48px;
     display: grid;
     gap: 0.08rem;
     padding: 0.65rem 0.75rem;
     color: var(--ink);
-    background: transparent;
-    border: 0;
-    font: inherit;
-    text-align: left;
     cursor: pointer;
   }
-  .feed-results button:hover,
-  .feed-results button:focus-visible { background: var(--paper-2); }
-  .feed-result-name { font-weight: 700; }
-  .feed-result-id { color: var(--ink-soft); font-family: var(--mono); font-size: 0.68rem; }
+  .feed-results [role="option"]:hover { background: var(--paper-2); }
+  /* The active option is where Enter lands; focus stays in the input
+     (aria-activedescendant), so the option draws its own focus ring. */
+  .feed-results [role="option"].is-active {
+    background: var(--paper-2);
+    outline: 3px solid var(--focus-page);
+    outline-offset: -3px;
+  }
+  .agency-option-name { font-weight: 700; }
+  .agency-option-detail { color: var(--ink-soft); font-family: var(--mono); font-size: 0.68rem; }
   .picker-note { min-height: 1.35rem; margin: 0.4rem 0 0; color: var(--ink-soft); font-size: 0.76rem; }
   .hero-actions { display: grid; gap: 0.55rem; margin-top: 1.2rem; }
   .action {
@@ -1675,14 +1677,23 @@
         </div>
 
         <div class="desk-tools">
-          <form class="feed-picker" id="feed-picker" action="/app/" method="get" role="search">
+          <form class="feed-picker" id="feed-picker" action="/app/" method="get" role="search"
+            data-msg-short="Type at least two characters to search published scorecards."
+            data-msg-loading="Loading agency names…"
+            data-msg-none="No published scorecard matches that search."
+            data-msg-one="1 match. Choose it to show the scorecard."
+            data-msg-many="{count} matches. Choose one to show its scorecard."
+            data-msg-more="{count} of {total} matches shown. Keep typing to narrow them."
+            data-msg-closed="Search results closed."
+            data-msg-error="The directory could not load. Browse every scorecard instead."
+            data-msg-detail="Feed ID {id}">
             <label for="feed-search">Find a published feed</label>
             <div class="feed-search-row">
-              <input id="feed-search" name="q" type="search" autocomplete="off" enterkeyhint="search" aria-controls="feed-results" aria-describedby="picker-status" placeholder="Agency name">
+              <input id="feed-search" name="q" type="search" autocomplete="off" enterkeyhint="search" aria-describedby="picker-status" placeholder="Agency name">
               <button type="submit">Find</button>
             </div>
             <ul class="feed-results" id="feed-results" aria-label="Matching scorecards" hidden></ul>
-            <p class="picker-note" id="picker-status" role="status" aria-live="polite">Search the published directory. The selected record opens in the example below.</p>
+            <p class="picker-note" id="picker-status" role="status" aria-live="polite">Search the published directory. Choosing an agency opens its scorecard.</p>
           </form>
 
           <nav class="hero-actions" aria-label="Start a feed-quality task">

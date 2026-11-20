@@ -29,6 +29,37 @@ the declared public surface).
 
 ### Changed
 
+- **The home page search opens the agency's page.** Typing in "Find a
+  published feed" now suggests agencies as you type. Choosing one, or pressing
+  Enter on a name only one agency has, goes straight to `/agency/<id>/`
+  instead of loading it into the example card. A broader search, or a name two
+  feeds share, still opens the results list in the app, and without
+  JavaScript the form still submits there. Suggestions come from a new small
+  index (`/data/agency-index.json`, about 250 KB for the full corpus before
+  compression) that loads on first keystroke, not with the page. Matching
+  ignores case, accents and punctuation and knows the abbreviations agencies
+  carry in parentheses, so "BART" finds Bay Area Rapid Transit first. ADR 0082.
+- **The alerts form's agency field is a find-as-you-type box.** It replaces a
+  `<select>` that downloaded and unpacked the full history index (84 MB in
+  production) just to list names, and that defaulted to "All agencies", so a
+  form sent before the list loaded followed every feed. Nothing is chosen
+  until you pick an agency or "All agencies"; an untouched field is now an
+  error that names the fix. Both pickers share one WAI-ARIA 1.2 combobox
+  (`web/src/agency-combobox.js`) and announce how many agencies match.
+- **"Watch this feed" on an agency page opens the alerts form with that agency
+  already chosen** (`/subscribe.html?agency=<id>`), instead of a blank form.
+- **The alerts form sends one request at a time.** While a request is out the
+  button stays disabled and shows a spinner, and the form is marked busy.
+  Pressing the button again after a request was accepted repeats the answer
+  instead of asking for a second confirmation email, which the API refuses
+  for 15 minutes. The form no longer clears itself after a success, so the
+  address it was sent to stays visible.
+- **The alerts form catches an address like `you@agency` itself.** The API
+  needs a dot and an ending after the @, which the browser does not check, so
+  such an address waited out the API round trip (up to 7 seconds on a cold
+  start) to come back as a terse server error. It now gets the form's own
+  "Enter a complete email address" message at once.
+
 - **Half the agency pages name the source feed URL in search results, as a
   test.** The queries that reach agency pages are "<agency> gtfs", the feed's
   own URL and "official", and each page already shows its source feed link.

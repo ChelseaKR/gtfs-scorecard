@@ -27,14 +27,11 @@ repository's accessibility issue template, or through the contact link on
   that branch (Appendix A) are part of what this report claims. Until the branch is
   merged and deployed, the live site differs on the rows marked "after the 2026-11-20
   fixes".
-- **Two agency pickers are rated as they will be after the agency-search branch lands.**
-  `feat/agency-search-typeahead-2026-11` replaces the home page search with a
-  find-as-you-type combobox and the alerts form's agency `<select>` with the same
-  combobox. Rows 1.4.13, 2.1.1, 2.4.7, 2.5.8, 3.2.2, 3.3.1, 3.3.7, 4.1.2 and 4.1.3
-  cite it. Until it
-  merges, the home page search is a text field with a button list of results and the
-  alerts form uses a native `<select>`; both were also checked and conform, so no row
-  changes level either way.
+- **The two agency pickers are find-as-you-type comboboxes.** The home page search
+  and the alerts form's agency field share one WAI-ARIA 1.2 combobox (ADR 0082). Rows
+  1.4.13, 2.1.1, 2.4.7, 2.5.8, 3.2.2, 3.3.1, 3.3.7, 4.1.2 and 4.1.3 cite them. They
+  replaced a text field with a button list of results and a native `<select>`, which
+  were also checked and conformed, so no row changed level when they shipped.
 - **No screen-reader walkthrough has been recorded yet.** Rows whose evidence is the
   accessibility tree, axe and code reading, rather than what NVDA or VoiceOver actually
   announce, say so in their remarks ("screen-reader confirmation pending"). Appendix B
@@ -50,7 +47,8 @@ repository's accessibility issue template, or through the contact link on
 ## Evaluation methods used
 
 Run on 2026-11-20 against `origin/main` at `e1c47cf4be1` plus the branch's fixes, with
-the agency-search branch (`10b3fc10a07`) overlaid for `/` and `/subscribe.html`:
+the agency pickers' code (`10b3fc10a07`, merged since) overlaid for `/` and
+`/subscribe.html`:
 
 - **axe-core 4.13** in headless Chromium, WCAG 2.0, 2.1 and 2.2 A and AA rules
   including `color-contrast` and `target-size`, on one page per template in the light
@@ -113,7 +111,7 @@ over from the earlier edition of this report are in Appendix C.
 | 1.3.3 Sensory Characteristics (Level A) | Supports | Instructions name controls by their label, never by shape, color or position. |
 | 1.4.1 Use of Color (Level A) | Supports | Grades are letters; severities carry words; the current nav stop carries `aria-current` and a filled marker; route colors on agency pages are also described in words; the equity map adds hatching. |
 | 1.4.2 Audio Control (Level A) | Not Applicable | No audio. |
-| 2.1.1 Keyboard (Level A) | Partially Supports | Every page control works from the keyboard: theme menu, nav menu, filters, the route table's highlight toggles, forms, copy buttons, and both agency pickers (Up and Down move through suggestions, Enter chooses, Escape closes; agency-search branch). Covered by `test_keyboard.py`, `test_forms.py` and the branch's `test_agency_combobox.py`. Exception: panning and zooming the MapLibre maps needs a pointer. On agency pages and `/map/` the same information is in a keyboard table on the page. On `/routes/` the national route map has no on-page equivalent; the agency list, coverage view and each agency's route table carry its information on other pages. |
+| 2.1.1 Keyboard (Level A) | Partially Supports | Every page control works from the keyboard: theme menu, nav menu, filters, the route table's highlight toggles, forms, copy buttons, and both agency pickers (Up and Down move through suggestions, Enter chooses, Escape closes). Covered by `test_keyboard.py`, `test_forms.py` and `test_agency_combobox.py`. Exception: panning and zooming the MapLibre maps needs a pointer. On agency pages and `/map/` the same information is in a keyboard table on the page. On `/routes/` the national route map has no on-page equivalent; the agency list, coverage view and each agency's route table carry its information on other pages. |
 | 2.1.2 No Keyboard Trap (Level A) | Supports | Tab walk on every tested page moved forward without getting stuck; menus and pickers close on Escape and on Tab. Map canvases are out of the tab order. |
 | 2.1.4 Character Key Shortcuts (Level A) | Not Applicable | No single-character keyboard shortcuts. |
 | 2.2.1 Timing Adjustable (Level A) | Not Applicable | No time limits on any page. Stripe Checkout's own session limit is outside this report. |
@@ -129,13 +127,13 @@ over from the earlier edition of this report are in Appendix C.
 | 2.5.4 Motion Actuation (Level A) | Not Applicable | No motion-operated functions. |
 | 3.1.1 Language of Page (Level A) | Supports | `<html lang="en">` on every page and `lang="es"` on `/es/`. After the 2026-11-20 fixes the alert confirm and unsubscribe pages and the bundle download page also declare `lang="en"`; before them they declared no language. |
 | 3.2.1 On Focus (Level A) | Supports | Focus never changes context. |
-| 3.2.2 On Input (Level A) | Supports | Typing in a picker only lists suggestions; moving through them changes nothing. On the home page (agency-search branch) a deliberate Enter, click or the Find button opens the agency page, as following a link would. Filters update results in place and announce the count. |
+| 3.2.2 On Input (Level A) | Supports | Typing in a picker only lists suggestions; moving through them changes nothing. On the home page a deliberate Enter, click or the Find button opens the agency page, as following a link would. Filters update results in place and announce the count. |
 | 3.2.6 Consistent Help (Level A) | Supports | The help mechanism is the footer's "Get help or sponsor" link to `/support/`. It is in the footer, after the main content, on every page that has the site footer, including the home page, whose footer is laid out differently. |
-| 3.3.1 Error Identification (Level A) | Supports | Forms name the problem in text, set `aria-invalid` and move focus to the field. After the 2026-11-20 fixes this includes `/bundle/setup/`, which named the missing field in its status line but did not mark or focus it. On the agency-search branch the alerts form treats an agency field with nothing chosen as an error that says how to fix it. Covered by `test_forms.py` and `test_bundle_setup_form.py`. |
+| 3.3.1 Error Identification (Level A) | Supports | Forms name the problem in text, set `aria-invalid` and move focus to the field. After the 2026-11-20 fixes this includes `/bundle/setup/`, which named the missing field in its status line but did not mark or focus it. The alerts form treats an agency field with nothing chosen as an error that says how to fix it. Covered by `test_forms.py` and `test_bundle_setup_form.py`. |
 | 3.3.2 Labels or Instructions (Level A) | Supports | Every field has a visible label; required fields say "(required)"; format hints sit under their fields and, after the 2026-11-20 fixes, are read with them on `/bundle/setup/` too. |
-| 3.3.7 Redundant Entry (Level A) | Supports | No form asks twice for what the reader already gave. `/bundle/setup/` leaves the delivery address optional and uses the checkout email when it is blank. On the agency-search branch, "Watch this feed" opens the alerts form with that agency already chosen. |
+| 3.3.7 Redundant Entry (Level A) | Supports | No form asks twice for what the reader already gave. `/bundle/setup/` leaves the delivery address optional and uses the checkout email when it is blank. "Watch this feed" on an agency page opens the alerts form with that agency already chosen. |
 | 4.1.1 Parsing (Level A) | Supports | Obsolete in WCAG 2.2 and treated as always satisfied. For WCAG 2.0 and 2.1: the pages are generated from templates with no duplicate IDs (axe `duplicate-id-aria`: 0). |
-| 4.1.2 Name, Role, Value (Level A) | Supports | Native controls throughout. The theme control is a `button` with `aria-expanded` opening a `menu` of `menuitemradio` (axe cannot confirm its `aria-controls` target while the menu is closed and not yet in the page); the nav menu button has `aria-expanded`/`aria-controls`; route table rows are `role="button"` with `aria-pressed`. On the agency-search branch both pickers expose `role="combobox"` with `aria-expanded`, `aria-controls` and `aria-activedescendant`, over a labeled `listbox` of `option` rows with `aria-selected`; without JavaScript each is a labeled text field. axe: 0 violations. Screen-reader confirmation pending. |
+| 4.1.2 Name, Role, Value (Level A) | Supports | Native controls throughout. The theme control is a `button` with `aria-expanded` opening a `menu` of `menuitemradio` (axe cannot confirm its `aria-controls` target while the menu is closed and not yet in the page); the nav menu button has `aria-expanded`/`aria-controls`; route table rows are `role="button"` with `aria-pressed`. Both agency pickers expose `role="combobox"` with `aria-expanded`, `aria-controls` and `aria-activedescendant`, over a labeled `listbox` of `option` rows with `aria-selected`; without JavaScript each is a labeled text field. axe: 0 violations. Screen-reader confirmation pending. |
 
 ### Table 2: Success Criteria, Level AA
 
@@ -154,17 +152,17 @@ over from the earlier edition of this report are in Appendix C.
 | 1.4.13 Content on Hover or Focus (Level AA) | Supports | No custom hover or focus pop-ups. The only hover text is native SVG `<title>` and `<abbr title>` tooltips, which the browser controls. Picker suggestions appear on typing, not on hover or focus, and Escape closes them. |
 | 2.4.5 Multiple Ways (Level AA) | Supports | Primary nav, footer, breadcrumbs, the agency directory, search, the map and program pages. The alert and download pages are steps of a process and exempt. |
 | 2.4.6 Headings and Labels (Level AA) | Supports | Headings name their sections; labels name their fields. |
-| 2.4.7 Focus Visible (Level AA) | Supports | Every element reached in the Tab walk (up to 40 per page, 25 pages) drew an outline or ring; none was invisible. Picker options, which keep focus in the field, draw their own 3 px inset ring (agency-search branch). |
+| 2.4.7 Focus Visible (Level AA) | Supports | Every element reached in the Tab walk (up to 40 per page, 25 pages) drew an outline or ring; none was invisible. Picker options, which keep focus in the field, draw their own 3 px inset ring. |
 | 2.4.11 Focus Not Obscured (Minimum) (Level AA) | Supports | The sticky header never fully covered the focused element in the Tab walk on any tested page; `test_focus_not_obscured.py` drives Shift+Tab and in-page links under it. Picker lists close when focus leaves the field. |
 | 2.5.7 Dragging Movements (Level AA) | Partially Supports | Panning a MapLibre map is the only drag on the site. Agency pages fit the map to the agency's routes and the route table highlights a route without dragging; `/map/` has the filterable agency table. The national map on `/routes/` can only be explored by dragging. |
-| 2.5.8 Target Size (Minimum) (Level AA) | Supports | Buttons, fields, chips, nav and footer links are 44 px or more; picker options 65 px, two lines each (agency-search branch). Text links inside sentences are exempt as inline. Stand-alone list and table links are 13 to 22 px tall with spacing that clears the 24 px circle test; checkboxes are 13 to 19 px but sit inside their clickable labels. The small state and country shapes on the `/app/` maps fall under the equivalent-control exception (the chip grid). axe `target-size`: 0 violations on the 25 tested pages. |
+| 2.5.8 Target Size (Minimum) (Level AA) | Supports | Buttons, fields, chips, nav and footer links are 44 px or more; picker options 65 px, two lines each. Text links inside sentences are exempt as inline. Stand-alone list and table links are 13 to 22 px tall with spacing that clears the 24 px circle test; checkboxes are 13 to 19 px but sit inside their clickable labels. The small state and country shapes on the `/app/` maps fall under the equivalent-control exception (the chip grid). axe `target-size`: 0 violations on the 25 tested pages. |
 | 3.1.2 Language of Parts (Level AA) | Supports | English on `/es/` carries `lang="en"`; other pages are English only. |
 | 3.2.3 Consistent Navigation (Level AA) | Supports | The same primary nav, in the same order, on every page with site chrome, generated from one list (`_NAV_ITEMS`, held by `test_static_nav.py`). |
 | 3.2.4 Consistent Identification (Level AA) | Supports | Shared components keep the same names across pages. |
 | 3.3.3 Error Suggestion (Level AA) | Supports | Error text says what to do ("Enter a complete email address", "Trim the list and send it again", a URL must start with http or https). |
 | 3.3.4 Error Prevention (Legal, Financial, Data) (Level AA) | Supports | Purchases go through Stripe Checkout's review step; the invoice path is a request, not a commitment; alert signup is double opt-in and unsubscribing is one link. |
 | 3.3.8 Accessible Authentication (Minimum) (Level AA) | Supports | There is no sign-in. Alert signup is confirmed from an emailed link, and bundle setup uses the order reference Stripe adds to the address; neither asks the reader to remember, transcribe or solve anything. |
-| 4.1.3 Status Messages (Level AA) | Supports | `role="status"` regions announce loading, result counts, copy confirmations and form outcomes without moving focus; on the agency-search branch the pickers announce how many agencies match, and when none do. Screen-reader confirmation pending. |
+| 4.1.3 Status Messages (Level AA) | Supports | `role="status"` regions announce loading, result counts, copy confirmations and form outcomes without moving focus; the agency pickers announce how many agencies match, and when none do. Screen-reader confirmation pending. |
 
 ### Table 3: Success Criteria, Level AAA
 
@@ -252,8 +250,8 @@ Pages, each in light and dark: `/`, `/404.html`, `/no-such-page/`, `/agency/unit
 `/app/#/agency/unitrans`, `/app/#/compare`, `/subscribe.html`, the alert confirm and
 unsubscribe pages, the bundle download page, `/program/`, `/program/california/`,
 `/bundle/`, `/bundle/setup/`, `/bundle/sample/`, `/invoice/`, `/accessibility/`,
-`/fix/expired_calendar/`, and from the agency-search branch `/`, `/subscribe.html` and
-`/agency/unitrans/`.
+`/fix/expired_calendar/`, and with the agency pickers' code overlaid, `/`,
+`/subscribe.html` and `/agency/unitrans/` again.
 
 | Check | Result |
 | --- | --- |
@@ -265,10 +263,13 @@ unsubscribe pages, the bundle download page, `/program/`, `/program/california/`
 | Reflow at 320 CSS px | No page-level sideways scroll except `/bundle/sample/` (349 px, a data table) |
 | Text spacing override | No text lost; the grade reel's hidden letters are by design |
 | Tab walk | No focus without a visible indicator; nothing fully covered by the sticky header |
-| Open agency pickers (agency-search branch), light and dark | 0 axe violations with the list open; `role="combobox"`, `aria-expanded="true"`, a named listbox, the active option ringed 3 px; options 65 px tall; the status line reads the count ("2 matches. Choose one to show its scorecard."); no sideways scroll at 320 px |
+| Open agency pickers, light and dark | 0 axe violations with the list open; `role="combobox"`, `aria-expanded="true"`, a named listbox, the active option ringed 3 px; options 65 px tall; the status line reads the count ("2 matches. Choose one to show its scorecard."); no sideways scroll at 320 px |
 
 ## Revision history
 
+- 2026-11-20: The agency pickers merged. The note and rows that rated them "after the
+  agency-search branch lands" now describe them as part of the site; no row changes
+  level.
 - 2026-11-20: Rewritten as a WCAG 2.2 A and AA report on the VPAT 2.5 Rev WCAG edition,
   after a template-by-template axe, keyboard, reflow, text-spacing and contrast pass in
   light and dark. 3.1.1, 1.3.1 and 3.3.1 hold after this branch's fixes. 2.1.1 and
