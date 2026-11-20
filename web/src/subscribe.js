@@ -124,6 +124,49 @@ function setStatus(message, kind) {
   status.className = `form-status ${kind ? `form-status-${kind}` : ""}`.trim();
 }
 
+/** The form's own sentences for problems, from data-msg-* attributes on the
+ *  form, so the wording is reviewed with the rest of the page's copy. */
+const SENTENCES = {
+  email: form.dataset.msgEmail || "",
+  kinds: form.dataset.msgKinds || "",
+  cooldown: form.dataset.msgCooldown || "",
+  rate: form.dataset.msgRate || "",
+  other: form.dataset.msgOther || "",
+};
+
+/** Turn a refusal from the alerts API into the form's own sentence and the
+ *  field it is about. The API's text ("invalid agency id: 'x'") is written for
+ *  developers and is never shown. The API names the field in `code`
+ *  (infra/alerts/handler.py); a reply without one, from the API as deployed
+ *  before that, is read by its text.
+ *  @param {number} statusCode @param {any} reply
+ *  @returns {{message: string, field: HTMLElement | null}} */
+function refusal(statusCode, reply) {
+  const text = String((reply && reply.error) || "");
+  let code = String((reply && reply.code) || "");
+  if (!code) {
+    if (/email is required/i.test(text)) code = "email";
+    else if (/agenc/i.test(text)) code = "agency";
+    else if (/kind/i.test(text)) code = "kinds";
+    else if (/confirmation email was just sent/i.test(text)) code = "cooldown";
+    else if (statusCode === 429) code = "rate";
+  }
+  switch (code) {
+    case "email":
+      return { message: SENTENCES.email, field: emailInput };
+    case "agency":
+      return { message: agencyField?.dataset.msgRequired || SENTENCES.other, field: agencyInput };
+    case "kinds":
+      return { message: SENTENCES.kinds, field: kindInputs[0] || null };
+    case "cooldown":
+      return { message: SENTENCES.cooldown, field: null };
+    case "rate":
+      return { message: SENTENCES.rate, field: null };
+    default:
+      return { message: SENTENCES.other, field: null };
+  }
+}
+
 /** @param {boolean} busy */
 function setSending(busy) {
   sending = busy;
@@ -157,10 +200,7 @@ if (!SUBSCRIBE_URL) {
     const kinds = data.getAll("kinds").map(String);
     clearInvalid();
     if (!email || !emailInput.validity.valid || !DOMAIN_WITH_ENDING.test(email)) {
-      setStatus(
-        email ? "Enter a complete email address, like you@agency.gov." : "Enter your email.",
-        "err"
-      );
+      setStatus(email ? SENTENCES.email : "Enter your email.", "err");
       flagInvalid(emailInput);
       emailInput.focus();
       return;
@@ -176,7 +216,7 @@ if (!SUBSCRIBE_URL) {
     }
     if (!kinds.length) {
       setSending(false);
-      setStatus("Choose at least one kind of alert.", "err");
+      setStatus(SENTENCES.kinds, "err");
       for (const input of kindInputs) flagInvalid(input);
       kindInputs[0]?.focus();
       return;
@@ -204,10 +244,15 @@ if (!SUBSCRIBE_URL) {
         lastAccepted = body;
         lastAcceptedMessage = reply.message || "Check your email to confirm your subscription.";
         setStatus(lastAcceptedMessage, "ok");
-      } else if (res.status === 429) {
-        setStatus(reply.error || "Too many requests. Try again later.", "err");
       } else {
-        setStatus(reply.error || "Something went wrong. Please try again.", "err");
+        const { message, field } = refusal(res.status, reply);
+        setStatus(message, "err");
+        if (field) {
+          // The kinds are one group: mark every box, as the check above does.
+          if (field === kindInputs[0]) for (const input of kindInputs) flagInvalid(input);
+          else flagInvalid(field);
+          field.focus();
+        }
       }
     } catch {
       setStatus("Could not reach the server. Please try again.", "err");

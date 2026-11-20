@@ -59,6 +59,30 @@ the declared public surface).
   such an address waited out the API round trip (up to 7 seconds on a cold
   start) to come back as a terse server error. It now gets the form's own
   "Enter a complete email address" message at once.
+- **Mail scanners can no longer use up alert links.** Agency and .gov mail
+  often runs a link scanner that opens every link before the person does.
+  Opening a confirm or unsubscribe link now shows a page with one button
+  ("Confirm my alerts", "Unsubscribe"), and only pressing it changes anything.
+  Before, a scanner confirmed the address on its own, so the person then saw
+  "Link not valid" although they were subscribed, and a scanner opening a
+  digest could unsubscribe its reader. A confirm link opened again after it
+  was used now says "You are subscribed". Each digest also carries the
+  RFC 8058 one-click unsubscribe headers (`List-Unsubscribe`,
+  `List-Unsubscribe-Post`), so mail providers can offer their own unsubscribe
+  button. Needs `infra/alerts` applied before the next digest (ADR 0004
+  amendment of 2026-11-20).
+- **The alerts form shows its own sentences when the API refuses a request**,
+  and marks and focuses the field the refusal is about, instead of printing
+  the API's text ("invalid agency id: 'x'"). A second request for the same
+  address within 15 minutes now says a confirmation was just sent and to check
+  the spam folder.
+- **Without JavaScript the alerts form no longer puts the address in the page
+  address.** It used to reload as `subscribe.html?email=...`, which sent
+  nothing and left the address in browser history and server logs. It now
+  posts, and a note above the button says the form needs JavaScript.
+- **The alerts API has 512 MB instead of 128 MB**, which shortens the 6 to 7
+  second wait on the first request after a quiet spell (`infra/alerts`,
+  takes effect on the next apply).
 
 - **Half the agency pages name the source feed URL in search results, as a
   test.** The queries that reach agency pages are "<agency> gtfs", the feed's

@@ -141,7 +141,14 @@ resource "aws_lambda_function" "alerts" {
   filename         = data.archive_file.alerts.output_path
   source_code_hash = data.archive_file.alerts.output_base64sha256
   timeout          = 15
-  memory_size      = 128
+  # 512 MB, not the 128 MB minimum: Lambda gives CPU in proportion to memory,
+  # and at 128 MB the first request after a quiet spell (importing boto3, then
+  # the DynamoDB and SES calls) took 6 to 7 seconds while the form said
+  # "Sending…". Cost stays negligible at this traffic: Lambda bills GB-seconds,
+  # so 48 requests since June at about 1 s each is roughly 25 GB-seconds a
+  # year, well inside the always-free 400,000 GB-seconds a month, and a fraction
+  # of a cent even without it. Faster runs offset part of the higher rate.
+  memory_size = 512
 
   environment {
     variables = {

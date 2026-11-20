@@ -87,6 +87,11 @@ class Email:
     to: str
     subject: str
     body: str
+    # The subscriber's unsubscribe address. When set, the email also carries the
+    # RFC 8058 one-click headers (List-Unsubscribe, List-Unsubscribe-Post), so a
+    # mail provider can offer its own unsubscribe button; it POSTs to this
+    # address, which the alerts API answers (infra/alerts/handler.py).
+    unsubscribe_url: str = ""
 
 
 def parse_subscribers(raw: object) -> list[Subscriber]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
@@ -223,15 +228,24 @@ def _subject(digest: Digest) -> str:
     return f"GTFS Scorecard: {agencies} {noun} attention ({digest.as_of.isoformat()})"
 
 
-def _unsubscribe_footer(subscriber: Subscriber, base: str | None) -> str:
-    """A one-click unsubscribe line for an alert email, if we can build one."""
+def _unsubscribe_link(subscriber: Subscriber, base: str | None) -> str:
+    """The subscriber's unsubscribe address on the alerts API, or "" when
+    there is no API base or no token to build one from."""
     if not base or not subscriber.unsub_token:
         return ""
-    link = (
+    return (
         f"{base.rstrip('/')}/unsubscribe"
         f"?email={quote(subscriber.email, safe='')}"
         f"&token={quote(subscriber.unsub_token, safe='')}"
     )
+
+
+def _unsubscribe_footer(subscriber: Subscriber, base: str | None) -> str:
+    """An unsubscribe line for an alert email, if we can build one. The link
+    opens a page with one button, so a mail scanner opening it changes nothing."""
+    link = _unsubscribe_link(subscriber, base)
+    if not link:
+        return ""
     return f"\n\n---\nStop these alerts at any time:\n  {link}\n"
 
 
@@ -252,7 +266,14 @@ def build_emails(
         if not personal.items:
             continue
         body = render_digest(personal) + _unsubscribe_footer(subscriber, unsubscribe_base)
-        emails.append(Email(to=subscriber.email, subject=_subject(personal), body=body))
+        emails.append(
+            Email(
+                to=subscriber.email,
+                subject=_subject(personal),
+                body=body,
+                unsubscribe_url=_unsubscribe_link(subscriber, unsubscribe_base),
+            )
+        )
     return emails
 
 
@@ -285,7 +306,14 @@ def build_portfolio_emails(
         body += _unsubscribe_footer(subscriber, unsubscribe_base)
         as_of = mine[0].as_of
         subject = f"GTFS Scorecard: weekly portfolio digest ({as_of.isoformat()})"
-        emails.append(Email(to=subscriber.email, subject=subject, body=body))
+        emails.append(
+            Email(
+                to=subscriber.email,
+                subject=subject,
+                body=body,
+                unsubscribe_url=_unsubscribe_link(subscriber, unsubscribe_base),
+            )
+        )
     return emails
 
 
@@ -406,6 +434,26 @@ def _failure_code(exc: Exception) -> str:
     return type(exc).__name__
 
 
+def _raw_message(email: Email, sender: str) -> bytes:
+    """The email as MIME bytes with the RFC 8058 one-click unsubscribe headers.
+
+    SES's simple send cannot set headers, so an email with an unsubscribe
+    address goes out raw. The line limit is raised to RFC 5322's 998 so the
+    long unsubscribe address stays one unfolded, unencoded header line, which is
+    the form mail providers parse."""
+    from email.message import EmailMessage
+    from email.policy import SMTP
+
+    message = EmailMessage(policy=SMTP.clone(max_line_length=998))
+    message["From"] = sender
+    message["To"] = email.to
+    message["Subject"] = email.subject
+    message["List-Unsubscribe"] = f"<{email.unsubscribe_url}>"
+    message["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
+    message.set_content(email.body)
+    return message.as_bytes()
+
+
 def send_via_ses(emails: list[Email], sender: str, region: str = "us-west-2") -> SendReport:
     """Send each email through Amazon SES. boto3 is imported lazily so the core
     pipeline has no AWS dependency; only the send path needs it.
@@ -422,14 +470,21 @@ def send_via_ses(emails: list[Email], sender: str, region: str = "us-west-2") ->
     failed = 0
     for index, email in enumerate(emails, start=1):
         try:
-            ses.send_email(
-                Source=sender,
-                Destination={"ToAddresses": [email.to]},
-                Message={
-                    "Subject": {"Data": email.subject},
-                    "Body": {"Text": {"Data": email.body}},
-                },
-            )
+            if email.unsubscribe_url:
+                ses.send_raw_email(
+                    Source=sender,
+                    Destinations=[email.to],
+                    RawMessage={"Data": _raw_message(email, sender)},
+                )
+            else:
+                ses.send_email(
+                    Source=sender,
+                    Destination={"ToAddresses": [email.to]},
+                    Message={
+                        "Subject": {"Data": email.subject},
+                        "Body": {"Text": {"Data": email.body}},
+                    },
+                )
         except Exception as exc:  # the docstring says why: its text can name the recipient
             failed += 1
             log.warning(

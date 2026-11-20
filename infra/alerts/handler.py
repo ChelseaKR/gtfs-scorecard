@@ -1,10 +1,22 @@
 """Serverless handler for opt-in feed-health alerts: claim and confirm.
 
-A small Lambda behind a function URL. Two routes:
+A small Lambda behind an HTTP API. Routes:
 
   POST /subscribe   {email, all|agencies[], kinds[]}  -> store a pending
                     (unverified) subscriber and email a tokenized confirm link.
-  GET  /confirm?email=&token=                          -> mark verified.
+  GET  /confirm?email=&token=                          -> a page with one button
+  POST /confirm?email=&token=                          -> mark verified.
+  GET  /unsubscribe?email=&token=                      -> a page with one button
+  POST /unsubscribe?email=&token=                      -> remove the subscriber
+                    (also the RFC 8058 one-click POST that mail providers send
+                    from the List-Unsubscribe header on each digest).
+
+Why a GET only shows a page: agency and .gov mail often runs a link scanner
+(Safe Links, Proofpoint, Mimecast) that opens every link in a message before the
+person does. While a GET confirmed or unsubscribed, the scanner used up the
+confirm link (the person then saw "Link not valid" although they were
+subscribed) and could unsubscribe a reader without their knowing. Scanners do
+not press buttons, so the change of state now waits for a POST.
 
 Consent is double opt-in: a row is written unverified, and nothing is ever sent
 to it (the daily digest skips unverified subscribers) until the recipient clicks
@@ -31,6 +43,7 @@ from __future__ import annotations
 
 import datetime as dt
 import hmac
+import html
 import json
 import os
 import re
@@ -66,14 +79,22 @@ EMAIL_COOLDOWN = 900  # seconds between confirm emails to one address
 
 
 class BadRequest(ValueError):
-    """Input the form should never send; surfaced as a 400."""
+    """Input the form should never send; surfaced as a 400.
+
+    `code` names the field the refusal is about (email, agency, kinds), so the
+    form can show its own sentence and mark that field rather than print the
+    API's terse text to a reader."""
+
+    def __init__(self, message: str, code: str) -> None:
+        super().__init__(message)
+        self.code = code
 
 
 def validate_subscribe(body: dict[str, Any]) -> dict[str, Any]:
     """Normalize and validate a subscribe payload. Pure; raises BadRequest."""
     email = body.get("email")
     if not isinstance(email, str) or not EMAIL_RE.match(email.strip()):
-        raise BadRequest("a valid email is required")
+        raise BadRequest("a valid email is required", "email")
     email = email.strip().lower()
 
     follows_all = body.get("all") is True
@@ -81,12 +102,12 @@ def validate_subscribe(body: dict[str, Any]) -> dict[str, Any]:
     if not follows_all:
         raw = body.get("agencies")
         if not isinstance(raw, list) or not raw:
-            raise BadRequest("choose at least one agency, or all")
+            raise BadRequest("choose at least one agency, or all", "agency")
         if len(raw) > MAX_AGENCIES:
-            raise BadRequest("too many agencies")
+            raise BadRequest("too many agencies", "agency")
         for a in raw:
             if not isinstance(a, str) or not SLUG_RE.match(a):
-                raise BadRequest(f"invalid agency id: {a!r}")
+                raise BadRequest(f"invalid agency id: {a!r}", "agency")
             agencies.append(a)
 
     kinds_raw = body.get("kinds")
@@ -95,10 +116,10 @@ def validate_subscribe(body: dict[str, Any]) -> dict[str, Any]:
     elif isinstance(kinds_raw, list) and kinds_raw:
         bad = [k for k in kinds_raw if k not in ALERT_KINDS]
         if bad:
-            raise BadRequest(f"unknown alert kind(s): {bad}")
+            raise BadRequest(f"unknown alert kind(s): {bad}", "kinds")
         kinds = list(dict.fromkeys(kinds_raw))  # de-dupe, keep order
     else:
-        raise BadRequest("kinds must be a non-empty list if present")
+        raise BadRequest("kinds must be a non-empty list if present", "kinds")
 
     out: dict[str, Any] = {"email": email, "kinds": kinds}
     if follows_all:
@@ -121,7 +142,23 @@ def _json(status: int, body: dict[str, Any]) -> dict[str, Any]:
     return {"statusCode": status, "headers": _cors_headers(), "body": json.dumps(body)}
 
 
-def _html(status: int, title: str, message: str) -> dict[str, Any]:
+def _html(status: int, title: str, message: str, button: str = "") -> dict[str, Any]:
+    """A small page for a link opened from an email.
+
+    With `button`, the page carries one form that POSTs back to the address it
+    was opened at (no action attribute), so the token in the link travels with
+    the press and nowhere else. `title`, `message` and `button` are this file's
+    own wording; anything taken from a request is escaped before it gets here.
+    These pages carry a token in their address, so they are never cached and
+    never sent as a referrer."""
+    form = (
+        "<form method=post>"
+        "<button type=submit style='font:inherit;font-weight:600;min-height:44px;"
+        "padding:0.6rem 1.2rem;cursor:pointer'>"
+        f"{button}</button></form>"
+        if button
+        else ""
+    )
     page = (
         # lang, a viewport and a main landmark, as on every page of the site:
         # people open this from an email link, often on a phone (WCAG 3.1.1,
@@ -130,10 +167,13 @@ def _html(status: int, title: str, message: str) -> dict[str, Any]:
         "<meta name=viewport content='width=device-width, initial-scale=1'>"
         f"<title>{title}</title>"
         "<body style='font-family:system-ui;max-width:34rem;margin:4rem auto;padding:0 1rem'>"
-        f"<main><h1>{title}</h1><p>{message}</p>"
+        f"<main><h1>{title}</h1><p>{message}</p>{form}"
         "<p><a href='https://gtfsscorecard.org/'>Back to GTFS Scorecard</a></p></main>"
     )
-    return {"statusCode": status, "headers": _cors_headers("text/html"), "body": page}
+    headers = _cors_headers("text/html; charset=utf-8")
+    headers["Cache-Control"] = "no-store"
+    headers["Referrer-Policy"] = "no-referrer"
+    return {"statusCode": status, "headers": headers, "body": page}
 
 
 def _secret_ok(event: dict[str, Any]) -> bool:
@@ -224,22 +264,27 @@ def _subscribe(event: dict[str, Any]) -> dict[str, Any]:
     if not _secret_ok(event):
         return _json(403, {"error": "forbidden"})
     if _ip_rate_limited(event):
-        return _json(429, {"error": "Too many requests. Try again later."})
+        return _json(429, {"error": "Too many requests. Try again later.", "code": "rate"})
     try:
         payload = json.loads(event.get("body") or "{}")
     except json.JSONDecodeError:
-        return _json(400, {"error": "invalid JSON"})
+        return _json(400, {"error": "invalid JSON", "code": "request"})
+    if not isinstance(payload, dict):
+        return _json(400, {"error": "invalid JSON", "code": "request"})
     try:
         sub = validate_subscribe(payload)
     except BadRequest as exc:
-        return _json(400, {"error": str(exc)})
+        return _json(400, {"error": str(exc), "code": exc.code})
 
     table = _table()
     existing = table.get_item(Key={"email": sub["email"]}).get("Item")
     if existing and existing.get("verified"):
         return _json(200, {"status": "subscribed", "message": "This address is already subscribed."})
     if _email_on_cooldown(existing):
-        return _json(429, {"error": "A confirmation email was just sent. Check your inbox."})
+        return _json(
+            429,
+            {"error": "A confirmation email was just sent. Check your inbox.", "code": "cooldown"},
+        )
 
     token = secrets.token_urlsafe(24)
     # A stable unsubscribe token, kept across confirm so every alert email can
@@ -265,45 +310,104 @@ def _subscribe(event: dict[str, Any]) -> dict[str, Any]:
     return _json(200, {"status": "pending", "message": "Check your email to confirm."})
 
 
-def _confirm(event: dict[str, Any]) -> dict[str, Any]:
+def _link_params(event: dict[str, Any]) -> tuple[str, str]:
+    """The address and token a confirm or unsubscribe link carries."""
     qs = parse_qs((event.get("rawQueryString") or "").lstrip("?"))
     email = (qs.get("email") or [""])[0].strip().lower()
     token = (qs.get("token") or [""])[0]
+    return email, token
+
+
+def _matches(row: dict[str, Any] | None, field: str, token: str) -> bool:
+    value = (row or {}).get(field)
+    return bool(value) and hmac.compare_digest(str(value), token)
+
+
+_SUBSCRIBED = (
+    "You are subscribed",
+    "Your address is confirmed. You will hear from us only when a feed you follow needs attention.",
+)
+
+
+def _confirm(event: dict[str, Any]) -> dict[str, Any]:
+    """POST /confirm: the person pressed the button, so mark the row verified.
+
+    The used token is kept as `confirmed_token`, so the same link opened again
+    (by the person, or by a scanner after them) says the address is subscribed
+    instead of calling a good link invalid. Only the holder of the link can get
+    that answer: any other token gets "Link not valid", whatever the row says."""
+    email, token = _link_params(event)
     if not email or not token:
         return _html(400, "Link incomplete", "That confirmation link is missing information.")
     table = _table()
     row = table.get_item(Key={"email": email}).get("Item")
-    if not row or not row.get("token") or not hmac.compare_digest(str(row["token"]), token):
+    if row and row.get("verified") and _matches(row, "confirmed_token", token):
+        return _html(200, *_SUBSCRIBED)
+    if not _matches(row, "token", token):
         return _html(400, "Link not valid", "That confirmation link is expired or already used.")
     table.update_item(
         Key={"email": email},
-        UpdateExpression="SET verified = :t REMOVE #tok",
+        UpdateExpression="SET verified = :t, confirmed_token = :tok REMOVE #tok",
         ExpressionAttributeNames={"#tok": "token"},
-        ExpressionAttributeValues={":t": True},
+        ExpressionAttributeValues={":t": True, ":tok": token},
     )
+    return _html(200, *_SUBSCRIBED)
+
+
+def _confirm_page(event: dict[str, Any]) -> dict[str, Any]:
+    """GET /confirm: what opening the emailed link shows. It changes nothing."""
+    email, token = _link_params(event)
+    if not email or not token:
+        return _html(400, "Link incomplete", "That confirmation link is missing information.")
+    row = _table().get_item(Key={"email": email}).get("Item")
+    if row and row.get("verified") and _matches(row, "confirmed_token", token):
+        return _html(200, *_SUBSCRIBED)
+    if not _matches(row, "token", token):
+        return _html(400, "Link not valid", "That confirmation link is expired or already used.")
     return _html(
         200,
-        "You are subscribed",
-        "Your address is confirmed. You will hear from us only when a feed you "
-        "follow needs attention.",
+        "Confirm your feed-health alerts",
+        f"Press the button to start alerts for {html.escape(email)}.",
+        button="Confirm my alerts",
     )
 
 
 def _unsubscribe(event: dict[str, Any]) -> dict[str, Any]:
-    qs = parse_qs((event.get("rawQueryString") or "").lstrip("?"))
-    email = (qs.get("email") or [""])[0].strip().lower()
-    token = (qs.get("token") or [""])[0]
+    """POST /unsubscribe: the button on the page, or a mail provider's RFC 8058
+    one-click request (body ``List-Unsubscribe=One-Click``). The token in the
+    address is what authorizes it, so the body is not read."""
+    email, token = _link_params(event)
     if not email or not token:
         return _html(400, "Link incomplete", "That unsubscribe link is missing information.")
     table = _table()
     row = table.get_item(Key={"email": email}).get("Item")
     # Idempotent: a missing row (already removed) is a success, not an error.
-    if row and row.get("unsub_token") and hmac.compare_digest(str(row["unsub_token"]), token):
+    if _matches(row, "unsub_token", token):
         table.delete_item(Key={"email": email})
     elif row:
         return _html(400, "Link not valid", "That unsubscribe link is not valid.")
     return _html(
         200, "Unsubscribed", "You will not receive any more feed-health alerts at this address."
+    )
+
+
+def _unsubscribe_page(event: dict[str, Any]) -> dict[str, Any]:
+    """GET /unsubscribe: what the link in a digest opens. It changes nothing."""
+    email, token = _link_params(event)
+    if not email or not token:
+        return _html(400, "Link incomplete", "That unsubscribe link is missing information.")
+    row = _table().get_item(Key={"email": email}).get("Item")
+    if not row:
+        return _html(
+            200, "Unsubscribed", "You will not receive any more feed-health alerts at this address."
+        )
+    if not _matches(row, "unsub_token", token):
+        return _html(400, "Link not valid", "That unsubscribe link is not valid.")
+    return _html(
+        200,
+        "Stop feed-health alerts",
+        f"Press the button to stop all feed-health alerts to {html.escape(email)}.",
+        button="Unsubscribe",
     )
 
 
@@ -314,10 +418,16 @@ def handler(event: dict[str, Any], context: object) -> dict[str, Any]:
     path = ctx.get("path", "/")
     if method == "OPTIONS":
         return {"statusCode": 204, "headers": _cors_headers(), "body": ""}
-    if method == "GET" and path.endswith("/unsubscribe"):
-        return _unsubscribe(event)
+    if path.endswith("/unsubscribe"):
+        if method == "GET":
+            return _unsubscribe_page(event)
+        if method == "POST":
+            return _unsubscribe(event)
     if method == "POST" and path.endswith("/subscribe"):
         return _subscribe(event)
-    if method == "GET" and path.endswith("/confirm"):
-        return _confirm(event)
+    if path.endswith("/confirm"):
+        if method == "GET":
+            return _confirm_page(event)
+        if method == "POST":
+            return _confirm(event)
     return _json(404, {"error": "not found"})

@@ -267,6 +267,11 @@ unsubscribe pages, the bundle download page, `/program/`, `/program/california/`
 
 ## Revision history
 
+- 2026-11-20: The alert confirm and unsubscribe pages now open with one button that
+  confirms or unsubscribes (ADR 0004 amendment), so a mail scanner opening the link
+  changes nothing. The button is a native `button` with visible text, 44 px tall; axe
+  (4.11, WCAG 2.0 to 2.2 A and AA rules) finds 0 violations on both pages in light and
+  dark, with no sideways scroll at 320 px. No row changes level.
 - 2026-11-20: The agency pickers merged. The note and rows that rated them "after the
   agency-search branch lands" now describe them as part of the site; no row changes
   level.

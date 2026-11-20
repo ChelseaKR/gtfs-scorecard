@@ -111,3 +111,34 @@ is sent on its weekly cadence even when it is all-clear, because the reassurance
 of a quiet week is the point of a periodic cohort summary and the volume is low
 and opt-in. The alert digest keeps its "silence on all-clear" rule; only the
 opted-in weekly rollup sends a steady-state note.
+
+## Amendment (2026-11-20): a link opened from an email changes nothing until a button is pressed
+
+Agency and .gov mail commonly passes through a link scanner (Microsoft Safe
+Links, Proofpoint, Mimecast) that fetches every link in a message before the
+person sees it. While `GET /confirm` and `GET /unsubscribe` acted on their own,
+the scanner confirmed subscriptions without the person (who then saw "Link not
+valid" on their own click, though they were subscribed) and could unsubscribe a
+reader from a digest without their knowing. Double opt-in only means something
+if a person, not a machine, does the opting in.
+
+- **GET shows, POST acts.** Opening either link shows a small page with one
+  button. The button's form has no `action`, so it POSTs to the same address,
+  token included, and only that POST confirms or unsubscribes. Scanners fetch;
+  they do not submit forms. The pages are sent with `Cache-Control: no-store`
+  and `Referrer-Policy: no-referrer`, because their address holds a token.
+- **A used confirm link still makes sense.** Confirming keeps the used token as
+  `confirmed_token`. The same link opened again answers "You are subscribed".
+  Any other token still gets "Link not valid", so the route cannot be used to
+  ask whether an address is subscribed.
+- **RFC 8058 one-click unsubscribe.** Every digest that carries an unsubscribe
+  link also carries `List-Unsubscribe: <that link>` and
+  `List-Unsubscribe-Post: List-Unsubscribe=One-Click`, so a mail provider can
+  show its own unsubscribe button, which POSTs to the link. Those emails go out
+  through `ses:SendRawEmail`, which the digest role already holds
+  (`infra/artifacts/github_oidc.tf`).
+- **Order of deploy.** The handler change ships with `terraform apply` in
+  `infra/alerts`; the digest headers ship with the next scheduled run after
+  merge. Apply first: a one-click POST to the old handler gets a 404 and
+  unsubscribes no one.
+
