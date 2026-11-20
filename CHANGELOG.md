@@ -106,6 +106,18 @@ the declared public surface).
 
 ### Fixed
 
+- **A WCAG 2.2 A and AA conformance report, and three fixes it found.**
+  `docs/vpat.md` is now an Accessibility Conformance Report on the VPAT 2.5
+  Rev WCAG edition, written from an axe, keyboard, 320 px reflow, text-spacing
+  and contrast pass over one page per template in light and dark. It reports
+  2.1.1 Keyboard and 2.5.7 Dragging Movements as Partially Supports for the
+  `/routes/` map, and marks every row a screen reader still has to confirm.
+  The fixes: the alert confirm and unsubscribe pages and the bundle download
+  page now declare their language, a phone viewport and a `main` landmark;
+  `/bundle/setup/` reads each hint with its field and, when a required field
+  is empty or the list is too long, marks that field invalid and moves focus
+  to it; and the accessibility page calls the report a "WCAG-edition VPAT
+  report" instead of a "508-edition VPAT".
 - **`scorecard bundle-email --send` exits 1 when SES refuses the email.** It
   printed a sent line and exited 0 whatever SES did. It now says how many
   delivery emails were not sent and exits 1, as the workflow's send step

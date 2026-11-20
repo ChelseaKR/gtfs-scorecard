@@ -7269,3 +7269,18 @@ def test_compact_rollup_negative_control_threshold_sabotage_is_detected(
     html = render_site._render_rollup(rollup)
     assert "#finding=" in html
     assert "program-row" in html
+
+
+def test_accessibility_statement_names_the_edition_the_acr_is_written_in() -> None:
+    """The statement links to docs/vpat.md by the edition of the report there.
+    It said "508-edition VPAT" after that file became the WCAG 2.2 edition of
+    the ACR (2026-11-20), so a procurement reader following it expected a
+    different document from the one they found."""
+    acr = (Path(__file__).resolve().parents[2] / "docs" / "vpat.md").read_text(encoding="utf-8")
+    assert "VPAT® 2.5 Rev WCAG edition" in acr
+    page = render_site._render_accessibility()
+    link = re.search(r'<a href="[^"]*/docs/vpat\.md">(.*?)</a>', page, re.S)
+    assert link, "the statement no longer links the ACR"
+    text = re.sub(r"<[^>]+>", "", link.group(1))
+    assert "508" not in text
+    assert "WCAG-edition" in text
