@@ -179,6 +179,20 @@ def test_unsubscribe_missing_row_is_idempotent_success(monkeypatch: pytest.Monke
     assert table.deleted is False
 
 
+def test_confirm_and_unsubscribe_pages_declare_language_viewport_and_main() -> None:
+    """The pages a subscriber lands on from an email link are web pages too
+    (WCAG 2.2 ACR, docs/vpat.md). Without `lang` a screen reader guesses the
+    pronunciation (3.1.1); without a viewport a phone lays the page out 980px
+    wide and shrinks it (1.4.10, 1.4.4); and the message sits in a `main`
+    landmark like every other page on the site (1.3.1)."""
+    page = alerts._html(200, "You are subscribed", "Your address is confirmed.")["body"]
+    assert page.startswith("<!doctype html><html lang=en>")
+    assert "<meta name=viewport content='width=device-width, initial-scale=1'>" in page
+    assert "<main>" in page and "</main>" in page
+    assert page.index("<main>") < page.index("<h1>") < page.index("</main>")
+    assert "Back to GTFS Scorecard" in page
+
+
 # --- submit: secret gate ---
 
 

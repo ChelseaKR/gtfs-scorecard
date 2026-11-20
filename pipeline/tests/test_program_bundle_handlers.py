@@ -1426,6 +1426,18 @@ def test_download_redirects_to_a_short_lived_presigned_url(
     assert s3.presigned["expires"] == setup_handler.PRESIGN_SECONDS == 900
 
 
+def test_download_pages_declare_language_viewport_and_main() -> None:
+    """A buyer opens the download link from an email, often on a phone. The
+    page it answers with declares its language (WCAG 3.1.1), a viewport so it
+    is not laid out 980px wide and shrunk (1.4.10, 1.4.4), and a `main`
+    landmark around the message (1.3.1), as every other page on the site does."""
+    page = common.html_response(202, "Still being prepared", "Try again soon.")["body"]
+    assert page.startswith("<!doctype html><html lang=en>")
+    assert "<meta name=viewport content='width=device-width, initial-scale=1'>" in page
+    assert page.index("<main>") < page.index("<h1>") < page.index("</main>")
+    assert "Back to GTFS Scorecard" in page
+
+
 def test_download_answers_202_while_the_archive_is_missing_and_404_otherwise(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
