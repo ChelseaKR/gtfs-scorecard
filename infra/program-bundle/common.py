@@ -165,10 +165,15 @@ def json_response(status: int, body: dict[str, Any]) -> dict[str, Any]:
 
 def html_response(status: int, title: str, message: str) -> dict[str, Any]:
     page = (
-        f"<!doctype html><meta charset=utf-8><title>{title}</title>"
+        # lang, a viewport and a main landmark, as on every page of the site:
+        # people open this from an email link, often on a phone (WCAG 3.1.1,
+        # 1.4.10, 1.3.1; docs/vpat.md).
+        "<!doctype html><html lang=en><meta charset=utf-8>"
+        "<meta name=viewport content='width=device-width, initial-scale=1'>"
+        f"<title>{title}</title>"
         "<body style='font-family:system-ui;max-width:34rem;margin:4rem auto;padding:0 1rem'>"
-        f"<h1>{title}</h1><p>{message}</p>"
-        "<p><a href='https://gtfsscorecard.org/'>Back to GTFS Scorecard</a></p>"
+        f"<main><h1>{title}</h1><p>{message}</p>"
+        "<p><a href='https://gtfsscorecard.org/'>Back to GTFS Scorecard</a></p></main>"
     )
     return {"statusCode": status, "headers": cors_headers("text/html"), "body": page}
 

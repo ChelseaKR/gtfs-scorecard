@@ -8203,7 +8203,8 @@ def _render_accessibility() -> str:
     """The on-site accessibility statement: what we aim for, how we check, known
     limitations, and a way to report a barrier (the Section 508 / EN 301 549
     feedback mechanism). Detailed evidence lives in docs/accessibility.md (the
-    WCAG 2.2 AAA conformance report) and docs/vpat.md (the 508-edition VPAT)."""
+    WCAG 2.2 AAA conformance report) and docs/vpat.md (the WCAG 2.2 A/AA ACR,
+    on the VPAT 2.5 Rev WCAG edition)."""
     canonical = f"{BASE_URL}/accessibility/"
     repo = "https://github.com/ChelseaKR/gtfs-scorecard"
     body = f"""    {_breadcrumb([("Home", "/"), ("Accessibility", None)])}
@@ -8231,7 +8232,7 @@ def _render_accessibility() -> str:
     screen-reader walkthrough is still pending, so automated results are not presented as
     an assistive-technology attestation. You can read the full results in the
     <a href="{repo}/blob/main/docs/accessibility.md">conformance report</a> and the
-    <a href="{repo}/blob/main/docs/vpat.md">508-edition <abbr title="Voluntary Product Accessibility Template">VPAT</abbr></a>.</p></section>
+    <a href="{repo}/blob/main/docs/vpat.md">WCAG-edition <abbr title="Voluntary Product Accessibility Template">VPAT</abbr> report</a>.</p></section>
 
     <section><h2 class="section-title">Known limitations</h2>
     <p>We keep an honest list. The agency map is a convenience layer built on a
@@ -8251,7 +8252,7 @@ def _render_accessibility() -> str:
     <p class="page-lede" style="margin-top:2rem">Last reviewed: 13 July 2026.</p>"""
     return _page(
         title="Accessibility | GTFS Scorecard",
-        description="How the GTFS Scorecard meets WCAG 2.2 AAA and Section 508, its known limitations, and how to report an accessibility barrier.",
+        description="How the GTFS Scorecard is built and tested against WCAG 2.2, its known limitations, and how to report an accessibility barrier.",
         canonical=canonical,
         body=body,
     )

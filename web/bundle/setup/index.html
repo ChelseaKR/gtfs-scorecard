@@ -79,27 +79,31 @@
       <p class="field">
         <label for="program_name">Program or organization name <span class="req">(required)</span></label>
         <input id="program_name" name="program_name" type="text" required maxlength="120"
-          autocomplete="organization" placeholder="e.g. Example State Transit Program">
-        <span class="hint">Printed as "Prepared by" on every cover.</span>
+          autocomplete="organization" placeholder="e.g. Example State Transit Program"
+          aria-describedby="program_name-hint">
+        <span class="hint" id="program_name-hint">Printed as "Prepared by" on every cover.</span>
       </p>
       <p class="field">
         <label for="accent">Accent color</label>
         <input id="accent" name="accent" type="text" maxlength="7" pattern="#[0-9A-Fa-f]{6}"
-          autocomplete="off" spellcheck="false" placeholder="#2c5f70">
-        <span class="hint">A #rrggbb value. It colors the cover band and section rules only,
+          autocomplete="off" spellcheck="false" placeholder="#2c5f70"
+          aria-describedby="accent-hint">
+        <span class="hint" id="accent-hint">A #rrggbb value. It colors the cover band and section rules only,
         never text, so any accent keeps the document readable.</span>
       </p>
       <p class="field">
         <label for="logo">Logo</label>
-        <input id="logo" name="logo" type="url" placeholder="https://.../logo.svg">
-        <span class="hint">An https link to an SVG, PNG, or JPEG up to 512 KiB. It is embedded in
+        <input id="logo" name="logo" type="url" placeholder="https://.../logo.svg"
+          aria-describedby="logo-hint">
+        <span class="hint" id="logo-hint">An https link to an SVG, PNG, or JPEG up to 512 KiB. It is embedded in
         each file so the report stays self-contained. Leave blank for no logo.</span>
       </p>
       <p class="field">
         <label for="agency_ids">Agency ids <span class="req">(required)</span></label>
         <textarea id="agency_ids" name="agency_ids" rows="6" required
-          placeholder="unitrans, yolobus, ..."></textarea>
-        <span class="hint">Comma or line separated, up to the number your plan covers. The id is
+          placeholder="unitrans, yolobus, ..."
+          aria-describedby="agency_ids-hint"></textarea>
+        <span class="hint" id="agency_ids-hint">Comma or line separated, up to the number your plan covers. The id is
         the last part of an agency's address on this site: gtfsscorecard.org/agency/<strong>unitrans</strong>/.
         An id we do not track is listed in the manifest with the reason, never silently dropped.</span>
       </p>

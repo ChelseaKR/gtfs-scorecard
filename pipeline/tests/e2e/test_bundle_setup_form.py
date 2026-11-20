@@ -23,6 +23,7 @@ regardless. No Stripe object is addressed, let alone created.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -262,3 +263,56 @@ def test_an_address_with_no_checkout_reference_does_not_offer_to_build_anything(
     assert "order reference" in text
     assert "Do not pay again." in text
     assert "Nothing has been charged" not in text
+
+
+def test_each_hint_is_read_with_its_field(page: Page, base_url: str) -> None:
+    """The hints under the setup fields carry the format each one needs (a
+    #rrggbb value, an https link, comma or line separated ids). Shown but not
+    tied to their fields, a screen reader moving through the form never heard
+    them (WCAG 1.3.1, 3.3.2). Each is now the field's accessible description."""
+    _open_setup(page, base_url)
+    expected = {
+        "#program_name": r"^Printed as .Prepared by. on every cover",
+        "#accent": r"^A #rrggbb value",
+        "#logo": r"^An https link to an SVG, PNG, or JPEG",
+        "#agency_ids": r"^Comma or line separated",
+    }
+    for field, description in expected.items():
+        expect(page.locator(field)).to_have_accessible_description(re.compile(description))
+
+
+def test_a_missing_required_field_is_marked_and_focused(page: Page, base_url: str) -> None:
+    """An empty required field is named in the status line, marked invalid and
+    given focus, as on the site's other forms (WCAG 3.3.1), so a keyboard or
+    screen-reader user lands on the field to fix instead of the disabled
+    button. Nothing is posted until the form is complete."""
+    _open_setup(page, base_url)
+    seen = _capture_setup(page, status=200, payload={"ok": True})
+    button = page.get_by_role("button", name="Build my reports")
+
+    button.click()
+    program = page.locator("#program_name")
+    expect(program).to_have_attribute("aria-invalid", "true")
+    expect(program).to_be_focused()
+    expect(page.locator("#form-status")).to_have_class("form-status form-status-err")
+
+    program.fill("Example State Transit Program")
+    button.click()
+    expect(program).not_to_have_attribute("aria-invalid", "true")
+    agencies = page.locator("#agency_ids")
+    expect(agencies).to_have_attribute("aria-invalid", "true")
+    expect(agencies).to_be_focused()
+    assert seen == []
+
+
+def test_a_list_over_the_widest_cap_marks_and_focuses_the_agency_field(
+    page: Page, base_url: str
+) -> None:
+    """The over-the-cap message asks the buyer to trim the list; focus goes to
+    the list it means, marked invalid (WCAG 3.3.1)."""
+    _open_setup(page, base_url)
+    _fill(page, agency_ids=", ".join(f"agency{n}" for n in range(101)))
+    page.get_by_role("button", name="Build my reports").click()
+    agencies = page.locator("#agency_ids")
+    expect(agencies).to_have_attribute("aria-invalid", "true")
+    expect(agencies).to_be_focused()
