@@ -8252,7 +8252,7 @@ def _render_accessibility() -> str:
     <p class="page-lede" style="margin-top:2rem">Last reviewed: 13 July 2026.</p>"""
     return _page(
         title="Accessibility | GTFS Scorecard",
-        description="How the GTFS Scorecard meets WCAG 2.2 AAA and Section 508, its known limitations, and how to report an accessibility barrier.",
+        description="How the GTFS Scorecard is built and tested against WCAG 2.2, its known limitations, and how to report an accessibility barrier.",
         canonical=canonical,
         body=body,
     )
