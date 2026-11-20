@@ -106,6 +106,10 @@ the declared public surface).
 
 ### Fixed
 
+- **`scorecard bundle-email --send` exits 1 when SES refuses the email.** It
+  printed a sent line and exited 0 whatever SES did. It now says how many
+  delivery emails were not sent and exits 1, as the workflow's send step
+  already fails. On success it prints the count, not the recipient.
 - **A missing address now gets the site's own page.** GitHub Pages was serving
   its stock "404 File not found" page, with no site navigation and no page
   language. `render_site` now writes `404.html` on the shared shell: "Page not

@@ -4294,7 +4294,13 @@ def _cmd_bundle_sample(args: argparse.Namespace, parser: argparse.ArgumentParser
 
 def _cmd_bundle_email(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     """Render (and with --send, send through SES) the delivery email for a
-    built bundle. Rendering never touches the network; --send needs boto3."""
+    built bundle. Rendering never touches the network; --send needs boto3.
+
+    send_via_ses reports a refusal instead of raising, so a send SES refused
+    exits 1 with the count, as the workflow path (bundle_order.py email) fails.
+    Neither outcome prints the buyer's address: the repository is public, and a
+    run log of this command would be a publication. --out keeps the To: line,
+    in the operator's own file."""
     from .bundle import BundleError, delivery_email, parse_request
     from .notify import send_via_ses
 
@@ -4312,8 +4318,15 @@ def _cmd_bundle_email(args: argparse.Namespace, parser: argparse.ArgumentParser)
     if args.send:
         if not args.sender:
             parser.error("--send needs --from (a verified SES sender)")
-        send_via_ses([email], args.sender)
-        print(f"sent to {email.to}")
+        report = send_via_ses([email], args.sender)
+        if report.failed:
+            print(
+                f"error: {report.failed} of {report.sent + report.failed} delivery email(s) "
+                "not sent; see the warning above (the recipient is not printed)",
+                file=sys.stderr,
+            )
+            return 1
+        print(f"sent {report.sent} delivery email")
     return 0
 
 
