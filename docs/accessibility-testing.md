@@ -47,7 +47,12 @@ complete the task without sighted, mouse-driven help.
 4. **Submit an agency** (`/submit.html`). Tab through every field; labels are
    announced. Submit empty — the error is announced and focus lands on the field to
    fix. Fix it and confirm the status message is announced.
-5. **Subscribe to alerts** (`/subscribe.html`). Same field/label/error checks.
+5. **Subscribe to alerts** (`/subscribe.html`). Same field/label/error checks. The
+   agency field is a combobox: type part of a name and confirm the number of
+   suggestions is announced, Down moves through them with each one read in full
+   (name, place, feed ID), Enter chooses, and Escape closes the list. Down in the
+   empty field offers "All agencies". Submitting with no agency chosen announces the
+   error and puts focus on the agency field.
 6. **Use the national map** (`/map/`). Confirm the map is announced as an image with a
    label that points to the agencies list, and that the list (`/agencies/`) carries the
    same information without the map.
@@ -56,6 +61,10 @@ complete the task without sighted, mouse-driven help.
 8. **Navigate.** Use the skip link, then the primary nav. The current page's "stop" is
    announced as current. On a narrow window the menu button opens/closes the stops and
    Escape closes it.
+9. **Search from the home page** (`/`). Type part of an agency name: the count of
+   suggestions is announced and arrow keys move through them while focus stays in the
+   field. Enter on a suggestion, or on a name only one agency has, opens that agency's
+   page; a broader search opens the results list.
 
 ## Cross-cutting checks (per surface)
 
