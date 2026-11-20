@@ -146,7 +146,9 @@ HARDCODED_STRING_BASELINE = {
     # catalog with them when the tier joins it.
     "plan-summary.js": 6,
     "submit.js": 17,
-    "subscribe.js": 8,
+    # Lowered from 8: the alerts form's error sentences moved into data-msg-*
+    # attributes on the form in subscribe.html.
+    "subscribe.js": 7,
     "theme.js": 4,
     "try.js": 9,
 }

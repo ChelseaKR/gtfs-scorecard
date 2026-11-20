@@ -66,7 +66,12 @@
     to watch and we will email you before that happens. You only hear from us when
     a feed needs attention, never otherwise.</p>
 
-    <form id="subscribe-form" class="submit-form" method="post" novalidate>
+    <form id="subscribe-form" class="submit-form" method="post" novalidate
+      data-msg-email="Enter a complete email address, like you@agency.gov."
+      data-msg-kinds="Choose at least one kind of alert."
+      data-msg-cooldown="We just sent a confirmation to this address. Check your inbox and spam folder, or try again in 15 minutes."
+      data-msg-rate="Too many requests. Try again later."
+      data-msg-other="Something went wrong. Please try again.">
       <p class="field">
         <label for="email">Your email <span class="req">(required)</span></label>
         <input id="email" name="email" type="email" required autocomplete="email"

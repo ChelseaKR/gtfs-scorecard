@@ -124,13 +124,14 @@ function setStatus(message, kind) {
   status.className = `form-status ${kind ? `form-status-${kind}` : ""}`.trim();
 }
 
+/** The form's own sentences for problems, from data-msg-* attributes on the
+ *  form, so the wording is reviewed with the rest of the page's copy. */
 const SENTENCES = {
-  email: "Enter a complete email address, like you@agency.gov.",
-  kinds: "Choose at least one kind of alert.",
-  cooldown:
-    "We just sent a confirmation to this address. Check your inbox and spam folder, or try again in 15 minutes.",
-  rate: "Too many requests. Try again later.",
-  other: "Something went wrong. Please try again.",
+  email: form.dataset.msgEmail || "",
+  kinds: form.dataset.msgKinds || "",
+  cooldown: form.dataset.msgCooldown || "",
+  rate: form.dataset.msgRate || "",
+  other: form.dataset.msgOther || "",
 };
 
 /** Turn a refusal from the alerts API into the form's own sentence and the
