@@ -193,6 +193,10 @@ the send is off until you verify a sender and set `SES_FROM`.
    ```
    The `subscribe_url` output is the endpoint the web form posts to; it is
    already wired into `web/src/config.js`.
+   Re-apply the same way after any change to `infra/alerts/handler.py` or
+   `main.tf`; the handler is zipped from the working tree at plan time. Apply
+   before merging a change the digest depends on, such as the one-click
+   unsubscribe POST route (ADR 0004 amendment of 2026-11-20).
 3. **Turn on sending.** Set the `SES_FROM` Actions variable to your verified
    sender. The daily `collect` job then runs
    `scorecard notify --send --from "$SES_FROM"` for confirmed subscribers only.
