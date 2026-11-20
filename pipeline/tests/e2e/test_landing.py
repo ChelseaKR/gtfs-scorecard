@@ -176,35 +176,26 @@ def test_landing_switches_record_category_and_fix_without_reload(page: Page, bas
     assert "fix=3" in page.url
 
 
-def test_landing_search_lazily_pins_another_published_feed(page: Page, base_url: str) -> None:
+def test_landing_search_lazily_opens_another_published_feed(page: Page, base_url: str) -> None:
     requested: list[str] = []
     page.on("request", lambda request: requested.append(request.url))
     page.goto(f"{base_url}/")
     _wait_for_scorecard(page)
-    assert not any(url.endswith("/api/v1/ids.json") for url in requested)
+    assert not any(url.endswith("/data/agency-index.json") for url in requested)
 
     search = page.locator("#feed-search")
     search.fill("ABQ RIDE")
-    first = page.locator("#feed-results button").first
+    first = page.locator("#feed-results [role=option]").first
     expect(first).to_be_visible()
     expect(page.locator("#picker-status")).to_contain_text(re.compile(r"match"))
-    first.click()
-    _wait_for_scorecard(page)
-
-    expect(page.locator("#scorecard-agency")).to_contain_text("ABQ RIDE")
-    assert search.evaluate("element => element === document.activeElement")
-    assert any(url.endswith("/api/v1/ids.json") for url in requested)
+    assert any(url.endswith("/data/agency-index.json") for url in requested)
+    assert not any(url.endswith("/api/v1/ids.json") for url in requested)
     assert not any(url.endswith("/api/v1/agencies.json") for url in requested)
     assert not any(url.endswith("/data/artifacts/directory.json") for url in requested)
 
-    search.fill("PATCO Speedline")
-    no_fix_record = page.locator('#feed-results button[data-agency-id="patco-speedline-3035"]')
-    expect(no_fix_record).to_be_visible()
-    no_fix_record.click()
-    _wait_for_scorecard(page)
-    expect(page.locator("#scorecard-score")).to_have_text("100")
-    expect(page.locator("#fix-selector")).to_be_hidden()
-    expect(page.locator("#fix-title")).to_have_text("No prioritized fixes in this snapshot.")
+    # A chosen suggestion opens the agency's own page, not the example below.
+    first.click()
+    page.wait_for_url(re.compile(r"/agency/abq-ride/$"))
 
 
 def test_landing_controls_keep_keyboard_focus(page: Page, base_url: str) -> None:
@@ -218,13 +209,17 @@ def test_landing_controls_keep_keyboard_focus(page: Page, base_url: str) -> None
     assert pilot.evaluate("element => element === document.activeElement")
     expect(pilot).to_have_attribute("aria-pressed", "true")
 
-    page.locator("#feed-search").focus()
+    search = page.locator("#feed-search")
+    search.focus()
     page.keyboard.type("unitrans")
-    expect(page.locator("#feed-results button").first).to_be_visible()
+    first = page.locator("#feed-results [role=option]").first
+    expect(first).to_be_visible()
     page.keyboard.press("ArrowDown")
-    assert page.locator("#feed-results button").first.evaluate(
-        "element => element === document.activeElement"
-    )
+    # The combobox pattern: focus stays in the field and the active option is
+    # named by aria-activedescendant.
+    expect(first).to_have_attribute("aria-selected", "true")
+    expect(search).to_have_attribute("aria-activedescendant", first.get_attribute("id") or "")
+    assert search.evaluate("element => element === document.activeElement")
 
 
 def test_landing_traces_an_expired_feed_as_a_freshness_check(page: Page, base_url: str) -> None:

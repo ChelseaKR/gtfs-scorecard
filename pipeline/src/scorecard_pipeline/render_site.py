@@ -4144,7 +4144,11 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             f'<a class="report-action" href="/agency/{esc(agency_id)}/board/">Board one-pager</a>',
             f'<a class="report-action" href="/agency/{esc(agency_id)}/brief/">Call brief</a>',
             f'<a class="report-action" href="/compare/?a={esc(agency_id)}">Compare</a>',
-            '<a class="report-action" href="/subscribe.html">Watch this feed</a>',
+            # Carries the agency so the alerts form opens with it already
+            # chosen, instead of making the reader search for the feed they
+            # were just looking at.
+            f'<a class="report-action" href="/subscribe.html?agency={esc(agency_id)}">'
+            "Watch this feed</a>",
             f'<a class="report-action" href="/claim/?agency={esc(agency_id)}">Correct listing</a>',
         ]
     )
@@ -14847,6 +14851,21 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             },
             indent=2,
             sort_keys=True,
+        )
+        + "\n",
+    )
+    # The small agency index the find-as-you-type pickers read (the home page
+    # search and the alerts signup form), so neither downloads the full history
+    # index or the feed-URL crosswalk to suggest a name. Compact separators on
+    # purpose: this file is fetched by browsers, not read by people.
+    from .agency_index import INDEX_PATH, build_agency_index
+
+    write(
+        INDEX_PATH,
+        json.dumps(
+            build_agency_index(catalog, generated_at=now.isoformat(timespec="seconds")),
+            ensure_ascii=False,
+            separators=(",", ":"),
         )
         + "\n",
     )

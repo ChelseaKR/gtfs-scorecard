@@ -4,52 +4,93 @@
  * pending subscriber and emails a confirm link (double opt-in). No account, no
  * client secret: abuse is bounded server-side. If the endpoint is not
  * configured, the form degrades to an explanation.
+ *
+ * The agency field is the shared find-as-you-type picker (agency-combobox.js),
+ * fed by the small agency index rather than the full history index, so the
+ * page no longer unpacks tens of megabytes to list names. Nothing is chosen
+ * until the reader picks an agency or the every-agency option: an untouched
+ * field is an error, not a subscription to every feed. A link from an agency page
+ * (?agency=<id>) opens with that agency already chosen.
  */
 
-import { compareText } from "./locale.js";
-
 const SUBSCRIBE_URL = /** @type {any} */ (window).SCORECARD_SUBSCRIBE_URL || null;
-const DATA_BASES = [
-  /** @type {any} */ (window).SCORECARD_DATA_BASE,
-  "data/artifacts",
-  "../data/artifacts",
-].filter(Boolean);
+const agencySearch = /** @type {any} */ (window).ScorecardAgencySearch || null;
 
 const form = /** @type {HTMLFormElement} */ (document.getElementById("subscribe-form"));
 const status = /** @type {HTMLElement} */ (document.getElementById("form-status"));
-const agencySelect = /** @type {HTMLSelectElement} */ (document.getElementById("agency"));
+const agencyInput = /** @type {HTMLInputElement} */ (document.getElementById("agency"));
+const agencyField = /** @type {HTMLElement} */ (document.getElementById("agency-picker"));
 const emailInput = /** @type {HTMLInputElement} */ (document.getElementById("email"));
+const submitButton = /** @type {HTMLButtonElement | null} */ (form.querySelector('button[type="submit"]'));
 const kindInputs = /** @type {NodeListOf<HTMLInputElement>} */ (
   form.querySelectorAll('input[name="kinds"]')
 );
 
-/** Fetch index.json from the first base that answers, to fill the agency list. */
-async function fetchIndex() {
-  for (const base of DATA_BASES) {
-    try {
-      const res = await fetch(`${base}/index.json`);
-      // Await here so a 200 that is not JSON (an HTML fallback page) is caught
-      // and the next base is tried, as fetchJson in app.js does.
-      if (res.ok) return await res.json();
-    } catch {
-      /* try the next base */
-    }
+/** @type {any} */
+let picker = null;
+/** The last request the API accepted, so pressing the button again does not
+ *  send a second confirmation (the API refuses a repeat within 15 minutes
+ *  with a 429). @type {string} */
+let lastAccepted = "";
+let lastAcceptedMessage = "";
+let sending = false;
+
+/** The alerts API also wants a dot and a two-letter ending after the @
+ *  (infra/alerts/handler.py EMAIL_RE), which the browser does not check, so
+ *  you@agency passed here and came back from the server, seconds later, as a
+ *  terse API error. Checked here with the same wording as any other
+ *  incomplete address. */
+const DOMAIN_WITH_ENDING = /@[^@\s]+\.[A-Za-z]{2,}$/;
+
+function setupPicker() {
+  if (!agencySearch || !agencyInput || !agencyField) return;
+  picker = agencySearch.attach({
+    input: agencyInput,
+    listbox: /** @type {HTMLElement} */ (document.getElementById("agency-options")),
+    status: /** @type {HTMLElement} */ (document.getElementById("agency-status")),
+    messages: agencySearch.messagesFrom(agencyField),
+    offerAll: true,
+    onChoose: () => {
+      if (agencyInput.getAttribute("aria-invalid")) clearInvalid();
+    },
+  });
+  const wanted = new URLSearchParams(window.location.search).get("agency");
+  if (wanted) {
+    picker.records().then(
+      (/** @type {any[]} */ records) => {
+        const record = records.find((r) => r.id === wanted);
+        if (record && !agencyInput.value) picker.choose(record);
+      },
+      () => {}
+    );
   }
-  return null;
 }
 
-async function populateAgencies() {
-  const index = await fetchIndex();
-  if (!index || !index.agencies) return;
-  const entries = Object.entries(index.agencies)
-    .map(([id, a]) => ({ id, name: /** @type {any} */ (a).name }))
-    .sort((x, y) => compareText(x.name, y.name));
-  for (const { id, name } of entries) {
-    const opt = document.createElement("option");
-    opt.value = id;
-    opt.textContent = name;
-    agencySelect.appendChild(opt);
+/** What the agency field holds once the reader is done with it: a chosen
+ *  record, "all", or null when nothing usable is chosen. Text that clearly
+ *  names one agency (typed in full, not picked) counts as choosing it.
+ *  @returns {Promise<{all: true} | {id: string} | null>} */
+async function chosenAgency() {
+  if (!picker) {
+    // The picker script did not load: the field is a plain text box, so take
+    // what was typed as a feed id, the way the API reads it.
+    const typed = agencyInput.value.trim();
+    return typed ? { id: typed } : null;
   }
+  const choice = picker.choice();
+  if (choice) return choice.all ? { all: true } : { id: choice.id };
+  if (!agencyInput.value.trim()) return null;
+  if (picker.allMatches()) return { all: true };
+  try {
+    const record = await picker.clearMatch();
+    if (record) {
+      picker.choose(record);
+      return { id: record.id };
+    }
+  } catch {
+    /* the index did not load; treated as nothing chosen */
+  }
+  return null;
 }
 
 /** Mark one field as the field in error and tie the status message to it.
@@ -83,22 +124,39 @@ function setStatus(message, kind) {
   status.className = `form-status ${kind ? `form-status-${kind}` : ""}`.trim();
 }
 
+/** @param {boolean} busy */
+function setSending(busy) {
+  sending = busy;
+  if (busy) {
+    form.setAttribute("aria-busy", "true");
+    submitButton?.setAttribute("disabled", "true");
+    submitButton?.classList.add("is-sending");
+  } else {
+    form.removeAttribute("aria-busy");
+    submitButton?.removeAttribute("disabled");
+    submitButton?.classList.remove("is-sending");
+  }
+}
+
+setupPicker();
+
 if (!SUBSCRIBE_URL) {
   setStatus(
     "Alerts are not enabled on this deployment yet. Check back soon.",
     "info"
   );
-  if (form) form.querySelector("button")?.setAttribute("disabled", "true");
+  if (form) submitButton?.setAttribute("disabled", "true");
 } else {
-  populateAgencies();
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    // One request at a time: a second press, or Enter in a field while the
+    // first request is out, does nothing.
+    if (sending) return;
     const data = new FormData(form);
     const email = String(data.get("email") || "").trim();
-    const agency = String(data.get("agency") || "");
     const kinds = data.getAll("kinds").map(String);
     clearInvalid();
-    if (!email || !emailInput.validity.valid) {
+    if (!email || !emailInput.validity.valid || !DOMAIN_WITH_ENDING.test(email)) {
       setStatus(
         email ? "Enter a complete email address, like you@agency.gov." : "Enter your email.",
         "err"
@@ -107,38 +165,54 @@ if (!SUBSCRIBE_URL) {
       emailInput.focus();
       return;
     }
+    setSending(true);
+    const agency = await chosenAgency();
+    if (!agency) {
+      setSending(false);
+      setStatus(agencyField?.dataset.msgRequired || "", "err");
+      flagInvalid(agencyInput);
+      agencyInput.focus();
+      return;
+    }
     if (!kinds.length) {
+      setSending(false);
       setStatus("Choose at least one kind of alert.", "err");
       for (const input of kindInputs) flagInvalid(input);
       kindInputs[0]?.focus();
       return;
     }
 
-    const payload = agency ? { email, agencies: [agency], kinds } : { email, all: true, kinds };
+    const payload =
+      "all" in agency ? { email, all: true, kinds } : { email, agencies: [agency.id], kinds };
+    const body = JSON.stringify(payload);
+    if (body === lastAccepted) {
+      // Already accepted from this page: say so again instead of asking the
+      // API for a second confirmation email it would refuse.
+      setSending(false);
+      setStatus(lastAcceptedMessage, "ok");
+      return;
+    }
     setStatus("Sending…", "");
-    form.querySelector("button")?.setAttribute("disabled", "true");
     try {
       const res = await fetch(`${SUBSCRIBE_URL.replace(/\/$/, "")}/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body,
       });
-      const body = await res.json().catch(() => ({}));
+      const reply = await res.json().catch(() => ({}));
       if (res.ok) {
-        setStatus(
-          body.message || "Check your email to confirm your subscription.",
-          "ok"
-        );
-        form.reset();
+        lastAccepted = body;
+        lastAcceptedMessage = reply.message || "Check your email to confirm your subscription.";
+        setStatus(lastAcceptedMessage, "ok");
       } else if (res.status === 429) {
-        setStatus(body.error || "Too many requests. Try again later.", "err");
+        setStatus(reply.error || "Too many requests. Try again later.", "err");
       } else {
-        setStatus(body.error || "Something went wrong. Please try again.", "err");
+        setStatus(reply.error || "Something went wrong. Please try again.", "err");
       }
     } catch {
       setStatus("Could not reach the server. Please try again.", "err");
     } finally {
-      form.querySelector("button")?.removeAttribute("disabled");
+      setSending(false);
     }
   });
 }

@@ -152,6 +152,16 @@ def test_alert_form_identifies_and_focuses_invalid_fields(page: Page, base_url: 
     assert page.evaluate("() => document.activeElement.id") == "email"
 
     email.fill("person@agency.gov")
+    page.get_by_role("button", name="Email me alerts").click()
+    agency = page.get_by_role("combobox", name="Which agency?")
+    expect(agency).to_have_attribute("aria-invalid", "true")
+    expect(page.locator("#form-status")).to_have_text(
+        "Choose an agency from the list, or choose All agencies."
+    )
+    assert page.evaluate("() => document.activeElement.id") == "agency"
+
+    agency.fill("unitrans")
+    page.get_by_role("option", name=re.compile("Feed ID unitrans")).click()
     for checkbox in page.locator('input[name="kinds"]').all():
         checkbox.uncheck()
     page.get_by_role("button", name="Email me alerts").click()

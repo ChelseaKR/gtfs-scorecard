@@ -308,7 +308,7 @@ def test_landing_uses_a_real_interactive_scorecard_instead_of_a_fictional_dashbo
     script = (_REPO / "web" / "src" / "landing-scorecard.js").read_text()
 
     assert 'id="live-scorecard"' in html
-    assert 'src="/src/landing-scorecard.js?v=20261105-fragment"' in html
+    assert 'src="/src/landing-scorecard.js?v=20261119-agency-search"' in html
     assert "Latest published scorecard" in html
     assert 'role="group" aria-label="Home pilots"' in html
     assert "measured category sets can differ" in html
@@ -325,7 +325,14 @@ def test_landing_uses_a_real_interactive_scorecard_instead_of_a_fictional_dashbo
         "/data/artifacts/yolobus/latest.json",
     ):
         assert endpoint in script
-    assert "/api/v1/ids.json" in script
+    # The search box suggests names from the shared picker's small index,
+    # never the feed-URL crosswalk or the full directory.
+    picker = (_REPO / "web" / "src" / "agency-combobox.js").read_text()
+    assert 'src="/src/agency-combobox.js?v=20261119-agency-search"' in html
+    assert html.index("/src/agency-combobox.js") < html.index("/src/landing-scorecard.js")
+    assert "ScorecardAgencySearch" in script
+    assert '"/data/agency-index.json"' in picker
+    assert "/api/v1/ids.json" not in script + picker
     assert "/api/v1/agencies.json" not in script
     assert "/data/artifacts/directory.json" not in script
     assert "/src/app.js" not in html

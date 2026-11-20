@@ -207,14 +207,9 @@
     fixIndex: 0,
     request: 0,
     controller: null,
-    directory: null,
-    directoryPromise: null,
-    visibleMatches: [],
     persistUrl: false,
-    searchRequest: 0,
   };
   var cache = new Map(Object.entries(FALLBACKS));
-  var searchTimer = 0;
 
   function text(element, value) {
     if (element) element.textContent = value == null ? "" : String(value);
@@ -616,93 +611,6 @@
     }
   }
 
-  function hideResults() {
-    state.visibleMatches = [];
-    if (elements.searchResults) elements.searchResults.hidden = true;
-  }
-
-  function renderMatches(matches) {
-    state.visibleMatches = matches;
-    if (!elements.searchResults) return;
-    elements.searchResults.replaceChildren();
-    matches.forEach(function (agency) {
-      var item = document.createElement("li");
-      var button = document.createElement("button");
-      button.type = "button";
-      button.dataset.agencyId = agency.id;
-      button.dataset.agencyName = agency.name;
-      var name = document.createElement("span");
-      var identifier = document.createElement("span");
-      name.className = "feed-result-name";
-      identifier.className = "feed-result-id";
-      name.textContent = agency.name;
-      identifier.textContent = "Feed ID " + agency.id;
-      button.append(name, identifier);
-      item.appendChild(button);
-      elements.searchResults.appendChild(item);
-    });
-    elements.searchResults.hidden = matches.length === 0;
-    text(
-      elements.pickerStatus,
-      matches.length ? matches.length + (matches.length === 1 ? " match. Choose it to show the scorecard." : " matches. Choose one to show its scorecard.") : "No published scorecard matches that search."
-    );
-  }
-
-  async function loadDirectory() {
-    if (state.directory) return state.directory;
-    if (!state.directoryPromise) {
-      state.directoryPromise = fetch("/api/v1/ids.json", { headers: { Accept: "application/json" } })
-        .then(function (response) {
-          if (!response.ok) throw new Error("Directory request failed");
-          return response.json();
-        })
-        .then(function (payload) {
-          if (!payload || !Array.isArray(payload.agencies)) throw new Error("Directory response is invalid");
-          state.directory = payload.agencies.filter(function (agency) {
-            return agency && validId(agency.id) && typeof agency.name === "string";
-          });
-          return state.directory;
-        })
-        .catch(function (error) {
-          state.directoryPromise = null;
-          throw error;
-        });
-    }
-    return state.directoryPromise;
-  }
-
-  async function searchDirectory(query) {
-    state.searchRequest += 1;
-    var request = state.searchRequest;
-    var normalized = query.trim().toLowerCase();
-    if (normalized.length < 2) {
-      hideResults();
-      state.visibleMatches = [];
-      text(elements.pickerStatus, "Type at least two characters to search published scorecards.");
-      return;
-    }
-    text(elements.pickerStatus, "Loading agency names…");
-    try {
-      var directory = await loadDirectory();
-      if (request !== state.searchRequest) return;
-      var matches = directory
-        .filter(function (agency) {
-          return agency.name.toLowerCase().indexOf(normalized) >= 0 || agency.id.indexOf(normalized) >= 0;
-        })
-        .sort(function (left, right) {
-          var leftStarts = left.name.toLowerCase().startsWith(normalized) ? 0 : 1;
-          var rightStarts = right.name.toLowerCase().startsWith(normalized) ? 0 : 1;
-          return leftStarts - rightStarts || left.name.localeCompare(right.name);
-        })
-        .slice(0, 7);
-      renderMatches(matches);
-    } catch (error) {
-      if (request !== state.searchRequest) return;
-      hideResults();
-      text(elements.pickerStatus, "The directory could not load. Browse every scorecard instead.");
-    }
-  }
-
   document.querySelectorAll("[data-agency-id]").forEach(function (button) {
     button.addEventListener("click", function () {
       var id = button.getAttribute("data-agency-id");
@@ -737,78 +645,49 @@
     });
   });
 
-  if (elements.searchInput) {
-    elements.searchInput.addEventListener("input", function () {
-      window.clearTimeout(searchTimer);
-      state.searchRequest += 1;
-      state.visibleMatches = [];
-      hideResults();
-      searchTimer = window.setTimeout(function () {
-        searchTimer = 0;
-        searchDirectory(elements.searchInput.value);
-      }, 120);
-    });
-    elements.searchInput.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        window.clearTimeout(searchTimer);
-        searchTimer = 0;
-        state.searchRequest += 1;
-        hideResults();
-        text(elements.pickerStatus, "Search results closed.");
-      }
-      if (event.key === "ArrowDown" && elements.searchResults && !elements.searchResults.hidden) {
-        var first = elements.searchResults.querySelector("button");
-        if (first instanceof HTMLButtonElement) {
-          event.preventDefault();
-          first.focus();
-        }
-      }
-    });
+  /* The search box goes to an agency's own page: a chosen suggestion, or
+   * Enter on a query that clearly names one agency. Anything else, including
+   * a name two feeds share, keeps going to the results list in the app.
+   * The suggestions come from the shared picker (agency-combobox.js) and its
+   * small index, which loads the first time someone types, not with the page.
+   * Without JavaScript the form submits to /app/ on its own. */
+  function agencyPage(record) {
+    return "/agency/" + encodeURIComponent(record.slug || record.id) + "/";
   }
 
-  if (elements.searchResults) {
-    elements.searchResults.addEventListener("click", function (event) {
-      var button = event.target instanceof Element ? event.target.closest("button[data-agency-id]") : null;
-      if (!(button instanceof HTMLButtonElement)) return;
-      var id = button.dataset.agencyId;
-      var name = button.dataset.agencyName || button.textContent.trim();
-      if (!id) return;
-      if (elements.searchInput) elements.searchInput.value = name;
-      hideResults();
-      if (elements.searchInput) elements.searchInput.focus();
-      state.persistUrl = true;
-      state.fixIndex = 0;
-      loadAgency(id, name);
-    });
+  function resultsPage(query) {
+    return "/app/#/?q=" + encodeURIComponent(query);
   }
 
-  if (elements.searchForm) {
+  var agencySearch = window.ScorecardAgencySearch;
+  if (agencySearch && elements.searchForm && elements.searchInput && elements.searchResults) {
+    var picker = agencySearch.attach({
+      input: elements.searchInput,
+      listbox: elements.searchResults,
+      status: elements.pickerStatus,
+      messages: agencySearch.messagesFrom(elements.searchForm),
+      onChoose: function (record) {
+        if (record && record.id) window.location.assign(agencyPage(record));
+      },
+    });
     elements.searchForm.addEventListener("submit", function (event) {
       event.preventDefault();
-      var first = state.visibleMatches[0];
-      if (first) {
-        if (elements.searchInput) elements.searchInput.value = first.name;
-        hideResults();
-        if (elements.searchInput) elements.searchInput.focus();
-        state.persistUrl = true;
-        state.fixIndex = 0;
-        loadAgency(first.id, first.name);
+      var query = elements.searchInput.value.trim();
+      picker.close();
+      if (!query) {
+        window.location.assign(resultsPage(query));
         return;
       }
-      var query = elements.searchInput ? elements.searchInput.value.trim() : "";
-      window.location.href = "/app/#/?q=" + encodeURIComponent(query);
+      picker.clearMatch().then(
+        function (record) {
+          window.location.assign(record ? agencyPage(record) : resultsPage(query));
+        },
+        function () {
+          window.location.assign(resultsPage(query));
+        }
+      );
     });
   }
-
-  document.addEventListener("click", function (event) {
-    if (event.target instanceof Node && elements.searchForm && !elements.searchForm.contains(event.target)) {
-      window.clearTimeout(searchTimer);
-      searchTimer = 0;
-      state.searchRequest += 1;
-      hideResults();
-    }
-  });
 
   async function copyView() {
     state.persistUrl = true;

@@ -74,14 +74,28 @@
         <span class="hint" id="email-hint">We send a confirmation link first. Nothing is sent until
         you click it.</span>
       </p>
-      <p class="field">
+      <div class="field agency-picker" id="agency-picker"
+        data-msg-short="Type at least two characters to see matching agencies."
+        data-msg-loading="Loading agency names…"
+        data-msg-none="No agencies match that name."
+        data-msg-one="1 agency matches. Use the down arrow to choose it."
+        data-msg-many="{count} agencies match. Use the up and down arrows to choose one."
+        data-msg-more="{count} of {total} matching agencies shown. Keep typing to narrow them."
+        data-msg-closed="Suggestions closed."
+        data-msg-error="The agency list could not load. Reload the page to try again."
+        data-msg-detail="Feed ID {id}"
+        data-msg-all="All agencies"
+        data-msg-required="Choose an agency from the list, or choose All agencies.">
         <label for="agency">Which agency?</label>
-        <select id="agency" name="agency" aria-describedby="agency-hint">
-          <option value="">All agencies</option>
-        </select>
-        <span class="hint" id="agency-hint">Pick one, or watch every tracked agency (useful if you
-        support a group of them).</span>
-      </p>
+        <div class="agency-picker-box">
+          <input id="agency" name="agency" type="text" autocomplete="off"
+            aria-describedby="agency-hint" placeholder="Start typing an agency name">
+          <ul class="agency-options" id="agency-options" hidden></ul>
+        </div>
+        <span class="hint" id="agency-hint">Type a name and pick it from the list, or choose All
+        agencies to watch every tracked agency (useful if you support a group of them).</span>
+        <span class="agency-status" id="agency-status" role="status" aria-live="polite"></span>
+      </div>
       <fieldset class="field">
         <legend>Alert me about</legend>
         <label><input type="checkbox" name="kinds" value="expiry" checked> A feed
@@ -177,6 +191,7 @@
   </footer>
 
   <script src="src/config.js"></script>
-  <script type="module" src="src/subscribe.js"></script>
+  <script src="src/agency-combobox.js?v=20261119-agency-search" defer></script>
+  <script type="module" src="src/subscribe.js?v=20261119-agency-search"></script>
 </body>
 </html>

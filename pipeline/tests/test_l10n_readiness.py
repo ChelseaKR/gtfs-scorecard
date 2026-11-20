@@ -59,6 +59,11 @@ HARDCODED_STRING_BASELINE = {
     # now the app named nowhere. A deliberate increase, to move into the catalog
     # with the rest of the tier copy when the tier joins it.
     "app.js": 395,
+    # The shared find-as-you-type agency picker. New module, so a first
+    # baseline: the single match is the strict-mode directive. Every word a
+    # reader sees or hears comes from data-* attributes on the page that uses
+    # it, which keeps this file at no English copy of its own.
+    "agency-combobox.js": 1,
     # Program report bundle pages (docs/program-plan.md): unlinked and
     # noindex, so not yet in the locale catalog. Their status and form copy
     # is recorded here for the same ratchet as landing-scorecard.js.
@@ -116,7 +121,10 @@ HARDCODED_STRING_BASELINE = {
     # selected-record scope links, technical trace labels, and accessible
     # selection announcements raised this reviewed baseline from 111 to 116;
     # the source and method labels for freshness findings raise it to 121.
-    "landing-scorecard.js": 121,
+    # Lowered 121 -> 111: the search box moved to the shared agency picker,
+    # whose wording lives in data-* attributes on the page, so its status
+    # sentences left this file.
+    "landing-scorecard.js": 111,
     "locale.js": 0,
     # The site-measurement shim (docs/decisions/0055): event and property
     # names only, no reader-facing copy. The matches are the strict-mode
