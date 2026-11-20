@@ -48,6 +48,21 @@ function setStatus(message, kind) {
   status.className = `form-status form-status-${kind}`;
 }
 
+/**
+ * Mark the field a message is about and move focus to it, as the other forms on
+ * this site do (WCAG 3.3.1): the status line says what is wrong, aria-invalid
+ * says where, and a keyboard or screen-reader user lands on the field to fix.
+ * Called with no field, it only clears the marks of an earlier attempt.
+ * @param {HTMLElement | null} [field]
+ */
+function markInvalid(field) {
+  if (!form) return;
+  for (const el of Array.from(form.querySelectorAll("[aria-invalid]"))) el.removeAttribute("aria-invalid");
+  if (!field) return;
+  field.setAttribute("aria-invalid", "true");
+  field.focus();
+}
+
 /** @param {boolean} on */
 function enable(on) {
   if (!form) return;
@@ -91,8 +106,11 @@ if (!form) {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(form).entries());
     const ids = String(data.agency_ids || "").trim();
+    const programField = /** @type {HTMLElement | null} */ (form.querySelector("#program_name"));
+    const idsField = /** @type {HTMLElement | null} */ (form.querySelector("#agency_ids"));
     if (!String(data.program_name || "").trim() || !ids) {
       setStatus("Please give the program name and at least one agency id.", "err");
+      markInvalid(String(data.program_name || "").trim() ? idsField : programField);
       return;
     }
     // A ceiling across every plan, not a promise about the plan this buyer
@@ -103,8 +121,10 @@ if (!form) {
     // (infra/program-bundle/common.py); test_bundle_setup_ceiling.py holds it.
     if (ids.split(/[\s,]+/).filter(Boolean).length > 100) {
       setStatus("No bundle covers more than 100 agencies. Trim the list and send it again.", "err");
+      markInvalid(idsField);
       return;
     }
+    markInvalid(null);
     enable(false);
     setStatus("Confirming your payment and starting the build…", "info");
     try {
