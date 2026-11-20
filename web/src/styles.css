@@ -2598,7 +2598,10 @@ main:focus { outline: none; }
 .submit-button:disabled { opacity: 0.6; cursor: progress; }
 /* While a request is out the button shows a small spinning ring beside its
    label. Decorative only: the status line says "Sending…" in words, and the
-   form carries aria-busy. Reduced motion stops the spin (global rule above). */
+   form carries aria-busy. It turns six times (4.8 s) and then holds still, so
+   it never moves for more than five seconds (WCAG 2.2.2,
+   test_motion_stops.py); a cold start can take longer than that. Reduced
+   motion stops the spin altogether (global rule above). */
 .submit-button.is-sending::after {
   content: "";
   inline-size: 0.9em;
@@ -2607,7 +2610,7 @@ main:focus { outline: none; }
   border: 2px solid currentColor;
   border-block-start-color: transparent;
   border-radius: 50%;
-  animation: submit-spin 0.8s linear infinite;
+  animation: submit-spin 0.8s linear 6;
 }
 @keyframes submit-spin { to { transform: rotate(360deg); } }
 
