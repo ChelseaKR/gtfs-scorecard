@@ -357,8 +357,13 @@ def test_search_intent_copy_fits_and_carries_the_pages_grade(
     generated = _agency_seo_metadata("Placeholder Name", grade_facts=facts)
     meta = _apply_search_intent(agency_id, generated, facts)
     # Every entry must actually apply: copy that silently falls back would
-    # leave the page on its old title while this table claims otherwise.
-    assert meta.title != generated.title
+    # leave the page on its old title while this table claims otherwise. An
+    # entry with no identity replaces the description only.
+    if _SEARCH_INTENT_COPY[agency_id].identity:
+        assert meta.title != generated.title
+    else:
+        assert (meta.title, meta.identity) == (generated.title, generated.identity)
+    assert meta.description != generated.description
     assert 15 <= len(meta.title) <= 60
     assert 50 <= len(meta.description) <= 155
     assert meta.title.startswith(meta.identity)
@@ -380,6 +385,94 @@ def test_search_intent_copy_names_jgp_nis_in_latin_letters() -> None:
     )
     assert meta.title == "JGP Niš (Јавни градски превоз Ниш) GTFS feed quality report"
     assert "Јавни градски превоз Ниш" in meta.title
+
+
+# Approved 2026-11-20, worded for "<agency> gtfs" searches. The grade, score
+# and date in each description are the page's own, generated from its artifact;
+# these are the values each page carried on 2026-11-20 (Greensboro's last
+# successful check was 2026-11-09, and its grade is partial).
+_APPROVED_2026_11_20 = {
+    "pid-prague": (
+        {"name": "Pražská integrovaná doprava (PID)", "country": "CZ"},
+        {"grade": "F", "score": 31.6},
+        "2026-11-20",
+        "PID Prague GTFS feed: source URL and quality report",
+        "Prague Integrated Transport (PID), Czechia, GTFS feed: grade F, 31.6 of 100, checked"
+        " 2026-11-20. See the source feed URL, validator findings and fixes.",
+    ),
+    "go-transit-metrolinx": (
+        {"name": "GO Transit (Metrolinx)", "country": "CA"},
+        {"grade": "C", "score": 79.7},
+        "2026-11-20",
+        "GO Transit GTFS feed: source URL and quality report",
+        "GO Transit (Metrolinx, Ontario) GTFS feed: grade C, 79.7 of 100, checked 2026-11-20."
+        " See the source feed URL, validator findings and fixes.",
+    ),
+    "greensboro-transit-authority-gta": (
+        {"name": "Greensboro Transit Authority (GTA)", "country": "US", "state": "North Carolina"},
+        {"grade": "D", "score": 63.5, "grade_qualifier": "partial: freshness not measured"},
+        "2026-11-09",
+        # The title is the generated one, unchanged; only the description is
+        # hand-written.
+        "Greensboro Transit Authority (GTA) GTFS feed quality report",
+        "Greensboro Transit Authority (GTA) GTFS feed: grade D (partial: freshness not"
+        " measured), 63.5 of 100, checked 2026-11-09. See fixes.",
+    ),
+}
+
+
+def _approved_corpus() -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+    from scorecard_pipeline.config import AGENCIES
+
+    records = [{"id": agency_id, **rec} for agency_id, (rec, *_) in _APPROVED_2026_11_20.items()]
+    artifacts = {
+        agency_id: _artifact(
+            agency={"id": agency_id, "name": rec["name"]},
+            overall=overall,
+            snapshot_date=checked,
+        )
+        for agency_id, (rec, overall, checked, *_) in _APPROVED_2026_11_20.items()
+    }
+    # PID and GO Transit are in the ADR 0078 test half and show a source feed,
+    # so the hand-written copy has to win over that test's wording too.
+    planned = _plan_agency_seo_metadata(
+        records, artifacts, AGENCIES, source_shown=frozenset(_APPROVED_2026_11_20)
+    )
+    return planned, artifacts
+
+
+@pytest.mark.parametrize("agency_id", sorted(_APPROVED_2026_11_20))
+def test_approved_snippets_render_exactly_with_todays_data(agency_id: str) -> None:
+    planned, artifacts = _approved_corpus()
+    rec, _overall, _checked, title, description = _APPROVED_2026_11_20[agency_id]
+    html = _render_agency(artifacts[agency_id], dir_record=rec, seo_metadata=planned[agency_id])
+    assert _head(html) == (title, description)
+    assert len(title) <= 60 and len(description) <= 155
+
+
+def test_greensboro_keeps_the_title_it_would_have_had_anyway() -> None:
+    planned, artifacts = _approved_corpus()
+    rec, _overall, _checked, title, _description = _APPROVED_2026_11_20[
+        "greensboro-transit-authority-gta"
+    ]
+    generated = _agency_seo_metadata(
+        rec["name"],
+        location_label="North Carolina",
+        grade_facts=_seo_grade_facts(artifacts["greensboro-transit-authority-gta"]),
+    )
+    assert generated.title == title == planned["greensboro-transit-authority-gta"].title
+    # The generated description is the one that cut the name short.
+    assert "Greensboro Transit…" in generated.description
+
+
+def test_the_approved_descriptions_follow_the_artifact_not_a_fixed_string() -> None:
+    """The grade, score and date are generated: a later check changes them."""
+    facts = ("B", "88.2", "2026-12-01")
+    meta = _apply_search_intent("pid-prague", _agency_seo_metadata("PID", grade_facts=facts), facts)
+    assert meta.description == (
+        "Prague Integrated Transport (PID), Czechia, GTFS feed: grade B, 88.2 of 100, checked"
+        " 2026-12-01. See the source feed URL, validator findings and fixes."
+    )
 
 
 def test_agency_without_search_intent_copy_is_untouched() -> None:
