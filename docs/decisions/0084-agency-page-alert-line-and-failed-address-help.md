@@ -1,8 +1,8 @@
 # ADR 0084: Agency pages offer the free alert under the grade, and help when the address fails
 
-**Status:** Proposed (2026-11-20). Built on a branch; the new reader-facing
-wording waits for the maintainer's approval before merge. 0083 is taken by the
-alert-signup events branch.
+**Status:** Accepted (2026-11-21). The maintainer approved the recommended
+wording for both lines on 2026-11-21. 0083 is taken by the alert-signup events
+branch.
 
 ## Context
 
