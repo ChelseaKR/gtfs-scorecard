@@ -82,6 +82,12 @@ wording; in short:
 
 ### Changed
 
+- **Program pages put the member list first.** Each state, country and
+  group page now lists its feed scorecards right after the summary, under a
+  free "Watch these feeds" card that links the alerts form. Shared fixes,
+  expired feeds, realtime, shapes and the state-report match follow. A state
+  or country page's breadcrumb reads Home, Agencies, then the place. The
+  program panel (ADR 0064) is unchanged and stays last.
 - **The agency directory lists current feeds first.** Every directory page
   opens with the agency search from the home page and "Browse by place", which
   links the existing state and country pages. Current feeds follow, A to Z,
