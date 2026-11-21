@@ -87,6 +87,10 @@ recommending `@v1`.
   **Publish this Action to the GitHub Marketplace** selected, choose the action's
   categories, and move the floating major tag only after the protected release tag
   is published.
+- [ ] Create the GitHub release as a draft (`gh release create vX.Y.Z --draft`) right
+  after the tag push, and publish it only after `release-sign.yml` has attached its
+  five assets: releases here are immutable, so a published release refuses the upload
+  (v1.6.0 shipped without them on 2026-11-21).
 - [ ] Before tagging an Action release, inspect the `export-ignore`-bounded source archive.
   It should contain only `action.yml`, `action/`, the runtime `pipeline/` package, and
   license/security files, and compress below 10 MB. Never make every Action consumer

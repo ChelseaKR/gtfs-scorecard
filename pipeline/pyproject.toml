@@ -8,7 +8,7 @@ name = "gtfs-scorecard"
 # in CITATION.cff and server.json; a `make verify` check (scripts/check_versions.py)
 # fails CI if they drift. A protected release tag is cut only after these
 # declarations and CI agree; this file never treats an uncut tag as published.
-version = "1.6.0"
+version = "1.6.1"
 description = "Score GTFS Schedule feeds with plain-language fixes: the gtfsscorecard.org pipeline, CLI, and read-only MCP server"
 readme = "README.md"
 license = "Apache-2.0"

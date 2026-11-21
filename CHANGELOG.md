@@ -27,7 +27,26 @@ the declared public surface).
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-11-21
+
+### Changed
+
+- **1.6.1 re-releases 1.6.0's code, with no code changes.** The v1.6.0
+  GitHub release was published before `release-sign.yml` could attach its
+  signed manifest, SBOM and VEX. This repository's releases are immutable, so
+  the upload was refused (HTTP 422) and the v1.6.0 release carries none of
+  them. Its PyPI run was cancelled before the upload, so `gtfs-scorecard`
+  1.6.0 is not on PyPI. 1.6.1 is the same code under a new tag, released with
+  those assets and uploaded to PyPI; pin `v1.6.1`. The version declarations
+  say 1.6.1, `docs/ci-action.md` says what `v1.6.1` is, and
+  `docs/release-checklist.md` now says to create the GitHub release as a
+  draft and publish it only after `release-sign.yml` has attached its assets.
+  The 1.6.0 section below lists every change since 1.5.1.
+
 ## [1.6.0] - 2026-11-21
+
+**Not published to PyPI, and its GitHub release has no signed manifest, SBOM
+or VEX; use 1.6.1, which carries the same code.**
 
 Everything merged since v1.5.1 (2026-10-09). It is a minor release, not a
 patch, because the declared public surface (README "Versioning": the JSON
@@ -3395,7 +3414,8 @@ from `git log` against current history. As of this tag, the repo shipped:
 - Realtime drift/plausibility checks, embeddable grade badges, and rollup
   views across agency cohorts.
 
-[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.6.1...HEAD
+[1.6.1]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.4.0...v1.5.0
