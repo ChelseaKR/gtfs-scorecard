@@ -11,6 +11,14 @@
  * until the reader picks an agency or the every-agency option: an untouched
  * field is an error, not a subscription to every feed. A link from an agency page
  * (?agency=<id>) opens with that agency already chosen.
+ *
+ * Two steps of the signup are announced to the measurement script as a
+ * "scorecard:lead" event (docs/decisions/0083-alert-signup-events.md): the API
+ * accepted the form and is sending a confirmation email, and the reader
+ * confirmed from that email. Only the name of the step is in the event, never
+ * the address or anything else from the form. The alerts API sends a confirmed
+ * reader back here as /subscribe.html#confirmed, which shows the confirmation
+ * note (by CSS :target, so it shows without scripting too).
  */
 
 const SUBSCRIBE_URL = /** @type {any} */ (window).SCORECARD_SUBSCRIBE_URL || null;
@@ -181,6 +189,26 @@ function setSending(busy) {
   }
 }
 
+/** Tell web/src/measure.js that a step of the signup happened. The detail
+ *  carries the name of the step and nothing else.
+ *  @param {"alert_signup_requested" | "alert_signup_confirmed"} step */
+function announce(step) {
+  document.dispatchEvent(new CustomEvent("scorecard:lead", { detail: { event: step } }));
+}
+
+/** A reader the alerts API sent back after pressing the confirm button. The
+ *  marker is taken out of the address once read, so reloading the page neither
+ *  shows the note again nor counts the confirmation twice. */
+function showConfirmed() {
+  const note = document.getElementById("confirmed");
+  if (!note || window.location.hash !== "#confirmed") return;
+  note.classList.add("is-shown");
+  window.history.replaceState(null, "", window.location.pathname + window.location.search);
+  note.focus();
+  announce("alert_signup_confirmed");
+}
+
+showConfirmed();
 setupPicker();
 
 if (!SUBSCRIBE_URL) {
@@ -244,6 +272,9 @@ if (!SUBSCRIBE_URL) {
         lastAccepted = body;
         lastAcceptedMessage = reply.message || "Check your email to confirm your subscription.";
         setStatus(lastAcceptedMessage, "ok");
+        // "pending" is a new request with a confirmation email on its way. An
+        // address that was already subscribed is not a new signup.
+        if (reply.status === "pending") announce("alert_signup_requested");
       } else {
         const { message, field } = refusal(res.status, reply);
         setStatus(message, "err");

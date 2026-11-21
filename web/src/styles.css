@@ -2657,6 +2657,12 @@ main:focus { outline: none; }
 .form-status { margin-top: 0.4rem; font-size: 0.9rem; }
 .form-status-err { color: var(--error); font-weight: 600; }
 .form-status-ok { color: var(--success-text); font-weight: 600; }
+/* The note a reader sees when the alerts API sends them back confirmed
+   (/subscribe.html#confirmed). Hidden otherwise; :target shows it without
+   scripting, and subscribe.js keeps it shown after taking the marker out of
+   the address (docs/decisions/0083). */
+.confirm-note { display: none; color: var(--success-text); font-weight: 600; }
+.confirm-note:target, .confirm-note.is-shown { display: block; }
 
 /* Plan cards on /bundle/: the price line is the one thing the server sets.
    No new colors; the mono face keeps amounts from reading as prose. */

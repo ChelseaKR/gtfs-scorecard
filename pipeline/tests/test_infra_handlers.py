@@ -167,7 +167,7 @@ def test_confirm_accepts_matching_token(monkeypatch: pytest.MonkeyPatch) -> None
     table = FakeTable({"email": "a@b.io", "token": "good"})
     monkeypatch.setattr(alerts, "_table", lambda: table)
     resp = alerts._confirm({"rawQueryString": "email=a@b.io&token=good"})
-    assert resp["statusCode"] == 200
+    assert resp["statusCode"] == 303  # back to the site's alerts page (ADR 0083)
     assert table.updated is True
 
 

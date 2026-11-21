@@ -5,7 +5,9 @@ A small Lambda behind an HTTP API. Routes:
   POST /subscribe   {email, all|agencies[], kinds[]}  -> store a pending
                     (unverified) subscriber and email a tokenized confirm link.
   GET  /confirm?email=&token=                          -> a page with one button
-  POST /confirm?email=&token=                          -> mark verified.
+  POST /confirm?email=&token=                          -> mark verified, then
+                    send the reader back to the site's alerts page
+                    (303 to /subscribe.html#confirmed).
   GET  /unsubscribe?email=&token=                      -> a page with one button
   POST /unsubscribe?email=&token=                      -> remove the subscriber
                     (also the RFC 8058 one-click POST that mail providers send
@@ -323,6 +325,33 @@ def _matches(row: dict[str, Any] | None, field: str, token: str) -> bool:
     return bool(value) and hmac.compare_digest(str(value), token)
 
 
+# Where a reader lands after pressing "Confirm my alerts" for the first time.
+# The site's alerts page shows the same confirmation in the site's own shell,
+# and that page view is what lets the site's measurement script count a
+# confirmed signup (docs/decisions/0083-alert-signup-events.md). The address
+# carries a fixed marker and nothing else: never the email or the token.
+CONFIRMED_PATH = "/subscribe.html#confirmed"
+_ORIGIN_RE = re.compile(r"^https://[a-z0-9.-]+$")
+
+
+def _site_origin() -> str:
+    """The static site's origin, the same one the form is allowed from."""
+    origin = os.environ.get("ALLOW_ORIGIN", DEFAULT_ORIGIN).rstrip("/")
+    return origin if _ORIGIN_RE.match(origin) else DEFAULT_ORIGIN
+
+
+def _confirmed_redirect() -> dict[str, Any]:
+    """303 See Other to the site's alerts page after a new confirmation.
+
+    The body is the same "You are subscribed" page as before, for a client that
+    does not follow the redirect. The headers keep _html's no-store and
+    no-referrer, so the confirm link (which carries the address and the token)
+    is neither cached nor sent to the site as a referrer."""
+    resp = _html(303, *_SUBSCRIBED)
+    resp["headers"]["Location"] = _site_origin() + CONFIRMED_PATH
+    return resp
+
+
 _SUBSCRIBED = (
     "You are subscribed",
     "Your address is confirmed. You will hear from us only when a feed you follow needs attention.",
@@ -351,7 +380,9 @@ def _confirm(event: dict[str, Any]) -> dict[str, Any]:
         ExpressionAttributeNames={"#tok": "token"},
         ExpressionAttributeValues={":t": True, ":tok": token},
     )
-    return _html(200, *_SUBSCRIBED)
+    # Only this first confirmation is sent back to the site; the same link
+    # pressed again gets the plain page above, so it is not counted twice.
+    return _confirmed_redirect()
 
 
 def _confirm_page(event: dict[str, Any]) -> dict[str, Any]:
