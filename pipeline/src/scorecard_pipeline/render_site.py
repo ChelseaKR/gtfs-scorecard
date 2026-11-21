@@ -5274,7 +5274,10 @@ def _render_fixlog_page(
             f'<a href="#{esc(anchor)}" aria-label="Link to this fix record">Link</a></li>'
         )
 
-    body = f"""    <p class="brief-nav"><a href="/agency/{esc(agency_id)}/">&larr; Back to the full scorecard</a></p>
+    # The first line leads to the scorecard (the 2026-11 IA): this log outranks
+    # the scorecard for some "<agency> gtfs" searches, and those readers came
+    # for the feed URL and the grade, which live on the scorecard.
+    body = f"""    <p class="brief-nav fixlog-lead">Feed URL and current grade: <a href="/agency/{esc(agency_id)}/"><bdi>{esc(agency_name)}</bdi> scorecard</a></p>
     <header class="page-head">
       <h1 class="page-title">Finding clearance log: {esc(agency_name)}</h1>
       <p class="page-lede">A dated record of findings that appeared in one compatible

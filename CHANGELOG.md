@@ -82,6 +82,11 @@ wording; in short:
 
 ### Changed
 
+- **Clearance logs lead with the scorecard.** The first line of each
+  `/agency/<id>/fixes/` page now reads "Feed URL and current grade: <agency>
+  scorecard" and links the scorecard, in place of "Back to the full
+  scorecard". The log outranks the scorecard for a few "<agency> gtfs"
+  searches whose readers want the feed URL and the grade.
 - **Program pages put the member list first.** Each state, country and
   group page now lists its feed scorecards right after the summary, under a
   free "Watch these feeds" card that links the alerts form. Shared fixes,
