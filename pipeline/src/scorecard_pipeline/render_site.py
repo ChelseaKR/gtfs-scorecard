@@ -6563,6 +6563,67 @@ def _published_directory_places(art: Path) -> DirectoryPlaces:
     return _directory_places(entries, written)
 
 
+#: Markers around the home page's "Browse by place" chips. The home page is
+#: hand-authored; the render writes the chips between these from the rollups.
+HOME_CHIPS_START = "<!-- place-chips:start -->"
+HOME_CHIPS_END = "<!-- place-chips:end -->"
+HOME_CHIP_COUNT = 6
+
+
+def home_place_chips(rollup_entries: list[dict[str, Any]], written: set[str]) -> str:
+    """The home page's place chips: the state and country pages with the most
+    published scorecards, then "All states and countries" (the 2026-11 IA,
+    D6). Only rollups whose payload was written are linked."""
+    states, countries = _directory_places(rollup_entries, written)
+    labels = dict(states + countries)
+    counts = {
+        str(entry.get("id") or ""): _whole_number(entry.get("agency_count"))
+        for entry in rollup_entries
+    }
+    top = sorted(labels, key=lambda slug: (-counts.get(slug, 0), labels[slug].casefold()))
+    chips = "".join(
+        f'<li><a href="/program/{esc(slug)}/">{esc(labels[slug])}</a></li>'
+        for slug in top[:HOME_CHIP_COUNT]
+    )
+    return (
+        f'<ul class="chip-list">{chips}'
+        '<li><a href="/program/">All states and countries</a></li></ul>'
+    )
+
+
+def sync_home_place_chips(home: Path, art: Path) -> bool:
+    """Write the place chips into the home page; True when it changed.
+
+    A tree without the home page or its markers (a test fixture) is left
+    alone, as is one whose rollup index cannot be read."""
+    if not home.exists():
+        return False
+    page = home.read_text()
+    start, end = page.find(HOME_CHIPS_START), page.find(HOME_CHIPS_END)
+    rollup_index = art / "rollups" / "index.json"
+    if start < 0 or end < start or not rollup_index.exists():
+        return False
+    try:
+        entries = json.loads(rollup_index.read_text()).get("rollups", [])
+    except (json.JSONDecodeError, OSError):
+        return False
+    written = {
+        str(entry.get("id", ""))
+        for entry in entries
+        if (art / "rollups" / f"{entry.get('id', '')}.json").exists()
+    }
+    indent = page[page.rfind("\n", 0, start) + 1 : start]
+    new = (
+        page[: start + len(HOME_CHIPS_START)]
+        + f"\n{indent}{home_place_chips(entries, written)}\n{indent}"
+        + page[end:]
+    )
+    if new == page:
+        return False
+    home.write_text(new)
+    return True
+
+
 def _place_links(places: list[tuple[str, str]]) -> str:
     return (
         '<ul class="place-links">'
@@ -9132,6 +9193,44 @@ def _sandbox_section() -> str:
 {_SANDBOX_STYLE}"""
 
 
+#: Three sections that sat on the home page until the 2026-11 IA shortened it
+#: (D6): the check-to-recheck workflow, where the scorecard fits among other
+#: tools, and the remediation pilot. They moved here, text unchanged, with the
+#: ids they had on the home page (workflow-run-h, ecosystem, pilot), so a link
+#: to either section names the same anchor. This page already links the
+#: validator guide once (ADR 0081), so the moved sentence names it unlinked.
+_GUIDE_WORKFLOW_SECTIONS = """    <section class="guide-workflow" aria-labelledby="workflow-run-h">
+    <p class="guide-kicker">Check to recheck</p>
+    <h2 class="section-title" id="workflow-run-h">Where the scorecard fits in the work</h2>
+    <ol class="guide-steps">
+      <li><h3>Identify the intended public feed</h3><p>Keep the source URL and feed identity attached to the record.</p><p class="guide-state">Live</p></li>
+      <li><h3>Check the published data</h3><p>Run canonical validation plus freshness, rider-information, and optional realtime checks. A feed can follow the specification and still strand a rider, so <a href="/focus/#beyond-the-validator">some checks run past the validator</a>. New to the validator? Read the GTFS validator guide.</p><p class="guide-state">Live</p></li>
+      <li><h3>Choose a concrete action</h3><p>Use the prioritized fix, affected field, rider relevance, and dated evidence.</p><p class="guide-state">Live</p></li>
+      <li><h3>Change and publish the feed</h3><p>The agency, vendor, or support program works through its existing tools and channels.</p><p class="guide-state">Your workflow</p></li>
+      <li><h3>Recheck the same feed</h3><p>The pilot tests feed identity and measurement comparability before calling a finding cleared.</p><p class="guide-state">Pilot</p></li>
+      <li><h3>Preserve a closure receipt</h3><p>A verified closure requires an accepted action and a comparable recheck. This is not yet a proven service.</p><p class="guide-state">Pilot</p></li>
+    </ol>
+    </section>
+    <section class="guide-workflow" id="ecosystem" aria-labelledby="ecosystem-h">
+    <p class="guide-kicker">Where it fits</p>
+    <h2 class="section-title" id="ecosystem-h">Use the scorecard between discovery and the next feed export.</h2>
+    <p>GTFS Scorecard adds dated evidence and prioritized fixes around canonical validation. Agencies, vendors, editors, and support programs still make and publish changes through their existing tools. The accepted-action recheck remains a pilot.</p>
+    <ol class="guide-steps">
+      <li><p class="guide-kicker">1 / Discover</p><h3>Identify the intended feed</h3><p><a href="https://mobilitydatabase.org/">Mobility Database</a> and <a href="https://www.transit.land/">Transitland</a> help people find public feeds and distinguish their sources or versions.</p></li>
+      <li><p class="guide-kicker">2 / Diagnose</p><h3>Apply canonical rules</h3><p>The <a href="https://github.com/MobilityData/gtfs-validator">MobilityData GTFS validator</a> supplies the specification findings used for correctness. The scorecard does not reimplement them.</p></li>
+      <li><p class="guide-kicker">3 / Change</p><h3>Fix and publish the feed</h3><p>An agency, vendor, editor, or support program decides what to change and publishes the new export through its existing workflow.</p></li>
+      <li><p class="guide-kicker">4 / Verify</p><h3>Pilot the final recheck</h3><p>GTFS Scorecard is testing whether an accepted action can be linked to a comparable recheck of the intended published feed. This is not yet a proven service.</p></li>
+    </ol>
+    <p class="fineprint">The <a href="https://reports.dds.dot.ca.gov/">California GTFS Quality Dashboard</a> inspired this project's daily scorecard and support-program framing. GTFS Scorecard is independent and is not an official compliance determination.</p>
+    </section>
+    <section class="guide-workflow" id="pilot" aria-labelledby="movement-h">
+    <p class="guide-kicker">Pilot</p>
+    <h2 class="section-title" id="movement-h">Remediation workflow</h2>
+    <p>A 90-day pilot is testing whether a finding can move through an accepted request and comparable same-feed recheck. This is not yet a proven service.</p>
+    <p><a href="https://github.com/ChelseaKR/gtfs-scorecard/issues/194">Pilot details</a></p>
+    </section>"""
+
+
 def _render_guide() -> str:
     """A plain-language 'how to read your scorecard' on-ramp for someone who has
     never seen GTFS, including what the grades mean so 'is a B good?' is answered."""
@@ -9212,6 +9311,9 @@ def _render_guide() -> str:
     <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">listing
     and removal policy</a> for how a listing can be corrected or removed. Grades we have
     published and taken back are listed on the <a href="/corrections/">corrections page</a>.</p></section>
+
+    {_route_rule()}
+{_GUIDE_WORKFLOW_SECTIONS}
 
 {_methodology_versions_section()}
 
@@ -14273,6 +14375,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     )
     clearance_sitemap_ids = load_clearance_sitemap_ids(root)
     directory_places = _published_directory_places(art)
+    sync_home_place_chips(web / "index.html", art)
     agency_count = len(index.get("agencies") or {})
     agency_page_count = max(1, math.ceil(agency_count / _AGENCY_INDEX_PAGE_SIZE))
     for page_number in range(1, agency_page_count + 1):

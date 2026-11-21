@@ -143,6 +143,38 @@
     published and taken back are listed on the <a href="/corrections/">corrections page</a>.</p></section>
 
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
+    <section class="guide-workflow" aria-labelledby="workflow-run-h">
+    <p class="guide-kicker">Check to recheck</p>
+    <h2 class="section-title" id="workflow-run-h">Where the scorecard fits in the work</h2>
+    <ol class="guide-steps">
+      <li><h3>Identify the intended public feed</h3><p>Keep the source URL and feed identity attached to the record.</p><p class="guide-state">Live</p></li>
+      <li><h3>Check the published data</h3><p>Run canonical validation plus freshness, rider-information, and optional realtime checks. A feed can follow the specification and still strand a rider, so <a href="/focus/#beyond-the-validator">some checks run past the validator</a>. New to the validator? Read the GTFS validator guide.</p><p class="guide-state">Live</p></li>
+      <li><h3>Choose a concrete action</h3><p>Use the prioritized fix, affected field, rider relevance, and dated evidence.</p><p class="guide-state">Live</p></li>
+      <li><h3>Change and publish the feed</h3><p>The agency, vendor, or support program works through its existing tools and channels.</p><p class="guide-state">Your workflow</p></li>
+      <li><h3>Recheck the same feed</h3><p>The pilot tests feed identity and measurement comparability before calling a finding cleared.</p><p class="guide-state">Pilot</p></li>
+      <li><h3>Preserve a closure receipt</h3><p>A verified closure requires an accepted action and a comparable recheck. This is not yet a proven service.</p><p class="guide-state">Pilot</p></li>
+    </ol>
+    </section>
+    <section class="guide-workflow" id="ecosystem" aria-labelledby="ecosystem-h">
+    <p class="guide-kicker">Where it fits</p>
+    <h2 class="section-title" id="ecosystem-h">Use the scorecard between discovery and the next feed export.</h2>
+    <p>GTFS Scorecard adds dated evidence and prioritized fixes around canonical validation. Agencies, vendors, editors, and support programs still make and publish changes through their existing tools. The accepted-action recheck remains a pilot.</p>
+    <ol class="guide-steps">
+      <li><p class="guide-kicker">1 / Discover</p><h3>Identify the intended feed</h3><p><a href="https://mobilitydatabase.org/">Mobility Database</a> and <a href="https://www.transit.land/">Transitland</a> help people find public feeds and distinguish their sources or versions.</p></li>
+      <li><p class="guide-kicker">2 / Diagnose</p><h3>Apply canonical rules</h3><p>The <a href="https://github.com/MobilityData/gtfs-validator">MobilityData GTFS validator</a> supplies the specification findings used for correctness. The scorecard does not reimplement them.</p></li>
+      <li><p class="guide-kicker">3 / Change</p><h3>Fix and publish the feed</h3><p>An agency, vendor, editor, or support program decides what to change and publishes the new export through its existing workflow.</p></li>
+      <li><p class="guide-kicker">4 / Verify</p><h3>Pilot the final recheck</h3><p>GTFS Scorecard is testing whether an accepted action can be linked to a comparable recheck of the intended published feed. This is not yet a proven service.</p></li>
+    </ol>
+    <p class="fineprint">The <a href="https://reports.dds.dot.ca.gov/">California GTFS Quality Dashboard</a> inspired this project's daily scorecard and support-program framing. GTFS Scorecard is independent and is not an official compliance determination.</p>
+    </section>
+    <section class="guide-workflow" id="pilot" aria-labelledby="movement-h">
+    <p class="guide-kicker">Pilot</p>
+    <h2 class="section-title" id="movement-h">Remediation workflow</h2>
+    <p>A 90-day pilot is testing whether a finding can move through an accepted request and comparable same-feed recheck. This is not yet a proven service.</p>
+    <p><a href="https://github.com/ChelseaKR/gtfs-scorecard/issues/194">Pilot details</a></p>
+    </section>
+
+    <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section aria-labelledby="methodology-h"><h2 class="section-title" id="methodology-h">Methodology and versions</h2>
     <p>New checks use scorecard rubric <strong>v1.5</strong> on top of the
     MobilityData <abbr title="GTFS Schedule Validator">gtfs-validator</abbr> <strong>8.0.1</strong>,

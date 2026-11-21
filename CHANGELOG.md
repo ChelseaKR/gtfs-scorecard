@@ -82,6 +82,15 @@ wording; in short:
 
 ### Changed
 
+- **A shorter home page.** It now reads "GTFS feed quality, graded daily."
+  and offers the agency search, "Browse by place" (the state and country
+  pages with the most scorecards, written by the site render), three doors
+  for agency staff, people who support several agencies, and data users, the
+  example scorecard with its fix trace, and "What the score does not
+  establish". The check-to-recheck workflow, "Where it fits" and the
+  remediation pilot moved to /how-to-read/, text unchanged, with the same
+  anchors (`#workflow-run-h`, `#ecosystem`, `#pilot`). The page title and
+  description are unchanged.
 - **Clearance logs lead with the scorecard.** The first line of each
   `/agency/<id>/fixes/` page now reads "Feed URL and current grade: <agency>
   scorecard" and links the scorecard, in place of "Back to the full
