@@ -150,3 +150,43 @@ def test_an_unexpected_refusal_never_shows_the_api_text(page: Page, base_url: st
     _refuse(page, 403, {"error": "forbidden"})
     _send(page, base_url)
     expect(page.locator("#form-status")).to_have_text("Something went wrong. Please try again.")
+
+
+# --- the confirmed reader back on the site (docs/decisions/0083) ----------------
+
+
+def test_a_plain_visit_shows_no_confirmation_note(page: Page, base_url: str) -> None:
+    page.goto(f"{base_url}/subscribe.html")
+    expect(page.locator("#confirmed")).to_be_hidden()
+
+
+def test_a_confirmed_reader_sees_the_note_and_one_named_step_is_announced(
+    page: Page, base_url: str
+) -> None:
+    page.add_init_script(
+        "window.__leads = [];"
+        "document.addEventListener('scorecard:lead', (e) => window.__leads.push(e.detail));"
+    )
+    page.goto(f"{base_url}/subscribe.html#confirmed")
+    note = page.locator("#confirmed")
+    expect(note).to_be_visible()
+    expect(note).to_have_text(re.compile(r"^You are subscribed\.\s+Your address is confirmed\."))
+    expect(note).to_be_focused()
+    # The marker leaves the address, so a reload neither shows the note nor counts again.
+    assert page.evaluate("window.location.hash") == ""
+    assert page.evaluate("window.__leads") == [{"event": "alert_signup_confirmed"}]
+    page.reload()
+    expect(note).to_be_hidden()
+    assert page.evaluate("window.__leads") == []
+
+
+def test_without_javascript_a_confirmed_reader_still_sees_the_note(
+    browser: Browser, base_url: str
+) -> None:
+    context = browser.new_context(java_script_enabled=False, service_workers="block")
+    try:
+        page = context.new_page()
+        page.goto(f"{base_url}/subscribe.html#confirmed")
+        expect(page.locator("#confirmed")).to_be_visible()
+    finally:
+        context.close()
