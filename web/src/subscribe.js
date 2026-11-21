@@ -67,7 +67,14 @@ function setupPicker() {
     picker.records().then(
       (/** @type {any[]} */ records) => {
         const record = records.find((r) => r.id === wanted);
-        if (record && !agencyInput.value) picker.choose(record);
+        if (record && !agencyInput.value) {
+          picker.choose(record);
+          // The reader came from the scorecard of that agency: say so under the
+          // field, in the words the page carries (data-hint-chosen).
+          const hint = document.getElementById("agency-hint");
+          const chosen = hint && hint.getAttribute("data-hint-chosen");
+          if (hint && chosen) hint.textContent = chosen;
+        }
       },
       () => {}
     );

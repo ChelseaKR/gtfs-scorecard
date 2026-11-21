@@ -82,6 +82,13 @@ wording; in short:
 
 ### Changed
 
+- **Alerts and About pages: breadcrumbs, agency first, who it is for.** Both
+  pages trade their back links for a breadcrumb (the alerts page's pointed at
+  `/app/`). The alerts form asks which agency before the email address, and a
+  reader arriving with `?agency=` is told the agency came from the scorecard
+  they were on. About opens with "Who it is for" and "How the grade works",
+  which link the methodology and run status rather than repeat them. The
+  `#privacy` and `#privacy-opt-out` anchors are unchanged.
 - **A shorter home page.** It now reads "GTFS feed quality, graded daily."
   and offers the agency search, "Browse by place" (the state and country
   pages with the most scorecards, written by the site render), three doors

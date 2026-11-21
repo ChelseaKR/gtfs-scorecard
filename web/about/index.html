@@ -48,12 +48,31 @@
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/subscribe.html"><span class="pip" aria-hidden="true"></span>Feed alerts</a><a class="nav-stop" href="/fix/"><span class="pip" aria-hidden="true"></span>Fix a feed</a><a class="nav-stop" href="/program/"><span class="pip" aria-hidden="true"></span>For programs</a><a class="nav-stop" href="/data/"><span class="pip" aria-hidden="true"></span>Data</a><a class="nav-stop" href="/about/" aria-current="page"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
 
   <main id="main" class="wrap" tabindex="-1">
-    <a class="backlink" href="/">&larr; Home</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">About</span><meta itemprop="position" content="2"></li></ol></nav>
     <h1 class="page-title">About this scorecard</h1>
     <p class="page-lede">A free, open-source, plain-language data-quality check for a transit
     agency's <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn> feed. It reads
     the feed an agency already publishes, runs the same validator the state and the apps use, and
     turns the result into a grade, the three things to fix, and why each one matters to riders.</p>
+
+    <section aria-labelledby="for-whom-h">
+      <h2 class="section-title" id="for-whom-h">Who it is for</h2>
+      <ul class="about-audiences">
+        <li><strong>Agency staff:</strong> <a href="/agencies/">your grade</a>, your fixes, and <a href="/subscribe.html">a free alert</a>.</li>
+        <li><strong>Program staff and consultants:</strong> <a href="/program/">every agency you support on one page</a>.</li>
+        <li><strong>Data users:</strong> <a href="/data/">feed URLs, the open dataset and the API</a>.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="grade-works-h">
+      <h2 class="section-title" id="grade-works-h">How the grade works</h2>
+      <p>Four categories, weighted, from the canonical MobilityData validator plus freshness,
+      rider-information and realtime checks. Unmeasured categories are left out, not scored as
+      zero.</p>
+      <p><a href="/how-to-read/#methodology-h">Methodology and versions</a> &middot;
+      <a href="/how-to-read/">How to read a scorecard</a> &middot;
+      <a href="/status/">Run status</a></p>
+    </section>
 
     <section aria-labelledby="why-h">
       <h2 class="section-title" id="why-h">Why it exists</h2>
