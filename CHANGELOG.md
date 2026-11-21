@@ -37,6 +37,14 @@ the declared public surface).
   page's own artifact. A `_SEARCH_INTENT_COPY` entry with an empty identity
   now replaces the description only. PID Prague and GO Transit leave the
   ADR 0078 source-feed title test, as every hand-written entry does.
+- **A confirmed alert signup can be counted.** Pressing "Confirm my alerts"
+  for the first time now ends on the site's alerts page
+  (`/subscribe.html#confirmed`), which shows the same "You are subscribed"
+  note, instead of the alerts API's plain page. GA4 receives two events by
+  name only, `alert_signup_requested` when the form is accepted and
+  `alert_signup_confirmed` on that return, with no address and no link token.
+  Neither measurement tool loads in a browser that reports
+  `navigator.webdriver`. Needs `infra/alerts` re-applied. ADR 0083.
 - **The home page search opens the agency's page.** Typing in "Find a
   published feed" now suggests agencies as you type. Choosing one, or pressing
   Enter on a name only one agency has, goes straight to `/agency/<id>/`

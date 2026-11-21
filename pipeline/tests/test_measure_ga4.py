@@ -63,6 +63,7 @@ _ID = "G-TEST0A1B2C"
 _KEY = "phc_TestKey0123456789abcdefghijklmnopqrstuv"  # gitleaks:allow (fixture key, not real)
 _ID_LINE = '  var GA4_ID = ""; // measure:ga4-id'
 _GPC_GUARD = "  if (nav.globalPrivacyControl === true) return;\n"
+_WEBDRIVER_GUARD = "  if (nav.webdriver === true) return;\n"
 _DNT_GUARD = (
     '  if (nav.doNotTrack === "1" || win.doNotTrack === "1" || nav.msDoNotTrack === "1") return;\n'
 )
@@ -229,11 +230,12 @@ def test_the_block_names_one_host_and_reads_nothing_it_promises_not_to() -> None
         "location.href",
     ):
         assert forbidden not in code, forbidden
-    # It listens for two things, the bundle pages' conversion steps (ADR 0057)
-    # and the opt-out, and writes a cookie only to expire one: every cookie
-    # assignment carries Max-Age=0.
+    # It listens for three things, the bundle pages' conversion steps (ADR 0057),
+    # the alerts page's signup steps (ADR 0083) and the opt-out, and writes a
+    # cookie only to expire one: every cookie assignment carries Max-Age=0.
     assert re.findall(r'addEventListener\("([^"]+)"', code) == [
         "scorecard:commerce",
+        "scorecard:lead",
         "scorecard:measure-stopped",
     ]
     # Session storage holds one key, the plan chosen at checkout (ADR 0057),
@@ -401,6 +403,9 @@ const out = cases.map(function (c) {
     if (action && action.commerce) {
       fire(docListeners, "scorecard:commerce", { detail: action.commerce });
     }
+    if (action && typeof action === "object" && "lead" in action) {
+      fire(docListeners, "scorecard:lead", { detail: action.lead });
+    }
   });
   return {
     appended: appended,
@@ -512,6 +517,8 @@ _OPT_OUTS: dict[str, dict[str, Any]] = {
     "do not track": {"navigator": {"doNotTrack": "1"}},
     "window do not track": {"window": {"doNotTrack": "1"}},
     "ms do not track": {"navigator": {"msDoNotTrack": "1"}},
+    # ADR 0083: automation software says so in navigator.webdriver.
+    "automation": {"navigator": {"webdriver": True}},
     "localhost": {"hostname": "localhost"},
     "loopback": {"hostname": "127.0.0.1"},
 }
@@ -525,9 +532,10 @@ def test_an_opt_out_or_a_local_page_loads_nothing(tmp_path: Path, name: str) -> 
 
 
 def test_a_false_privacy_signal_does_not_opt_out(tmp_path: Path) -> None:
-    """GPC off and DNT "0" are not opt-outs; only the set signals are."""
+    """GPC off, DNT "0" and webdriver false are not opt-outs; only the set
+    signals are."""
     rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
-    visit = _visit(navigator={"globalPrivacyControl": False, "doNotTrack": "0"})
+    visit = _visit(navigator={"globalPrivacyControl": False, "doNotTrack": "0", "webdriver": False})
     [result] = _run(tmp_path, rendered, [visit])
     assert _loaded(result)
 
@@ -732,6 +740,97 @@ def test_control_without_the_order_check_the_raw_reference_would_be_sent(
     assert [entry[2]["transaction_id"] for entry in _events(result)] == ["cs_x"]
 
 
+# --- alert signup steps (ADR 0083), run in Node against the same stub page ---
+
+_ALERTS_PAGE = "https://gtfsscorecard.org/subscribe.html"
+_REQUESTED = {"event": "alert_signup_requested"}
+_CONFIRMED = {"event": "alert_signup_confirmed"}
+
+
+def _lead(*details: Any, **overrides: Any) -> dict[str, Any]:
+    visit = {
+        "pathname": "/subscribe.html",
+        "search": "?agency=unitrans",
+        "hash": "#confirmed",
+        "referrer": "https://example-mail.test/inbox?email=reader%40example.org",
+    }
+    visit.update(overrides)
+    return _visit(actions=[{"lead": detail} for detail in details], **visit)
+
+
+def test_both_signup_steps_are_sent_by_name_with_the_path_only_page(tmp_path: Path) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    [result] = _run(tmp_path, rendered, [_lead(_REQUESTED, _CONFIRMED)])
+    page = {"page_location": _ALERTS_PAGE, "page_referrer": "https://example-mail.test/"}
+    assert _events(result) == [
+        ["event", "alert_signup_requested", page],
+        ["event", "alert_signup_confirmed", page],
+    ]
+
+
+def test_nothing_but_the_step_name_reaches_google(tmp_path: Path) -> None:
+    """An address, a link token, or anything else a careless edit put in the
+    event is dropped: the block sends a name from its own list and the two
+    page fields it builds itself."""
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    loaded = {**_CONFIRMED, **_PII, "token": "tok_secret", "agency": "unitrans"}
+    [result] = _run(tmp_path, rendered, [_lead(loaded)])
+    [event] = _events(result)
+    assert event[1] == "alert_signup_confirmed"
+    assert set(event[2]) == {"page_location", "page_referrer"}
+    sent = json.dumps(result["dataLayer"])
+    for value in (*_PII.values(), "tok_secret", "unitrans", "reader%40example.org"):
+        assert value not in sent, value
+
+
+@pytest.mark.parametrize(
+    "detail",
+    [
+        {"event": "sign_up"},
+        {"event": "purchase", "transaction_id": _ORDER},
+        {"event": "ALERT_SIGNUP_CONFIRMED"},
+        {},
+        "alert_signup_confirmed",
+        None,
+    ],
+)
+def test_a_step_not_on_the_list_is_dropped(tmp_path: Path, detail: Any) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    [result] = _run(tmp_path, rendered, [_lead(detail)])
+    assert _events(result) == []
+
+
+@pytest.mark.parametrize("name", sorted(_OPT_OUTS))
+def test_no_signup_step_is_sent_under_an_opt_out(tmp_path: Path, name: str) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    [result] = _run(tmp_path, rendered, [_lead(_REQUESTED, _CONFIRMED, **_OPT_OUTS[name])])
+    assert result["dataLayer"] is None, name
+
+
+def test_opting_out_mid_page_sends_no_later_signup_step(tmp_path: Path) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    visit = _lead(_REQUESTED)
+    visit["actions"] += ["click", {"lead": _CONFIRMED}]
+    [result] = _run(tmp_path, rendered, [visit])
+    assert [entry[1] for entry in _events(result)] == ["alert_signup_requested"]
+
+
+def test_control_without_the_kill_switch_a_signup_step_follows_an_opt_out(
+    tmp_path: Path,
+) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    check = 'if (win["ga-disable-" + GA4_ID] || LEADS.indexOf(name) < 0) return;'
+    assert rendered.count(check) == 1
+    broken = rendered.replace(check, "if (LEADS.indexOf(name) < 0) return;")
+    visit = _lead(_REQUESTED)
+    visit["actions"] += ["click", {"lead": _CONFIRMED}]
+    [result] = _run(tmp_path, broken, [visit])
+    assert [entry[1] for entry in _events(result)] == [
+        "alert_signup_requested",
+        "alert_signup_confirmed",
+    ]
+
+
 # --- the footer opt-out, run in Node against the same stub page ------------
 
 _STORE = "scorecard-analytics"
@@ -896,6 +995,27 @@ def test_control_without_the_gpc_guard_the_harness_sees_ga_load(tmp_path: Path) 
     broken = _sabotaged(rendered, _GPC_GUARD)
     [result] = _run(tmp_path, broken, [_visit(**_OPT_OUTS["global privacy control"])])
     assert _loaded(result)
+
+
+def test_automation_software_reaches_neither_tool(tmp_path: Path) -> None:
+    """ADR 0083: navigator.webdriver is true in Playwright, Puppeteer, Selenium
+    and headless Chrome by default. Neither block counts such a browser."""
+    [result] = _run(tmp_path, _both(), [_visit(**_OPT_OUTS["automation"], actions=["checkout"])])
+    assert result["sent"] == [] and not _loaded(result)
+
+
+def test_control_without_the_webdriver_guard_the_harness_sees_ga_load(tmp_path: Path) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    broken = _sabotaged(rendered, _WEBDRIVER_GUARD)
+    [result] = _run(tmp_path, broken, [_visit(**_OPT_OUTS["automation"])])
+    assert _loaded(result)
+
+
+def test_control_without_the_webdriver_guard_posthog_sends(tmp_path: Path) -> None:
+    broken = _sabotaged(_both(), _WEBDRIVER_GUARD, posthog=True)
+    [result] = _run(tmp_path, broken, [_visit(**_OPT_OUTS["automation"])])
+    assert result["sent"] == ["$pageview"]
+    assert not _loaded(result)  # GA4 kept its guard, so only PostHog broke
 
 
 def test_control_without_the_dnt_guard_the_harness_sees_ga_load(tmp_path: Path) -> None:
@@ -1101,5 +1221,9 @@ def test_the_disclosure_describes_ga4_as_configured() -> None:
         "hashing Stripe's order reference",
         "scorecard-checkout",
         "any plan kept for a checkout",
+        # ADR 0083: the alert signup steps and what they never carry.
+        'id="privacy-alert-steps"',
+        "two steps of signing up for alerts",
+        "Each step carries only its name",
     ):
         assert phrase in privacy, phrase

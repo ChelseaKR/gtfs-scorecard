@@ -19,6 +19,8 @@
  * - Nothing is read from a form, an input, or the page text. There is no
  *   autocapture here because there is no SDK here.
  * - Global Privacy Control or Do Not Track switches all of it off.
+ * - So does navigator.webdriver, which automation software sets: a script
+ *   driving a browser is not a reader (docs/decisions/0083).
  * - With no key written by the deploy, the first line of logic returns and
  *   nothing is sent. The committed copy of this file has no key.
  *
@@ -149,6 +151,9 @@
   var win = /** @type {any} */ (window);
   var doc = /** @type {any} */ (document);
   if (nav.globalPrivacyControl === true) return;
+  // A browser driven by automation software (Playwright, Puppeteer, Selenium,
+  // headless Chrome by default) says so here. It is not a reader.
+  if (nav.webdriver === true) return;
   if (nav.doNotTrack === "1" || win.doNotTrack === "1" || nav.msDoNotTrack === "1") return;
   if (doc.documentElement.hasAttribute("data-measure-stopped")) return;
   if (doc.prerendering) return;
@@ -308,7 +313,9 @@
 //   committed copy of this file has no id. The id is measurement_ga4_id in
 //   site-seo.json, and render-measure writes it into the marked line below.
 // - Global Privacy Control, Do Not Track, or an opt-out through the footer
-//   link returns before anything loads. Opting out on a page where GA4 has
+//   link returns before anything loads.
+// - A browser that reports navigator.webdriver (automation software, not a
+//   reader) returns before anything loads (docs/decisions/0083). Opting out on a page where GA4 has
 //   already loaded sets Google's own ga-disable flag for the id, which stops
 //   every later hit, and expires the two GA4 cookies.
 // - A page served from this machine (localhost) loads nothing, so local work
@@ -347,6 +354,9 @@
   var win = /** @type {any} */ (window);
   var doc = /** @type {any} */ (document);
   if (nav.globalPrivacyControl === true) return;
+  // A browser driven by automation software (Playwright, Puppeteer, Selenium,
+  // headless Chrome by default) says so here. It is not a reader.
+  if (nav.webdriver === true) return;
   if (nav.doNotTrack === "1" || win.doNotTrack === "1" || nav.msDoNotTrack === "1") return;
   if (doc.documentElement.hasAttribute("data-measure-stopped")) return;
   if (!/^G-[A-Z0-9]+$/.test(GA4_ID)) return;
@@ -520,6 +530,26 @@
       page_location: PAGE,
       page_referrer: REFERRER,
     });
+  });
+
+  // Alert signup steps (docs/decisions/0083-alert-signup-events.md).
+  //
+  // The alerts page (web/subscribe.html, web/src/subscribe.js) announces two
+  // steps as a "scorecard:lead" event on the document: the form was accepted
+  // and a confirmation email is on its way (alert_signup_requested), and a
+  // reader pressed the button in that email and the alerts API sent them back
+  // to the page confirmed (alert_signup_confirmed). This block forwards the
+  // step's name and nothing else, with the same path-only page address and
+  // referrer as the page view, so an address or a link token a future edit put
+  // in the event cannot reach Google.
+  var LEADS = ["alert_signup_requested", "alert_signup_confirmed"];
+
+  doc.addEventListener("scorecard:lead", function (/** @type {any} */ event) {
+    var detail = event && event.detail;
+    var name = detail && typeof detail === "object" ? detail.event : "";
+    // The opt-out sets ga-disable, as for the purchase steps above.
+    if (win["ga-disable-" + GA4_ID] || LEADS.indexOf(name) < 0) return;
+    gtag("event", name, { page_location: PAGE, page_referrer: REFERRER });
   });
 
   doc.addEventListener("scorecard:measure-stopped", function () {

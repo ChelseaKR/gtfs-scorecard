@@ -101,7 +101,9 @@ def test_pressing_the_confirm_button_confirms_and_keeps_the_link_recognizable(
     table = RecordingTable(dict(PENDING))
     _use(monkeypatch, table)
     resp = alerts.handler(_event("POST", "/confirm", "email=person%40agency.gov&token=good"), None)
-    assert resp["statusCode"] == 200
+    # Sent back to the site's alerts page (ADR 0083); the body still says it
+    # for a client that does not follow redirects.
+    assert resp["statusCode"] == 303
     assert "<h1>You are subscribed</h1>" in resp["body"]
     (update,) = table.updates
     assert update["ExpressionAttributeValues"][":t"] is True
@@ -110,6 +112,43 @@ def test_pressing_the_confirm_button_confirms_and_keeps_the_link_recognizable(
     # ask whether any address is subscribed.
     assert "confirmed_token" in update["UpdateExpression"]
     assert "good" in update["ExpressionAttributeValues"].values()
+
+
+def test_a_new_confirmation_sends_the_reader_to_the_site_with_no_address_or_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR 0083: the first press of "Confirm my alerts" ends on the site's
+    alerts page, whose page view is what the site's measurement script can
+    count. The address it is sent to carries a fixed marker and nothing from
+    the link, and the redirect is neither cached nor a source of a referrer."""
+    _use(monkeypatch, RecordingTable(dict(PENDING)))
+    monkeypatch.delenv("ALLOW_ORIGIN", raising=False)
+    resp = alerts.handler(_event("POST", "/confirm", "email=person%40agency.gov&token=good"), None)
+    headers = resp["headers"]
+    assert resp["statusCode"] == 303
+    assert headers["Location"] == "https://gtfsscorecard.org/subscribe.html#confirmed"
+    for secret in ("person", "agency.gov", "%40", "good", "token", "email"):
+        assert secret not in headers["Location"], secret
+    assert headers["Cache-Control"] == "no-store"
+    assert headers["Referrer-Policy"] == "no-referrer"
+
+
+@pytest.mark.parametrize(
+    ("configured", "expected"),
+    [
+        ("https://staging.example.org/", "https://staging.example.org"),
+        ("http://gtfsscorecard.org", "https://gtfsscorecard.org"),
+        ("https://evil.example/path?x=1", "https://gtfsscorecard.org"),
+        ("*", "https://gtfsscorecard.org"),
+    ],
+)
+def test_the_site_a_confirmed_reader_returns_to_is_a_bare_https_origin(
+    monkeypatch: pytest.MonkeyPatch, configured: str, expected: str
+) -> None:
+    _use(monkeypatch, RecordingTable(dict(PENDING)))
+    monkeypatch.setenv("ALLOW_ORIGIN", configured)
+    resp = alerts.handler(_event("POST", "/confirm", "email=person%40agency.gov&token=good"), None)
+    assert resp["headers"]["Location"] == expected + "/subscribe.html#confirmed"
 
 
 @pytest.mark.parametrize("method", ["GET", "POST"])
@@ -125,6 +164,8 @@ def test_an_already_confirmed_link_says_you_are_subscribed(
     assert "<h1>You are subscribed</h1>" in resp["body"]
     assert "Link not valid" not in resp["body"]
     assert table.updates == []
+    # Not sent back to the site again, so a second press is not a second signup.
+    assert "Location" not in resp["headers"]
 
 
 @pytest.mark.parametrize("method", ["GET", "POST"])
@@ -140,6 +181,66 @@ def test_a_wrong_token_never_reveals_whether_an_address_is_subscribed(
     assert "<h1>Link not valid</h1>" in resp["body"]
     assert "person@agency.gov" not in resp["body"]
     assert table.updates == []
+
+
+# --- B: the confirmed reader back on the site (ADR 0083) ---------------------------
+
+_SUBSCRIBE_HTML = (REPO / "web" / "subscribe.html").read_text()
+_SUBSCRIBE_JS = (REPO / "web" / "src" / "subscribe.js").read_text()
+_MEASURE_JS = (REPO / "web" / "src" / "measure.js").read_text()
+_STYLES = (REPO / "web" / "src" / "styles.css").read_text()
+
+
+def _words(fragment: str) -> str:
+    return " ".join(re.sub(r"<[^>]+>", " ", fragment).split())
+
+
+def test_the_alerts_page_carries_the_note_the_redirect_targets() -> None:
+    """The redirect's fragment names the note, and the note says what the
+    API's own page said, so the wording a confirmed reader sees is unchanged."""
+    fragment = alerts.CONFIRMED_PATH.split("#", 1)[1]
+    assert alerts.CONFIRMED_PATH == "/subscribe.html#confirmed"
+    match = re.search(
+        r'<p class="confirm-note" id="' + fragment + r'" tabindex="-1">(.*?)</p>',
+        _SUBSCRIBE_HTML,
+        re.DOTALL,
+    )
+    assert match, "the note the redirect points at"
+    title, message = alerts._SUBSCRIBED
+    assert _words(match.group(1)) == f"{title}. {message}"
+
+
+def test_the_note_is_hidden_unless_it_is_the_target_so_it_shows_without_scripting() -> None:
+    assert ".confirm-note { display: none;" in _STYLES
+    assert ".confirm-note:target, .confirm-note.is-shown { display: block; }" in _STYLES
+
+
+def test_the_page_announces_only_step_names_and_only_the_two_measure_forwards() -> None:
+    # One dispatch, whose detail is the step name and nothing else.
+    assert _SUBSCRIBE_JS.count("dispatchEvent(") == 1
+    assert (
+        'document.dispatchEvent(new CustomEvent("scorecard:lead", { detail: { event: step } }));'
+        in _SUBSCRIBE_JS
+    )
+    steps = re.findall(r'announce\("([a-z_]+)"\)', _SUBSCRIBE_JS)
+    assert steps == ["alert_signup_confirmed", "alert_signup_requested"]
+    forwarded = re.search(r"var LEADS = \[([^\]]*)\];", _MEASURE_JS)
+    assert forwarded
+    assert sorted(re.findall(r'"([a-z_]+)"', forwarded.group(1))) == sorted(steps)
+
+
+def test_a_signup_is_requested_only_for_a_new_pending_address() -> None:
+    """An address that was already subscribed is not a new signup."""
+    assert 'if (reply.status === "pending") announce("alert_signup_requested");' in _SUBSCRIBE_JS
+
+
+def test_the_confirmed_marker_is_read_once_and_taken_out_of_the_address() -> None:
+    body = _SUBSCRIBE_JS[_SUBSCRIBE_JS.index("function showConfirmed()") :]
+    body = body[: body.index("\n}\n")]
+    assert 'window.location.hash !== "#confirmed"' in body
+    replaced = body.index("history.replaceState(")
+    assert replaced < body.index('announce("alert_signup_confirmed")')
+    assert "window.location.pathname + window.location.search" in body
 
 
 # --- B: unsubscribe ---------------------------------------------------------------
