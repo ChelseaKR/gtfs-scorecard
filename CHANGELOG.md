@@ -82,6 +82,13 @@ wording; in short:
 
 ### Changed
 
+- **The agency directory lists current feeds first.** Every directory page
+  opens with the agency search from the home page and "Browse by place", which
+  links the existing state and country pages. Current feeds follow, A to Z,
+  and the expired feeds come after them in their own section, reached by one
+  "Jump to expired feeds" link. The 32 page URLs and the page count are
+  unchanged; which feed lands on which page changes. The search loads its
+  script only when the field gets focus.
 - **The primary nav is six tasks, and every page shares one footer.** The bar
   reads Find an agency, Feed alerts, Fix a feed, For programs, Data and About,
   each an existing page. Coverage, Feed features and How it works move to the

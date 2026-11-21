@@ -375,3 +375,45 @@ def test_alerts_catches_an_address_the_api_would_refuse(page: Page, base_url: st
     )
     expect(email).to_have_attribute("aria-invalid", "true")
     assert bodies == []
+
+
+# --- the agency directory search (the 2026-11 IA, decision D4) ------------------
+
+
+def test_directory_search_loads_the_picker_on_focus_and_opens_the_chosen_scorecard(
+    page: Page, base_url: str
+) -> None:
+    requested = _requested(page)
+    page.goto(f"{base_url}/agencies/")
+    page.wait_for_load_state("load")
+    # Nothing of the picker is fetched with the page.
+    assert not any("/src/agency-combobox.js" in url for url in requested)
+    assert not any(url.endswith("/data/agency-index.json") for url in requested)
+
+    field = page.get_by_label("Find a published feed")
+    field.click()
+    combobox = page.get_by_role("combobox", name="Find a published feed")
+    expect(combobox).to_have_attribute("aria-expanded", "false")
+    page.keyboard.type("yolobus")
+    listbox = page.get_by_role("listbox", name="Matching scorecards")
+    expect(listbox).to_be_visible()
+    expect(page.locator("#directory-search-status")).to_have_text(
+        re.compile(r"^(1 match\. Choose it|\d+ matches\. Choose one)")
+    )
+    page.keyboard.press("ArrowDown")
+    page.keyboard.press("Enter")
+    page.wait_for_url(re.compile(r"/agency/[^/]+/$"))
+    expect(page.locator("h1")).to_contain_text("Yolobus")
+
+
+def test_directory_lists_current_feeds_before_expired_ones(page: Page, base_url: str) -> None:
+    page.goto(f"{base_url}/agencies/")
+    current = page.locator("#current")
+    expect(current).to_be_visible()
+    expect(page.locator("#current")).to_contain_text("Current feeds, A to Z")
+    # Page 1 holds no expired feed; the jump link names the page where they start.
+    expect(page.locator("#expired")).to_have_count(0)
+    jump = page.get_by_role("link", name=re.compile(r"^Jump to expired feeds \(\d+\)$"))
+    expect(jump).to_have_attribute("href", re.compile(r"^/agencies/page/\d+/#expired$"))
+    jump.click()
+    expect(page.locator("#expired")).to_be_visible()

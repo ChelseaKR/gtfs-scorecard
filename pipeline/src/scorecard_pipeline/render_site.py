@@ -6348,7 +6348,9 @@ def _agency_index_href(page: int) -> str:
 def _agency_index_groups(
     index: dict[str, Any], liveness: dict[str, dict[str, Any]]
 ) -> tuple[int, list[dict[str, Any]]]:
-    """Directory rows grouped in their practitioner-facing reading order.
+    """Directory rows grouped in their reading order: current feeds A to Z
+    first, then the expired feeds in their own groups (ADR 0085's directory
+    phase, D4). A first-time visitor sees working feeds before lapsed ones.
 
     The returned rows are already ordered. Pagination happens after grouping so
     every feed appears exactly once and the page chain stays deterministic.
@@ -6379,6 +6381,15 @@ def _agency_index_groups(
     stale_reachable.sort(key=lambda row: row[2], reverse=True)
     stale_unreachable.sort(key=lambda row: row[2], reverse=True)
     return len(agencies), [
+        {
+            "key": "current",
+            "heading": "Current feeds, A to Z",
+            "note": (
+                "Listed alphabetically. Each grade describes only that feed's published bytes "
+                "under its stated scoring contract; this list is not a cross-feed ranking."
+            ),
+            "rows": [(aid, agency, "") for aid, agency, _ in current],
+        },
         {
             "key": "lapsed",
             "heading": "Recently lapsed",
@@ -6423,15 +6434,6 @@ def _agency_index_groups(
                 )
                 for aid, agency, days in stale_unreachable
             ],
-        },
-        {
-            "key": "current",
-            "heading": "Current and upcoming service",
-            "note": (
-                "Listed alphabetically. Each grade describes only that feed's published bytes "
-                "under its stated scoring contract; this list is not a cross-feed ranking."
-            ),
-            "rows": [(aid, agency, "") for aid, agency, _ in current],
         },
     ]
 
@@ -6496,18 +6498,152 @@ def _agency_index_head_links(page: int, page_count: int) -> str:
     return "\n  ".join(links)
 
 
-def _agency_index_jump_nav(*, has_expired: bool, has_current: bool) -> str:
-    """On-page links only for sections present in the current bounded page."""
-    links = []
-    if has_expired:
-        links.append('<a href="#expired">Expired feeds on this page</a>')
-    if has_current:
-        links.append('<a href="#current">Current service on this page</a>')
-    if not links:
+def _agency_index_jump_nav(*, expired_total: int, expired_href: str | None) -> str:
+    """One link to the expired feeds, which now follow every current feed.
+
+    ``expired_href`` is where the expired section starts: ``#expired`` on a
+    page that holds it, or the first directory page that does. Nothing when
+    there are no expired feeds."""
+    if not expired_total or not expired_href:
         return ""
     return (
-        f'<nav class="grade-jump" aria-label="Jump to section">Jump to: {" · ".join(links)}</nav>'
+        '<nav class="grade-jump" aria-label="Jump to section">'
+        f'<a href="{esc(expired_href)}">Jump to expired feeds ({expired_total})</a></nav>'
     )
+
+
+#: The existing state and country pages, as the directory's "Browse by place"
+#: lists them: (slug, label) pairs for the United States and for other
+#: countries. Only rollups whose payload was written are listed, the same rule
+#: as ``program_ids``, so the directory never links a page that does not exist.
+DirectoryPlaces = tuple[list[tuple[str, str]], list[tuple[str, str]]]
+
+
+def _directory_places(rollup_entries: list[dict[str, Any]], written: set[str]) -> DirectoryPlaces:
+    """Split the published rollups into US states and other countries.
+
+    A ``country-xx`` rollup is a country page, labeled with its name. A state
+    rollup is named "<State> agencies"; its label is the state. Named cohorts
+    (``all``, a county) are not places and are left out."""
+    states: list[tuple[str, str]] = []
+    countries: list[tuple[str, str]] = []
+    for entry in rollup_entries:
+        slug = str(entry.get("id") or "")
+        name = str(entry.get("name") or "").strip()
+        if slug not in written or not name:
+            continue
+        if slug.startswith("country-"):
+            countries.append((slug, name))
+        elif slug != "all" and name.endswith(" agencies"):
+            states.append((slug, name.removesuffix(" agencies")))
+    return (
+        sorted(states, key=lambda row: row[1].casefold()),
+        sorted(countries, key=lambda row: row[1].casefold()),
+    )
+
+
+def _published_directory_places(art: Path) -> DirectoryPlaces:
+    """``_directory_places`` over the rollups whose payload file exists, the
+    same gate the rollup render loop and ``program_ids`` use."""
+    rollup_index = art / "rollups" / "index.json"
+    if not rollup_index.exists():
+        return ([], [])
+    try:
+        entries = json.loads(rollup_index.read_text()).get("rollups", [])
+    except (json.JSONDecodeError, OSError):
+        return ([], [])
+    written = {
+        str(entry.get("id", ""))
+        for entry in entries
+        if (art / "rollups" / f"{entry.get('id', '')}.json").exists()
+    }
+    return _directory_places(entries, written)
+
+
+def _place_links(places: list[tuple[str, str]]) -> str:
+    return (
+        '<ul class="place-links">'
+        + "".join(
+            f'<li><a href="/program/{esc(slug)}/">{esc(label)}</a></li>' for slug, label in places
+        )
+        + "</ul>"
+    )
+
+
+def _browse_by_place(places: DirectoryPlaces) -> str:
+    """The directory's "Browse by place" block, or nothing without places.
+
+    Each group is a disclosure, so 47 state links do not push the list of
+    feeds off a phone's first screen; the links are in the page either way."""
+    states, countries = places
+    if not states and not countries:
+        return ""
+    groups = []
+    if states:
+        groups.append(
+            f'<details class="place-group"><summary>United States</summary>'
+            f"{_place_links(states)}</details>"
+        )
+    if countries:
+        groups.append(
+            f'<details class="place-group"><summary>Other countries</summary>'
+            f"{_place_links(countries)}"
+            '<p class="fineprint">Countries without their own page are in the full list '
+            "below.</p></details>"
+        )
+    return (
+        '<section class="browse-place" id="browse-by-place" aria-labelledby="browse-place-h">'
+        '<h2 class="section-title" id="browse-place-h">Browse by place</h2>'
+        f"{''.join(groups)}</section>"
+    )
+
+
+#: The directory's agency search: the home page's form and wording, sent to
+#: the interactive app without scripts. With scripts, the shared picker
+#: (agency-combobox.js) loads the first time the form gets focus, never with
+#: the page, so it adds nothing before the first paint; choosing a suggestion,
+#: or a query that names one agency, opens that scorecard.
+_DIRECTORY_SEARCH = """<form class="directory-search" id="directory-search" action="/app/" method="get" role="search"
+      data-msg-short="Type at least two characters to search published scorecards."
+      data-msg-loading="Loading agency names…"
+      data-msg-none="No published scorecard matches that search."
+      data-msg-one="1 match. Choose it to show the scorecard."
+      data-msg-many="{count} matches. Choose one to show its scorecard."
+      data-msg-more="{count} of {total} matches shown. Keep typing to narrow them."
+      data-msg-closed="Search results closed."
+      data-msg-error="The directory could not load. Browse every scorecard instead."
+      data-msg-detail="Feed ID {id}">
+      <label for="directory-search-input">Find a published feed</label>
+      <div class="directory-search-row"><div class="agency-picker-box">
+        <input id="directory-search-input" name="q" type="search" autocomplete="off" enterkeyhint="search" aria-describedby="directory-search-status" placeholder="Agency name">
+        <ul class="agency-options" id="directory-search-results" aria-label="Matching scorecards" hidden></ul>
+      </div><button class="button" type="submit">Find</button></div>
+      <p class="fineprint" id="directory-search-status" role="status" aria-live="polite">Search the published directory. Choosing an agency opens its scorecard.</p>
+    </form>"""
+
+_DIRECTORY_SEARCH_SCRIPT = (
+    "<script>(function(){var f=document.getElementById('directory-search');"
+    "if(!f)return;var i=document.getElementById('directory-search-input'),"
+    "l=document.getElementById('directory-search-results'),"
+    "st=document.getElementById('directory-search-status'),p=null,ready=null;"
+    "function page(r){return '/agency/'+encodeURIComponent(r.slug||r.id)+'/';}"
+    "function results(q){return '/app/#/?q='+encodeURIComponent(q);}"
+    "function load(){if(ready)return ready;ready=new Promise(function(ok,no){"
+    "if(window.ScorecardAgencySearch){ok(window.ScorecardAgencySearch);return;}"
+    "var s=document.createElement('script');s.src='/src/agency-combobox.js?v=20261119-agency-search';"
+    "s.onload=function(){window.ScorecardAgencySearch?ok(window.ScorecardAgencySearch):no(new Error('missing'));};"
+    "s.onerror=function(){no(new Error('load'));};document.head.appendChild(s);})"
+    ".then(function(a){p=a.attach({input:i,listbox:l,status:st,messages:a.messagesFrom(f),"
+    "onChoose:function(r){if(r&&r.id)window.location.assign(page(r));}});"
+    "if(i.value&&document.activeElement===i)i.dispatchEvent(new Event('input'));return p;},"
+    "function(e){ready=null;throw e;});return ready;}"
+    "f.addEventListener('focusin',function(){load().catch(function(){});});"
+    "f.addEventListener('submit',function(e){e.preventDefault();var q=i.value.trim();"
+    "if(p)p.close();if(!q){window.location.assign(results(q));return;}"
+    "load().then(function(r){return r.clearMatch();}).then("
+    "function(r){window.location.assign(r?page(r):results(q));},"
+    "function(){window.location.assign(results(q));});});})();</script>"
+)
 
 
 def _render_agency_index(
@@ -6517,9 +6653,15 @@ def _render_agency_index(
     page: int = 1,
     page_size: int = _AGENCY_INDEX_PAGE_SIZE,
     fixlog_ids: frozenset[str] = frozenset(),
+    places: DirectoryPlaces = ([], []),
 ) -> str:
     """Render one bounded page of the crawlable agency directory. Agencies in
-    ``fixlog_ids`` (those with an indexable clearance log) link to it."""
+    ``fixlog_ids`` (those with an indexable clearance log) link to it.
+
+    Every page opens with the agency search and "Browse by place" (the
+    existing state and country pages); current feeds come first, A to Z, and
+    the expired feeds follow in their own section (ADR 0085, D4). The page
+    URLs and their count are unchanged."""
     total, groups = _agency_index_groups(index, liveness)
     page_count = max(1, math.ceil(total / page_size))
     if page < 1 or page > page_count:
@@ -6577,7 +6719,7 @@ def _render_agency_index(
         )
         current_section = (
             '<section aria-labelledby="current">'
-            '<h2 class="section-title" id="current">Current and upcoming service '
+            f'<h2 class="section-title" id="current">{esc(current_group["heading"])} '
             f'<span class="grade-count">{len(selected_current)} on this page · '
             f"{len(current_group['rows'])} total</span></h2>"
             f'<p class="group-note">{esc(current_group["note"])}</p>'
@@ -6592,28 +6734,34 @@ def _render_agency_index(
         f"Page {page} of {page_count} for {total} published GTFS feed scorecards, "
         "including current, recently expired, and older published feeds."
     )
-    jump_nav = _agency_index_jump_nav(
-        has_expired=bool(expired_groups),
-        has_current=bool(selected_current),
+    current_count = len(group_by_key["current"]["rows"])
+    expired_href = (
+        "#expired"
+        if expired_groups
+        else f"{_agency_index_href(current_count // page_size + 1)}#expired"
     )
+    jump_nav = _agency_index_jump_nav(expired_total=expired_total, expired_href=expired_href)
     pager_top = _agency_index_pager(page, page_count, label="Directory pages before the list")
     pager_bottom = _agency_index_pager(page, page_count, label="Directory pages after the list")
-    body = f"""    {_breadcrumb([("Home", "/"), ("All agencies", None)])}
+    body = f"""    {_breadcrumb([("Home", "/"), ("Agencies", None)])}
     <h1 class="page-title">Agency scorecards</h1>
     <p class="page-lede">{total} published feed scorecards, each with a
     <abbr title="General Transit Feed Specification">GTFS</abbr> data
     quality grade and the fixes to start with.</p>
-    <p class="fineprint">Showing records {start + 1 if total else 0}&ndash;{end} of {total}.
-      Use the page links to browse the complete directory.</p>
+    {_DIRECTORY_SEARCH}
+    {_browse_by_place(places)}
     <nav class="grade-jump" aria-label="Other views of the same scorecards">Same scorecards, other
     views: <a href="/app/">live search and filters</a> · <a href="/map/">on a map</a> ·
     <a href="/routes/">every route</a> · <a href="/compare/">compare two</a> ·
     <a href="/program/">grouped by program</a></nav>
+    <p class="fineprint">Showing records {start + 1 if total else 0}&ndash;{end} of {total}.
+      Use the page links to browse the complete directory.</p>
 {pager_top}
 {jump_nav}
-{expired_section}
 {current_section}
-{pager_bottom}"""
+{expired_section}
+{pager_bottom}
+{_DIRECTORY_SEARCH_SCRIPT}"""
     return _page(
         title=title,
         description=desc,
@@ -14086,6 +14234,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         agency_id for agency_id, found in fixlog_receipts.items() if fixlog_is_indexable(found)
     )
     clearance_sitemap_ids = load_clearance_sitemap_ids(root)
+    directory_places = _published_directory_places(art)
     agency_count = len(index.get("agencies") or {})
     agency_page_count = max(1, math.ceil(agency_count / _AGENCY_INDEX_PAGE_SIZE))
     for page_number in range(1, agency_page_count + 1):
@@ -14104,6 +14253,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 page=page_number,
                 page_size=_AGENCY_INDEX_PAGE_SIZE,
                 fixlog_ids=fixlog_ids,
+                places=directory_places,
             ),
             f"{BASE_URL}{page_href}",
             lastmod=agency_index_lastmod(
