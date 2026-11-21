@@ -52,6 +52,23 @@ of 821 commits made silently in every workflow that names it. On 2026-10-11 it
 moved again, to `v1.5.1`, and it moves with each release. Pin a release and
 upgrade on purpose.
 
+**What `v1.6.0` changes from `v1.5.1`.** The Action step has one fix: a feed
+the scorer refuses no longer reports an earlier step's grade. `v1.5.1` removed
+a result left at the `json` path by an earlier step only when `evidence-packet`
+was set, so in a job that checked two feeds without `json`, a refusal on the
+second published the first feed's `grade`, `score`, `days-to-expiry` and job
+summary. `v1.6.0` removes that file before every run; see
+[Outputs and job summary](#outputs-and-job-summary). The scorer the Action
+bundles also moves from rubric 1.4 and artifact schema 1.19 to rubric 1.5 and
+schema 1.20, so a feed can grade differently than it did under `v1.5.1`: for
+one, padded CSV headers no longer hide columns. Its feed download also sends
+`gtfs-scorecard/<version> (+https://gtfsscorecard.org)` as the User-Agent and
+reads the feed host's robots.txt first, so a feed whose host disallows it, or
+answers `/robots.txt` with an error, a redirect or an HTML page, is not
+fetched. The validator jar is checked against a pinned SHA-256 before it runs.
+The inputs and outputs are unchanged. The 1.6.0 section of `CHANGELOG.md` lists
+every change.
+
 **What `v1.5.1` changes from `v1.5.0`.** Nothing the Action does. `v1.5.1`
 renamed the Python distribution to `gtfs-scorecard` so it could be uploaded to
 PyPI; the Action's inputs, outputs and grading are those of `v1.5.0`.
@@ -113,7 +130,7 @@ later steps can upload or inspect it even when the gate fails. A result already
 at that path, from an earlier step in the same job, is removed before the feed
 is scored. Without `json` every step in a job uses the same temporary path, so
 this is what keeps a feed that could not be scored from reporting the previous
-feed's grade. (On `main`, not yet in a release: `v1.5.1` removes it only when
+feed's grade. (Fixed in `v1.6.0`: `v1.5.1` and earlier remove it only when
 `evidence-packet` is set.) `comparable` and
 `regressed` are blank unless you set `baseline`; `sarif` is blank unless you set
 `sarif`; `retest-outcome` and `retest-json` are blank unless you set
