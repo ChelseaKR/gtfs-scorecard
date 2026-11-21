@@ -71,6 +71,39 @@ def test_home_search_is_an_accessible_combobox_that_loads_its_index_lazily(
     assert not any(url.endswith("/api/v1/ids.json") for url in requested)
 
 
+def test_home_picker_script_loads_after_the_first_paint(page: Page, base_url: str) -> None:
+    """The picker script is fetched after the page loads, never before the first paint.
+
+    Every request that starts before the first paint counts against the
+    simulated Largest Contentful Paint the Lighthouse budget checks
+    (lighthouserc.json); as a deferred head script the picker cost the home
+    page its LCP budget. landing-scorecard.js now fetches it after the load
+    event, so the combobox above still arrives without any interaction.
+    """
+    page.goto(f"{base_url}/")
+    expect(page.get_by_role("combobox", name="Find a published feed")).to_have_attribute(
+        "aria-expanded", "false"
+    )
+    timing = page.evaluate(
+        """() => {
+          const picker = performance
+            .getEntriesByType("resource")
+            .find((entry) => entry.name.includes("/src/agency-combobox.js"));
+          const paint = performance.getEntriesByName("first-contentful-paint")[0];
+          const navigation = performance.getEntriesByType("navigation")[0];
+          return {
+            picker: picker ? picker.startTime : null,
+            paint: paint ? paint.startTime : null,
+            load: navigation.loadEventStart,
+          };
+        }"""
+    )
+    assert timing["picker"] is not None
+    assert timing["paint"] is not None
+    assert timing["picker"] >= timing["load"] > 0
+    assert timing["picker"] > timing["paint"]
+
+
 def test_home_keyboard_only_choice_opens_the_agency_page(page: Page, base_url: str) -> None:
     page.goto(f"{base_url}/")
     combobox = page.get_by_role("combobox", name="Find a published feed")

@@ -59,6 +59,11 @@ Two places ask a reader to pick an agency by name.
 
 - The alerts page no longer downloads the history index, and the home page no
   longer downloads the feed-URL crosswalk to suggest names.
+- On the home page the picker script loads after the page has loaded and
+  painted (or when the search form gets focus), not from the head: as a
+  deferred head script it pushed the simulated Largest Contentful Paint past
+  the `lighthouserc.json` budget. The alerts page still loads it from the
+  head, where the field is the point of the page.
 - One more generated file. It is rebuilt on every render, so it can only list
   agencies that have a page, and `test_agency_index.py` holds the committed
   copy to the committed catalog.

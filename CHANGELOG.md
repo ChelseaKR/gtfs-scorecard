@@ -169,6 +169,18 @@ the declared public surface).
 
 ### Fixed
 
+- **The home page is back under its Largest Contentful Paint budget.** The
+  agency picker script (`web/src/agency-combobox.js`) was a deferred script in
+  the head of the home page, so it was fetched before the first paint and the
+  simulated LCP in `lighthouserc.json` came in at about 2,885 ms against
+  2,750 ms; the Deploy site workflow has failed on it since the picker
+  shipped. `landing-scorecard.js` now loads the picker once the page has
+  loaded and painted, or at once when the search form gets focus. The search
+  box reads and works the same: it is a combobox as soon as the page has
+  loaded, and text typed while the script is on its way still gets
+  suggestions.
+  A browser test checks that the script is fetched after the first paint.
+
 - **A WCAG 2.2 A and AA conformance report, and three fixes it found.**
   `docs/vpat.md` is now an Accessibility Conformance Report on the VPAT 2.5
   Rev WCAG edition, written from an axe, keyboard, 320 px reflow, text-spacing

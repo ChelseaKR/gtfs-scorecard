@@ -650,7 +650,18 @@
    * a name two feeds share, keeps going to the results list in the app.
    * The suggestions come from the shared picker (agency-combobox.js) and its
    * small index, which loads the first time someone types, not with the page.
-   * Without JavaScript the form submits to /app/ on its own. */
+   * Without JavaScript the form submits to /app/ on its own.
+   *
+   * The picker script itself is not in the head of the page either: on a
+   * throttled phone every request that starts before the first paint counts
+   * against Largest Contentful Paint, and the Lighthouse budget in
+   * lighthouserc.json failed by one request when it was. It loads once the
+   * page has loaded, painted and gone idle, or at once when the
+   * search form gets focus first. */
+  var PICKER_SRC = "/src/agency-combobox.js?v=20261119-agency-search";
+  var picker = null;
+  var pickerReady = null;
+
   function agencyPage(record) {
     return "/agency/" + encodeURIComponent(record.slug || record.id) + "/";
   }
@@ -659,9 +670,8 @@
     return "/app/#/?q=" + encodeURIComponent(query);
   }
 
-  var agencySearch = window.ScorecardAgencySearch;
-  if (agencySearch && elements.searchForm && elements.searchInput && elements.searchResults) {
-    var picker = agencySearch.attach({
+  function attachPicker(agencySearch) {
+    picker = agencySearch.attach({
       input: elements.searchInput,
       listbox: elements.searchResults,
       status: elements.pickerStatus,
@@ -670,23 +680,78 @@
         if (record && record.id) window.location.assign(agencyPage(record));
       },
     });
+    // Text typed while the script was on its way gets its suggestions now.
+    if (elements.searchInput.value && document.activeElement === elements.searchInput) {
+      elements.searchInput.dispatchEvent(new Event("input"));
+    }
+    return picker;
+  }
+
+  function loadPicker() {
+    if (pickerReady) return pickerReady;
+    pickerReady = new Promise(function (resolve, reject) {
+      if (window.ScorecardAgencySearch) {
+        resolve(window.ScorecardAgencySearch);
+        return;
+      }
+      var script = document.createElement("script");
+      script.src = PICKER_SRC;
+      script.onload = function () {
+        if (window.ScorecardAgencySearch) resolve(window.ScorecardAgencySearch);
+        else reject(new Error("agency-picker:missing"));
+      };
+      script.onerror = function () {
+        reject(new Error("agency-picker:load"));
+      };
+      document.head.appendChild(script);
+    }).then(attachPicker, function (error) {
+      // Forgotten, so the next focus can try again.
+      pickerReady = null;
+      throw error;
+    });
+    return pickerReady;
+  }
+
+  function loadPickerQuietly() {
+    loadPicker().catch(function () {});
+  }
+
+  if (elements.searchForm && elements.searchInput && elements.searchResults) {
+    elements.searchForm.addEventListener("focusin", loadPickerQuietly);
     elements.searchForm.addEventListener("submit", function (event) {
       event.preventDefault();
       var query = elements.searchInput.value.trim();
-      picker.close();
+      if (picker) picker.close();
       if (!query) {
         window.location.assign(resultsPage(query));
         return;
       }
-      picker.clearMatch().then(
-        function (record) {
-          window.location.assign(record ? agencyPage(record) : resultsPage(query));
-        },
-        function () {
-          window.location.assign(resultsPage(query));
-        }
-      );
+      loadPicker()
+        .then(function (ready) {
+          return ready.clearMatch();
+        })
+        .then(
+          function (record) {
+            window.location.assign(record ? agencyPage(record) : resultsPage(query));
+          },
+          function () {
+            window.location.assign(resultsPage(query));
+          }
+        );
     });
+    // The load event can still come just before the first paint, so wait
+    // for the next frame to be drawn and then for an idle moment.
+    var whenIdle = function () {
+      window.requestAnimationFrame(function () {
+        if (typeof window.requestIdleCallback === "function") {
+          window.requestIdleCallback(loadPickerQuietly, { timeout: 2000 });
+        } else {
+          window.setTimeout(loadPickerQuietly, 0);
+        }
+      });
+    };
+    if (document.readyState === "complete") whenIdle();
+    else window.addEventListener("load", whenIdle, { once: true });
   }
 
   async function copyView() {

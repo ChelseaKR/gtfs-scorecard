@@ -308,7 +308,7 @@ def test_landing_uses_a_real_interactive_scorecard_instead_of_a_fictional_dashbo
     script = (_REPO / "web" / "src" / "landing-scorecard.js").read_text()
 
     assert 'id="live-scorecard"' in html
-    assert 'src="/src/landing-scorecard.js?v=20261119-agency-search"' in html
+    assert 'src="/src/landing-scorecard.js?v=20261121-lazy-picker"' in html
     assert "Latest published scorecard" in html
     assert 'role="group" aria-label="Home pilots"' in html
     assert "measured category sets can differ" in html
@@ -328,8 +328,7 @@ def test_landing_uses_a_real_interactive_scorecard_instead_of_a_fictional_dashbo
     # The search box suggests names from the shared picker's small index,
     # never the feed-URL crosswalk or the full directory.
     picker = (_REPO / "web" / "src" / "agency-combobox.js").read_text()
-    assert 'src="/src/agency-combobox.js?v=20261119-agency-search"' in html
-    assert html.index("/src/agency-combobox.js") < html.index("/src/landing-scorecard.js")
+    assert '"/src/agency-combobox.js?v=20261119-agency-search"' in script
     assert "ScorecardAgencySearch" in script
     assert '"/data/agency-index.json"' in picker
     assert "/api/v1/ids.json" not in script + picker
@@ -340,6 +339,24 @@ def test_landing_uses_a_real_interactive_scorecard_instead_of_a_fictional_dashbo
     assert "Format example" not in html
     assert "Tri-County Transit" not in html
     assert 'class="who-card"' not in html
+
+
+def test_landing_keeps_the_agency_picker_script_off_the_first_paint() -> None:
+    """The picker script loads after the page, not from the head (LCP budget).
+
+    Every request that starts before the first paint counts against the
+    simulated Largest Contentful Paint in lighthouserc.json. With the picker
+    as a deferred head script, the home page missed the 2750 ms budget by one
+    request (Deploy site, 2026-11-20). landing-scorecard.js now loads it once
+    the page has loaded and the browser is idle, or when the search form gets
+    focus first; the browser test checks the timing in a real page.
+    """
+    html = (_REPO / "web" / "index.html").read_text()
+    script = (_REPO / "web" / "src" / "landing-scorecard.js").read_text()
+
+    assert "agency-combobox.js" not in html
+    assert 'window.addEventListener("load", whenIdle' in script
+    assert 'addEventListener("focusin", loadPickerQuietly)' in script
 
 
 def test_landing_pilot_artifacts_have_the_interactive_scorecard_contract() -> None:
