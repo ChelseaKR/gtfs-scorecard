@@ -3390,7 +3390,9 @@ class SearchIntentCopy:
     ``identity`` + ``suffix`` is the title. ``lead`` opens the description and
     ``tail`` closes it; the page's own dated grade goes between them exactly
     as ``_agency_seo_metadata`` writes it, or is left out when the page has
-    none. Every word must be something the agency page itself shows.
+    none. Every word must be something the agency page itself shows. An entry
+    with an empty ``identity`` and ``suffix`` keeps the generated title and
+    replaces only the description.
     """
 
     identity: str
@@ -3465,6 +3467,29 @@ _SEARCH_INTENT_COPY: dict[str, SearchIntentCopy] = {
         "Mwasalat (Oman National Transport Company) GTFS feed",
         "See the source feed URL, service dates and fixes.",
     ),
+    # Search Console, 2026-11-20: "pid gtfs" reached this page at position 4.8
+    # with no clicks, under a Czech-only title.
+    "pid-prague": SearchIntentCopy(
+        "PID Prague",
+        " GTFS feed: source URL and quality report",
+        "Prague Integrated Transport (PID), Czechia, GTFS feed",
+        "See the source feed URL, validator findings and fixes.",
+    ),
+    # "go transit gtfs" ranked the /fixes/ log instead of the main page.
+    "go-transit-metrolinx": SearchIntentCopy(
+        "GO Transit",
+        " GTFS feed: source URL and quality report",
+        "GO Transit (Metrolinx, Ontario) GTFS feed",
+        "See the source feed URL, validator findings and fixes.",
+    ),
+    # Description only: the generated title is fine, but the generated
+    # description cut the name to "Greensboro Transit…".
+    "greensboro-transit-authority-gta": SearchIntentCopy(
+        "",
+        "",
+        "Greensboro Transit Authority (GTA) GTFS feed",
+        "See fixes.",
+    ),
 }
 
 
@@ -3482,7 +3507,10 @@ def _apply_search_intent(
     copy = _SEARCH_INTENT_COPY.get(agency_id)
     if copy is None:
         return metadata
-    title = f"{copy.identity}{copy.suffix}"
+    if copy.identity or copy.suffix:
+        title, identity = f"{copy.identity}{copy.suffix}", copy.identity
+    else:
+        title, identity = metadata.title, metadata.identity
     if not 15 <= len(title) <= _TITLE_MAX:
         return metadata
     if grade_facts is not None:
@@ -3496,7 +3524,7 @@ def _apply_search_intent(
     description = next((d for d in candidates if 50 <= len(d) <= _DESC_MAX), "")
     if not description:
         return metadata
-    return replace(metadata, title=title, description=description, identity=copy.identity)
+    return replace(metadata, title=title, description=description, identity=identity)
 
 
 def _source_title_test_ids(

@@ -29,6 +29,14 @@ the declared public surface).
 
 ### Changed
 
+- **Search titles and descriptions for three agency pages.** PID Prague and GO
+  Transit get "<agency> GTFS feed: source URL and quality report" titles and
+  descriptions that name the feed the way people search for it. Greensboro
+  Transit Authority keeps its title and gets a description that no longer cuts
+  its name short. The grade, score and date in each stay generated from the
+  page's own artifact. A `_SEARCH_INTENT_COPY` entry with an empty identity
+  now replaces the description only. PID Prague and GO Transit leave the
+  ADR 0078 source-feed title test, as every hand-written entry does.
 - **The home page search opens the agency's page.** Typing in "Find a
   published feed" now suggests agencies as you type. Choosing one, or pressing
   Enter on a name only one agency has, goes straight to `/agency/<id>/`
