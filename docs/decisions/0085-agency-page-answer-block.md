@@ -22,7 +22,11 @@ The head of `/agency/<id>/` is, in order:
    level is the state or country page `_portfolio_route` already resolves,
    and appears only when that page was rendered. The duplicate backlink goes.
 3. The answer block: the existing grade card (kicker, name, one-line
-   provenance, mirror caveat, grade, partial qualifier, trend, chips) and a
+   provenance, mirror caveat, grade, partial qualifier, trend, chips, and,
+   approved on 2026-11-21 with this block, one sentence under the grade: "The
+   grade is not a count of validator errors. It also weighs freshness and
+   rider information." with a "How the grade works" link to the methodology
+   on `/how-to-read/#methodology-h`) and a
    "Feed file" card with the feed URL, a Copy URL button and the Mobility
    Database version history. On a failed address the card says "Failed at
    last check (HTTP <code>)" and links the newest saved copy under ADR

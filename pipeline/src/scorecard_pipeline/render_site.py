@@ -1718,8 +1718,19 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         f"{_grade_qualifier_html(qualifier)}"
         f'<p class="score-trend">{trend}</p>{_peer_context(peer_record)}'
         f'<div class="chips">{"".join(chips)}</div></div></div>'
+        f"{_GRADE_EXPLAINER}"
         "</div></div>"
     )
+
+
+#: Under the grade in the grade card (approved 2026-11-21 with the answer
+#: block, ADR 0085): what the grade weighs, and where the method is written
+#: down. The anchor is the methodology heading on /how-to-read/.
+_GRADE_EXPLAINER = (
+    '<p class="grade-explainer">The grade is not a count of validator errors. It also '
+    'weighs freshness and rider information. <a href="/how-to-read/#methodology-h">'
+    "How the grade works</a></p>"
+)
 
 
 def _grade_qualifier_html(qualifier: str | None) -> str:

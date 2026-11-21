@@ -82,17 +82,18 @@ wording; in short:
 
 ### Changed
 
-- **Agency pages open with an answer block.** The grade card now sits beside
-  a "Feed file" card with the feed URL, a Copy URL button and the Mobility
-  Database version history; a failed address says "Failed at last check" there
-  and links the newest saved copy. "Watch this feed" is the one primary
-  button, and the other actions are text links. The breadcrumb gains the
-  state or country page and loses the duplicate backlink. The liveness,
-  confidence and disclaimer notes move, unchanged, into "How we measured
-  this" after the evidence, and "About this feed" follows the fixes and opens
-  with one line for riders looking for times. Presses of Watch this feed and
-  Copy URL are counted without cookies, and the privacy statement says so.
-  ADR 0085.
+- **Agency pages open with an answer block.** The grade card says, under the
+  grade, that the grade is not a count of validator errors, with a link to how
+  the grade works. It now sits beside a "Feed file" card with the feed URL, a
+  Copy URL button and the Mobility Database version history; a failed address
+  says "Failed at last check" there and links the newest saved copy. "Watch
+  this feed" is the one primary button, and the other actions are text links.
+  The breadcrumb gains the state or country page and loses the duplicate
+  backlink. The liveness, confidence and disclaimer notes move, unchanged,
+  into "How we measured this" after the evidence, and "About this feed"
+  follows the fixes and opens with one line for riders looking for times.
+  Presses of Watch this feed and Copy URL are counted without cookies, and the
+  privacy statement says so. ADR 0085.
 - **Search titles and descriptions for three agency pages.** PID Prague and GO
   Transit get "<agency> GTFS feed: source URL and quality report" titles and
   descriptions that name the feed the way people search for it. Greensboro

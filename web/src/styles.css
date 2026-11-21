@@ -1617,6 +1617,12 @@ main:focus { outline: none; }
    stack on a phone and sit side by side once the report has room. Source
    order is the reading order either way. */
 .answer-block { display: grid; gap: 1rem; margin: 0 0 1rem; }
+/* Under the grade on the dark board: fixed light text, as the board's other
+   text is, and the signal-amber focus ring the dark chrome uses. */
+.grade-explainer { margin: 1.1rem 0 0; max-width: 40rem; font-size: 0.9rem; color: #f4f6f0; }
+.grade-explainer a { color: #f4f6f0; display: inline-flex; align-items: center; min-height: 44px; }
+.grade-explainer a:hover { color: #fff; }
+.grade-explainer a:focus-visible { outline-color: var(--amber); }
 .answer-block > * { min-width: 0; }
 .answer-block .board-hero { margin: 0; }
 @media (min-width: 64rem) {

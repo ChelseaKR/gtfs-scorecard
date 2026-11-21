@@ -295,3 +295,33 @@ def test_the_answer_block_has_its_styles() -> None:
     css = (_REPO / "web" / "src" / "styles.css").read_text()
     for selector in (".answer-block {", ".feed-card {", ".copy-url {", ".copy-url[hidden]"):
         assert selector in css, selector
+
+
+# --- 8. what the grade weighs, under the grade --------------------------------------------
+
+
+@pytest.mark.parametrize("agency_id", _GOLDEN_IDS)
+def test_the_grade_card_says_what_the_grade_weighs(agency_id: str) -> None:
+    html = (_GOLDENS / agency_id / "index.html").read_text()
+    hero = re.search(r'<div class="board-hero".*?</div></div>\n', html, re.S)
+    assert hero is not None
+    line = re.search(r'<p class="grade-explainer">.*?</p>', hero.group(0))
+    assert line is not None, "the sentence is not inside the grade card"
+    assert hero.group(0).index('class="score-big"') < line.start()
+    assert _visible(line.group(0)) == (
+        "The grade is not a count of validator errors. It also weighs freshness and "
+        "rider information. How the grade works"
+    )
+    assert '<a href="/how-to-read/#methodology-h">How the grade works</a>' in line.group(0)
+    assert html.count('class="grade-explainer"') == 1
+
+
+def test_the_methodology_anchor_the_grade_card_links_exists() -> None:
+    how_to_read = (_GOLDENS.parent / "how-to-read" / "index.html").read_text()
+    assert 'id="methodology-h"' in how_to_read
+
+
+def test_the_grade_card_link_is_legible_on_the_dark_board() -> None:
+    css = (_REPO / "web" / "src" / "styles.css").read_text()
+    assert ".grade-explainer a { color: #f4f6f0;" in css
+    assert ".grade-explainer a:focus-visible { outline-color: var(--amber); }" in css
