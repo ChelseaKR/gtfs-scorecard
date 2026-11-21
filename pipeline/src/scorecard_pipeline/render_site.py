@@ -1821,6 +1821,67 @@ def _liveness_note(record: dict[str, Any] | None, now: dt.datetime | None = None
     return f'<p class="monitoring-note">{esc("; ".join(parts))}.</p>'
 
 
+#: The Mobility Database's "latest" copies, the only saved copies of a feed
+#: this site links. The scorecard never hosts a copy itself (docs/api.md: the
+#: raw archive is private). These are the two shapes the published artifacts
+#: record as ``fetch.final_url`` when a grade was scored from such a copy:
+#: ``files.mobilitydatabase.org/<id>/latest.zip`` and the ``mdb-latest``
+#: bucket on Google Cloud Storage (checked 2026-11-20 across the 85 pages
+#: whose address on file failed with HTTP 4xx). Anything else is not linked.
+_SAVED_COPY_URL_RE: Final = re.compile(
+    r"https://files\.mobilitydatabase\.org/(?:mdb|tld|ntd|tdg)-[0-9]+/latest\.zip"
+    r"|https://storage\.googleapis\.com/storage/v1/b/mdb-latest/o/[a-z0-9-]+\.zip\?alt=media"
+)
+
+
+def _saved_copy_url(artifact: dict[str, Any]) -> str | None:
+    """The Mobility Database copy this grade was scored from, when it was one."""
+    fetch = artifact.get("fetch")
+    if not isinstance(fetch, dict) or fetch.get("source") != "mirror":
+        return None
+    url = fetch.get("final_url")
+    return url if isinstance(url, str) and _SAVED_COPY_URL_RE.fullmatch(url) else None
+
+
+def _dead_feed_note(agency_id: str, record: dict[str, Any] | None, artifact: dict[str, Any]) -> str:
+    """One sentence at the top of the page when the address on file failed.
+
+    Shown only when the daily check's last answer was an HTTP 4xx (the address
+    is gone or refuses the download). It links the Mobility Database's newest
+    saved copy when the grade was scored from one, and always offers the
+    existing correction route for the new address. A 5xx, a timeout or a
+    certificate error can be passing, so none of them shows it.
+    """
+    status = (record or {}).get("status")
+    if isinstance(status, bool) or not isinstance(status, int) or not 400 <= status < 500:
+        return ""
+    fix = f'<a href="/claim/?agency={esc(agency_id)}">send us the new address</a>'
+    copy = _saved_copy_url(artifact)
+    if copy:
+        rest = (
+            f'<a href="{esc(copy)}">Download the newest saved copy</a> from the Mobility '
+            f"Database, or {fix}."
+        )
+    else:
+        rest = f"If the feed moved, {fix}."
+    return (
+        f'<p class="feed-help">The feed address on file failed at our last check '
+        f"(HTTP {status}). {rest}</p>"
+    )
+
+
+def _watch_line(agency_id: str) -> str:
+    """The free alert, offered right under the grade on every agency page.
+
+    The link opens the alerts form with this agency already chosen
+    (``subscribe.js`` reads ``?agency=``)."""
+    return (
+        f'<p class="watch-line"><a href="/subscribe.html?agency={esc(agency_id)}">'
+        "Watch this feed</a> for free: we email you before it expires or when its grade "
+        "drops.</p>"
+    )
+
+
 _NOT_FETCHED_COPY = {
     "not fetched: robots disallows": (
         "The latest run did not download this feed: the host's robots.txt asks "
@@ -4238,8 +4299,9 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     body = f"""    <div class="report-head">
     {crumb}
     <a class="backlink" href="/agencies/">&larr; All agencies</a>
-    {actions}
+    {actions}{_dead_feed_note(agency_id, liveness, artifact)}
     {_board_hero(agency_name, agency_id, artifact, history or [], dir_record)}
+    {_watch_line(agency_id)}
     {_source_feed_line(_public_source_url(artifact, source_withheld), _mdb_feed_page((dir_record or {}).get("mdb_id")))}
     {op_html}
     {_anomaly_note(history)}
