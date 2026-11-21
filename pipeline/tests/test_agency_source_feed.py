@@ -1,14 +1,15 @@
-"""The visible "Source feed" line on an agency scorecard (owner scope, 2026-10-11).
+"""The visible feed URL on an agency scorecard (owner scope, 2026-10-11).
 
 Most disclosed search queries that land on an agency page ask for the agency's
 GTFS file, and the page named that file's URL only inside its JSON-LD. The
-line links the publisher's own download and, when the record carries a
+"Feed file" card beside the grade (ADR 0085; it replaced the "Source feed"
+line) links the publisher's own download and, when the record carries a
 Mobility Database id, that feed's version history there. It links; the site
 never hosts a copy. These tests hold four things:
 
-1. **No public source, no line.** A local zip, a credentialed fetch, a URL on
+1. **No public source, no card.** A local zip, a credentialed fetch, a URL on
    this site, a withheld publisher, or a license block that forbids
-   redistribution renders no "Source feed" line at all, with no placeholder.
+   redistribution renders no feed card at all, with no placeholder.
 2. **The Mobility Database link is never guessed.** Only an id of a shape that
    was opened on mobilitydatabase.org is linked; anything else is omitted.
 3. **The JSON-LD agrees with the page.** ``isBasedOn`` is present exactly when
@@ -31,18 +32,18 @@ import pytest
 
 from scorecard_pipeline.config import Agency, LicenseBlock
 from scorecard_pipeline.render_site import (
+    _feed_file_card,
     _license_forbids_redistribution,
     _mdb_feed_page,
     _public_source_url,
     _render_agency,
-    _source_feed_line,
     _withheld_source_ids,
 )
 
 _REPO = Path(__file__).resolve().parents[2]
 _GOLDENS = _REPO / "pipeline" / "tests" / "goldens"
 _FIXTURE = _REPO / "pipeline" / "tests" / "fixtures" / "golden_site"
-_LINE_RE = re.compile(r'<p class="feed-source">.*?</p>', re.S)
+_LINE_RE = re.compile(r'<section class="feed-card".*?</section>', re.S)
 _HREF_RE = re.compile(r'href="([^"]+)"')
 _JSONLD_RE = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
 _BARRIE_URL = "http://www.myridebarrie.ca/gtfs/Google_transit.zip"
@@ -79,7 +80,7 @@ def _page(artifact: dict[str, Any], **kwargs: Any) -> str:
 
 def _line(html: str) -> str:
     lines = _LINE_RE.findall(html)
-    assert len(lines) <= 1, "more than one source line on one page"
+    assert len(lines) <= 1, "more than one feed card on one page"
     return lines[0] if lines else ""
 
 
@@ -94,12 +95,15 @@ def _dataset_jsonld(html: str) -> dict[str, Any]:
 # --- 1. the line, as it renders --------------------------------------------
 
 
-def test_the_line_links_the_feed_and_its_mobility_database_history() -> None:
+def test_the_card_links_the_feed_and_its_mobility_database_history() -> None:
     line = _line(_page(_artifact()))
     assert line == (
-        f'<p class="feed-source">Source feed: <a href="{_BARRIE_URL}">{_BARRIE_URL}</a> '
-        '<span aria-hidden="true">&middot;</span> '
-        f'<a href="{_BARRIE_MDB}">Version history on the Mobility Database</a></p>'
+        '<section class="feed-card" aria-labelledby="feed-file-h">'
+        '<h2 class="feed-card-title" id="feed-file-h">Feed file</h2>'
+        f'<p class="feed-source">Feed URL: <a href="{_BARRIE_URL}">{_BARRIE_URL}</a></p>'
+        '<p class="feed-card-actions"><button type="button" class="copy-url" hidden '
+        f'data-copy-text="{_BARRIE_URL}" data-measure="agency_copy_url_click">Copy URL</button> '
+        f'<a href="{_BARRIE_MDB}">Version history on the Mobility Database</a></p></section>'
     )
 
 
@@ -113,7 +117,7 @@ def test_no_mobility_database_id_keeps_the_source_and_drops_only_the_history() -
 def test_every_golden_scorecard_links_its_feed_and_never_this_site(agency_id: str) -> None:
     html = (_GOLDENS / "agency" / agency_id / "index.html").read_text()
     line = _line(html)
-    assert line.startswith('<p class="feed-source">Source feed: <a href="http')
+    assert '<p class="feed-source">Feed URL: <a href="http' in line
     hrefs = _HREF_RE.findall(line)
     for href in hrefs:
         host = urlsplit(href).hostname or ""
@@ -123,16 +127,17 @@ def test_every_golden_scorecard_links_its_feed_and_never_this_site(agency_id: st
     assert _dataset_jsonld(html)["isBasedOn"] == hrefs[0]
 
 
-def test_only_the_scorecard_carries_the_line_not_the_brief_or_board() -> None:
+def test_only_the_scorecard_carries_the_card_not_the_brief_or_board() -> None:
     for page in sorted((_GOLDENS / "agency").rglob("*.html")):
         rel = page.relative_to(_GOLDENS).as_posix()
         if rel.count("/") > 2:
-            assert 'class="feed-source"' not in page.read_text(), rel
+            assert 'class="feed-card"' not in page.read_text(), rel
 
 
-def test_the_line_escapes_the_url_it_prints() -> None:
-    line = _source_feed_line('https://ex.org/g.zip?a=1&b="x"', None)
+def test_the_card_escapes_the_url_it_prints_and_copies() -> None:
+    line = _feed_file_card('https://ex.org/g.zip?a=1&b="x"', None, None, {})
     assert 'href="https://ex.org/g.zip?a=1&amp;b=&quot;x&quot;"' in line
+    assert 'data-copy-text="https://ex.org/g.zip?a=1&amp;b=&quot;x&quot;"' in line
     assert '"x"' not in line
 
 
@@ -204,8 +209,8 @@ _SABOTAGE: dict[str, tuple[_Sabotage, _Landed]] = {
 @pytest.mark.parametrize("case", sorted(_SABOTAGE))
 def test_negative_control_no_public_source_renders_no_line_and_no_isbasedon(case: str) -> None:
     control = _page(_artifact())
-    assert "Source feed:" in control and '"isBasedOn"' in control, (
-        "the unsabotaged control renders no source line; this proves nothing"
+    assert "Feed URL:" in control and '"isBasedOn"' in control, (
+        "the unsabotaged control renders no feed card; this proves nothing"
     )
 
     sabotage, landed = _SABOTAGE[case]
@@ -213,17 +218,17 @@ def test_negative_control_no_public_source_renders_no_line_and_no_isbasedon(case
     sabotage(artifact)
     assert landed(artifact), f"{case}: the sabotage did not apply"
     html = _page(artifact)
-    assert "Source feed" not in html
-    assert 'class="feed-source"' not in html
+    assert "Feed URL:" not in html
+    assert 'class="feed-card"' not in html
     # No Mobility Database link on its own either: no label without a link.
     assert not [h for h in _HREF_RE.findall(html) if _host(h) == "mobilitydatabase.org"]
     assert '"isBasedOn"' not in html
 
 
 def test_negative_control_a_withheld_publisher_renders_no_line_and_no_isbasedon() -> None:
-    assert "Source feed:" in _page(_artifact(), source_withheld=False)
+    assert "Feed URL:" in _page(_artifact(), source_withheld=False)
     html = _page(_artifact(), source_withheld=True)
-    assert "Source feed" not in html
+    assert "Feed URL:" not in html
     assert '"isBasedOn"' not in html
     assert _BARRIE_URL not in html.partition("<footer")[0].partition('id="report-overview"')[2]
 
@@ -232,7 +237,7 @@ def test_public_source_url_is_the_one_rule_for_both_surfaces() -> None:
     artifact = _artifact()
     assert _public_source_url(artifact) == _BARRIE_URL
     assert _public_source_url(artifact, withheld=True) is None
-    assert _source_feed_line(None, _BARRIE_MDB) == ""
+    assert _feed_file_card(None, _BARRIE_MDB, None, artifact) == ""
 
 
 # --- 3. who is withheld -------------------------------------------------------

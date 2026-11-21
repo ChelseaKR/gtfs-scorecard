@@ -246,8 +246,9 @@ def test_the_shim_reports_only_controls_that_opt_in_by_name() -> None:
         if "data-measure" in path.read_text() and path.name != "measure.js"
     ]
     assert [path.name for path in marked] == ["bundle.js"]
-    # The one marked control rendered from Python: the link to /bundle/ in the
-    # program panel at the end of every program rollup page (ADR 0064).
+    # The marked controls rendered from Python: the link to /bundle/ in the
+    # program panel at the end of every program rollup page (ADR 0064), and
+    # Watch this feed and Copy URL on every agency scorecard (ADR 0085).
     pipeline_src = _REPO / "pipeline" / "src" / "scorecard_pipeline"
     rendered = [
         path.name
@@ -255,7 +256,12 @@ def test_the_shim_reports_only_controls_that_opt_in_by_name() -> None:
         if "data-measure=" in path.read_text()
     ]
     assert rendered == ["render_site.py"]
-    assert (pipeline_src / "render_site.py").read_text().count("data-measure=") == 1
+    source = (pipeline_src / "render_site.py").read_text()
+    assert sorted(re.findall(r'data-measure="([a-z_]+)"', source)) == [
+        "agency_copy_url_click",
+        "agency_watch_click",
+        "bundle_panel_click",
+    ]
 
 
 def test_the_history_pointers_are_plain_links_that_opt_nothing_in() -> None:
@@ -280,10 +286,13 @@ def test_the_history_pointers_are_plain_links_that_opt_nothing_in() -> None:
 
 def test_the_program_panel_link_is_counted_and_disclosed() -> None:
     """The panel moved from agency scorecards to the rollup pages (ADR 0064).
-    The counted link moved with it: one on /program/all/, none on an agency's
-    scorecard, and the privacy statement names where it now is."""
+    The counted link moved with it: one on /program/all/, none to /bundle/ on
+    an agency's scorecard, and the privacy statement names where it now is.
+    The scorecard's only counted link is Watch this feed (ADR 0085)."""
     agency_links = re.findall(r'<a [^>]*data-measure="([^"]*)"[^>]*>', _AGENCY_GOLDEN.read_text())
-    assert agency_links == [], "an agency scorecard still carries a counted link"
+    assert agency_links == ["agency_watch_click"], (
+        "an agency scorecard carries another counted link"
+    )
     page = _ROLLUP_GOLDEN.read_text()
     links = re.findall(r'<a [^>]*data-measure="([^"]*)"[^>]*>', page)
     assert links == ["bundle_panel_click"]
@@ -298,6 +307,10 @@ def test_the_program_panel_link_is_counted_and_disclosed() -> None:
     assert "It records two further events" in flat
     assert "the link to the bundle page at the end of a program rollup page" in flat
     assert "agency's scorecard" not in flat
+    assert (
+        "When you press Watch this feed or Copy URL on a scorecard, the cookieless counter "
+        "records that the button was pressed." in flat
+    )
 
 
 def test_the_page_families_the_shim_sends_are_the_ones_the_disclosure_names() -> None:

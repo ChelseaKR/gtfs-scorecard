@@ -45,8 +45,8 @@ def test_unchanged_feed_on_the_old_template_reports_the_template_revision() -> N
 
 
 def test_a_feed_change_after_the_revision_wins() -> None:
-    history = [_row("2026-07-03", A), _row("2026-10-08", B), _row("2026-10-11", B)]
-    assert agency_page_lastmod(history) == "2026-10-08"
+    history = [_row("2026-07-03", A), _row("2026-11-23", B), _row("2026-11-26", B)]
+    assert agency_page_lastmod(history) == "2026-11-23"
 
 
 def test_a_feed_change_before_the_revision_gives_way_to_it() -> None:
@@ -55,15 +55,15 @@ def test_a_feed_change_before_the_revision_gives_way_to_it() -> None:
 
 
 def test_a_scorecard_first_published_after_the_revision_starts_at_its_first_check() -> None:
-    history = [_row("2026-10-09"), _row("2026-10-10"), _row("2026-10-11")]
-    assert agency_page_lastmod(history) == "2026-10-09"
+    history = [_row("2026-11-24"), _row("2026-11-25"), _row("2026-11-26")]
+    assert agency_page_lastmod(history) == "2026-11-24"
 
 
 def test_lastmod_is_never_the_latest_check_date() -> None:
     # Negative control for the bug ADR 0067 must not reintroduce: a daily
     # check that changed nothing does not move lastmod.
-    history = [_row("2026-07-03"), _row("2026-10-07"), _row("2026-10-11")]
-    assert agency_page_lastmod(history) != "2026-10-11"
+    history = [_row("2026-07-03"), _row("2026-11-24"), _row("2026-11-26")]
+    assert agency_page_lastmod(history) != "2026-11-26"
     assert agency_page_lastmod(None) == AGENCY_TEMPLATE_REVISED
     assert agency_page_lastmod([{"date": "yesterday"}]) == AGENCY_TEMPLATE_REVISED
 

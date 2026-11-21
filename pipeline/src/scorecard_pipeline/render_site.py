@@ -886,7 +886,8 @@ def feed_change_date(history: list[dict[str, Any]] | None) -> str | None:
 # lastmod (docs/decisions/0067-agency-lastmod-and-moved-companion-pages.md).
 # 2026-10-06: "About this feed", the feed history table and the de-duplicated
 # finding handoff reached every scorecard (#501, #502).
-AGENCY_TEMPLATE_REVISED = "2026-10-06"
+# 2026-11-21: the answer block at the top of every scorecard (ADR 0085).
+AGENCY_TEMPLATE_REVISED = "2026-11-21"
 
 
 def agency_page_lastmod(history: list[dict[str, Any]] | None) -> str:
@@ -1852,8 +1853,8 @@ def _dead_feed_note(agency_id: str, record: dict[str, Any] | None, artifact: dic
     existing correction route for the new address. A 5xx, a timeout or a
     certificate error can be passing, so none of them shows it.
     """
-    status = (record or {}).get("status")
-    if isinstance(status, bool) or not isinstance(status, int) or not 400 <= status < 500:
+    status = _failed_status_code(record)
+    if status is None:
         return ""
     fix = f'<a href="/claim/?agency={esc(agency_id)}">send us the new address</a>'
     copy = _saved_copy_url(artifact)
@@ -1874,12 +1875,93 @@ def _watch_line(agency_id: str) -> str:
     """The free alert, offered right under the grade on every agency page.
 
     The link opens the alerts form with this agency already chosen
-    (``subscribe.js`` reads ``?agency=``)."""
+    (``subscribe.js`` reads ``?agency=``). It is the page's one primary
+    button (ADR 0085), with ADR 0084's words, and the cookieless counter
+    records a press of it (ADR 0055; the privacy statement names it)."""
     return (
-        f'<p class="watch-line"><a href="/subscribe.html?agency={esc(agency_id)}">'
+        f'<p class="watch-line"><a class="button button-primary watch-button" '
+        f'href="/subscribe.html?agency={esc(agency_id)}" data-measure="agency_watch_click">'
         "Watch this feed</a> for free: we email you before it expires or when its grade "
         "drops.</p>"
     )
+
+
+def _failed_status_code(record: dict[str, Any] | None) -> int | None:
+    """The HTTP 4xx the daily check last got for the address on file, or None.
+
+    The one rule behind both ADR 0084's sentence and the feed card's status
+    line: a 5xx, a timeout or a certificate error can pass by the next check,
+    so none of them counts as a failed address."""
+    status = (record or {}).get("status")
+    if isinstance(status, bool) or not isinstance(status, int) or not 400 <= status < 500:
+        return None
+    return status
+
+
+#: Copies a feed URL for the "Copy URL" button on the feed card. The button is
+#: rendered hidden and shown only when the browser offers the clipboard, so a
+#: reader without scripts never meets a control that does nothing. It reads
+#: the URL from the button's own attribute, so focus stays on the button.
+_COPY_URL_SCRIPT = (
+    "<script>document.querySelectorAll('.copy-url[data-copy-text]').forEach(function(b){"
+    "if(!navigator.clipboard){return;}b.hidden=false;"
+    "b.addEventListener('click',function(){"
+    "navigator.clipboard.writeText(b.getAttribute('data-copy-text'));"
+    "var o=b.textContent;b.textContent='Copied';"
+    "setTimeout(function(){b.textContent=o;},1500);});});</script>"
+)
+
+
+def _feed_file_card(
+    source_url: str | None,
+    mdb_page: str | None,
+    record: dict[str, Any] | None,
+    artifact: dict[str, Any],
+) -> str:
+    """The "Feed file" card beside the grade (ADR 0085), or nothing.
+
+    It holds what a reader who searched for an agency's GTFS file came for:
+    the publisher's own download, a Copy URL button, and the feed's version
+    history on the Mobility Database. When the address failed at the last
+    check it says so, and links the newest saved copy when the grade was
+    scored from one (ADR 0084's rule). No public source URL renders nothing,
+    the same rule the old "Source feed" line kept, so the card never shows a
+    label with no link.
+    """
+    if not source_url:
+        return ""
+    status = _failed_status_code(record)
+    status_html = ""
+    if status is not None:
+        copy = _saved_copy_url(artifact)
+        copy_html = (
+            f' <span aria-hidden="true">&middot;</span> <a href="{esc(copy)}">Newest saved copy</a>'
+            if copy
+            else ""
+        )
+        status_html = f'<p class="feed-status">Failed at last check (HTTP {status}){copy_html}</p>'
+    history = (
+        f' <a href="{esc(mdb_page)}">Version history on the Mobility Database</a>'
+        if mdb_page
+        else ""
+    )
+    return (
+        '<section class="feed-card" aria-labelledby="feed-file-h">'
+        '<h2 class="feed-card-title" id="feed-file-h">Feed file</h2>'
+        f'<p class="feed-source">Feed URL: <a href="{esc(source_url)}">{esc(source_url)}</a></p>'
+        f"{status_html}"
+        '<p class="feed-card-actions"><button type="button" class="copy-url" hidden '
+        f'data-copy-text="{esc(source_url)}" data-measure="agency_copy_url_click">Copy URL</button>'
+        f"{history}</p></section>"
+    )
+
+
+#: The one sentence for a reader who came for times or routes (ADR 0085, D3).
+#: It opens "About this feed", below the answer block, not in the hero.
+_RIDER_LINE = (
+    "Looking for times or routes? This page checks the data file that trip planners use. "
+    "For schedules, use the agency's own website or a trip planner."
+)
 
 
 _NOT_FETCHED_COPY = {
@@ -3908,7 +3990,12 @@ def _about_change_sentence(history: list[dict[str, Any]] | None) -> str:
     return ""
 
 
-def _about_feed_section(artifact: dict[str, Any], history: list[dict[str, Any]] | None) -> str:
+def _about_feed_section(
+    artifact: dict[str, Any],
+    history: list[dict[str, Any]] | None,
+    *,
+    rider_line: bool = False,
+) -> str:
     """A short lead built only from what the checks measured about the feed.
 
     Every sentence needs its own measured fields and is dropped when any is
@@ -3917,7 +4004,9 @@ def _about_feed_section(artifact: dict[str, Any], history: list[dict[str, Any]] 
     measured. The change sentence uses the same observed-change rule as the
     sitemap (``feed_change_date``) and says "has not changed since" only when
     every recorded check carries the same known file hash. Empty when nothing
-    is measured.
+    is measured, unless ``rider_line`` asks for the agency page's one sentence
+    for riders (ADR 0085), which opens the section whether or not anything
+    was measured.
     """
     sentences = [
         sentence
@@ -3929,12 +4018,14 @@ def _about_feed_section(artifact: dict[str, Any], history: list[dict[str, Any]] 
         )
         if sentence
     ]
-    if not sentences:
+    if not sentences and not rider_line:
         return ""
+    rider = f'<p class="rider-line">{esc(_RIDER_LINE)}</p>' if rider_line else ""
+    lede = f'<p class="page-lede">{" ".join(sentences)}</p>' if sentences else ""
     return (
         '<section aria-labelledby="about-feed-h" class="about-feed">'
         '<h2 class="section-title" id="about-feed-h">About this feed</h2>'
-        f'<p class="page-lede">{" ".join(sentences)}</p></section>'
+        f"{rider}{lede}</section>"
     )
 
 
@@ -4223,53 +4314,40 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         badge_state(agency_name, artifact, (now or dt.datetime.now(dt.UTC)).date()),
     )
     _citation_block = _citation_section(artifact, agency_id, agency_name)
-    action_links = []
-    if _vendor_block:
-        action_links.append(
-            '<a class="report-action report-action-primary" href="#send-vendor">Send fixes</a>'
-        )
-    action_links.extend(
-        [
-            f'<a class="report-action" href="/agency/{esc(agency_id)}/board/">Board one-pager</a>',
-            f'<a class="report-action" href="/agency/{esc(agency_id)}/brief/">Call brief</a>',
-            f'<a class="report-action" href="/compare/?a={esc(agency_id)}">Compare</a>',
-            # Carries the agency so the alerts form opens with it already
-            # chosen, instead of making the reader search for the feed they
-            # were just looking at.
-            f'<a class="report-action" href="/subscribe.html?agency={esc(agency_id)}">'
-            "Watch this feed</a>",
-            f'<a class="report-action" href="/claim/?agency={esc(agency_id)}">Correct listing</a>',
-        ]
-    )
-    if has_fixlog:
-        action_links.append(
-            f'<a class="report-action" href="/agency/{esc(agency_id)}/fixes/">Clearance log</a>'
-        )
-    actions = (
-        '<nav class="report-actions" aria-label="Scorecard actions">'
-        + "".join(action_links)
-        + "</nav>"
-    )
-    report_stops = [
-        ("Overview", "#report-overview"),
-        ("Fixes", "#fixes-h"),
+    # Watch this feed is the page's one primary action (_watch_line, under
+    # the answer block). The rest are text links in one row (ADR 0085): the
+    # vendor request has its own section after the fixes, so it needs no
+    # button up here.
+    action_links = [
+        f'<a href="/claim/?agency={esc(agency_id)}">Correct this listing</a>',
+        f'<a href="/agency/{esc(agency_id)}/board/">Board one-pager</a>',
+        f'<a href="/agency/{esc(agency_id)}/brief/">Call brief</a>',
+        f'<a href="/compare/?a={esc(agency_id)}">Compare</a>',
     ]
+    if has_fixlog:
+        action_links.append(f'<a href="/agency/{esc(agency_id)}/fixes/">Clearance log</a>')
+    actions = (
+        '<nav class="report-actions" aria-label="More for this agency"><ul>'
+        + "".join(f"<li>{link}</li>" for link in action_links)
+        + "</ul></nav>"
+    )
+    report_stops = [("Fixes", "#fixes-h")]
     if artifact.get("ferry_profile"):
         report_stops.append(("Ferry profile", "#ferry-profile-h"))
-    report_stops.append(("Scores", "#cats-h"))
+    report_stops.extend([("About this feed", "#about-feed-h"), ("Scores", "#cats-h")])
     if map_section:
         report_stops.append(("Routes", "#map-h"))
     report_stops.extend(
         [
             ("History", "#trend-h"),
             ("Evidence", "#findings-h"),
+            ("How we measured this", "#measured-h"),
             ("Standards", "#standards-h"),
         ]
     )
     report_route = (
-        '<nav class="report-route" aria-label="On this scorecard">'
-        '<p class="report-route-kicker">Report route</p>'
-        '<p class="report-route-title">Sections on this page</p><ol>'
+        '<nav class="report-route" aria-labelledby="report-route-h">'
+        '<p class="report-route-title" id="report-route-h">On this page</p><ol>'
         + "".join(
             f'<li><a href="{href}"><span aria-hidden="true"></span>{label}</a></li>'
             for label, href in report_stops
@@ -4283,6 +4361,12 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         if (_outreach_block or _vendor_block or _embed_block or _citation_block)
         else ""
     )
+    source_url = _public_source_url(artifact, source_withheld)
+    feed_card = _feed_file_card(
+        source_url, _mdb_feed_page((dir_record or {}).get("mdb_id")), liveness, artifact
+    )
+    if feed_card:
+        _copy_script += _COPY_URL_SCRIPT
     # A pointer to the free group view this agency sits in, for the reader who
     # supports several. It names a rollup, never the paid tier: the program
     # panel lives on that rollup page (ADR 0064, which moved it off this page),
@@ -4295,28 +4379,40 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         css_class="fineprint",
         tail="the same scorecards for every feed we track in that group, on one free page.",
     )
-    crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (agency_name, None)])
+    # Home > Agencies > the place page > this agency. The place level appears
+    # only when that state or country page was rendered (_portfolio_route), so
+    # the trail never links a page that does not exist.
+    place = _portfolio_route(dir_record, artifact, program_ids)
+    crumb = _breadcrumb(
+        [
+            ("Home", "/"),
+            ("Agencies", "/agencies/"),
+            *([(place[1], f"/program/{place[0]}/")] if place else []),
+            (agency_name, None),
+        ]
+    )
+    # How the grade was measured: the liveness, run and confidence notes and
+    # the disclaimer, moved below the evidence with their text unchanged
+    # (ADR 0085). The partial-grade qualifier and the one-line provenance stay
+    # in the grade card (ADR 0030).
+    measured_notes = (
+        f"{_liveness_note(liveness, now)}{_not_fetched_note(not_fetched_reason, artifact)}"
+        f"{confidence_block}"
+    )
     body = f"""    <div class="report-head">
+    {_dead_feed_note(agency_id, liveness, artifact)}
     {crumb}
-    <a class="backlink" href="/agencies/">&larr; All agencies</a>
-    {actions}{_dead_feed_note(agency_id, liveness, artifact)}
+    <div class="answer-block">
     {_board_hero(agency_name, agency_id, artifact, history or [], dir_record)}
+    {feed_card}
+    </div>
     {_watch_line(agency_id)}
-    {_source_feed_line(_public_source_url(artifact, source_withheld), _mdb_feed_page((dir_record or {}).get("mdb_id")))}
+    {actions}
     {op_html}
     {_anomaly_note(history)}
-    <p class="disclaimer">A data-quality and completeness lens to help an agency improve its
-      <abbr title="General Transit Feed Specification">GTFS</abbr> feed. Not an official compliance
-      determination from any transit program.
-      <a href="/how-to-read/">New to this? How to read your scorecard.</a>
-      <a href="/app/#/agency/{esc(agency_id)}">Interactive view of this scorecard.</a>
-      {_rubric_version_html(artifact)}, validator {esc(artifact.get("validator_version", "—"))}.</p>
     </div>
     {report_route}
-    <div class="report-content">
-    {_liveness_note(liveness, now)}{_not_fetched_note(not_fetched_reason, artifact)}{confidence_block}{license_notice_block}
-    {_about_feed_section(artifact, history)}
-    {_route_rule()}
+    <div class="report-content">{license_notice_block}
     <section aria-labelledby="fixes-h">
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
       {fixes_html}
@@ -4326,6 +4422,8 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     {_rider_impact_section(artifact)}{ferry_profile_block}
     {_vendor_block}
     {_outreach_block}
+    {_route_rule()}
+    {_about_feed_section(artifact, history, rider_line=True)}
     {_route_rule()}
     <section aria-labelledby="cats-h">
       <h2 class="section-title" id="cats-h">Score by category</h2>
@@ -4343,6 +4441,17 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     </section>
     {_recommendations_section(artifact)}
     {_autofix_section(artifact)}
+    {_route_rule()}
+    <section aria-labelledby="measured-h" class="measured">
+      <h2 class="section-title" id="measured-h">How we measured this</h2>
+      {measured_notes}
+      <p class="disclaimer">A data-quality and completeness lens to help an agency improve its
+      <abbr title="General Transit Feed Specification">GTFS</abbr> feed. Not an official compliance
+      determination from any transit program.
+      <a href="/how-to-read/">New to this? How to read your scorecard.</a>
+      <a href="/app/#/agency/{esc(agency_id)}">Interactive view of this scorecard.</a>
+      {_rubric_version_html(artifact)}, validator {esc(artifact.get("validator_version", "—"))}.</p>
+    </section>
     {_route_rule()}
     {_ntd_section(artifact)}
     {_canada_equity_section(artifact)}
@@ -4498,29 +4607,6 @@ def _mdb_feed_page(mdb_id: object) -> str | None:
     if not _MDB_FEED_ID_RE.fullmatch(normalized):
         return None
     return f"https://mobilitydatabase.org/feeds/gtfs/{normalized}"
-
-
-def _source_feed_line(source_url: str | None, mdb_page: str | None) -> str:
-    """The visible "Source feed" line under the hero, or nothing.
-
-    The line exists for the reader who searched for an agency's GTFS file: it
-    links the publisher's own download and, when the record carries a Mobility
-    Database id, that feed's version history there. It links; the scorecard
-    never hosts a copy. No public source URL renders nothing at all, including
-    the Mobility Database link, so a page never shows a label with no link.
-    """
-    if not source_url:
-        return ""
-    history = (
-        ' <span aria-hidden="true">&middot;</span> '
-        f'<a href="{esc(mdb_page)}">Version history on the Mobility Database</a>'
-        if mdb_page
-        else ""
-    )
-    return (
-        f'<p class="feed-source">Source feed: <a href="{esc(source_url)}">'
-        f"{esc(source_url)}</a>{history}</p>"
-    )
 
 
 def _withheld_source_ids(root: Path) -> frozenset[str] | None:
