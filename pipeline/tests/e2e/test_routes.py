@@ -1285,12 +1285,15 @@ def test_feature_nav_and_translation_language_deep_link(page: Page, app_url: str
     _serve_directory(page, directory)
     page.goto(f"{app_url}#/")
 
-    page.get_by_role("link", name="Feed features").click()
+    page.locator('.site-footer a[href="/app/#/?view=features"]').click()
     page.wait_for_url(f"{app_url}#/?view=features")
     expect(page.locator("#feature-finder")).to_be_focused()
-    # "true", the current item in a set: the two app stops are views of one
-    # page, so neither is ever "page" (the current page in a set of pages).
-    expect(page.get_by_role("link", name="Feed features")).to_have_attribute("aria-current", "true")
+    # "true", the current item in a set: the feature finder sits in the Data
+    # section, and the app is never "page" for a hub it only belongs to.
+    expect(page.locator('.nav-stops a[href="/data/"]')).to_have_attribute("aria-current", "true")
+    expect(page.locator('.nav-stops a[href="/agencies/"]')).not_to_have_attribute(
+        "aria-current", "true"
+    )
 
     page.locator('input[value="translations"]').check()
     page.locator("#translation-language").select_option("fr")
@@ -1334,20 +1337,22 @@ def test_service_mode_filter_is_deep_linkable_and_exports_evidence(
     assert '"bus|ferry|rail"' in csv
 
 
-def test_feature_nav_is_available_from_mobile_menu(page: Page, app_url: str) -> None:
+def test_feature_finder_is_reachable_on_a_phone_and_marks_the_data_stop(
+    page: Page, app_url: str
+) -> None:
+    """Feed features left the primary bar for the footer's Data group (the
+    2026-11 IA). On a phone the footer link still opens the finder, and the
+    menu's Data stop says which section the reader is in."""
     _serve_directory(page, _feature_directory())
     page.set_viewport_size({"width": 390, "height": 844})
     page.goto(f"{app_url}#/")
 
-    page.get_by_role("button", name="Menu").click()
-    page.get_by_role("link", name="Feed features").click()
+    page.locator('.site-footer a[href="/app/#/?view=features"]').click()
 
     page.wait_for_url(f"{app_url}#/?view=features")
     expect(page.locator("#feature-finder")).to_be_focused()
-    expect(page.get_by_role("button", name="Menu")).to_have_attribute("aria-expanded", "false")
-    expect(page.locator('.nav-stops a[href="/app/#/?view=features"]')).to_have_attribute(
-        "aria-current", "true"
-    )
+    page.get_by_role("button", name="Menu").click()
+    expect(page.locator('.nav-stops a[href="/data/"]')).to_have_attribute("aria-current", "true")
 
 
 def test_cohort_agency_name_cannot_inject_attributes(page: Page, app_url: str) -> None:

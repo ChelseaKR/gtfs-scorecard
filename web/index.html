@@ -215,7 +215,7 @@
      tests/test_landing_focus_ring.py holds this list to the bands. */
   .home-header :focus-visible,
   .workflow-run :focus-visible,
-  footer :focus-visible { outline-color: var(--focus-dark); }
+  .site-footer :focus-visible { outline-color: var(--focus-dark); }
   .home-header .theme-menu :focus-visible { outline-color: var(--focus-page); }
   .action-primary:focus-visible,
   .skip:focus-visible { outline-color: var(--focus-on-amber); }
@@ -826,13 +826,25 @@
   .movement p { margin: 0.7rem 0 0; color: #d3decf; }
   .movement .action { min-width: 13rem; border-color: var(--on-pine); color: var(--on-pine); }
 
-  footer { background: var(--pine); color: var(--on-pine); padding: 3rem 0 2rem; }
-  .footer-grid { display: grid; grid-template-columns: 1.2fr repeat(4, 1fr); gap: 2rem; }
-  footer h2 { margin: 0 0 0.7rem; font-family: var(--display); font-size: 1.05rem; }
-  footer p { margin: 0; color: #cfdcd2; font-size: 0.9rem; }
-  footer nav { display: grid; align-content: start; }
-  footer a { min-height: 44px; display: inline-flex; align-items: center; color: var(--on-pine); }
-  .footer-note { max-width: 38ch; }
+  /* The shared site footer (site_shell.FOOTER_HTML, written here by
+     sync_static_navs), styled inline like the rest of this page so the
+     first paint still loads no stylesheet. Same rules as web/src/styles.css,
+     on this page's tokens. */
+  .site-footer { border-top: 3px solid var(--amber); background: var(--pine); padding-block: 2rem 2.4rem; font-size: 0.9rem; color: #cfdcd2; }
+  .site-footer a { color: var(--on-pine); }
+  .site-footer > .wrap { padding-inline: 0; }
+  .footer-intro { display: grid; grid-template-columns: auto minmax(0, 32rem); align-items: baseline; justify-content: space-between; gap: 1rem 2rem; padding-bottom: 1.35rem; margin-bottom: 1.35rem; border-bottom: 1px solid rgb(244 246 240 / 0.2); }
+  .footer-intro p { margin: 0; color: #cfdcd2; }
+  .footer-brand { font-family: var(--display); font-size: 1.2rem; font-weight: 900; text-decoration: none; }
+  .footer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem clamp(1.4rem, 3vw, 3rem); }
+  .footer-grid section { min-width: 0; }
+  .footer-grid h2 { margin: 0 0 0.65rem; color: var(--on-pine); font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; }
+  .footer-grid ul { list-style: none; margin: 0; padding: 0; }
+  .footer-grid li { margin: 0; }
+  .footer-grid .footer-subhead { margin-top: 0.55rem; color: #cfdcd2; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .footer-grid .footer-aside { margin: 0.7rem 0 0; color: #cfdcd2; font-size: 0.78rem; line-height: 1.45; }
+  .footer-grid a { display: inline-flex; align-items: center; width: fit-content; min-height: 44px; padding-block: 0.25rem; line-height: 1.25; }
+  @media (min-width: 64rem) { .footer-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 
   @media (max-width: 1120px) {
     .home-menu-toggle { display: inline-flex; margin-left: auto; }
@@ -893,7 +905,6 @@
     .note-row dd { padding-top: 0.35rem; padding-left: 0.8rem; }
     .movement .wrap { grid-template-columns: 1fr; gap: 1rem; }
     .movement .action { width: min(100%, 22rem); }
-    .footer-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
   @media (max-width: 720px) {
@@ -916,7 +927,8 @@
     .score-number { font-size: 2.4rem; }
     .score-of { margin: 0; }
     .scope-list { grid-template-columns: 1fr; }
-    .footer-grid { grid-template-columns: 1fr; }
+    .footer-intro { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
   @media (max-width: 430px) {
@@ -1647,14 +1659,7 @@
       <span class="menu-glyph" aria-hidden="true"></span><span>Menu</span>
     </button>
     <div class="topbar-controls" id="home-menu">
-      <nav aria-label="Primary">
-        <a class="navcta" href="/agencies/">Find an agency</a>
-        <a href="/pulse/">Coverage</a>
-        <a href="/app/#/?view=features">Feed features</a>
-        <a href="/tools/">Tools</a>
-        <a href="/how-to-read/">How it works</a>
-        <a href="/about/">About</a>
-      </nav>
+      <nav aria-label="Primary"><a class="navcta" href="/agencies/">Find an agency</a><a href="/subscribe.html">Feed alerts</a><a href="/fix/">Fix a feed</a><a href="/program/">For programs</a><a href="/data/">Data</a><a href="/about/">About</a></nav>
       <div id="theme-control"></div>
     </div>
   </div>
@@ -2010,15 +2015,82 @@
   </section>
 </main>
 
-<footer>
-  <div class="wrap footer-grid">
-    <div class="footer-note"><h2>GTFS Scorecard</h2><p>An open-source data-quality lens for small transit agencies, piloted with Unitrans and Yolobus in Yolo County. It is not an official compliance determination.</p></div>
-    <nav aria-label="Use the scorecard"><h2>Use</h2><a href="/app/">All scorecards</a><a href="/tools/">Feed tools</a><a href="/data/">Open data</a><a href="/status/">Pipeline status</a></nav>
-    <nav aria-label="Explore the project"><h2>Explore</h2><a href="/pulse/">Coverage overview</a><a href="/problems/">Common problems</a><a href="/focus/">Focus areas</a><a href="/how-to-read/">How to read a scorecard</a></nav>
-    <nav aria-label="For programs"><h2>For programs</h2><a href="/program/all/">Program rollups</a><a href="/bundle/">Board report bundle (paid)</a></nav>
-    <nav aria-label="Project information"><h2>Project</h2><a href="/about/">About</a><a href="/about/#privacy">Privacy</a><a href="/about/#privacy-opt-out" data-analytics-toggle data-label-on="Opt out of analytics" data-label-off="Opt back in to analytics" data-status-off="Analytics is off on this device." data-status-on="Analytics comes back on from the next page you open.">Opt out of analytics</a><span class="visually-hidden" role="status" data-analytics-status></span><a href="/support/">Get help or sponsor</a><a href="https://github.com/ChelseaKR/gtfs-scorecard" target="_blank" rel="noopener">Source<span class="visually-hidden"> (opens in a new tab)</span></a><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/accessibility.md" target="_blank" rel="noopener">Accessibility<span class="visually-hidden"> (opens in a new tab)</span></a><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md" target="_blank" rel="noopener">Listing policy<span class="visually-hidden"> (opens in a new tab)</span></a><a href="https://chelseakr.com" target="_blank" rel="noopener">Built by Chelsea Kelly-Reif<span class="visually-hidden"> (opens in a new tab)</span></a></nav>
-  </div>
-</footer>
+<footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-intro">
+        <a class="footer-brand" href="/">GTFS Scorecard</a>
+        <p>An open-source data quality tool for small and rural transit agencies.</p>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <section aria-labelledby="footer-find-h">
+          <h2 id="footer-find-h">Find an agency</h2>
+          <ul>
+            <li><a href="/agencies/">Agency directory</a></li>
+            <li><a href="/program/">By state and country</a></li>
+            <li><a href="/app/">Search and filter</a></li>
+            <li><a href="/map/">Agency map</a></li>
+            <li><a href="/routes/">All routes</a></li>
+            <li><a href="/compare/">Compare two agencies</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-act-h">
+          <h2 id="footer-act-h">Act on a feed</h2>
+          <ul>
+            <li><a href="/subscribe.html">Feed alerts (free)</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
+            <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
+            <li><a href="/check/">Check before publishing</a></li>
+            <li><a href="/try.html">Request a one-off score</a></li>
+            <li><a href="/procurement/">Procurement language</a></li>
+            <li><a href="/tools/">Feed tools</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-programs-h">
+          <h2 id="footer-programs-h">For programs</h2>
+          <ul>
+            <li><a href="/program/">Program pages</a></li>
+            <li><a href="/program/all/">Every agency in one view</a></li>
+            <li><a href="/bundle/">Board report bundle (paid)</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
+          </ul>
+          <p class="footer-aside">Scoring an agency is free. A purchase buys no influence over grades, methodology, or which agencies are listed.</p>
+        </section>
+        <section aria-labelledby="footer-data-h">
+          <h2 id="footer-data-h">Data</h2>
+          <ul>
+            <li><a href="/data/">Open data</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/app/#/?view=features">Feed features</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+          <li class="footer-subhead">United States tools</li>
+          <li><a href="/ntd/">U.S. NTD readiness</a></li>
+          <li><a href="/equity/">U.S. equity</a></li>
+          </ul>
+        </section>
+        <section aria-labelledby="footer-about-h">
+          <h2 id="footer-about-h">About</h2>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/how-to-read/">How to read a scorecard</a></li>
+            <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/status/">Status</a></li>
+            <li><a href="/crosswalk/">Standards crosswalk</a></li>
+            <li><a href="/press/">For reporters</a></li>
+            <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="/about/#privacy">Privacy</a></li>
+            <li><a href="/about/#privacy-opt-out" data-analytics-toggle data-label-on="Opt out of analytics" data-label-off="Opt back in to analytics" data-status-off="Analytics is off on this device." data-status-on="Analytics comes back on from the next page you open.">Opt out of analytics</a><span class="visually-hidden" role="status" data-analytics-status></span></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
+            <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
+          </ul>
+        </section>
+      </nav>
+    </div>
+  </footer>
 
 <script>
   (function () {

@@ -249,7 +249,9 @@ def test_negative_control_an_agency_scorecard_cannot_carry_the_panel() -> None:
     head = _above_footer(_render_agency(_artifact(), _history()))
     assert "program-offer" not in head
     assert "/bundle/" not in head
-    assert "For programs" not in head
+    # The task nav's free "For programs" stop (the 2026-11 IA) sits in the
+    # shared header; the page itself still names no program stop.
+    assert "For programs" not in head.partition("<main")[2]
 
 
 def test_a_printed_rollup_drops_the_panel() -> None:

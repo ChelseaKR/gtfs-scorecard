@@ -19,8 +19,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 LANDING = ROOT / "web" / "index.html"
 
-# Bands that contain links or buttons. `footer` is the page footer.
-BANDS = (".home-header", ".workflow-run", ".movement", "footer")
+# Bands that contain links or buttons. `.site-footer` is the shared footer the
+# home page has carried since the 2026-11 IA.
+BANDS = (".home-header", ".workflow-run", ".movement", ".site-footer")
 DARK_BACKGROUNDS = {"var(--pine)"}
 
 
