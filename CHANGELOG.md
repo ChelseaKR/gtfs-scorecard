@@ -27,6 +27,40 @@ the declared public surface).
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-21
+
+Everything merged since v1.5.1 (2026-10-09). It is a minor release, not a
+patch, because the declared public surface (README "Versioning": the JSON
+schema, the Action's inputs and the CLI) grew. The entries below keep their
+wording; in short:
+
+- **Breaking for `scorecard canary` only:** `--candidate-sha256` is now
+  required, so a call without it fails. `validator-canary.yml` has the
+  matching required input (ADR 0079). No other command loses or changes an
+  argument.
+- **Artifact schema 1.19 to 1.20 and rubric 1.4 to 1.5.** A grade whose
+  freshness was not measured is marked partial (`overall.grade_qualifier`);
+  the change is additive. Padded CSV headers no longer hide columns, so some
+  grades change. Nothing is graded from a Mobility Database mirror copy any
+  more (ADR 0075).
+- **The Action.** A feed it refuses no longer reports an earlier step's grade,
+  score, days-to-expiry or job summary (#601). Its feed download sends
+  `gtfs-scorecard/<version> (+https://gtfsscorecard.org)` as the User-Agent
+  and reads robots.txt first, so a feed whose host disallows it, or answers
+  `/robots.txt` with an error, a redirect or an HTML page, is not fetched
+  (ADR 0070). The validator jar is checked against a pinned SHA-256 before it
+  runs. Its inputs and outputs are unchanged.
+- **New CLI subcommands:** `scorecard rescore-history` (earlier-rubric records
+  rescored offline, published as their own series) and `scorecard
+  backfill-index-history` (restores index rows from the stored records).
+  `scorecard bundle-email --send` exits 1 when SES refuses the email.
+- **Security:** published feed URLs no longer carry credentials, input
+  hardening at four boundaries (ADR 0079), and container CVE fixes.
+- **The site:** free alerts on agency pages, agency search as you type, a
+  WCAG 2.2 A and AA conformance report and its fixes, a site 404 page, NTD
+  Report Year 2026 state pages, invoice and purchase-order buying, and search
+  and performance work.
+
 ### Changed
 
 - **Search titles and descriptions for three agency pages.** PID Prague and GO
@@ -3361,7 +3395,8 @@ from `git log` against current history. As of this tag, the repo shipped:
 - Realtime drift/plausibility checks, embeddable grade badges, and rollup
   views across agency cohorts.
 
-[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.3.0...v1.4.0
