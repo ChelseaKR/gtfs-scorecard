@@ -45,6 +45,12 @@ the declared public surface).
   `alert_signup_confirmed` on that return, with no address and no link token.
   Neither measurement tool loads in a browser that reports
   `navigator.webdriver`. Needs `infra/alerts` re-applied. ADR 0083.
+- **Agency pages offer the free alert under the grade.** One line, "Watch
+  this feed for free", opens the alerts form with the agency chosen. A page
+  whose feed address failed at the last check (HTTP 4xx) now opens with one
+  sentence that says so, links the Mobility Database's newest saved copy when
+  the grade came from one, and points to the correction form for the new
+  address. ADR 0084 (proposed).
 - **The home page search opens the agency's page.** Typing in "Find a
   published feed" now suggests agencies as you type. Choosing one, or pressing
   Enter on a name only one agency has, goes straight to `/agency/<id>/`

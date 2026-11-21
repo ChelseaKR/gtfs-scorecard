@@ -1598,6 +1598,11 @@ main:focus { outline: none; }
    Mobility Database history.
    A feed URL has no spaces to break at, so it wraps anywhere at 320px. */
 .feed-source { margin: 0 0 0.6rem; font-size: 0.9rem; overflow-wrap: anywhere; }
+/* Agency page: the free alert under the grade, and the note shown when the
+   feed address on file failed (render_site._watch_line, _dead_feed_note). */
+.watch-line { margin: 0 0 0.6rem; font-size: 0.95rem; }
+.feed-help { margin: 0.6rem 0; padding: 0.6rem 0.8rem; max-width: 42rem;
+  border: 1px solid var(--line); border-inline-start: 4px solid var(--warning); }
 .legend { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: 0.6rem; max-width: 40rem; }
 .legend-row { display: grid; grid-template-columns: 2.2rem 1fr; gap: 0.7rem; align-items: start; }
 
