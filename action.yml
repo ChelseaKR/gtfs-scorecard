@@ -137,11 +137,13 @@ runs:
       run: |
         set -euo pipefail
         result_json="${JSON_OUT:-${RUNNER_TEMP}/gtfs-scorecard-result.json}"
-        # The evidence-packet retest reads the result this run writes. A result
-        # left at the same path by an earlier step in the job must not outlive a
-        # run that could not score the feed, or the packet would be judged
-        # against another run's bytes.
-        if [[ -n "$EVIDENCE_PACKET" ]]; then rm -f -- "$result_json"; fi
+        # Everything below reads the result this run writes: the outputs, the
+        # job summary, the baseline diff and the evidence-packet retest. A
+        # result left at the same path by an earlier step in the job must not
+        # outlive a run that could not score the feed. The default path is the
+        # same for every step in a job, so without this a refused feed was
+        # given the previous feed's grade, score, days-to-expiry and summary.
+        rm -f -- "$result_json"
         args=("$FEED_URL")
         args+=(--country "$FEED_COUNTRY")
         if [[ -n "$FEED_NAME" ]]; then args+=(--name "$FEED_NAME"); fi

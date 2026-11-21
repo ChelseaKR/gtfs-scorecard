@@ -97,7 +97,9 @@ gate: an archive the scorer could read no schedule data out of — no stops and
 no trips — is refused rather than graded, exactly as a response body that is not
 a zip is. The step fails with `could not score <url>: ...` and `passed` is
 `false`. Before that change such a feed was graded and the default
-configuration reported `passed=true` for it.
+configuration reported `passed=true` for it. A refused feed leaves `grade`,
+`score` and `days-to-expiry` blank and writes no job summary, because there is
+no scorecard to report.
 
 **Added in `v1.5.0`.** A workflow pinned to `@v1.4.0` grades such a feed
 instead. See [Which ref to pin](#which-ref-to-pin).
@@ -107,7 +109,12 @@ instead. See [Which ref to pin](#which-ref-to-pin).
 The action exposes `grade`, `score`, `days-to-expiry`, `passed`,
 `result-json`, `comparable`, `regressed`, `sarif`, `retest-outcome`, and
 `retest-json`. The complete JSON is written before thresholds are applied, so
-later steps can upload or inspect it even when the gate fails. `comparable` and
+later steps can upload or inspect it even when the gate fails. A result already
+at that path, from an earlier step in the same job, is removed before the feed
+is scored. Without `json` every step in a job uses the same temporary path, so
+this is what keeps a feed that could not be scored from reporting the previous
+feed's grade. (On `main`, not yet in a release: `v1.5.1` removes it only when
+`evidence-packet` is set.) `comparable` and
 `regressed` are blank unless you set `baseline`; `sarif` is blank unless you set
 `sarif`; `retest-outcome` and `retest-json` are blank unless you set
 `evidence-packet`.
@@ -211,9 +218,9 @@ still present.
   not record it, and a result scored under a different country is refused.
 - **The retest runs even when a threshold fails,** because the feed was still
   scored. When the feed could not be scored there is nothing to retest, and the
-  step says so rather than skipping the check. With `evidence-packet` set, a
-  result already at the `json` path from an earlier step is removed before the
-  feed is scored, so the packet is never judged against another run's result.
+  step says so rather than skipping the check. A result already at the `json`
+  path from an earlier step is removed before the feed is scored, so the packet
+  is never judged against another run's result.
 - **The job summary includes the retest record.** `retest-json` is the path to
   the record as JSON, for a later step to upload.
 

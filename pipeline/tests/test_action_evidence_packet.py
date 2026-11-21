@@ -593,6 +593,75 @@ def test_a_feed_that_could_not_be_scored_is_not_retested_against_an_earlier_resu
     assert "GTFS feed could not be scored" in transcript["stdout"]
 
 
+# --- unset, a refused feed never reports an earlier step's result ----------------------
+#
+# Not about the packet, but it lives here because this is the harness that runs
+# the composite step for real, and the removal it pins used to happen only when
+# `evidence-packet` was set. Reported downstream by
+# ChelseaKR/gtfs-scorecard-action-smoke#11: a feed the scorer refuses must
+# publish no grade, score or day count. The scorer stopped grading such a feed
+# in v1.5.0, but the step still read whatever sat at the result path, and with
+# `json` unset that path is the same for every step in the job.
+
+#: The default result path, and one a workflow sets.
+RESULT_PATHS = [
+    pytest.param({}, "runner/gtfs-scorecard-result.json", id="the default json path"),
+    pytest.param({"json": "out/scorecard.json"}, "out/scorecard.json", id="a json path"),
+]
+
+
+def _refused_after_an_earlier_step(
+    tmp_path: Path, inputs: dict[str, str], stale: str, *, script: str | None = None
+) -> dict[str, Any]:
+    """The second of two gate steps in one job: the first scored a feed, this one is refused."""
+    return run_step(
+        tmp_path,
+        {"feed-url": "https://example.org/gtfs/empty.zip", **inputs},
+        try_rc=1,
+        try_writes=False,
+        script=script,
+        before={stale: json.dumps(scored_artifact())},
+    )
+
+
+@pytest.mark.parametrize(("inputs", "stale"), RESULT_PATHS)
+def test_a_refused_feed_never_reports_an_earlier_steps_result(
+    tmp_path: Path, inputs: dict[str, str], stale: str
+) -> None:
+    transcript = _refused_after_an_earlier_step(tmp_path, inputs, stale)
+
+    assert transcript["exit_code"] == 1
+    outputs = transcript["github_output"]
+    assert "grade=\n" in outputs, "the earlier feed's letter was reported for this one"
+    assert "score=\n" in outputs
+    assert "days-to-expiry=\n" in outputs
+    assert "passed=false\n" in outputs
+    assert transcript["step_summary"] is None, "the earlier feed's scorecard was summarized"
+    assert "GTFS feed could not be scored" in transcript["stdout"]
+    assert "did not pass: grade" not in transcript["stdout"], (
+        "a refusal is not a threshold failure and must not be reported as one"
+    )
+    stale_name = stale.removeprefix("runner/")
+    listing = transcript["runner_temp_files" if stale.startswith("runner/") else "workspace_files"]
+    assert stale_name not in listing, "the earlier result outlived a run that scored nothing"
+
+
+def test_the_refused_feed_check_catches_a_conditional_removal(tmp_path: Path) -> None:
+    """Negative control: the removal as it was in v1.5.1, gated on the packet."""
+    script = _sabotage(
+        gate_step()["run"],
+        'rm -f -- "$result_json"\nargs=',
+        'if [[ -n "$EVIDENCE_PACKET" ]]; then rm -f -- "$result_json"; fi\nargs=',
+    )
+    transcript = _refused_after_an_earlier_step(
+        tmp_path, {}, "runner/gtfs-scorecard-result.json", script=script
+    )
+
+    assert "grade=B\n" in transcript["github_output"]
+    assert "days-to-expiry=120\n" in transcript["github_output"]
+    assert transcript["step_summary"] is not None
+
+
 def test_a_threshold_failure_is_still_retested(tmp_path: Path) -> None:
     transcript = run_step(
         tmp_path, _with_packet(**{"min-grade": "A"}), try_rc=1, before={"packet.json": _packet()}
