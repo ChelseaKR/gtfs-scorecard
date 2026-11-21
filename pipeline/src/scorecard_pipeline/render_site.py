@@ -4415,10 +4415,12 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     {crumb}
     <div class="answer-block">
     {_board_hero(agency_name, agency_id, artifact, history or [], dir_record)}
+    <div class="answer-side">
     {feed_card}
-    </div>
     {_watch_line(agency_id)}
     {actions}
+    </div>
+    </div>
     {op_html}
     {_anomaly_note(history)}
     </div>

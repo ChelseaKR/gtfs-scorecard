@@ -1617,6 +1617,11 @@ main:focus { outline: none; }
    stack on a phone and sit side by side once the report has room. Source
    order is the reading order either way. */
 .answer-block { display: grid; gap: 1rem; margin: 0 0 1rem; }
+/* Beside the grade on a wide screen: the feed file, Watch this feed and the
+   other links, so all of them sit above the fold with the grade. */
+.answer-side { display: grid; gap: 0.6rem; align-content: start; min-width: 0; }
+.answer-side .watch-line,
+.answer-side .report-actions { margin: 0; }
 /* Under the grade on the dark board: fixed light text, as the board's other
    text is, and the signal-amber focus ring the dark chrome uses. */
 .grade-explainer { margin: 1.1rem 0 0; max-width: 40rem; font-size: 0.9rem; color: #f4f6f0; }
@@ -1626,7 +1631,7 @@ main:focus { outline: none; }
 .answer-block > * { min-width: 0; }
 .answer-block .board-hero { margin: 0; }
 @media (min-width: 64rem) {
-  .answer-block { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: stretch; }
+  .answer-block { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; }
   .answer-block .board-title { font-size: clamp(2rem, 3.4vw, 2.6rem); }
 }
 .feed-card {

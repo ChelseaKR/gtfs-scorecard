@@ -325,3 +325,19 @@ def test_the_grade_card_link_is_legible_on_the_dark_board() -> None:
     css = (_REPO / "web" / "src" / "styles.css").read_text()
     assert ".grade-explainer a { color: #f4f6f0;" in css
     assert ".grade-explainer a:focus-visible { outline-color: var(--amber); }" in css
+
+
+def test_watch_and_the_links_sit_beside_the_grade_not_under_it() -> None:
+    """On a wide screen the side column holds the feed file, Watch this feed and
+    the other links, so they are above the fold with the grade (ADR 0085)."""
+    html = _render_agency(_artifact(), dir_record=_record())
+    side = re.search(r'<div class="answer-side">.*?</nav>\s*</div>\s*</div>', html, re.S)
+    assert side is not None
+    for marker in (
+        '<section class="feed-card"',
+        '<p class="watch-line">',
+        'class="report-actions"',
+    ):
+        assert marker in side.group(0), marker
+    css = (_REPO / "web" / "src" / "styles.css").read_text()
+    assert ".answer-side {" in css
