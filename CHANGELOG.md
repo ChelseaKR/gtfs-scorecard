@@ -183,6 +183,24 @@ the declared public surface).
 
 ### Fixed
 
+- **The Action no longer reports an earlier step's grade for a feed it could
+  not score.** Since `v1.5.0` the scorer refuses an archive with no stops and
+  no trips, and on a fresh runner the step then leaves `grade`, `score` and
+  `days-to-expiry` blank with `passed=false`, which is what
+  ChelseaKR/gtfs-scorecard-action-smoke#11 asks for (that pull request ran
+  against `v1.4.0`, which predates the refusal). The outputs and the job
+  summary are read from the result file, though, and the step removed a file
+  left at that path by an earlier step only when `evidence-packet` was set.
+  With `json` unset every step in a job writes to the same temporary path, so
+  a job that checked two feeds and got a refusal on the second published the
+  first feed's grade, score and days-to-expiry for it, wrote the first feed's
+  summary, and annotated it as "GTFS gate did not pass: grade F, score 33.7"
+  instead of "could not be scored". Replayed against the `v1.5.1` code with
+  `unitrans_trimmed.zip` then the smoke repository's README-only zip. The
+  step now removes that file before every run. A threshold failure still
+  publishes its own result, and the runs that write no stale file are
+  unchanged, byte for byte, against the recorded transcripts.
+
 - **The home page is back under its Largest Contentful Paint budget.** The
   agency picker script (`web/src/agency-combobox.js`) was a deferred script in
   the head of the home page, so it was fetched before the first paint and the
