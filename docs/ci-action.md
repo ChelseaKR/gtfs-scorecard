@@ -28,7 +28,7 @@ jobs:
   gtfs-quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: ChelseaKR/gtfs-scorecard@v1.5.1
+      - uses: ChelseaKR/gtfs-scorecard@v1.6.1
         with:
           feed-url: https://example.org/gtfs/feed.zip
           name: Example Transit
@@ -39,7 +39,7 @@ jobs:
 
 ### Which ref to pin
 
-Name a full release tag, as the example does, or a commit SHA. `v1.5.1` is the
+Name a full release tag, as the example does, or a commit SHA. `v1.6.1` is the
 newest published Action release, so a workflow that pins it runs a build whose
 behavior is written down on this page and cannot change underneath it.
 
@@ -49,8 +49,8 @@ but it is a single mutable pointer: it moves to the newest `v1.x.y` on release
 day, so a workflow naming it changes what it runs with no commit, no review and
 no diff on your side. On 2026-10-09 it moved from `v1.4.0` to `v1.5.0`, a jump
 of 821 commits made silently in every workflow that names it. On 2026-10-11 it
-moved again, to `v1.5.1`, and it moves with each release. Pin a release and
-upgrade on purpose.
+moved again, to `v1.5.1`, and on 2026-11-21 to `v1.6.1`, and it moves with each
+release. Pin a release and upgrade on purpose.
 
 **What `v1.6.1` changes from `v1.5.1`.** `v1.6.1` re-releases `v1.6.0`'s code
 unchanged. The `v1.6.0` GitHub release was published before its signature,
@@ -141,7 +141,7 @@ feed's grade. (Fixed in `v1.6.1`: `v1.5.1` and earlier remove it only when
 
 ```yaml
       - id: gtfs
-        uses: ChelseaKR/gtfs-scorecard@v1.5.1
+        uses: ChelseaKR/gtfs-scorecard@v1.6.1
         with:
           feed-url: https://example.org/gtfs/feed.zip
           min-grade: B
@@ -164,7 +164,7 @@ Set `baseline` to compare this run with a previous scorecard, so a pull request
 cannot quietly regress a published feed:
 
 ```yaml
-      - uses: ChelseaKR/gtfs-scorecard@v1.5.1
+      - uses: ChelseaKR/gtfs-scorecard@v1.6.1
         with:
           feed-url: https://example.org/gtfs/feed.zip
           baseline: example-transit@latest
@@ -260,7 +260,7 @@ files are committed:
       security-events: write     # upload-sarif only
     steps:
       - uses: actions/checkout@v5
-      - uses: ChelseaKR/gtfs-scorecard@v1.5.1
+      - uses: ChelseaKR/gtfs-scorecard@v1.6.1
         with:
           feed-url: https://example.org/gtfs/feed.zip
           sarif: gtfs.sarif
@@ -296,7 +296,7 @@ Three things about the file are worth knowing:
 Set `html` to keep the rendered scorecard as a build artifact:
 
 ```yaml
-      - uses: ChelseaKR/gtfs-scorecard@v1.5.1
+      - uses: ChelseaKR/gtfs-scorecard@v1.6.1
         with:
           feed-url: https://example.org/gtfs/feed.zip
           min-grade: C

@@ -27,6 +27,13 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Changed
+
+- The Action examples in `README.md` and `docs/ci-action.md` pin `@v1.6.1`,
+  the newest published Action release, and `docs/ci-action.md` says the
+  floating `v1` moved to it on 2026-11-21. `README.md` says `gtfs-scorecard`
+  1.6.1 is on PyPI and listed in the MCP Registry.
+
 ## [1.6.1] - 2026-11-21
 
 ### Changed

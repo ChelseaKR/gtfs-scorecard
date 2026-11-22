@@ -206,7 +206,7 @@ feed, prints the grade and the top fixes in the job log, and fails the build if
 the feed drops below `min-grade` or expires within `min-days-to-expiry`:
 
 ```yaml
-- uses: ChelseaKR/gtfs-scorecard@v1.5.1
+- uses: ChelseaKR/gtfs-scorecard@v1.6.1
   with:
     feed-url: https://your-agency.example/google_transit.zip
     country: CA
@@ -218,7 +218,7 @@ Pin a full release tag or a commit SHA, as above. The floating major `@v1`
 still exists for consumers who already use it, but it is not recommended here
 and these examples no longer use it: it is one mutable pointer that moves to
 the newest `v1.x.y` on release day, so it changes what your workflow runs
-without a commit or a diff on your side. `v1.5.1` is the newest published
+without a commit or a diff on your side. `v1.6.1` is the newest published
 Action release, and [docs/ci-action.md](docs/ci-action.md#which-ref-to-pin)
 says what it includes.
 
@@ -354,7 +354,7 @@ declared here; none is silently skipped.
 | AI Development Measurement | Applies — delivery and quality-debt outcomes are measured at repository level; local AI-tool telemetry is never a merge gate | [`AI-DEVELOPMENT-MEASUREMENT-STANDARD.md`](docs/standards/AI-DEVELOPMENT-MEASUREMENT-STANDARD.md) |
 | Quality & Metrics | Applies (data-quality/lineage named for this repo explicitly) | [`QUALITY-AND-METRICS-STANDARD.md`](docs/standards/QUALITY-AND-METRICS-STANDARD.md) |
 | Documentation | Applies | [`DOCUMENTATION-STANDARD.md`](docs/standards/DOCUMENTATION-STANDARD.md) |
-| Release & Versioning | Applies — reusable Action tags (`v1`; the newest version tag is `v1.5.1`), monthly dataset releases; `gtfs-scorecard` 1.5.1 is on PyPI and `io.github.ChelseaKR/gtfs-scorecard` 1.5.1 is listed in the MCP Registry (see Versioning) | [`RELEASE-AND-VERSIONING-STANDARD.md`](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) |
+| Release & Versioning | Applies — reusable Action tags (`v1`; the newest version tag is `v1.6.1`), monthly dataset releases; `gtfs-scorecard` 1.6.1 is on PyPI and `io.github.ChelseaKR/gtfs-scorecard` 1.6.1 is listed in the MCP Registry (see Versioning) | [`RELEASE-AND-VERSIONING-STANDARD.md`](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) |
 | Responsible-Tech Framework | Applies (audits A-F; AI-governance rows N/A — no AI system) | [`RESPONSIBLE-TECH-FRAMEWORK.md`](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) |
 | Incident Response | Applies — deployed static site and scheduled pipeline; incidents use the shared severity, label, postmortem, and secret-leak conventions | [`INCIDENT-RESPONSE-STANDARD.md`](docs/standards/INCIDENT-RESPONSE-STANDARD.md) |
 | Data Governance | Applies — public civic datasets, feed provenance, licenses, retention, and publication lineage are core product concerns | [`DATA-GOVERNANCE-STANDARD.md`](docs/standards/DATA-GOVERNANCE-STANDARD.md) |
@@ -410,9 +410,9 @@ This repo also **produces releases**: the marketplace GitHub Action (tagged
 `v1`) and monthly citable dataset releases (`dataset-release.yml`). It carries
 a publish workflow for the `gtfs-scorecard` Python package
 (`pypi-publish.yml`) and an MCP server manifest (`server.json`).
-[`gtfs-scorecard`](https://pypi.org/project/gtfs-scorecard/) 1.5.1 is on PyPI,
-and the MCP Registry lists `io.github.ChelseaKR/gtfs-scorecard` 1.5.1 with that
-package. The v1.5.0 run of the workflow reached the upload under the package's
+[`gtfs-scorecard`](https://pypi.org/project/gtfs-scorecard/) 1.6.1 is on PyPI,
+and the MCP Registry lists `io.github.ChelseaKR/gtfs-scorecard` 1.6.1 with that
+package; 1.5.1 was the first upload, and 1.6.0 was never uploaded. The v1.5.0 run of the workflow reached the upload under the package's
 former name `scorecard-pipeline`, which PyPI refused as too similar to an
 existing project, so nothing was uploaded for 1.5.0 and the distribution is
 `gtfs-scorecard` from 1.5.1 on. A release tag starts the PyPI workflow, which
