@@ -244,25 +244,30 @@ def test_landing_names_both_counts_and_the_shipped_service_scope() -> None:
     assert "Countries in registry" in html
     assert "everywhere they publish a feed" not in html
 
+    # The three doors (the 2026-11 IA, D6) and the example scorecard.
     representative_surfaces = (
-        "/agency/unitrans/board/",
-        "/program/all/",
-        "/app/#/?view=features",
+        "/agencies/",
+        "/subscribe.html",
+        "/claim/",
         "/check/",
+        "/program/",
+        "/bundle/",
         "/data/",
+        "/data/history/",
+        "/agency/unitrans/brief/",
     )
     for href in representative_surfaces:
         assert f'href="{href}"' in html, href
 
 
-def test_landing_points_at_the_history_tables_from_the_open_data_card_only() -> None:
-    """One sentence on the "Use the public data" card, beside the /data/ link
-    it already carried, and nowhere else on the page: not in the primary nav,
-    which sync_static_navs writes from _NAV_ITEMS, and not in the program-tier
-    section, which sells the bundle. The anchor says "paid" before the click,
-    as the bundle's own card link does, and no amount is typed anywhere on the
-    page: the bundle's home-page copy carries none either, its plan summary
-    being fetched at view time."""
+def test_landing_points_at_the_history_tables_from_the_data_door_only() -> None:
+    """One link, in the "I use GTFS data" door beside the /data/ link, and
+    nowhere else on the page: not in the primary nav, which sync_static_navs
+    writes from _NAV_ITEMS, and not in the program-tier section, which sells
+    the bundle. The anchor says "paid" before the click, as the bundle's door
+    link does, and no amount is typed anywhere on the page: the bundle's
+    home-page copy carries none either, its plan summary being fetched at
+    view time."""
     html = (_REPO / "web" / "index.html").read_text()
     # The landing page carries its own header and the shared footer.
     head, separator, _footer = html.partition('<footer class="site-footer">')
@@ -280,57 +285,87 @@ def test_landing_points_at_the_history_tables_from_the_open_data_card_only() -> 
     ]
     assert "/data/history/" not in programs
 
-    card_nav = head.index('<nav aria-label="Reuse public evidence">')
-    card = head[head.rfind("<li>", 0, card_nav) : head.index("</li>", card_nav)]
-    assert 'href="/data/"' in card
-    assert '<a href="/data/history/">scorecard history tables (paid)</a>' in card
+    door_nav = head.index('<nav aria-labelledby="door-data-h">')
+    door = head[door_nav : head.index("</nav>", door_nav)]
+    assert 'href="/data/"' in door
+    assert '<a href="/data/history/">History tables (paid)</a>' in door
 
     plan = json.loads((_REPO / "web" / "data" / "history" / "plan.json").read_text())
     assert f"${plan['products']['history_once']['price']}" not in html
 
 
-def test_landing_leads_with_the_quality_workflow_and_keeps_the_pilot_bounded() -> None:
+def test_landing_is_short_and_the_workflow_moved_to_how_to_read() -> None:
+    """The 2026-11 IA, D6: search, browse by place, three doors, the example
+    scorecard and "What the score does not establish". The six-step workflow,
+    where the scorecard fits, and the pilot moved to /how-to-read/ with the ids
+    they had here, text unchanged."""
     html = (_REPO / "web" / "index.html").read_text()
     script = (_REPO / "web" / "src" / "landing-scorecard.js").read_text()
+    guide = (_REPO / "pipeline" / "tests" / "goldens" / "how-to-read" / "index.html").read_text()
 
-    assert "Find the next fix in a published GTFS feed." in html
-    assert (
-        "Search an agency to open its latest scorecard and first recommended fix. "
-        "You can also check a GTFS ZIP before publishing it."
-    ) in html
-    assert "Where the scorecard fits in the work" in html
-    assert "Start with the work you need to do." in html
-    assert "Change and publish the feed" in html
-    assert "Your workflow" in html
+    assert '<h1 id="home-title">GTFS feed quality, graded daily.</h1>' in html
+    assert ("Find an agency to see its grade, its feed URL, and the first things to fix.") in html
+    assert "Find the next fix in a published GTFS feed." not in html
+    assert '<h2 id="place-chips-h">Browse by place</h2>' in html
+    assert '<h2 id="task-board-h">Start from what you do</h2>' in html
+    for door in (
+        "I work at a transit agency",
+        "I support several agencies",
+        "I use GTFS data",
+    ):
+        assert door in html
+    assert '<h2 id="scorecard-demo-h">Example scorecard</h2>' in html
     assert "Latest published scorecard" in html
-    assert "This is not yet a proven service." in html
+    assert "What the score does not establish" in html
     assert "A finding that disappears is a finding clearance." in html
     assert "Correctness uses MobilityData's canonical validator." in html
-    assert "The scorecard starts the conversation." not in html
-    assert "Other tools" not in html
-    assert html.index('class="workflow-run"') < html.index('id="live-scorecard"')
     assert html.index('class="task-board"') < html.index('id="live-scorecard"')
-    assert "PUBLIC FEED QUALITY / SERVICE DESK" not in html
-    assert "One scored feed. Five places to use the evidence." not in html
-    assert "Help test the full handoff." not in html
+    assert html.index('id="live-scorecard"') < html.index('id="notes-h"')
     for element_id in (
         "coverage-registry-count",
         "coverage-published-count",
         "coverage-country-count",
+        "door-published-count",
     ):
         assert f'id="{element_id}"' in html
     assert 'fetch("/api/v1/coverage.json"' in script
     assert "gtfs-scorecard-coverage-v1" in script
     assert "COVERAGE_CACHE_TTL_MS" in script
-    assert 'id="pilot"' in html
-    assert 'href="https://github.com/ChelseaKR/gtfs-scorecard/issues/194"' in html
+    assert 'getElementById("door-published-count")' in script
+
+    # Moved, not deleted: same text, same ids, now on /how-to-read/.
+    for moved in ('id="workflow-run-h"', 'id="ecosystem"', 'id="pilot"'):
+        assert moved not in html, moved
+        assert moved in guide, moved
+    for sentence in (
+        "Where the scorecard fits in the work",
+        "Change and publish the feed",
+        "Your workflow",
+        "This is not yet a proven service.",
+        "Use the scorecard between discovery and the next feed export.",
+        "Remediation workflow",
+    ):
+        assert sentence in guide, sentence
     for href in (
+        "https://github.com/ChelseaKR/gtfs-scorecard/issues/194",
         "https://mobilitydatabase.org/",
         "https://www.transit.land/",
         "https://github.com/MobilityData/gtfs-validator",
         "https://reports.dds.dot.ca.gov/",
     ):
-        assert f'href="{href}"' in html
+        assert f'href="{href}"' in guide, href
+
+
+def test_landing_place_chips_link_only_place_pages() -> None:
+    html = (_REPO / "web" / "index.html").read_text()
+    block = html[html.index("<!-- place-chips:start -->") : html.index("<!-- place-chips:end -->")]
+    hrefs = re.findall(r'href="([^"]+)"', block)
+    assert hrefs[-1] == "/program/"
+    assert '<a href="/program/">All states and countries</a>' in block
+    assert 1 <= len(hrefs) - 1 <= 6
+    for href in hrefs[:-1]:
+        assert re.fullmatch(r"/program/[a-z0-9-]+/", href), href
+        assert href not in ("/program/all/", "/program/yolo-county/"), href
 
 
 def test_landing_uses_a_real_interactive_scorecard_instead_of_a_fictional_dashboard() -> None:
@@ -338,7 +373,7 @@ def test_landing_uses_a_real_interactive_scorecard_instead_of_a_fictional_dashbo
     script = (_REPO / "web" / "src" / "landing-scorecard.js").read_text()
 
     assert 'id="live-scorecard"' in html
-    assert 'src="/src/landing-scorecard.js?v=20261121-lazy-picker"' in html
+    assert 'src="/src/landing-scorecard.js?v=20261121-short-home"' in html
     assert "Latest published scorecard" in html
     assert 'role="group" aria-label="Home pilots"' in html
     assert "measured category sets can differ" in html

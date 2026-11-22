@@ -4023,3 +4023,19 @@ textarea {
 }
 .watch-card .section-title { margin-top: 0; }
 .watch-card p { margin: 0.4rem 0 0; }
+
+/* How to read: the workflow, where-it-fits and pilot sections that moved
+   from the home page (the 2026-11 IA, D6). */
+.guide-kicker {
+  margin: 0;
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.guide-steps { display: grid; gap: 0.9rem; max-width: var(--measure); margin: 0.6rem 0 1rem; padding-inline-start: 1.4rem; }
+.guide-steps h3 { margin: 0.1rem 0 0.25rem; font-size: 1rem; }
+.guide-steps p { margin: 0; }
+.guide-state { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-soft); }

@@ -32,7 +32,7 @@
 </script>
 <script src="/src/theme.js" defer></script>
 <script src="/src/measure.js" defer></script>
-<script src="/src/landing-scorecard.js?v=20261121-lazy-picker" defer></script>
+<script src="/src/landing-scorecard.js?v=20261121-short-home" defer></script>
 <script src="/src/plan-summary.js" defer></script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -826,6 +826,14 @@
   .movement p { margin: 0.7rem 0 0; color: #d3decf; }
   .movement .action { min-width: 13rem; border-color: var(--on-pine); color: var(--on-pine); }
 
+  /* Browse by place (the 2026-11 IA): chips the render writes between the
+     place-chips markers, linking the existing state and country pages. */
+  .place-chips { margin-top: 1.2rem; }
+  .place-chips h2 { margin: 0 0 0.5rem; color: var(--green); font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .chip-list { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0; padding: 0; list-style: none; }
+  .chip-list a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.85rem; border: 1.5px solid var(--ink-soft); border-radius: 999px; color: var(--green); font-weight: 700; font-size: 0.9rem; text-decoration: none; }
+  .chip-list a:hover { text-decoration: underline; }
+  .door-register a { min-height: 44px; font-size: 0.9rem; }
   /* The shared site footer (site_shell.FOOTER_HTML, written here by
      sync_static_navs), styled inline like the rest of this page so the
      first paint still loads no stylesheet. Same rules as web/src/styles.css,
@@ -1586,6 +1594,20 @@
     border: 1px solid var(--ink);
   }
 
+  /* The short home (the 2026-11 IA): with the workflow moved to
+     /how-to-read/, the search and place chips take the right-hand column
+     beside the heading, and the coverage ledger sits under them. */
+  @media (min-width: 901px) {
+    .desk-intro { grid-column: 1; grid-row: 1 / span 2; }
+    .desk-tools {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: start;
+      padding: clamp(2rem, 4vw, 3.8rem) 0 1.45rem clamp(1.5rem, 3vw, 3rem);
+    }
+    .hero-ledger { grid-column: 2; grid-row: 2; padding: 0 0 1.25rem clamp(1.5rem, 3vw, 3rem); }
+  }
+
   @media (max-width: 900px) {
     .service-desk { grid-template-columns: 1fr; }
     .desk-intro,
@@ -1669,15 +1691,13 @@
   <section class="bulletin-hero" aria-labelledby="home-title">
     <div class="wrap">
       <div class="bulletin-meta">
-        <div class="issue">GTFS quality workflow</div>
-        <div class="runline"><span>Public feeds checked daily &middot; no login</span><a href="/status/">Run status</a></div>
+        <div class="runline"><span>Public feeds checked daily &middot; no login</span></div>
       </div>
       <div class="service-desk">
         <div class="desk-intro">
-          <p class="desk-kicker">Published feed evidence</p>
-          <h1 id="home-title">Find the next fix in a published GTFS feed.</h1>
-          <p class="desk-summary">Search an agency to open its latest scorecard and first recommended fix. You can also check a GTFS ZIP before publishing it.</p>
-          <p class="desk-reassure">Correctness uses MobilityData's canonical validator. A missing realtime feed does not lower the grade.</p>
+          <h1 id="home-title">GTFS feed quality, graded daily.</h1>
+          <p class="desk-summary">Find an agency to see its grade, its feed URL, and the first things to fix.</p>
+          <p class="desk-reassure">Correctness uses MobilityData's canonical validator. A missing realtime feed does not lower the grade. New to the validator? Read <a href="/gtfs-validator/">the GTFS validator guide</a>.</p>
         </div>
 
         <div class="desk-tools">
@@ -1700,9 +1720,11 @@
             <p class="picker-note" id="picker-status" role="status" aria-live="polite">Search the published directory. Choosing an agency opens its scorecard.</p>
           </form>
 
-          <nav class="hero-actions" aria-label="Start a feed-quality task">
-            <a class="action action-primary" href="/agencies/"><span>Browse published feeds</span><span class="arrow" aria-hidden="true">&rarr;</span></a>
-            <a class="action action-secondary" href="/check/"><span>Check a ZIP before publishing</span><span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <nav class="place-chips" aria-labelledby="place-chips-h">
+            <h2 id="place-chips-h">Browse by place</h2>
+            <!-- place-chips:start -->
+            <ul class="chip-list"><li><a href="/program/country-jp/">Japan</a></li><li><a href="/program/country-fr/">France</a></li><li><a href="/program/california/">California</a></li><li><a href="/program/colorado/">Colorado</a></li><li><a href="/program/new-york/">New York</a></li><li><a href="/program/oregon/">Oregon</a></li><li><a href="/program/">All states and countries</a></li></ul>
+            <!-- place-chips:end -->
           </nav>
         </div>
 
@@ -1714,96 +1736,38 @@
             <div><dt>Monitoring</dt><dd>Scheduled daily</dd></div>
           </dl>
         </aside>
-
-        <section class="workflow-run" aria-labelledby="workflow-run-h">
-          <header class="workflow-head">
-            <div>
-              <p class="workflow-label">Check to recheck</p>
-              <h2 id="workflow-run-h">Where the scorecard fits in the work</h2>
-            </div>
-            <ul class="workflow-key" aria-label="Workflow status key">
-              <li><span class="workflow-state state-live">Live</span></li>
-              <li><span class="workflow-state state-external">Your workflow</span></li>
-              <li><span class="workflow-state state-pilot">Pilot</span></li>
-            </ul>
-          </header>
-          <ol class="workflow-track">
-            <li class="workflow-step">
-              <span class="workflow-node" aria-hidden="true">1</span>
-              <div><h3>Identify the intended public feed</h3><p>Keep the source URL and feed identity attached to the record.</p></div>
-              <span class="workflow-state state-live">Live</span>
-            </li>
-            <li class="workflow-step">
-              <span class="workflow-node" aria-hidden="true">2</span>
-              <div><h3>Check the published data</h3><p>Run canonical validation plus freshness, rider-information, and optional realtime checks. A feed can follow the specification and still strand a rider, so <a href="/focus/#beyond-the-validator">some checks run past the validator</a>. New to the validator? Read <a href="/gtfs-validator/">the GTFS validator guide</a>.</p></div>
-              <span class="workflow-state state-live">Live</span>
-            </li>
-            <li class="workflow-step">
-              <span class="workflow-node" aria-hidden="true">3</span>
-              <div><h3>Choose a concrete action</h3><p>Use the prioritized fix, affected field, rider relevance, and dated evidence.</p></div>
-              <span class="workflow-state state-live">Live</span>
-            </li>
-            <li class="workflow-step">
-              <span class="workflow-node" aria-hidden="true">4</span>
-              <div><h3>Change and publish the feed</h3><p>The agency, vendor, or support program works through its existing tools and channels.</p></div>
-              <span class="workflow-state state-external">Your workflow</span>
-            </li>
-            <li class="workflow-step">
-              <span class="workflow-node" aria-hidden="true">5</span>
-              <div><h3>Recheck the same feed</h3><p>The pilot tests feed identity and measurement comparability before calling a finding cleared.</p></div>
-              <span class="workflow-state state-pilot">Pilot</span>
-            </li>
-            <li class="workflow-step">
-              <span class="workflow-node" aria-hidden="true">6</span>
-              <div><h3>Preserve a closure receipt</h3><p>A verified closure requires an accepted action and a comparable recheck. This is not yet a proven service.</p></div>
-              <span class="workflow-state state-pilot">Pilot</span>
-            </li>
-          </ol>
-        </section>
       </div>
 
       <section class="task-board" id="explore" aria-labelledby="task-board-h">
         <div class="section-intro">
-          <p class="section-code">Choose the next job</p>
           <div>
-            <h2 id="task-board-h">Start with the work you need to do.</h2>
-            <p class="lede">Each path uses the same dated feed evidence. The scorecard is one record in that workflow.</p>
+            <h2 id="task-board-h">Start from what you do</h2>
           </div>
         </div>
-        <ul class="task-register">
+        <ul class="task-register door-register">
           <li>
-            <div class="task-name"><span>Published feed</span><h3>Maintain a feed</h3></div>
-            <p>Review the current findings, prioritize a fix, and follow later published records.</p>
-            <nav aria-label="Maintain a published feed">
-              <a id="scope-scorecard-link" href="/agency/unitrans/">Open selected record</a>
-              <a id="scope-feed-link" href="/agency/unitrans/feed.xml">Follow updates</a>
+            <div class="task-name"><h3 id="door-agency-h">I work at a transit agency</h3></div>
+            <nav aria-labelledby="door-agency-h">
+              <a href="/agencies/">See your grade and fixes</a>
+              <a href="/subscribe.html">Watch your feed for free</a>
+              <a href="/claim/">Correct your listing</a>
+              <a href="/check/">Check a ZIP before publishing</a>
             </nav>
           </li>
           <li>
-            <div class="task-name"><span>Before release</span><h3>Check before publishing</h3></div>
-            <p>Run a GTFS ZIP in the browser, correct the source, and rerun the same check.</p>
-            <nav aria-label="Check before publishing">
-              <a href="/check/">Check a GTFS ZIP</a>
-              <a href="https://github.com/marketplace/actions/gtfs-scorecard-gate">Add the GitHub Action</a>
+            <div class="task-name"><h3 id="door-programs-h">I support several agencies</h3></div>
+            <nav aria-labelledby="door-programs-h">
+              <a href="/program/">Your state or country</a>
+              <a href="/subscribe.html">Watch every agency you support</a>
+              <a href="/bundle/">Board reports for every agency (paid)</a>
             </nav>
           </li>
           <li>
-            <div class="task-name"><span>Agency support</span><h3>Prepare a check-in</h3></div>
-            <p>Use the selected feed’s leading findings in a call brief, board view, or program rollup.</p>
-            <nav aria-label="Prepare agency support">
-              <a id="scope-brief-link" href="/agency/unitrans/brief/">Open selected brief</a>
-              <a id="scope-board-link" href="/agency/unitrans/board/">Board one-pager</a>
-              <a href="/program/all/">Program views</a>
-              <a href="/bundle/">Bundle for a program (paid)</a>
-            </nav>
-          </li>
-          <li>
-            <div class="task-name"><span>Reuse evidence</span><h3>Use the public data</h3></div>
-            <p>Filter feed features, query the API, download records, or embed the selected grade. Every dated check and finding, as tables over time, is sold as the <a href="/data/history/">scorecard history tables (paid)</a>; the dated scorecards behind them stay free.</p>
-            <nav aria-label="Reuse public evidence">
-              <a href="/app/#/?view=features">Feed features</a>
-              <a href="/data/">Data and API</a>
-              <a id="scope-badge-link" href="/data/artifacts/unitrans/badge.svg">Selected badge</a>
+            <div class="task-name"><h3 id="door-data-h">I use GTFS data</h3></div>
+            <nav aria-labelledby="door-data-h">
+              <a href="/agencies/">Feed URLs for <span id="door-published-count">2,100+</span> feeds</a>
+              <a href="/data/">Open data and API</a>
+              <a href="/data/history/">History tables (paid)</a>
             </nav>
           </li>
         </ul>
@@ -1831,7 +1795,7 @@
         <div class="section-intro">
           <p class="section-code">Example evidence record</p>
           <div>
-            <h2 id="scorecard-demo-h">Open the record behind a prioritized fix.</h2>
+            <h2 id="scorecard-demo-h">Example scorecard</h2>
             <p class="lede">The example keeps the grade, measured categories, source finding, and next action together. Switch feeds or search above to inspect another published record.</p>
           </div>
         </div>
@@ -1953,38 +1917,6 @@
         </ol>
       </section>
 
-      <section class="inspection ecosystem" id="ecosystem" aria-labelledby="ecosystem-h">
-        <div class="section-intro">
-          <p class="section-code">Where it fits</p>
-          <div>
-            <h2 id="ecosystem-h">Use the scorecard between discovery and the next feed export.</h2>
-            <p class="lede">GTFS Scorecard adds dated evidence and prioritized fixes around canonical validation. Agencies, vendors, editors, and support programs still make and publish changes through their existing tools. The accepted-action recheck remains a pilot.</p>
-          </div>
-        </div>
-        <ol class="route-track">
-          <li class="route-stop">
-            <p class="stop-label">1 / Discover</p>
-            <h3>Identify the intended feed</h3>
-            <p><a href="https://mobilitydatabase.org/">Mobility Database</a> and <a href="https://www.transit.land/">Transitland</a> help people find public feeds and distinguish their sources or versions.</p>
-          </li>
-          <li class="route-stop">
-            <p class="stop-label">2 / Diagnose</p>
-            <h3>Apply canonical rules</h3>
-            <p>The <a href="https://github.com/MobilityData/gtfs-validator">MobilityData GTFS validator</a> supplies the specification findings used for correctness. The scorecard does not reimplement them.</p>
-          </li>
-          <li class="route-stop">
-            <p class="stop-label">3 / Change</p>
-            <h3>Fix and publish the feed</h3>
-            <p>An agency, vendor, editor, or support program decides what to change and publishes the new export through its existing workflow.</p>
-          </li>
-          <li class="route-stop">
-            <p class="stop-label">4 / Verify</p>
-            <h3>Pilot the final recheck</h3>
-            <p>GTFS Scorecard is testing whether an accepted action can be linked to a comparable recheck of the intended published feed. This is not yet a proven service.</p>
-          </li>
-        </ol>
-        <p class="evidence-base">The <a href="https://reports.dds.dot.ca.gov/">California GTFS Quality Dashboard</a> inspired this project's daily scorecard and support-program framing. GTFS Scorecard is independent and is not an official compliance determination.</p>
-      </section>
     </div>
   </section>
 
@@ -2006,13 +1938,6 @@
     </div>
   </section>
 
-  <section class="movement" id="pilot" aria-labelledby="movement-h">
-    <div class="wrap">
-      <p class="live-label">Pilot</p>
-      <div><h2 id="movement-h">Remediation workflow</h2><p>A 90-day pilot is testing whether a finding can move through an accepted request and comparable same-feed recheck. This is not yet a proven service.</p></div>
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/issues/194">Pilot details</a>
-    </div>
-  </section>
 </main>
 
 <footer class="site-footer">

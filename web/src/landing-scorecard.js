@@ -193,6 +193,7 @@
     scopeFeedLink: document.getElementById("scope-feed-link"),
     coverageRegistryCount: document.getElementById("coverage-registry-count"),
     coveragePublishedCount: document.getElementById("coverage-published-count"),
+    doorPublishedCount: document.getElementById("door-published-count"),
     coverageCountryCount: document.getElementById("coverage-country-count"),
     searchForm: document.getElementById("feed-picker"),
     searchInput: document.getElementById("feed-search"),
@@ -231,6 +232,7 @@
     var formatter = new Intl.NumberFormat("en-US");
     text(elements.coverageRegistryCount, formatter.format(payload.configured_feed_records));
     text(elements.coveragePublishedCount, formatter.format(payload.published_scorecard_pages));
+    text(elements.doorPublishedCount, formatter.format(payload.published_scorecard_pages));
     text(elements.coverageCountryCount, formatter.format(payload.country_count));
   }
 

@@ -238,20 +238,20 @@ def test_the_pointers_reach_the_history_page_and_name_no_price() -> None:
     head, separator, _footer = support.partition(_FOOTER_TAG)
     assert separator
     assert 'href="/data/history/"' in head and 'id="path-history-h"' in head
-    # The home page: one sentence on the card that already links /data/, which
-    # says it is paid before the click and what stays free, and nothing in the
-    # program-tier section, which sells the bundle.
+    # The home page: one link in the "I use GTFS data" door, beside the /data/
+    # link, which says it is paid before the click (the 2026-11 IA, D6), and
+    # nothing in the program-tier section, which sells the bundle.
     # The landing page carries the shared footer, so it is split on that tag;
     # the footer links the bundle and must not grow a history link, which the
     # count below would notice.
     home = (_WEB / "index.html").read_text()
     head, separator, _footer = home.partition('<footer class="site-footer">')
     assert separator, "the landing page has no footer; the split below proves nothing"
-    card = re.search(r'<nav aria-label="Reuse public evidence">', head)
+    card = re.search(r'<nav aria-labelledby="door-data-h">', head)
     assert card is not None
     card_text = head[head.rfind("<li>", 0, card.start()) : head.index("</li>", card.start())]
     assert 'href="/data/"' in card_text and 'href="/data/history/"' in card_text
-    assert "(paid)" in card_text and "stay free" in card_text
+    assert "History tables (paid)" in card_text
     assert head.count('href="/data/history/"') == 1
     programs = head[
         head.index('id="programs"') : head.index("</section>", head.index('id="programs"'))

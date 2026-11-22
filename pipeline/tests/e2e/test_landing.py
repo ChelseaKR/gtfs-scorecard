@@ -44,53 +44,59 @@ def test_landing_starts_with_a_real_unitrans_record(page: Page, base_url: str) -
     expect(page.locator("#trace-code")).to_have_text(artifact["top_fixes"][0]["code"])
 
 
-def test_landing_puts_the_operating_workflow_before_the_scorecard(
-    page: Page, base_url: str
-) -> None:
+def test_landing_is_search_places_doors_then_the_example(page: Page, base_url: str) -> None:
+    """The short home of the 2026-11 IA (D6), in reading order."""
     page.goto(f"{base_url}/")
     _wait_for_scorecard(page)
 
-    expect(page.get_by_role("heading", level=1)).to_have_text(
-        "Find the next fix in a published GTFS feed."
-    )
+    expect(page.get_by_role("heading", level=1)).to_have_text("GTFS feed quality, graded daily.")
     expect(page.locator(".desk-summary")).to_have_text(
-        "Search an agency to open its latest scorecard and first recommended fix. "
-        "You can also check a GTFS ZIP before publishing it."
+        "Find an agency to see its grade, its feed URL, and the first things to fix."
     )
-    expect(page.locator(".workflow-step")).to_have_count(6)
-    expect(page.get_by_role("heading", name="Start with the work you need to do.")).to_be_visible()
-    expect(page.get_by_role("link", name="Check a GTFS ZIP")).to_be_visible()
+    expect(page.get_by_role("heading", name="Browse by place")).to_be_visible()
+    expect(page.get_by_role("link", name="All states and countries")).to_have_attribute(
+        "href", "/program/"
+    )
+    expect(page.get_by_role("heading", name="Start from what you do")).to_be_visible()
+    expect(page.locator(".door-register > li")).to_have_count(3)
     expect(
-        page.get_by_label("Reuse public evidence").get_by_role("link", name="Feed features")
-    ).to_be_visible()
+        page.get_by_role("navigation", name="I work at a transit agency").get_by_role(
+            "link", name="Watch your feed for free"
+        )
+    ).to_have_attribute("href", "/subscribe.html")
+    expect(page.locator(".workflow-step")).to_have_count(0)
 
-    workflow_box = page.locator(".workflow-run").bounding_box()
-    tasks_box = page.locator(".task-board").bounding_box()
+    search_box = page.locator("#feed-picker").bounding_box()
+    places_box = page.locator(".place-chips").bounding_box()
+    doors_box = page.locator(".task-board").bounding_box()
     scorecard_box = page.locator(".scorecard-demo").bounding_box()
-    assert workflow_box is not None
-    assert tasks_box is not None
-    assert scorecard_box is not None
-    assert workflow_box["y"] < scorecard_box["y"]
-    assert tasks_box["y"] < scorecard_box["y"]
+    assert search_box and places_box and doors_box and scorecard_box
+    assert search_box["y"] < places_box["y"] < doors_box["y"] < scorecard_box["y"]
 
 
-def test_landing_workflow_stacks_without_horizontal_overflow_on_mobile(
-    page: Page, base_url: str
-) -> None:
+def test_landing_stacks_without_horizontal_overflow_on_mobile(page: Page, base_url: str) -> None:
     page.set_viewport_size({"width": 390, "height": 844})
     page.goto(f"{base_url}/")
     _wait_for_scorecard(page)
 
     expect(page.get_by_role("heading", level=1)).to_be_visible()
-    expect(page.locator(".workflow-run")).to_be_visible()
-    expect(page.locator(".task-register > li")).to_have_count(4)
+    expect(page.locator("#feed-search")).to_be_visible()
+    expect(page.locator(".door-register > li")).to_have_count(3)
     assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
 
-    ledger_box = page.locator(".hero-ledger").bounding_box()
-    workflow_box = page.locator(".workflow-run").bounding_box()
-    assert ledger_box is not None
-    assert workflow_box is not None
-    assert ledger_box["y"] < workflow_box["y"]
+
+def test_the_workflow_moved_to_how_to_read_with_its_anchors(page: Page, base_url: str) -> None:
+    for anchor, heading in (
+        ("workflow-run-h", "Where the scorecard fits in the work"),
+        ("ecosystem", "Use the scorecard between discovery and the next feed export."),
+        ("pilot", "Remediation workflow"),
+    ):
+        # A fresh load each time: a same-document hash change is not what a
+        # reader following a link from another page gets.
+        page.goto("about:blank")
+        page.goto(f"{base_url}/how-to-read/#{anchor}")
+        expect(page.locator(f"#{anchor}")).to_have_count(1)
+        expect(page.get_by_role("heading", name=heading)).to_be_in_viewport()
 
 
 def test_landing_loads_and_caches_exact_coverage_counts(page: Page, base_url: str) -> None:
@@ -149,11 +155,11 @@ def test_landing_switches_record_category_and_fix_without_reload(page: Page, bas
         f"{artifact['categories']['realtime']['score']:g}"
     )
     expect(page.locator('[data-agency-id="yolobus"]')).to_have_attribute("aria-pressed", "true")
-    expect(page.locator("#scope-scorecard-link")).to_have_attribute(
+    expect(page.locator("#full-scorecard-link")).to_have_attribute(
         "href",
         f"/agency/yolobus/#finding={first_fix}",
     )
-    expect(page.locator("#scope-brief-link")).to_have_attribute(
+    expect(page.locator("#brief-link")).to_have_attribute(
         "href",
         f"/agency/yolobus/brief/#finding={first_fix}",
     )
@@ -164,13 +170,13 @@ def test_landing_switches_record_category_and_fix_without_reload(page: Page, bas
     page.locator('[data-fix-index="2"]').click()
     expect(page.locator("#trace-code")).to_have_text(third_fix)
     expect(page.locator("#trace-source-files")).to_contain_text("feed_info.txt")
-    expect(page.locator("#scope-scorecard-link")).to_have_attribute(
+    expect(page.locator("#full-scorecard-link")).to_have_attribute(
         "href",
         f"/agency/yolobus/#finding={third_fix}",
     )
-    expect(page.locator("#scope-board-link")).to_have_attribute(
+    expect(page.locator("#trace-record-link")).to_have_attribute(
         "href",
-        f"/agency/yolobus/board/#finding={third_fix}",
+        f"/agency/yolobus/#finding={third_fix}",
     )
     assert "feed=yolobus" in page.url
     assert "fix=3" in page.url
