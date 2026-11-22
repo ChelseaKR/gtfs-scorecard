@@ -3959,3 +3959,55 @@ textarea {
     transform: none;
   }
 }
+
+/* ---------- agency directory: search and browse by place (ADR 0085, D4) ---------- */
+
+.directory-search {
+  max-width: 48rem;
+  margin: 1rem 0 1.25rem;
+  padding: 1rem 1.1rem;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+}
+.directory-search label { display: block; margin-bottom: 0.4rem; font-weight: 700; }
+.directory-search-row { display: flex; gap: 0.5rem; align-items: stretch; }
+.directory-search-row .agency-picker-box { flex: 1; min-width: 0; }
+.directory-search input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.7rem;
+  font: inherit;
+  color: var(--ink);
+  background: var(--card);
+  border: 1.5px solid var(--field-line);
+  border-radius: var(--radius);
+}
+.directory-search .fineprint { margin: 0.45rem 0 0; }
+.browse-place { margin: 0 0 1rem; }
+/* The summary keeps its native list-item display, and with it the disclosure
+   triangle, so it reads as something to open; the padding makes it 44px tall. */
+.place-group summary {
+  padding-block: 0.6rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.place-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.5rem;
+  margin: 0.25rem 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+.place-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.8rem;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  text-decoration: none;
+}
+.place-links a:hover { border-color: var(--ink); }

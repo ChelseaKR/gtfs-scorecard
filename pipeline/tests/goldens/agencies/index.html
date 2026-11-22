@@ -49,22 +49,41 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/" aria-current="page"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/subscribe.html"><span class="pip" aria-hidden="true"></span>Feed alerts</a><a class="nav-stop" href="/fix/"><span class="pip" aria-hidden="true"></span>Fix a feed</a><a class="nav-stop" href="/program/"><span class="pip" aria-hidden="true"></span>For programs</a><a class="nav-stop" href="/data/"><span class="pip" aria-hidden="true"></span>Data</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
   <main id="main" class="wrap wrap-wide" tabindex="-1">
-    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">All agencies</span><meta itemprop="position" content="2"></li></ol></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Agencies</span><meta itemprop="position" content="2"></li></ol></nav>
     <h1 class="page-title">Agency scorecards</h1>
     <p class="page-lede">3 published feed scorecards, each with a
     <abbr title="General Transit Feed Specification">GTFS</abbr> data
     quality grade and the fixes to start with.</p>
-    <p class="fineprint">Showing records 1&ndash;3 of 3.
-      Use the page links to browse the complete directory.</p>
+    <form class="directory-search" id="directory-search" action="/app/" method="get" role="search"
+      data-msg-short="Type at least two characters to search published scorecards."
+      data-msg-loading="Loading agency names…"
+      data-msg-none="No published scorecard matches that search."
+      data-msg-one="1 match. Choose it to show the scorecard."
+      data-msg-many="{count} matches. Choose one to show its scorecard."
+      data-msg-more="{count} of {total} matches shown. Keep typing to narrow them."
+      data-msg-closed="Search results closed."
+      data-msg-error="The directory could not load. Browse every scorecard instead."
+      data-msg-detail="Feed ID {id}">
+      <label for="directory-search-input">Find a published feed</label>
+      <div class="directory-search-row"><div class="agency-picker-box">
+        <input id="directory-search-input" name="q" type="search" autocomplete="off" enterkeyhint="search" aria-describedby="directory-search-status" placeholder="Agency name">
+        <ul class="agency-options" id="directory-search-results" aria-label="Matching scorecards" hidden></ul>
+      </div><button class="button" type="submit">Find</button></div>
+      <p class="fineprint" id="directory-search-status" role="status" aria-live="polite">Search the published directory. Choosing an agency opens its scorecard.</p>
+    </form>
+    <section class="browse-place" id="browse-by-place" aria-labelledby="browse-place-h"><h2 class="section-title" id="browse-place-h">Browse by place</h2><details class="place-group"><summary>United States</summary><ul class="place-links"><li><a href="/program/california/">California</a></li></ul></details></section>
     <nav class="grade-jump" aria-label="Other views of the same scorecards">Same scorecards, other
     views: <a href="/app/">live search and filters</a> · <a href="/map/">on a map</a> ·
     <a href="/routes/">every route</a> · <a href="/compare/">compare two</a> ·
     <a href="/program/">grouped by program</a></nav>
+    <p class="fineprint">Showing records 1&ndash;3 of 3.
+      Use the page links to browse the complete directory.</p>
 
-<nav class="grade-jump" aria-label="Jump to section">Jump to: <a href="#current">Current service on this page</a></nav>
 
-<section aria-labelledby="current"><h2 class="section-title" id="current">Current and upcoming service <span class="grade-count">3 on this page · 3 total</span></h2><p class="group-note">Listed alphabetically. Each grade describes only that feed&#x27;s published bytes under its stated scoring contract; this list is not a cross-feed ranking.</p><ul class="agency-list"><li class="agency-card"><span class="grade-chip grade-c">C<span class="visually-hidden"> grade</span></span><div><h3><a href="/agency/barrie-transit/"><bdi>Barrie Transit (Ontario)</bdi></a></h3><p class="meta">Overall 72.3 out of 100 · checked 2026-07-02</p></div></li><li class="agency-card"><span class="grade-chip grade-b">B<span class="visually-hidden"> grade</span></span><div><h3><a href="/agency/unitrans/"><bdi>Unitrans (ASUCD / City of Davis)</bdi></a></h3><p class="meta">Overall 80.8 out of 100 · checked 2026-07-02</p></div></li><li class="agency-card"><span class="grade-chip grade-b">B<span class="visually-hidden"> grade</span></span><div><h3><a href="/agency/yolobus/"><bdi>Yolobus (Yolo County Transportation District)</bdi></a></h3><p class="meta">Overall 82.5 out of 100 · checked 2026-07-02</p></div></li></ul></section>
+<section aria-labelledby="current"><h2 class="section-title" id="current">Current feeds, A to Z <span class="grade-count">3 on this page · 3 total</span></h2><p class="group-note">Listed alphabetically. Each grade describes only that feed&#x27;s published bytes under its stated scoring contract; this list is not a cross-feed ranking.</p><ul class="agency-list"><li class="agency-card"><span class="grade-chip grade-c">C<span class="visually-hidden"> grade</span></span><div><h3><a href="/agency/barrie-transit/"><bdi>Barrie Transit (Ontario)</bdi></a></h3><p class="meta">Overall 72.3 out of 100 · checked 2026-07-02</p></div></li><li class="agency-card"><span class="grade-chip grade-b">B<span class="visually-hidden"> grade</span></span><div><h3><a href="/agency/unitrans/"><bdi>Unitrans (ASUCD / City of Davis)</bdi></a></h3><p class="meta">Overall 80.8 out of 100 · checked 2026-07-02</p></div></li><li class="agency-card"><span class="grade-chip grade-b">B<span class="visually-hidden"> grade</span></span><div><h3><a href="/agency/yolobus/"><bdi>Yolobus (Yolo County Transportation District)</bdi></a></h3><p class="meta">Overall 82.5 out of 100 · checked 2026-07-02</p></div></li></ul></section>
 
+
+<script>(function(){var f=document.getElementById('directory-search');if(!f)return;var i=document.getElementById('directory-search-input'),l=document.getElementById('directory-search-results'),st=document.getElementById('directory-search-status'),p=null,ready=null;function page(r){return '/agency/'+encodeURIComponent(r.slug||r.id)+'/';}function results(q){return '/app/#/?q='+encodeURIComponent(q);}function load(){if(ready)return ready;ready=new Promise(function(ok,no){if(window.ScorecardAgencySearch){ok(window.ScorecardAgencySearch);return;}var s=document.createElement('script');s.src='/src/agency-combobox.js?v=20261119-agency-search';s.onload=function(){window.ScorecardAgencySearch?ok(window.ScorecardAgencySearch):no(new Error('missing'));};s.onerror=function(){no(new Error('load'));};document.head.appendChild(s);}).then(function(a){p=a.attach({input:i,listbox:l,status:st,messages:a.messagesFrom(f),onChoose:function(r){if(r&&r.id)window.location.assign(page(r));}});if(i.value&&document.activeElement===i)i.dispatchEvent(new Event('input'));return p;},function(e){ready=null;throw e;});return ready;}f.addEventListener('focusin',function(){load().catch(function(){});});f.addEventListener('submit',function(e){e.preventDefault();var q=i.value.trim();if(p)p.close();if(!q){window.location.assign(results(q));return;}load().then(function(r){return r.clearMatch();}).then(function(r){window.location.assign(r?page(r):results(q));},function(){window.location.assign(results(q));});});})();</script>
   </main>
   <footer class="site-footer">
     <div class="wrap">
