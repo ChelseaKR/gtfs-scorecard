@@ -177,10 +177,10 @@ def tts_stop_name_findings(stops_rows: list[dict[str, str]]) -> list[Finding]:
             count=len(flagged),
             what=f"{len(flagged)} stop name(s) use abbreviations or symbols a screen "
             f"reader may mispronounce, with no spoken form set ({shown}).",
-            why="A screen reader speaks the raw name. 'Main St & 2nd Ave' can come "
-            "out as 'Main saint', or lose the ampersand.",
-            fix="Add tts_stop_name with the spoken form, e.g. 'Main Street and Second "
-            "Avenue', for the affected stops.",
+            why='A screen reader speaks the raw name. "Main St & 2nd Ave" can come '
+            'out as "Main saint," or lose the ampersand.',
+            fix='Add tts_stop_name with the spoken form, e.g. "Main Street and Second '
+            'Avenue," for the affected stops.',
             effort="A short text field per affected stop; start with the busiest.",
             deduction=0.0,
         )

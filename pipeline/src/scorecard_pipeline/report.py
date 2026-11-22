@@ -39,7 +39,14 @@ from .comparisons import same_producer_contract
 from .config import artifacts_dir
 from .feed_provenance import mirror_copy_caveat
 from .score import grade_qualifier, qualified_grade
-from .site_shell import ANALYTICS_OPT_OUT_HTML, BASE_URL, CATEGORY_LABELS, CATEGORY_ORDER, esc
+from .site_shell import (
+    ANALYTICS_OPT_OUT_HTML,
+    BASE_URL,
+    CATEGORY_LABELS,
+    CATEGORY_ORDER,
+    esc,
+    utc_stamp,
+)
 
 # The rubric documents the report cites in its methodology footer.
 _RUBRIC_DOC_URL = "https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/rubric.md"
@@ -284,7 +291,7 @@ def build_report_data(
         "fixes": list(artifact.get("top_fixes", []))[:3],
         "ntd": _ntd_data(artifact),
         "history": _history_rows(hist),
-        "generated_at": generated_at.strftime("%Y-%m-%d %H:%M UTC"),
+        "generated_at": utc_stamp(generated_at),
         "rubric_version": str(artifact.get("rubric_version", "")),
         "validator_version": str(artifact.get("validator_version", "")),
         "scorecard_url": f"{BASE_URL}/agency/{artifact.get('agency', {}).get('id', '')}/",

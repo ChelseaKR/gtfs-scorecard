@@ -6184,7 +6184,7 @@ def test_status_commitment_labels_current_liveness_and_explains_mirror_differenc
     assert "Overall clean-check rate" not in html
     assert "without a mirror" in html
     assert "daily full scoring run can use the Mobility Database mirror" in html
-    assert '<time datetime="2026-07-08T14:00:00+00:00">2026-07-08 14:00 UTC</time>' in html
+    assert '<time datetime="2026-07-08T14:00:00+00:00">Jul 8, 2026, 2:00 PM UTC</time>' in html
 
 
 def test_status_page_healthy_run_shows_counts_and_no_degraded_banner() -> None:

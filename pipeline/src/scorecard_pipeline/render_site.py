@@ -137,6 +137,7 @@ from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
     esc,
     json_for_script,
     sync_static_navs,
+    utc_stamp,
 )
 from .timemachine import Event, grade_story, history_events
 from .timemachine import finding_codes as _finding_codes
@@ -8853,7 +8854,7 @@ def _status_commitment_section(doc: dict[str, Any]) -> str:
 
     as_of = str(record["as_of"])
     try:
-        as_of_label = dt.datetime.fromisoformat(as_of).strftime("%Y-%m-%d %H:%M UTC")
+        as_of_label = utc_stamp(dt.datetime.fromisoformat(as_of))
     except ValueError:
         as_of_label = as_of
     as_of_html = f'<time datetime="{esc(as_of)}">{esc(as_of_label)}</time>'
@@ -12635,7 +12636,7 @@ def _status_evidence_section(
             shard_phrase = f"{shard_count} {shard_word}"
         run_section = f"""    <section class="feed-details"><h3 class="section-title">Run summary</h3>
     <p><span class="{badge_class}">{badge_text}</span> Recorded
-    {esc(_ago(now, generated_at))} ({esc(generated_at.strftime("%Y-%m-%d %H:%M UTC"))}).
+    {esc(_ago(now, generated_at))} ({esc(utc_stamp(generated_at))}).
     The run attempted {run_summary.get("agency_count", 0)} feed records across
     {shard_phrase}. The current catalog contains
     {run_summary.get("published_feed_record_count", len(catalog))} feed records.</p>

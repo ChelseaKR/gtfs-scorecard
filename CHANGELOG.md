@@ -33,6 +33,12 @@ the declared public surface).
   the newest published Action release, and `docs/ci-action.md` says the
   floating `v1` moved to it on 2026-11-21. `README.md` says `gtfs-scorecard`
   1.6.1 is on PyPI and listed in the MCP Registry.
+- American English style for reader-facing text. The six example names in
+  the stop-name, route-name and mixed-case finding text use double quotes
+  instead of single quotes. Timestamps on the status page (the freshness commitment and
+  the run summary) and in the agency report read "Nov 19, 2026, 1:23 PM UTC" instead of
+  "2026-11-19 13:23 UTC" (one shared `site_shell.utc_stamp` formatter, still
+  in UTC).
 
 ## [1.6.1] - 2026-11-21
 

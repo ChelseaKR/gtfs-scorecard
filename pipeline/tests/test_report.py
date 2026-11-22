@@ -415,7 +415,7 @@ def test_render_report_footer_cites_rubric_and_timestamp() -> None:
     assert "docs/rubric.md" in html_text
     assert "rubric v1.2" in html_text
     assert "validator 7.0.0" in html_text
-    assert "2026-07-10 12:00 UTC" in html_text
+    assert "Jul 10, 2026, 12:00 PM UTC" in html_text
     assert "not an official compliance determination" in html_text
 
 
