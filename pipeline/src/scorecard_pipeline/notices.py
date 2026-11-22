@@ -82,7 +82,7 @@ TRANSLATIONS: dict[str, Translation] = {
     "missing_route_long_name": Translation(
         what="Some routes are missing a descriptive long name.",
         why="Apps fall back to bare route numbers, which mean little to visitors and new riders.",
-        fix="Add a route_long_name (e.g. 'Downtown – Campus Loop') for the flagged routes.",
+        fix='Add a route_long_name (e.g. "Downtown – Campus Loop") for the flagged routes.',
         effort="One field per route.",
     ),
     "route_color_contrast": Translation(
@@ -151,8 +151,8 @@ TRANSLATIONS: dict[str, Translation] = {
         what="Some rider-facing names are in ALL CAPS or all lowercase.",
         why="ALL-CAPS stop and headsign names are harder to read in apps "
         "and are read awkwardly by screen readers.",
-        fix="Use mixed case for stop names and headsigns (e.g. 'Main St & "
-        "2nd Ave', not 'MAIN ST & 2ND AVE').",
+        fix='Use mixed case for stop names and headsigns (e.g. "Main St & '
+        '2nd Ave," not "MAIN ST & 2ND AVE").',
         effort="Often a bulk fix in your scheduling software.",
     ),
     "non_ascii_or_non_printable_char": Translation(
@@ -285,9 +285,9 @@ TRANSLATIONS: dict[str, Translation] = {
     ),
     "route_long_name_contains_short_name": Translation(
         what="Some route long names repeat the route's short name inside them.",
-        why="Apps show both names together, so riders see the number twice, like '5 5 Downtown'.",
+        why='Apps show both names together, so riders see the number twice, like "5 5 Downtown."',
         fix="Drop the short name from route_long_name and keep the long name "
-        "descriptive, like 'Downtown via 5th Ave'.",
+        'descriptive, like "Downtown via 5th Ave."',
         effort="One field per flagged route.",
     ),
     "stops_match_shape_out_of_order": Translation(

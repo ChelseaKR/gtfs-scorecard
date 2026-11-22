@@ -13,6 +13,7 @@ render_site re-exports these names, so existing imports keep working.
 # ruff: noqa: E501  (long inline-HTML lines, matching render_site)
 from __future__ import annotations
 
+import datetime as dt
 import html
 import json
 import re
@@ -53,6 +54,18 @@ def _repo_root() -> Path:
 
 def esc(text: object) -> str:
     return html.escape(str(text), quote=True)
+
+
+def utc_stamp(moment: dt.datetime) -> str:
+    """A reader-facing UTC timestamp in American style: "Nov 19, 2026, 1:23 PM UTC".
+
+    The clock fields are printed as given, as the old "%Y-%m-%d %H:%M UTC"
+    format did, so callers pass a UTC (or naive UTC) datetime. The month is
+    the C-locale abbreviation, and neither the day nor the hour is zero padded.
+    """
+    hour = moment.hour % 12 or 12
+    meridiem = "AM" if moment.hour < 12 else "PM"
+    return f"{moment:%b} {moment.day}, {moment.year}, {hour}:{moment:%M} {meridiem} UTC"
 
 
 # JSON written inside a <script> element is read twice: first by the HTML
