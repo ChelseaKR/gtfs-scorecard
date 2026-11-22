@@ -4011,3 +4011,15 @@ textarea {
   text-decoration: none;
 }
 .place-links a:hover { border-color: var(--ink); }
+
+/* Program page (the 2026-11 IA): the free alert for a group of feeds. */
+.watch-card {
+  max-width: 40rem;
+  margin: 1rem 0;
+  padding: 1rem 1.1rem;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+}
+.watch-card .section-title { margin-top: 0; }
+.watch-card p { margin: 0.4rem 0 0; }

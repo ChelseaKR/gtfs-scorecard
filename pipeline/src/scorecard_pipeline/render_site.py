@@ -7318,6 +7318,32 @@ def _rollup_ntd_state_link(state: str, href: str) -> str:
     )
 
 
+#: The free alert, offered for a whole group of feeds near the top of every
+#: program page (the 2026-11 IA). The alerts form offers "All agencies" for a
+#: reader who supports many; nothing here is paid (ADR 0064's panel stays last).
+_ROLLUP_WATCH_CARD = (
+    '<section class="watch-card" aria-labelledby="watch-feeds-h">'
+    '<h2 class="section-title" id="watch-feeds-h">Watch these feeds</h2>'
+    "<p>Get an email before a feed expires or its grade drops.</p>"
+    '<p><a class="button button-secondary" href="/subscribe.html">Feed alerts</a></p>'
+    "</section>"
+)
+
+
+def _rollup_place_label(rollup: dict[str, Any]) -> str:
+    """The place a state or country rollup stands for, or "" for a named cohort.
+
+    A ``country-xx`` rollup is named for its country; a state rollup is named
+    "<State> agencies" (the same rule as the directory's place links)."""
+    rid = str(rollup["rollup"]["id"])
+    name = str(rollup["rollup"]["name"]).strip()
+    if rid.startswith("country-"):
+        return name
+    if rid != "all" and name.endswith(" agencies"):
+        return name.removesuffix(" agencies")
+    return ""
+
+
 def _render_rollup(
     rollup: dict[str, Any],
     others: tuple[str, list[dict[str, Any]]] | None = None,
@@ -7399,7 +7425,15 @@ def _render_rollup(
     # page is looking for programs. This is also what the app's own twin does
     # (app.js renderProgram links back to #/programs), and it is how the other 66
     # rollups become reachable from any one of them.
-    crumb = _breadcrumb([("Home", "/"), ("Program rollups", "/program/"), (rname, None)])
+    # A state or country page is a place page too (the 2026-11 IA): its trail
+    # reads Home > Agencies > <place>, the level every scorecard in it now
+    # shows. Named cohorts keep the rollup index as their parent.
+    place = _rollup_place_label(rollup)
+    crumb = _breadcrumb(
+        [("Home", "/"), ("Agencies", "/agencies/"), (place, None)]
+        if place
+        else [("Home", "/"), ("Program rollups", "/program/"), (rname, None)]
+    )
     outside_html = _rollup_outside_section(others)
     outside_section = f"\n    {outside_html}" if outside_html else ""
     body = f"""    {crumb}
@@ -7414,15 +7448,16 @@ def _render_rollup(
     </div>
     {_route_rule()}
     {dist_section}
-    {reconciliation_section}
-    {expired_section}
-    {realtime_section}
-    {shapes_section}
-    {common_fixes_section}
+    {_ROLLUP_WATCH_CARD}
     <section aria-labelledby="members-h">
       <h2 class="section-title" id="members-h">{members_heading}</h2>
       {members_html}
     </section>{outside_section}
+    {common_fixes_section}
+    {expired_section}
+    {realtime_section}
+    {shapes_section}
+    {reconciliation_section}
     {_program_offer_section(offer)}"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
