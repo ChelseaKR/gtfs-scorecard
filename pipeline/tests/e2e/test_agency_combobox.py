@@ -241,17 +241,19 @@ def test_alerts_agency_field_is_an_accessible_combobox(page: Page, base_url: str
 def test_alerts_keyboard_only_signup_for_one_agency(page: Page, base_url: str) -> None:
     bodies = _stub_subscribe(page)
     page.goto(f"{base_url}/subscribe.html")
-    page.locator("#email").focus()
-    page.keyboard.type("person@agency.gov")
-    page.keyboard.press("Tab")
+    # Agency first, then email (the 2026-11 IA).
     combobox = page.get_by_role("combobox", name="Which agency?")
-    assert combobox.evaluate("element => element === document.activeElement")
+    combobox.focus()
     page.keyboard.type("yolobus")
     expect(page.get_by_role("listbox", name="Which agency?")).to_be_visible()
     page.keyboard.press("ArrowDown")
     page.keyboard.press("Enter")
     expect(combobox).to_have_value(_name("yolobus"))
     expect(combobox).to_have_attribute("aria-expanded", "false")
+    page.keyboard.press("Tab")
+    email = page.locator("#email")
+    assert email.evaluate("element => element === document.activeElement")
+    page.keyboard.type("person@agency.gov")
 
     page.keyboard.press("Enter")  # implicit submission from the text field
     expect(page.locator("#form-status")).to_have_text(_ACCEPTED["message"])
@@ -307,6 +309,26 @@ def test_alerts_link_from_an_agency_page_arrives_with_the_agency_chosen(
     page.get_by_role("button", name="Email me alerts").click()
     expect(page.locator("#form-status")).to_have_text(_ACCEPTED["message"])
     assert bodies[0]["agencies"] == ["unitrans"]
+
+
+def test_alerts_form_asks_for_the_agency_first_and_says_it_was_chosen(
+    page: Page, base_url: str
+) -> None:
+    """Agency first, then email (the 2026-11 IA): a reader from "Watch this
+    feed" sees the agency already chosen, and the hint says where it came from."""
+    page.goto(f"{base_url}/subscribe.html?agency=unitrans")
+    expect(page.get_by_role("combobox", name="Which agency?")).to_have_value(_name("unitrans"))
+    expect(page.locator("#agency-hint")).to_have_text(
+        "Chosen from the scorecard you came from. Type to change it, or choose All agencies."
+    )
+    agency_box = page.locator("#agency").bounding_box()
+    email_box = page.locator("#email").bounding_box()
+    assert agency_box and email_box and agency_box["y"] < email_box["y"]
+
+
+def test_alerts_form_without_an_agency_keeps_the_general_hint(page: Page, base_url: str) -> None:
+    page.goto(f"{base_url}/subscribe.html")
+    expect(page.locator("#agency-hint")).to_contain_text("Type a name and pick it from the list")
 
 
 def test_alerts_sends_once_however_often_the_button_is_pressed(page: Page, base_url: str) -> None:

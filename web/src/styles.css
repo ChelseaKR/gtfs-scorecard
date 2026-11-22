@@ -4039,3 +4039,7 @@ textarea {
 .guide-steps h3 { margin: 0.1rem 0 0.25rem; font-size: 1rem; }
 .guide-steps p { margin: 0; }
 .guide-state { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-soft); }
+
+/* About (the 2026-11 IA): who the site is for, one line each. */
+.about-audiences { max-width: var(--measure); margin: 0.4rem 0 1rem; padding-inline-start: 1.2rem; }
+.about-audiences li + li { margin-top: 0.35rem; }

@@ -58,7 +58,7 @@
   </header>
 
   <main id="main" class="wrap" tabindex="-1">
-    <a class="backlink" href="/app/">&larr; All agencies</a>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Feed alerts</span><meta itemprop="position" content="2"></li></ol></nav>
     <h1 class="page-title">Get feed-health alerts.</h1>
     <p class="page-lede">The most common way a small agency disappears from trip
     planners is quiet: the <dfn><abbr title="General Transit Feed Specification">GTFS</abbr></dfn>
@@ -75,13 +75,6 @@
       data-msg-cooldown="We just sent a confirmation to this address. Check your inbox and spam folder, or try again in 15 minutes."
       data-msg-rate="Too many requests. Try again later."
       data-msg-other="Something went wrong. Please try again.">
-      <p class="field">
-        <label for="email">Your email <span class="req">(required)</span></label>
-        <input id="email" name="email" type="email" required autocomplete="email"
-          aria-describedby="email-hint" placeholder="you@agency.gov">
-        <span class="hint" id="email-hint">We send a confirmation link first. Nothing is sent until
-        you click it.</span>
-      </p>
       <div class="field agency-picker" id="agency-picker"
         data-msg-short="Type at least two characters to see matching agencies."
         data-msg-loading="Loading agency names…"
@@ -100,10 +93,17 @@
             aria-describedby="agency-hint" placeholder="Start typing an agency name">
           <ul class="agency-options" id="agency-options" hidden></ul>
         </div>
-        <span class="hint" id="agency-hint">Type a name and pick it from the list, or choose All
+        <span class="hint" id="agency-hint" data-hint-chosen="Chosen from the scorecard you came from. Type to change it, or choose All agencies.">Type a name and pick it from the list, or choose All
         agencies to watch every tracked agency (useful if you support a group of them).</span>
         <span class="agency-status" id="agency-status" role="status" aria-live="polite"></span>
       </div>
+      <p class="field">
+        <label for="email">Your email <span class="req">(required)</span></label>
+        <input id="email" name="email" type="email" required autocomplete="email"
+          aria-describedby="email-hint" placeholder="you@agency.gov">
+        <span class="hint" id="email-hint">We send a confirmation link first. Nothing is sent until
+        you click it.</span>
+      </p>
       <fieldset class="field">
         <legend>Alert me about</legend>
         <label><input type="checkbox" name="kinds" value="expiry" checked> A feed
@@ -207,6 +207,6 @@
 
   <script src="src/config.js"></script>
   <script src="src/agency-combobox.js?v=20261119-agency-search" defer></script>
-  <script type="module" src="src/subscribe.js?v=20261120-alert-signup-events"></script>
+  <script type="module" src="src/subscribe.js?v=20261121-agency-first"></script>
 </body>
 </html>
