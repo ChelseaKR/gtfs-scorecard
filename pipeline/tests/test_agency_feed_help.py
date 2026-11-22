@@ -60,23 +60,27 @@ def _visible(html: str) -> str:
 
 def test_the_watch_line_links_the_alerts_form_with_this_agency_chosen() -> None:
     line = _watch_line("demo-transit")
-    assert '<a href="/subscribe.html?agency=demo-transit">Watch this feed</a>' in line
+    assert 'href="/subscribe.html?agency=demo-transit"' in line
+    assert ">Watch this feed</a>" in line
     assert _visible(line) == (
         "Watch this feed for free: we email you before it expires or when its grade drops."
     )
 
 
-def test_the_watch_line_sits_right_under_the_grade() -> None:
+def test_the_watch_line_sits_right_under_the_answer_block() -> None:
+    """Under the grade and the feed card (ADR 0085), before the other actions."""
     html = _render_agency(_artifact())
-    hero_end = html.index('<p class="watch-line">')
-    assert html.index('class="score-big"') < hero_end < html.index('<p class="feed-source">')
+    watch = html.index('<p class="watch-line">')
+    assert html.index('class="score-big"') < html.index('<p class="feed-source">') < watch
+    assert watch < html.index('<nav class="report-actions"')
 
 
 @pytest.mark.parametrize("page", sorted(p.parent.name for p in _GOLDENS.glob("*/index.html")))
 def test_every_rendered_agency_page_offers_the_alert_once(page: str) -> None:
     html = (_GOLDENS / page / "index.html").read_text()
     assert html.count('<p class="watch-line">') == 1
-    assert f'<a href="/subscribe.html?agency={page}">Watch this feed</a> for free' in html
+    assert f'href="/subscribe.html?agency={page}" data-measure="agency_watch_click">' in html
+    assert ">Watch this feed</a> for free" in html
 
 
 # --- help when the feed address on file failed ------------------------------------
@@ -145,10 +149,12 @@ def test_nothing_else_is_linked_as_a_saved_copy(fetch: object) -> None:
 
 
 def test_the_note_is_the_first_thing_above_the_agency_name() -> None:
+    """First in the page, above the breadcrumb and the name (ADR 0085)."""
     html = _render_agency(_artifact(fetch=_mirror(_MDB_COPY)), liveness={"status": 404})
     assert html.count('<p class="feed-help">') == 1
     note = html.index('<p class="feed-help">')
-    assert html.index('<nav class="report-actions"') < note < html.index('class="board-title"')
+    assert html.index('<div class="report-head">') < note < html.index('class="breadcrumb"')
+    assert note < html.index('class="board-title"')
 
 
 def test_a_page_whose_address_works_carries_no_note() -> None:

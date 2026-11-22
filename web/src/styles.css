@@ -140,15 +140,6 @@ main.wrap-wide .page-title {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
-.report-route-kicker {
-  margin: 0;
-  color: var(--green);
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
 .report-route-title {
   margin: 0.1rem 0 0.55rem;
   font-family: var(--font-display);
@@ -297,11 +288,21 @@ a:hover { color: var(--green-bright); }
 .button-primary:hover,
 .report-action-primary:hover { color: var(--success-on); filter: brightness(1.06); }
 .button-secondary { color: var(--green); background: var(--card); }
-.report-actions {
+/* Agency page (ADR 0085): after the one primary action, the rest are plain
+   text links in a row. Each keeps a 44px-tall target. */
+.report-actions { margin: 0 0 1rem; }
+.report-actions ul {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0 0 1rem;
+  gap: 0 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.report-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 .action-panel {
   max-width: var(--measure);
@@ -1600,7 +1601,81 @@ main:focus { outline: none; }
 .feed-source { margin: 0 0 0.6rem; font-size: 0.9rem; overflow-wrap: anywhere; }
 /* Agency page: the free alert under the grade, and the note shown when the
    feed address on file failed (render_site._watch_line, _dead_feed_note). */
-.watch-line { margin: 0 0 0.6rem; font-size: 0.95rem; }
+.watch-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.8rem;
+  margin: 0 0 0.6rem;
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+}
+/* The answer block (ADR 0085): the grade card and the feed-file card. They
+   stack on a phone and sit side by side once the report has room. Source
+   order is the reading order either way. */
+.answer-block { display: grid; gap: 1rem; margin: 0 0 1rem; }
+/* Beside the grade on a wide screen: the feed file, Watch this feed and the
+   other links, so all of them sit above the fold with the grade. */
+.answer-side { display: grid; gap: 0.6rem; align-content: start; min-width: 0; }
+.answer-side .watch-line,
+.answer-side .report-actions { margin: 0; }
+/* Under the grade on the dark board: fixed light text, as the board's other
+   text is, and the signal-amber focus ring the dark chrome uses. */
+.grade-explainer { margin: 1.1rem 0 0; max-width: 40rem; font-size: 0.9rem; color: #f4f6f0; }
+.grade-explainer a { color: #f4f6f0; display: inline-flex; align-items: center; min-height: 44px; }
+.grade-explainer a:hover { color: #fff; }
+.grade-explainer a:focus-visible { outline-color: var(--amber); }
+.answer-block > * { min-width: 0; }
+.answer-block .board-hero { margin: 0; }
+@media (min-width: 64rem) {
+  .answer-block { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; }
+  .answer-block .board-title { font-size: clamp(2rem, 3.4vw, 2.6rem); }
+}
+.feed-card {
+  padding: 1rem 1.1rem;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-inline-start: 4px solid var(--green);
+  border-radius: var(--radius);
+}
+.feed-card-title {
+  margin: 0 0 0.5rem;
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.feed-card .feed-source { margin: 0 0 0.5rem; }
+.feed-status { margin: 0 0 0.5rem; font-size: 0.9rem; font-weight: 700; }
+.feed-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  margin: 0;
+  font-size: 0.9rem;
+}
+.feed-card-actions a { display: inline-flex; align-items: center; min-height: 44px; }
+.copy-url {
+  font: inherit;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.45rem 1rem;
+  color: var(--ink);
+  background: var(--card);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.copy-url[hidden] { display: none; }
+.rider-line { max-width: var(--measure); }
 .feed-help { margin: 0.6rem 0; padding: 0.6rem 0.8rem; max-width: 42rem;
   border: 1px solid var(--line); border-inline-start: 4px solid var(--warning); }
 .legend { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: 0.6rem; max-width: 40rem; }
