@@ -685,8 +685,10 @@ function formatModeName(value) {
 /** Keep the persistent app-shell navigation aligned with the current hash view.
  * @param {boolean} featureMode */
 function setAppNav(featureMode) {
+  // The feature finder sits in the Data section of the primary nav (the
+  // 2026-11 information architecture); the search view in Find an agency.
   const featureNav = /** @type {HTMLAnchorElement | null} */ (
-    document.querySelector('.nav-stop[href="/app/#/?view=features"]')
+    document.querySelector('.nav-stop[href="/data/"]')
   );
   const agencyNav = /** @type {HTMLAnchorElement | null} */ (
     document.querySelector('.nav-stop[href="/agencies/"]')

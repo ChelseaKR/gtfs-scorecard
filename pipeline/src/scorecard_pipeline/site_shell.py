@@ -87,16 +87,17 @@ def json_for_script(value: object, *, ensure_ascii: bool = True) -> str:
     )
 
 
-# Six stops, one per question, instead of a flat list of every page: find an
-# agency, review coverage, find feeds by rider-facing feature, act with a tool,
-# learn how to read the thing, and who made it. The pages those groups absorb
-# stay reachable from each hub (and from _NAV_SECTION_PREFIXES for wayfinding).
+# Six stops, one per task a reader comes with (the 2026-11 information
+# architecture, ADR 0085): find an agency, watch a feed, fix one, support a
+# group of agencies, use the data, and who made it. The pages those hubs absorb
+# stay reachable from each hub, from the shared footer, and from
+# _NAV_SECTION_PREFIXES for wayfinding.
 _NAV_ITEMS = [
     ("Find an agency", "/agencies/"),
-    ("Coverage", "/pulse/"),
-    ("Feed features", "/app/#/?view=features"),
-    ("Tools", "/tools/"),
-    ("How it works", "/how-to-read/"),
+    ("Feed alerts", "/subscribe.html"),
+    ("Fix a feed", "/fix/"),
+    ("For programs", "/program/"),
+    ("Data", "/data/"),
     ("About", "/about/"),
 ]
 
@@ -110,46 +111,56 @@ _NAV_ITEMS_ES = [
 ]
 
 # Which nav stop a non-hub path belongs to, so the bar still shows where you
-# are when you are inside a section's pages.
+# are when you are inside a section's pages. The longest matching prefix wins
+# and is checked before the hubs themselves, so /data/history/ (paid, under
+# For programs) is not taken for /data/ (the free open data).
 _NAV_SECTION_PREFIXES = {
     "/agency/": "/agencies/",
-    "/fix/": "/agencies/",
-    "/program/": "/agencies/",
     "/app/": "/agencies/",
     "/map/": "/agencies/",
     "/routes/": "/agencies/",
-    "/problems/": "/pulse/",
-    "/focus/": "/pulse/",
-    "/ntd/": "/pulse/",
-    "/realtime/": "/pulse/",
-    "/equity/": "/pulse/",
-    "/adoption/": "/app/#/?view=features",
-    "/compare/": "/tools/",
-    "/check/": "/tools/",
-    "/query/": "/tools/",
-    "/procurement/": "/tools/",
-    "/accessibility/": "/how-to-read/",
-    "/status/": "/how-to-read/",
-    "/data/": "/how-to-read/",
-    "/concept/": "/how-to-read/",
-    "/press/": "/how-to-read/",
-    "/support/": "/about/",
-    "/bundle/": "/about/",
+    "/compare/": "/agencies/",
+    "/claim/": "/subscribe.html",
+    "/submit.html": "/subscribe.html",
+    "/check/": "/fix/",
+    "/gtfs-validator/": "/fix/",
+    "/try.html": "/fix/",
+    "/procurement/": "/fix/",
+    "/tools/": "/fix/",
+    "/bundle/": "/program/",
+    "/data/history/": "/program/",
+    "/invoice/": "/program/",
+    "/support/": "/program/",
+    "/query/": "/data/",
+    "/pulse/": "/data/",
+    "/problems/": "/data/",
+    "/realtime/": "/data/",
+    "/adoption/": "/data/",
+    "/focus/": "/data/",
+    "/ntd/": "/data/",
+    "/equity/": "/data/",
+    "/how-to-read/": "/about/",
+    "/status/": "/about/",
+    "/corrections/": "/about/",
+    "/accessibility/": "/about/",
+    "/press/": "/about/",
+    "/fetcher/": "/about/",
+    "/concept/": "/about/",
+    "/crosswalk/": "/about/",
 }
 
 
 def _nav_active(path: str) -> str:
     """Which _NAV_ITEMS href is the current section for a site-relative path.
-    Pages inside a section (an agency page, a focus lens, a tool) light up
+    Pages inside a section (an agency page, a coverage view, a tool) light up
     their hub's stop."""
+    for prefix in sorted(_NAV_SECTION_PREFIXES, key=len, reverse=True):
+        if path.startswith(prefix):
+            return _NAV_SECTION_PREFIXES[prefix]
     active = ""
     for _, href in _NAV_ITEMS:
         if path.startswith(href):
             active = href
-    if not active:
-        for prefix, hub in _NAV_SECTION_PREFIXES.items():
-            if path.startswith(prefix):
-                return hub
     return active
 
 
@@ -221,18 +232,18 @@ def _nav_html(canonical: str, lang: str = "en") -> str:
 # and guarded by tests/test_static_nav.py, so the bar cannot drift between them and
 # the generated header the way it did before. Value is the active section, if any.
 STATIC_NAV_PAGES: dict[str, str | None] = {
-    "submit.html": None,
-    "subscribe.html": None,
-    "try.html": None,
+    "submit.html": "/subscribe.html",
+    "subscribe.html": "/subscribe.html",
+    "try.html": "/fix/",
     "app/index.html": "/agencies/",
     "about/index.html": "/about/",
-    "data/index.html": None,
-    "support/index.html": "/about/",
+    "data/index.html": "/data/",
+    "support/index.html": "/program/",
     "fetcher/index.html": "/about/",
     # Program report bundle (docs/program-plan.md): /bundle/ is indexable and,
     # since the tier launched, reachable from the shared footer's "For
     # programs" section on every page, from the home page, /about/, /data/,
-    # /support/, /tools/, and every program rollup. It sits in the About
+    # /support/, /tools/, and every program rollup. It sits in the For programs
     # section (the same stop its parent /support/ fills), so the wayfinding bar
     # says where a reader is instead of going blank. /bundle/setup/ is the
     # post-checkout form and stays noindex and out of the sitemap: it says
@@ -240,18 +251,18 @@ STATIC_NAV_PAGES: dict[str, str | None] = {
     # indexed one would collect search traffic it can only turn away. Both are
     # registered here so the shared nav and footer stay in sync and the
     # doc-stats sweep reads them.
-    "bundle/index.html": "/about/",
-    "bundle/setup/index.html": "/about/",
+    "bundle/index.html": "/program/",
+    "bundle/setup/index.html": "/program/",
     # Buy by invoice or purchase order: the same product as /bundle/ for a
     # buyer who cannot use a card link. A request page that composes a mailto
     # link; no checkout, no stored data, and every price read from plan.json.
-    "invoice/index.html": "/about/",
+    "invoice/index.html": "/program/",
     # The scorecard history tables (ADR 0063, docs/history-tables.md): the
     # landing page is indexable and sits under /data/, the free open-data page;
     # /data/history/setup/ is the post-checkout page and stays noindex and out
     # of the sitemap for the same reason /bundle/setup/ does.
-    "data/history/index.html": None,
-    "data/history/setup/index.html": None,
+    "data/history/index.html": "/program/",
+    "data/history/setup/index.html": "/program/",
 }
 
 # The one shared footer, single-sourced here so the generated pages and the
@@ -294,56 +305,60 @@ FOOTER_HTML = f"""<footer class="site-footer">
       </div>
       <nav class="footer-grid" aria-label="Footer">
         <section aria-labelledby="footer-find-h">
-          <h2 id="footer-find-h">Find a scorecard</h2>
+          <h2 id="footer-find-h">Find an agency</h2>
           <ul>
             <li><a href="/agencies/">Agency directory</a></li>
-            <li><a href="/app/">Interactive search</a></li>
+            <li><a href="/program/">By state and country</a></li>
+            <li><a href="/app/">Search and filter</a></li>
             <li><a href="/map/">Agency map</a></li>
             <li><a href="/routes/">All routes</a></li>
             <li><a href="/compare/">Compare two agencies</a></li>
           </ul>
         </section>
-        <section aria-labelledby="footer-improve-h">
-          <h2 id="footer-improve-h">Improve a feed</h2>
+        <section aria-labelledby="footer-act-h">
+          <h2 id="footer-act-h">Act on a feed</h2>
           <ul>
+            <li><a href="/subscribe.html">Feed alerts (free)</a></li>
+            <li><a href="/claim/">Correct or claim a listing</a></li>
+            <li><a href="/submit.html">Add an agency</a></li>
             <li><a href="/fix/">GTFS errors &amp; fixes</a></li>
             <li><a href="/check/">Check before publishing</a></li>
             <li><a href="/try.html">Request a one-off score</a></li>
-            <li><a href="/subscribe.html">Feed-health alerts</a></li>
-            <li><a href="/submit.html">Add an agency</a></li>
-            <li><a href="/claim/">Correct or claim a listing</a></li>
             <li><a href="/procurement/">Procurement language</a></li>
-          </ul>
-        </section>
-        <section aria-labelledby="footer-explore-h">
-          <h2 id="footer-explore-h">Explore the data</h2>
-          <ul>
-            <li><a href="/pulse/">Coverage overview</a></li>
-            <li><a href="/problems/">Common problems</a></li>
-            <li><a href="/realtime/">Realtime quality</a></li>
-            <li><a href="/adoption/">What feeds publish</a></li>
-            <li><a href="/focus/">Focus areas</a></li>
-{_US_TOOLS_FOOTER_SECTION.rstrip()}
-            <li><a href="/query/">Query the dataset</a></li>
-            <li><a href="/data/">Open data</a></li>
+            <li><a href="/tools/">Feed tools</a></li>
           </ul>
         </section>
         <section aria-labelledby="footer-programs-h">
           <h2 id="footer-programs-h">For programs</h2>
           <ul>
-            <li><a href="/program/all/">Program rollups</a></li>
+            <li><a href="/program/">Program pages</a></li>
+            <li><a href="/program/all/">Every agency in one view</a></li>
             <li><a href="/bundle/">Board report bundle (paid)</a></li>
+            <li><a href="/support/">Get help or sponsor</a></li>
           </ul>
           <p class="footer-aside">Scoring an agency is free. A purchase buys no influence over grades, methodology, or which agencies are listed.</p>
         </section>
-        <section aria-labelledby="footer-project-h">
-          <h2 id="footer-project-h">Project</h2>
+        <section aria-labelledby="footer-data-h">
+          <h2 id="footer-data-h">Data</h2>
+          <ul>
+            <li><a href="/data/">Open data</a></li>
+            <li><a href="/query/">Query the dataset</a></li>
+            <li><a href="/pulse/">Coverage overview</a></li>
+            <li><a href="/problems/">Common problems</a></li>
+            <li><a href="/realtime/">Realtime quality</a></li>
+            <li><a href="/adoption/">What feeds publish</a></li>
+            <li><a href="/app/#/?view=features">Feed features</a></li>
+            <li><a href="/focus/">Focus areas</a></li>
+{_US_TOOLS_FOOTER_SECTION.rstrip()}
+          </ul>
+        </section>
+        <section aria-labelledby="footer-about-h">
+          <h2 id="footer-about-h">About</h2>
           <ul>
             <li><a href="/about/">About</a></li>
-            <li><a href="/status/">Status</a></li>
-            <li><a href="/support/">Get help or sponsor</a></li>
             <li><a href="/how-to-read/">How to read a scorecard</a></li>
             <li><a href="/how-to-read/#glossary">Glossary</a></li>
+            <li><a href="/status/">Status</a></li>
             <li><a href="/crosswalk/">Standards crosswalk</a></li>
             <li><a href="/press/">For reporters</a></li>
             <li><a href="/accessibility/">Accessibility</a></li>
@@ -426,11 +441,48 @@ def static_page_path(rel: str) -> str:
 _NAV_STOPS_RE = re.compile(r'<nav class="nav-stops".*?</nav>', re.DOTALL)
 _FOOTER_RE = re.compile(r'<footer class="site-footer">.*?</footer>', re.DOTALL)
 
+# The home page keeps its own header, styled inline so the first paint loads
+# no stylesheet (ADR 0045's LCP budget), but its links and its footer come
+# from the same sources as every other page's, so the two cannot drift.
+HOME_PAGE = "index.html"
+_HOME_NAV_RE = re.compile(r'<nav aria-label="Primary">.*?</nav>', re.DOTALL)
+_HOME_FOOTER_RE = re.compile(r'<footer(?: class="site-footer")?>.*?</footer>', re.DOTALL)
+
+
+def home_nav_html() -> str:
+    """The home header's primary links, from _NAV_ITEMS. The first stop keeps
+    the home page's call-to-action style; none is current on the home page."""
+    cta = ' class="navcta"'
+    links = "".join(
+        f'<a{cta if i == 0 else ""} href="{href}">{label}</a>'
+        for i, (label, href) in enumerate(_NAV_ITEMS)
+    )
+    return f'<nav aria-label="Primary">{links}</nav>'
+
+
+def _sync_home(web: Path) -> Path | None:
+    """Rewrite the home page's primary links and footer; the path if changed."""
+    path = web / HOME_PAGE
+    old = path.read_text()
+    nav = _HOME_NAV_RE.search(old)
+    if nav is None:
+        raise ValueError(f"{path}: expected one primary nav block in the home header")
+    new = old[: nav.start()] + home_nav_html() + old[nav.end() :]
+    footer = _HOME_FOOTER_RE.search(new)
+    if footer is None:
+        raise ValueError(f"{path}: expected one footer block to sync, found none")
+    new = new[: footer.start()] + FOOTER_HTML + new[footer.end() :]
+    if new == old:
+        return None
+    path.write_text(new)
+    return path
+
 
 def sync_static_navs() -> list[Path]:
     """Rewrite the primary nav block and the footer of each hand-authored static
-    page from the single canonical sources (_nav_stops_html, FOOTER_HTML), so the
-    static pages cannot drift from the generated ones. Returns the paths that
+    page, the home page included, from the single canonical sources
+    (_nav_stops_html, home_nav_html, FOOTER_HTML), so the static pages cannot
+    drift from the generated ones. Returns the paths that
     changed (empty when in sync). Run via `make sync-static-nav`;
     tests/test_static_nav.py fails CI on drift."""
     web = _repo_root() / "web"
@@ -450,6 +502,9 @@ def sync_static_navs() -> list[Path]:
         if new != old:
             path.write_text(new)
             changed.append(path)
+    home = _sync_home(web)
+    if home is not None:
+        changed.append(home)
     return changed
 
 

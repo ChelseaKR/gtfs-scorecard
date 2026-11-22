@@ -82,6 +82,13 @@ wording; in short:
 
 ### Changed
 
+- **The primary nav is six tasks, and every page shares one footer.** The bar
+  reads Find an agency, Feed alerts, Fix a feed, For programs, Data and About,
+  each an existing page. Coverage, Feed features and How it works move to the
+  footer and to the Data and About sections, and each page inside a section
+  still lights its hub. The footer is regrouped the same way (Find an agency,
+  Act on a feed, For programs, Data, About), and the home page now carries it
+  too, styled inline so its first paint loads no stylesheet. No URL changed.
 - **Agency pages open with an answer block.** The grade card says, under the
   grade, that the grade is not a count of validator errors, with a link to how
   the grade works. It now sits beside a "Feed file" card with the feed URL, a

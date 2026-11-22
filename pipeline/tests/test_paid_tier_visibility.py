@@ -202,9 +202,9 @@ def test_each_landing_surface_reaches_the_history_tables_too() -> None:
     passive pointers on exactly these surfaces, and nothing in the shared nav
     or footer and nothing on an agency page (the test two below).
     """
-    # The landing page carries its own footer, not the shared one; split on it.
+    # Every one of these carries the shared footer; split on it.
     for rel, footer_tag in (
-        ("index.html", "<footer>"),
+        ("index.html", _FOOTER_TAG),
         ("data/index.html", _FOOTER_TAG),
         ("support/index.html", _FOOTER_TAG),
         ("bundle/index.html", _FOOTER_TAG),
@@ -644,7 +644,12 @@ def test_agency_pages_name_nothing_paid_above_the_footer() -> None:
             "lives on the program rollup pages (ADR 0064)."
         )
         assert "program-offer" not in head, f"{rel}: carries the program panel"
-        assert "For programs" not in head.partition('class="report-content"')[0], (
+        # The primary nav's "For programs" stop (the 2026-11 IA) links the free
+        # /program/ hub from every page's header. What this guards is the page
+        # itself: nothing between <main> and the report body names a program stop.
+        page_head = head.partition("<main")[2].partition('class="report-content"')[0]
+        assert page_head, f"{rel}: no <main> found; the check below proves nothing"
+        assert "For programs" not in page_head, (
             f"{rel}: the report route still lists a program stop"
         )
         if rel.count("/") == 2:

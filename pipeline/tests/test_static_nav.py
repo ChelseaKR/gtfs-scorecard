@@ -13,8 +13,11 @@ from pathlib import Path
 from scorecard_pipeline.site_shell import (
     _NAV_ITEMS,
     _NAV_STOPS_RE,
+    FOOTER_HTML,
+    HOME_PAGE,
     STATIC_NAV_PAGES,
     _nav_stops_html,
+    home_nav_html,
     static_page_path,
 )
 
@@ -49,6 +52,33 @@ def test_a_section_hub_is_never_announced_as_the_current_page() -> None:
         assert nav is not None, rel
         assert 'aria-current="page"' not in nav.group(0), rel
         assert f'href="{active}" aria-current="true"' in nav.group(0), rel
+
+
+def test_home_page_nav_and_footer_match_canonical() -> None:
+    """The home page keeps its inline-styled header, but its links are
+    _NAV_ITEMS and its footer is the shared one (the 2026-11 IA, phase 2)."""
+    html = (_REPO / "web" / HOME_PAGE).read_text()
+    header = re.search(r'<header class="home-header">.*?</header>', html, re.S)
+    assert header is not None
+    assert home_nav_html() in header.group(0), "home nav drifted; run `make sync-static-nav`"
+    assert html.count(FOOTER_HTML) == 1, "home footer drifted; run `make sync-static-nav`"
+    assert html.count("<footer") == 1
+    # The footer's rules are inline: the home page loads no stylesheet.
+    assert 'href="/src/styles.css"' not in html
+    assert ".site-footer {" in html and ".footer-grid {" in html
+
+
+def test_every_page_in_the_footer_or_nav_still_exists() -> None:
+    """Nav and footer point only at pages the site has; no URL was added."""
+    web = _REPO / "web"
+    hrefs = {href for _, href in _NAV_ITEMS} | set(re.findall(r'href="(/[^"#]*)', FOOTER_HTML))
+    goldens = _REPO / "pipeline" / "tests" / "goldens"
+    for href in sorted(hrefs):
+        rel = href.lstrip("/")
+        candidates = [web / rel, web / rel / "index.html", goldens / rel / "index.html"]
+        if rel.endswith(".html"):
+            candidates = [web / rel]
+        assert any(path.is_file() for path in candidates), href
 
 
 def test_active_section_targets_a_real_nav_item() -> None:
@@ -234,8 +264,8 @@ def test_landing_points_at_the_history_tables_from_the_open_data_card_only() -> 
     page: the bundle's home-page copy carries none either, its plan summary
     being fetched at view time."""
     html = (_REPO / "web" / "index.html").read_text()
-    # The landing page carries its own header and footer, not the shared ones.
-    head, separator, _footer = html.partition("<footer>")
+    # The landing page carries its own header and the shared footer.
+    head, separator, _footer = html.partition('<footer class="site-footer">')
     assert separator, "the landing page has no footer; the split below proves nothing"
     assert head.count('href="/data/history/"') == 1
 

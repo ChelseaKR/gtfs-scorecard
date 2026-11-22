@@ -201,8 +201,10 @@ def test_the_scripts_read_the_plan_file_and_post_only_the_session_id() -> None:
 
 
 def test_every_gate_that_opens_a_purchase_surface_knows_the_new_pages() -> None:
-    assert STATIC_NAV_PAGES["data/history/index.html"] is None
-    assert STATIC_NAV_PAGES["data/history/setup/index.html"] is None
+    # The paid history tables sit in the For programs section of the task nav
+    # (the 2026-11 IA), beside the bundle, not under the free open data.
+    assert STATIC_NAV_PAGES["data/history/index.html"] == "/program/"
+    assert STATIC_NAV_PAGES["data/history/setup/index.html"] == "/program/"
     config = json.loads((_REPO / ".pa11yci.json").read_text())
     scanned = {
         (entry["url"] if isinstance(entry, dict) else entry).replace("http://127.0.0.1:8080", ""): (
@@ -239,11 +241,11 @@ def test_the_pointers_reach_the_history_page_and_name_no_price() -> None:
     # The home page: one sentence on the card that already links /data/, which
     # says it is paid before the click and what stays free, and nothing in the
     # program-tier section, which sells the bundle.
-    # The landing page carries its own footer rather than the shared one, so it
-    # is split on that tag; its footer links the bundle and must not grow a
-    # history link, which the count below would notice.
+    # The landing page carries the shared footer, so it is split on that tag;
+    # the footer links the bundle and must not grow a history link, which the
+    # count below would notice.
     home = (_WEB / "index.html").read_text()
-    head, separator, _footer = home.partition("<footer>")
+    head, separator, _footer = home.partition('<footer class="site-footer">')
     assert separator, "the landing page has no footer; the split below proves nothing"
     card = re.search(r'<nav aria-label="Reuse public evidence">', head)
     assert card is not None

@@ -4746,29 +4746,31 @@ def test_tools_page_lists_every_self_serve_tool() -> None:
         assert f'href="{href}"' in html, href
 
 
-def test_nav_is_six_hubs_and_sections_light_their_hub() -> None:
-    # Design audit: the nav is six question-shaped hubs, not a flat list of
-    # every page. Absorbed pages still light up their hub's stop, and the
-    # feature finder has a direct primary-nav destination.
+def test_nav_is_six_task_hubs_and_sections_light_their_hub() -> None:
+    # The 2026-11 information architecture: six task-shaped hubs, each an
+    # existing URL. Absorbed pages still light up their hub's stop.
     from scorecard_pipeline.site_shell import _NAV_ITEMS, _nav_active
 
-    hrefs = [href for _, href in _NAV_ITEMS]
-    assert len(hrefs) == 6
-    assert hrefs == [
-        "/agencies/",
-        "/pulse/",
-        "/app/#/?view=features",
-        "/tools/",
-        "/how-to-read/",
-        "/about/",
+    assert _NAV_ITEMS == [
+        ("Find an agency", "/agencies/"),
+        ("Feed alerts", "/subscribe.html"),
+        ("Fix a feed", "/fix/"),
+        ("For programs", "/program/"),
+        ("Data", "/data/"),
+        ("About", "/about/"),
     ]
+    assert all(len(label) <= 14 for label, _ in _NAV_ITEMS)
     assert _nav_active("/app/") == "/agencies/"
     assert _nav_active("/map/") == "/agencies/"
-    assert _nav_active("/ntd/") == "/pulse/"
-    assert _nav_active("/adoption/") == "/app/#/?view=features"
-    assert _nav_active("/problems/") == "/pulse/"
-    assert _nav_active("/check/") == "/tools/"
+    assert _nav_active("/ntd/") == "/data/"
+    assert _nav_active("/adoption/") == "/data/"
+    assert _nav_active("/problems/") == "/data/"
+    assert _nav_active("/check/") == "/fix/"
+    assert _nav_active("/claim/") == "/subscribe.html"
     assert _nav_active("/agency/unitrans/") == "/agencies/"
+    # The paid history tables sit under For programs, not the free open data.
+    assert _nav_active("/data/history/") == "/program/"
+    assert _nav_active("/data/") == "/data/"
 
 
 @pytest.mark.parametrize(
@@ -4776,29 +4778,38 @@ def test_nav_is_six_hubs_and_sections_light_their_hub() -> None:
     [
         # The stop is the page itself.
         ("/agencies/", "/agencies/", "page"),
-        ("/pulse/", "/pulse/", "page"),
-        ("/tools/", "/tools/", "page"),
-        ("/how-to-read/", "/how-to-read/", "page"),
+        ("/subscribe.html", "/subscribe.html", "page"),
+        ("/fix/", "/fix/", "page"),
+        ("/program/", "/program/", "page"),
+        ("/data/", "/data/", "page"),
         ("/about/", "/about/", "page"),
         # The stop is the section this page sits in. Every one of these
         # announced "current page" on a link that navigates elsewhere.
         ("/agency/unitrans/", "/agencies/", "true"),
         ("/map/", "/agencies/", "true"),
         ("/routes/", "/agencies/", "true"),
-        ("/problems/", "/pulse/", "true"),
-        ("/ntd/", "/pulse/", "true"),
-        ("/realtime/", "/pulse/", "true"),
-        ("/equity/", "/pulse/", "true"),
-        ("/focus/", "/pulse/", "true"),
-        ("/check/", "/tools/", "true"),
-        ("/compare/", "/tools/", "true"),
-        ("/query/", "/tools/", "true"),
-        ("/procurement/", "/tools/", "true"),
-        ("/accessibility/", "/how-to-read/", "true"),
-        ("/status/", "/how-to-read/", "true"),
-        ("/press/", "/how-to-read/", "true"),
-        ("/support/", "/about/", "true"),
-        ("/adoption/", "/app/#/?view=features", "true"),
+        ("/compare/", "/agencies/", "true"),
+        ("/claim/", "/subscribe.html", "true"),
+        ("/fix/expired_calendar/", "/fix/", "true"),
+        ("/check/", "/fix/", "true"),
+        ("/tools/", "/fix/", "true"),
+        ("/procurement/", "/fix/", "true"),
+        ("/program/california/", "/program/", "true"),
+        ("/bundle/", "/program/", "true"),
+        ("/data/history/", "/program/", "true"),
+        ("/support/", "/program/", "true"),
+        ("/problems/", "/data/", "true"),
+        ("/ntd/", "/data/", "true"),
+        ("/realtime/", "/data/", "true"),
+        ("/equity/", "/data/", "true"),
+        ("/focus/", "/data/", "true"),
+        ("/pulse/", "/data/", "true"),
+        ("/query/", "/data/", "true"),
+        ("/adoption/", "/data/", "true"),
+        ("/how-to-read/", "/about/", "true"),
+        ("/accessibility/", "/about/", "true"),
+        ("/status/", "/about/", "true"),
+        ("/press/", "/about/", "true"),
     ],
 )
 def test_nav_announces_the_current_page_only_on_the_current_page(
