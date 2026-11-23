@@ -130,12 +130,13 @@ agencies:
     mdb_id: 2241
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-2355 is deprecated and redirects to mdb-2426; the feed URL follows it (ADR 0069).
   - id: xpress-2355
     name: Xpress
     subdivision_code: US-GA
     subdivision_name: Georgia
-    static_gtfs_url: https://gamobility.info/wp-content/uploads/2024/07/Google_Transit.zip
-    mdb_id: 2355
+    static_gtfs_url: https://gamobility.info/wp-content/uploads/2025/02/Google_Transit.zip
+    mdb_id: 2426
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: cobblinc

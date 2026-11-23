@@ -1,18 +1,172 @@
 # Feed-discovery check against the Mobility Database
 
-Run 2026-08-31. Source: mobilitydatabase.org catalog CSV.
+Run 2026-11-23. Source: mobilitydatabase.org catalog CSV.
 
 This checks whether the feed URL each agency is tracked on still appears in the Mobility Database, and where it doesn't, proposes the catalog feed that looks like the same agency. Candidates are suggestions to verify by hand, not automatic edits.
 
-- **1** agencies look **replaced**: the catalog lists a different download URL for the same agency.
+- **2** agencies look **replaced**: the catalog lists a different download URL for the same agency.
 - **1** agencies have **no catalog match** on name or URL.
-- **320** agencies are still on their **listed URL**: the link is canonical, so any staleness is at the source, not a wrong URL here.
+- **279** agencies are still on their **listed URL**: the link is canonical, so any staleness is at the source, not a wrong URL here.
+- **29** agencies look replaced but are **held**: the registry notes name the host we already track, so a curator chose it. This job does not overwrite that; the proposals are listed below to act on by hand.
 
 ## Likely replaced — verify and update the registry
 
+### Breeze Transit (`breeze-transit`)
+- Tracked URL (not in catalog): https://breezerider.tripsparkhost.com/gtfs/Static/google_transit.zip
+- Candidate (mdb 2260, Breeze Transit): https://breezerider.tripsparkhost.com/gtfs/2024Winter%20R02/google_transit.zip
+
+### Muncie Indiana Transit System (MITS) (`muncie-indiana-transit-system-mits`)
+- Tracked URL (not in catalog): https://www.mitsbus.org/wp-content/uploads/2026/04/MITS2026GTFS.zip
+- Candidate (mdb 719, Muncie Indiana Transit System (MITS)): http://www.mitsbus.org/wp-content/uploads/2016/11/GTFS.zip
+
+## Held — the registry notes pin the host we track
+
+The catalog lists a different URL for these agencies, and this job will not apply it: each record's `license_note` or `operating_note` names the host already tracked, which is a curator's recorded decision about provenance that the catalog cannot see. Following the catalog here is a hand edit, and it means editing the note in the same change.
+
+### Bell Gardens Trolley (`bell-gardens-trolley`)
+- Tracked URL, pinned by note: https://www.ips-systems.com/GTFS/Schedule/21
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks ips-systems.com, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 228, Bell Gardens Trolley): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/bellgardens-ca-us/bellgardens-ca-us.zip
+
+### Cascades East Transit (CET) (`cascades-east-transit-cet`)
+- Tracked URL, pinned by note: https://passio3.com/cet/passioTransit/gtfs/google_transit.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks passio3.com, the address the Mobility Database lists for this feed. The agency name and stop locations in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 138, Cascades East Transit (CET)): http://oregon-gtfs.com/gtfs_data/cascadeseast-or-us/cascadeseast-or-us.zip
+
+### Casco Bay Lines (`casco-bay-lines`)
+- Tracked URL, pinned by note: https://gtfs.remix.com/Casco_Bay_Lines_Portland_ME_USA.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks gtfs.remix.com, the address the Mobility Database lists for the record that replaced this one. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 1, Casco Bay Lines): http://smttracker.com/downloads/gtfs/cascobaylines-portland-me-usa.zip
+
+### Cherriots (`cherriots`)
+- Tracked URL, pinned by note: https://cherriots.rideralerts.com/InfoPoint/gtfs-zip.ashx
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks cherriots.rideralerts.com, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 128, Cherriots): https://www.cherriots.org/media/doc/gtfs.zip
+
+### City of Bell (La Campana) (`city-of-bell-la-campana-2249`)
+- Tracked URL, pinned by note: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13119/LaCampanaGTFS-2025-01-17.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks rapid.nationalrtap.org, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 2249, City of Bell (La Campana)): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/lacampana-ca-us/lacampana-ca-us.zip
+
 ### City of Wasco (`city-of-wasco`)
-- Tracked URL (not in catalog): https://gtfs.dds.dot.ca.gov/gtfs_files/WascoDialaRideFlex.zip
-- Candidate (mdb 1788, City of Wasco): https://gtfs.calitp.org/production/WascoDialaRideFlex.zip
+- Tracked URL, pinned by note: https://gtfs.dds.dot.ca.gov/gtfs_files/WascoDialaRideFlex.zip
+- Note: CC BY 4.0 through the Caltrans DDS GTFS index: https://gtfs.dds.dot.ca.gov/
+- Not applied (mdb 1788, City of Wasco): https://gtfs.calitp.org/production/WascoDialaRideFlex.zip
+
+### Corpus Christi Regional Transportation Authority (`corpus-christi-regional-transportation-authority`)
+- Tracked URL, pinned by note: https://gtfs.ccrta.cadavl.com/CCRTA/GTFS/GTFS_CCRTA.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks gtfs.ccrta.cadavl.com, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 315, Corpus Christi Regional Transportation Authority): https://www.ccrta.org/gtfs/ccrta-gtfs.zip
+
+### DowneyLINK (`downeylink`)
+- Tracked URL, pinned by note: https://downey.rideralerts.com/infopoint/gtfs-zip.ashx
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks downey.rideralerts.com, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 383, DowneyLINK): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/downey-ca-us/downey-ca-us.zip
+
+### Eau Claire Transit (`eau-claire-transit`)
+- Tracked URL, pinned by note: https://gtfs.ect.cadavl.com/ECT/GTFS/GTFS_ECT.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks gtfs.ect.cadavl.com, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 208, Eau Claire Transit): http://www-ecbus-org.site.atfni.com/build_data_feed.phtml
+
+### ECO Transit (`eco-transit-2061`)
+- Tracked URL, pinned by note: https://gtfs.coretransit.org/
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks gtfs.coretransit.org, the current address Transitland lists for this feed. The agency name and service area in that file match this record. The file names the agency Core Transit, ECO Transit's current name. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 2061, ECO Transit): https://cms5.revize.com/revize/eagle/zip%20download/GTFS.zip
+
+### Elk Grove Transit (`elk-grove-transit`)
+- Tracked URL, pinned by note: https://apps.sacrt.com/gtfs/eg/google_transit.zip
+- Note: The old address, elkgrovetransit.com/gtfs, now leads to an unrelated website, so this record reads SacRT's Elk Grove feed. Checked 2026-10-01: the security certificate on iportal.sacrt.com, which serves this feed, expired on 2026-09-20, so a download that checks certificates fails until SacRT renews it. The scorecard keeps checking certificates; while the check fails, the run records the failure and the artifact names any mirror copy it scored instead. Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks apps.sacrt.com, the host SacRT's transit data portal links. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 2136, Elk Grove Transit): https://elkgrovetransit.com/gtfs
+
+### Get Around Town Express (`get-around-town-express`)
+- Tracked URL, pinned by note: https://www.cityofsouthgate.org/files/sharedassets/public/v/1/city-services/documents/southgategtfs-2026-3-26.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks cityofsouthgate.org, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 606, Get Around Town Express): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/getaroundtownexpress-ca-us/getaroundtownexpress-ca-us.zip
+
+### Green Bay Metro (`green-bay-metro`)
+- Tracked URL, pinned by note: https://greenbaywi.gov/DocumentCenter/View/12124/Transit-Data-August-2024
+- Note: License: https://greenbaywi.gov/496/Transit-Data-Developer
+- Not applied (mdb 917, Green Bay Metro): https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/green-bay-wi-us.zip
+
+### HDPT (`harrisonburg-department-of-public-transportation-hdpt`)
+- Tracked URL, pinned by note: https://passio3.com/harrisonburg/passioTransit/gtfs/google_transit.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks passio3.com, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 382, Harrisonburg Department of Public Transportation (HDPT)): http://harrisonburgva.gov/sites/default/files/Transit/files/gtfs/google_transit_Working%20%281%29.zip
+
+### JAUNT Inc (`jaunt-inc`)
+- Tracked URL, pinned by note: https://gtfs.remix.com/jaunt_charlottesville_va_us.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks gtfs.remix.com, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 1324, JAUNT Inc): https://e8vkzj229xs.exactdn.com/wp-content/uploads/2022/04/GTFS-4.11.2022.zip
+
+### Lane Transit District (LTD) (`lane-transit-district-ltd`)
+- Tracked URL, pinned by note: https://feed.ltd.org/TMGTFSRealTimeWebService/GTFS/google_transit.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks feed.ltd.org, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 131, Lane Transit District (LTD)): https://www.ltd.org/files/library/ltdgtfs.zip
+
+### Memphis Area Transit Authority (`memphis-area-transit-authority-2352`)
+- Tracked URL, pinned by note: https://gtfs.mata.cadavl.com/MATA/GTFS/GTFS_MATA.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks gtfs.mata.cadavl.com, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 2352, Memphis Area Transit Authority): http://mata.cadavl.com:5053/MATA/GTFS/GTFS_MATA.zip
+
+### Mountain Metropolitan Transit (`mountain-metropolitan-transit-2356`)
+- Tracked URL, pinned by note: https://coloradosprings.gov/document/googletransit.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks coloradosprings.gov, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 2356, Mountain Metropolitan Transit): https://coloradosprings.gov/sites/default/files/google_transit_0.zip
+
+### Münchner Verkehrs- und Tarifverbund (MVV) (`mvv-munchen`)
+- Tracked URL, pinned by note: https://www.mvv-muenchen.de/fileadmin/mediapool/developer/opendata/mvv_gtfs.zip
+- Note: The Munich region's transport association network. The direct download is MobilityData's hosted mirror; the association rotates its own file path. Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks mvv-muenchen.de, the regional bus file on MVV's developer page. The agency name and stop locations in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 779, Münchner Verkehrs- und Tarifverbund GmbH (MVV)): https://www.mvv-muenchen.de/fileadmin/mediapool/02-Fahrplanauskunft/03-Downloads/openData/mvv_gtfs.zip
+
+### Niagara Frontier Transportation Authority (NFTA) (`niagara-frontier-transportation-authority-nfta`)
+- Tracked URL, pinned by note: https://metro.nfta.com/__googletransit/google_transit.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks metro.nfta.com, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 465, Niagara Frontier Transportation Authority (NFTA)): http://www.nfta.com/metro/__googletransit/google_transit.zip
+
+### Rabbit Transit (`rabbit-transit`)
+- Tracked URL, pinned by note: https://realtime.rabbittransit.org/InfoPoint/GTFS-Zip.ashx
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks realtime.rabbittransit.org, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 499, Rabbit Transit): http://www.rabbittransit.org/infopoint/gtfs/google_transit.zip
+
+### Ridgecrest Transit (`ridgecrest-transit`)
+- Tracked URL, pinned by note: https://ridgecrest-ca.gov/DocumentCenter/View/8038/Ridgecrest-GTFS-03052026
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks ridgecrest-ca.gov, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 2279, Ridgecrest Transit): https://www.ridgecrest-ca.gov/DocumentCenter/View/7499/Ridgecrest_gtfszip
+
+### Rockford Mass Transit District (`rockford-mass-transit-district`)
+- Tracked URL, pinned by note: https://rmtd.org/rmtdgtfs/GTFS_FILES.zip
+- Note: License: https://rmtd.org/gtfs/
+- Not applied (mdb 2019, Rockford Mass Transit District): https://dfef8f.p3cdn2.secureserver.net/wp-content/uploads/2023/08/RMTD_GTFS_AUGUST_2023.zip
+
+### South Florida Regional Transportation Authority (Tri-Rail) (`south-florida-regional-transportation-authority-tri-rail`)
+- Tracked URL, pinned by note: https://gtfs.tri-rail.com/gtfs.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks gtfs.tri-rail.com, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 333, South Florida Regional Transportation Authority (Tri-Rail)): http://www.tri-rail.com/GTDF/Current/google_transit.zip
+
+### SunTran (`suntran-2354`)
+- Tracked URL, pinned by note: https://www.suntran.com/wp-content/uploads/SunTranGTFS.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks the file linked from suntran.com. The agency name and stop locations in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 2354, SunTran): https://www.suntran.com/wp-content/uploads/2024/07/SunTranGTFS.zip
+
+### Tideline Water Taxi (`tideline-water-taxi`)
+- Tracked URL, pinned by note: https://data.trilliumtransit.com/gtfs/tidelinewatertaxi-ca-us/tidelinewatertaxi-ca-us.zip
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks data.trilliumtransit.com, the current address Transitland lists for this agency. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 52, Tideline Water Taxi): http://trilliumtransit.com/transit_feeds/tidelinewatertaxi-ca-us/tidelinewatertaxi-ca-us.zip
+
+### Transfort – City of Fort Collins (Transfort) (`transfort-city-of-fort-collins-transfort`)
+- Tracked URL, pinned by note: https://ridetransfort.com/wp-content/uploads/transfort_gtfs.zip
+- Note: License: http://www.ridetransfort.com/img/site_specific/uploads/Transfort_GTFS_License_Agreement.pdf
+- Not applied (mdb 179, Transfort – City of Fort Collins (Transfort)): http://www.ridetransfort.com/img/site_specific/uploads/google_transit.zip
+
+### Western Reserve Transit Authority (`western-reserve-transit-authority`)
+- Tracked URL, pinned by note: https://myvalleystops.wrtaonline.com/InfoPoint/gtfs-zip.ashx
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks myvalleystops.wrtaonline.com, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 922, Western Reserve Transit Authority): https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/western-reserve-transit-authority.zip
+
+### Wichita Transit (`wichita-transit`)
+- Tracked URL, pinned by note: https://bus.wichitatransit.org/InfoPoint/gtfs-zip.ashx
+- Note: Checked 2026-11-08: the feed URL on file had stopped working, so this record now tracks bus.wichitatransit.org, the current address Transitland lists for this feed. The agency name and service area in that file match this record. Grades dated before this change came from an older Mobility Database mirror copy.
+- Not applied (mdb 185, Wichita Transit): https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/blob/master/wichita-transit.zip?raw=true
 
 ## No catalog match — confirm the agency still publishes GTFS
 
@@ -28,9 +182,7 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Access Allegany (`access-allegany`): https://s3.amazonaws.com/datatools-511ny/public/Access_Allegany.zip
 - Addison County Transit (ACTR) (`addison-county-transit-actr`): https://data.trilliumtransit.com/gtfs/addisoncounty-vt-us/addisoncounty-vt-us.zip
 - Adirondack Trailways Pine Hill Trailways (`adirondack-trailways-pine-hill-trailways`): https://s3.amazonaws.com/datatools-511ny/public/Trailways-PHK.zip
-- Advance Transit (AT) (`advance-transit-at`): http://whereismybus.advancetransit.com/GTFS/feed.zip
 - Airport Valet Express (`airport-valet-express`): https://data.trilliumtransit.com/gtfs/airportvaletexpress-ca-us/airportvaletexpress-ca-us.zip
-- Alameda-Contra Costa Transit District (AC Transit) (`alameda-contra-costa-transit-district-ac-transit`): https://transitfeeds.com/p/ac-transit/1269/latest/download
 - Albany Transit System (`albany-transit-system`): https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11834/ats_albany_ga_us(2).zip
 - Alcatraz Cruises - Hornblower, Angel Island Tiburon Ferry, Blue & Gold Fleet (`alcatraz-cruises-hornblower-angel-island-tiburon-ferry-blue-gold-fleet`): https://data.trilliumtransit.com/gtfs/bayareaferries-ca-us/bayareaferries-ca-us.zip
 - Alhambra Community Transit (`alhambra-community-transit`): https://data.trilliumtransit.com/gtfs/alhambra-ca-us/alhambra-ca-us.zip
@@ -47,21 +199,17 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Azienda Napoletana Mobilità (ANM) (`anm-napoli`): http://www.anm.it/google/google-transit.zip
 - Baldwin Park Transit (`baldwin-park-transit`): https://data.trilliumtransit.com/gtfs/baldwinpark-ca-us/baldwinpark-ca-us.zip
 - Bay Town Trolley (`bay-town-trolley`): https://data.trilliumtransit.com/gtfs/baytowntrolley-fl-us/baytowntrolley-fl-us.zip
-- Beach Cities Transit (`beach-cities-transit`): https://www.redondo.org/civicax/filebank/blobdload.aspx?BlobID=33555
-- Bell Gardens Trolley (`bell-gardens-trolley`): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/bellgardens-ca-us/bellgardens-ca-us.zip
-- Bellflower Bus (`bellflower-bus`): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/bellflower-ca-us/bellflower-ca-us.zip
 - Benson Area Transit (`benson-area-transit`): https://data.trilliumtransit.com/gtfs/benson-az-us/benson-az-us.zip
 - Bent County Transit (`bent-county-transit`): https://data.trilliumtransit.com/gtfs/bentcounty-co-us/bentcounty-co-us.zip
 - Bethesda Circulator (`bethesda-circulator`): https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/bethesdacirculator-md-us.zip
-- Birmingham Jefferson County Transit Authority (MAX) (`birmingham-jefferson-county-transit-authority-max-2263`): https://maxtransit.org/wp-content/uploads/2024/09/google_transit_Working.zip
-- Blacksburg Transit (`blacksburg-transit`): http://www.bt4uclassic.org/gtfs/google_transit.zip
+- Birmingham Jefferson County Transit Authority (MAX) (`birmingham-jefferson-county-transit-authority-max-2263`): https://maxtransit.org/GTFS/2026/google_transit_Working.zip
+- Blacksburg Transit (`blacksburg-transit`): https://www.bt4uclassic.org/gtfs/google_transit.zip
 - Bloom Bus (`bloom-bus`): https://data.trilliumtransit.com/gtfs/bloombus-ma-us/bloombus-ma-us.zip
 - Blue & Gold Fleet (`blue-gold-fleet`): https://transitfeeds.com/p/blue-gold-fleet/824/latest/download
 - Blue Sky Limo LLC (`blue-sky-limo-llc`): https://blueskylimovail.com/blueskylimo_gtfs.zip
 - Blue Star Bus (`blue-star-bus`): https://oregon-gtfs.com/gtfs_data/bluestar-or-us/bluestar-or-us.zip
 - Boulder County (`boulder-county`): https://data.trilliumtransit.com/gtfs/bouldercounty-co-us/bouldercounty-co-us.zip
 - Breckenridge Free Ride (`breckenridge-free-ride`): https://data.trilliumtransit.com/gtfs/breckenridgefreeride-co-us/breckenridgefreeride-co-us.zip
-- Breeze Transit (`breeze-transit`): https://breezerider.tripsparkhost.com/gtfs/2024Winter%20R02/google_transit.zip
 - Brite (`brite`): http://britebus.org/gtfs/brite.zip
 - Buc Shuttle (`buc-shuttle`): http://documents.atlantaregional.com/transitdata/gtfs_Buc.zip
 - Butler County Regional Transit Authority (`butler-county-regional-transit-authority`): https://www.butlercountyrta.com/wp-content/uploads/2019/11/Bcrta-GTFS-1.zip
@@ -80,8 +228,6 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Carroll Transit System (`carroll-transit-system`): https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Carroll_GTFS.zip
 - Carson Circuit (`carson-circuit`): https://data.trilliumtransit.com/gtfs/carson-ca-us/carson-ca-us.zip
 - Cascade POINT (`cascade-point`): https://oregon-gtfs.trilliumtransit.com/gtfs_data/cascadespoint-or-us/cascadespoint-or-us.zip
-- Cascades East Transit (CET) (`cascades-east-transit-cet`): https://oregon-gtfs.com/gtfs_data/cascadeseast-or-us/cascadeseast-or-us.zip
-- Casco Bay Lines (`casco-bay-lines`): http://smttracker.com/downloads/gtfs/cascobaylines-portland-me-usa.zip
 - Cat Tran Shuttle (`cat-tran-shuttle-2206`): https://api.transloc.com/gtfs/arizona.zip
 - CATABUS (`centre-county-transit-authority-cata`): https://transitfeeds.com/p/catabus/536/latest/download
 - Catalina Flyer (`catalina-flyer`): https://data.trilliumtransit.com/gtfs/catalinaflyer-ca-us/catalinaflyer-ca-us.zip
@@ -90,14 +236,12 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Charles County VanGo (`charles-county-vango`): https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Charles_GTFS.zip
 - Charm City Circulator (`charm-city-circulator`): https://github.com/mobilityequity/maryland-local-gtfs/raw/master/CCC_GTFS.zip
 - Chatham Area Transit (CAT) (`chatham-area-transit-cat-2080`): https://catchacat.org/wp-content/uploads/GTFS.zip
-- Chattanooga Area Regional Transportation Authority (CARTA) (`chattanooga-area-regional-transportation-authority-carta-2082`): https://www.gocarta.org/wp-content/uploads/2024/01/GTFS.zip
+- Chattanooga Area Regional Transportation Authority (CARTA) (`chattanooga-area-regional-transportation-authority-carta-2082`): https://raw.githubusercontent.com/gocarta/gtfs/refs/heads/master/gtfs_current.zip
 - Cherokee Area Transportation System (CATS) (`cherokee-area-transportation-system-cats`): http://documents.atlantaregional.com/transitdata/gtfs_CATS.zip
-- Cherriots (`cherriots`): https://www.cherriots.org/media/doc/gtfs.zip
 - Citibus (`citibus-2304`): https://data.trilliumtransit.com/gtfs/davenport-ia-us/davenport-ia-us.zip
 - Citrus County Transit (`citrus-county-transit-2257`): https://www.citrusbocc.com/document_center/Department/Community%20Services/Support%20Services/Transit/GTFS%20Text%20Files/GTFS%2011-18-24.zip
 - City 2 City Shuttle (`city-2-city-shuttle`): https://oregon-gtfs.trilliumtransit.com/gtfs_data/citytocityshuttle-or-us/citytocityshuttle-or-us.zip
 - City Coach (`city-coach`): https://data.trilliumtransit.com/gtfs/vacavillecitycoach-ca-us/vacavillecitycoach-ca-us.zip
-- City of Bell (La Campana) (`city-of-bell-la-campana-2249`): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/lacampana-ca-us/lacampana-ca-us.zip
 - City of Douglas (`city-of-douglas`): https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13058/douglas_az_gtfs.zip
 - City of Glendale (`city-of-glendale`): https://transitfeeds.com/p/city-of-glendale/628/latest/download
 - City of Las Vegas (`city-of-las-vegas`): https://data.trilliumtransit.com/gtfs/lasvegasloop-nv-us/lasvegasloop-nv-us.zip
@@ -118,25 +262,20 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Continuum Flex (`continuum`): https://data.trilliumtransit.com/gtfs/continuum-co-us/continuum-co-us--flex-v2.zip
 - Copper Mountain Transit (`copper-mountain-transit`): https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11492/CMT_gtfs.zip
 - Corning Erwin Area Transit System (CEATS) (`corning-erwin-area-transit-system-ceats`): https://s3.amazonaws.com/datatools-511ny/public/Corning_Erwin_Area_Transit_System_CEATS.zip
-- Corpus Christi Regional Transportation Authority (`corpus-christi-regional-transportation-authority`): https://www.ccrta.org/gtfs/ccrta-gtfs.zip
 - Cortland County Public Transportation (`cortland-county-public-transportation`): https://s3.amazonaws.com/datatools-511ny/public/Cortland_Transit.zip
 - Cotton Express and Central Arizona Regional Transit (`city-of-coolidge`): https://coolidgeaz.govoffice2.com/vertical/Sites/%7BAE188E70-DD7F-47BE-99EF-B58B70641DF9%7D/uploads/coolidge_gtfs.zip
 - Cudahy Area Rapid Transit (`cudahy-area-rapid-transit-2248`): https://www.cityofcudahy.com/DocumentCenter/View/2041
-- Culver City Bus (`culver-city-bus`): https://www.culvercity.org/files/assets/public/documents/information-technology/maps/gtfsexport.zip
+- Culver City Bus (`culver-city-bus`): https://web.culvercity.org/gtfs/gtfsexport.zip
 - Cuyahoga Valley Scenic Railroad (`national-park-service`): http://nationalparkservice.github.io/nps-gtfs/cuva/scenic-rail/gtfs.zip
 - Dallas Host Committee (`dallas-host-committee`): https://d2igk3wxwksqfb.cloudfront.net/dallashostcommitteedata.zip
 - DATTCO Motorcoach (`dattco-motorcoach`): https://data.trilliumtransit.com/gtfs/dattco-ma-us/dattco-ma-us.zip
 - DC Streetcar (`dc-streetcar-2223`): https://mjcaction.com/MJC_GTFS_Public/dcstreetcar_gtfs.zip
 - Delmarva Community Transit (`delmarva-community-transit`): https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Delmarva_GTFS.zip
-- DowneyLINK (`downeylink`): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/downey-ca-us/downey-ca-us.zip
 - Duke University (`duke-university`): https://data.trilliumtransit.com/gtfs/duke-nc-us/duke-nc-us.zip
 - Eastern Point (`eastern-point`): https://oregon-gtfs.trilliumtransit.com/gtfs_data/easternpoint-or-us/easternpoint-or-us.zip
-- Eau Claire Transit (`eau-claire-transit`): http://www-ecbus-org.site.atfni.com/build_data_feed.phtml
-- ECO Transit (`eco-transit-2061`): https://cms5.revize.com/revize/eagle/zip%20download/GTFS.zip
 - El Monte Transit (`el-monte-transit`): https://data.trilliumtransit.com/gtfs/elmonte-ca-us/elmonte-ca-us.zip
 - El Segundo Transportation (`el-segundo-transportation-2210`): https://github.com/LACMTA/los-angeles-regional-gtfs/raw/main/elsegundo-ca-us/elsegundo-ca-us.zip
 - Elevated Transit (`elevated-transit`): https://transitfeeds.com/p/elevated-transit/609/latest/download
-- Elk Grove Transit (`elk-grove-transit`): https://elkgrovetransit.com/gtfs
 - Emerald Bay Shuttle (`keep-tahoe-blue`): https://keeptahoeblue.sharepoint.com/sites/LeaguetoSaveLakeTahoe-CommunityEngagement/_layouts/15/guestaccess.aspx?share=EdcHnLwMfdJLscvyGDDa8FwB_bLXkpj9XIuG5GFiKdlKJw&e=1yNB6c&download=1
 - Emerald Coast Rider (ECR) (`emerald-coast-rider-ecr`): https://data.trilliumtransit.com/gtfs/okaloosacountytransit-fl-us/okaloosacountytransit-fl-us.zip
 - Emory University Cliff Shuttles (`emory-university-cliff-shuttles`): http://documents.atlantaregional.com/transitdata/gtfs_CCTMA.zip
@@ -153,37 +292,31 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Gallup Express (`gallup-express`): https://mjcaction.com/MJC_GTFS_Public/gallupexpress_google_transit.zip
 - Garden of the Gods (`garden-of-the-gods`): https://data.trilliumtransit.com/gtfs/gardenofthegods-co-us/gardenofthegods-co-us.zip
 - Georgia Tech Trolley & Stinger Shuttles (`georgia-tech-trolley-stinger-shuttles`): http://documents.atlantaregional.com/transitdata/gtfs_GT.zip
-- Get Around Town Express (`get-around-town-express`): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/getaroundtownexpress-ca-us/getaroundtownexpress-ca-us.zip
 - Glendale Beeline (`glendale-beeline`): https://transitfeeds.com/p/glendale-beeline/917/latest/download
-- Glendora Transportation Division (`glendora-transportation-division`): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/glendora-ca-us/glendora-ca-us.zip
 - Glendora Transportation Division (`glendora-transportation-division-3097`): https://www.cityofglendora.gov/files/assets/city/v/3/recreation-amp-human-services/transportation/documents/gtfs-6-2025.zip
 - Go West Shuttle (`go-west-shuttle`): https://data.trilliumtransit.com/gtfs/westcovina-ca-us/westcovina-ca-us.zip
 - GoDurham (`godurham`): https://data.trilliumtransit.com/gtfs/durham-area-transit-authority-nc-us/durham-area-transit-authority-nc-us.zip
 - GoWal (`gowal`): https://data.trilliumtransit.com/gtfs/gowal-fl-us/gowal-fl-us.zip
-- Grand Valley Transit (`grand-valley-transit`): http://emap.mesacounty.us/datadownload/Google_Transit_Feed/google_transit.zip
+- Grand Valley Transit (`grand-valley-transit`): https://emap.mesacounty.us/datadownload/Google_Transit_Feed/google_transit.zip
 - Greater Attleboro Taunton Regional Transit Authority (GATRA) (`greater-attleboro-taunton-regional-transit-authority-gatra`): https://data.trilliumtransit.com/gtfs/gatra-ma-us/gatra-ma-us.zip
-- Green Bay Metro (`green-bay-metro`): https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/green-bay-wi-us.zip
 - Greensboro Transit Authority (GTA) (`greensboro-transit-authority-gta`): https://app.mecatran.com/urb/ws/feed/c2l0ZT1ncmVlbnNib3JvO2NsaWVudD1zZWxmO2V4cGlyZT07dHlwZT1ndGZzO2tleT00ZDQ3MDYyMjNiNjI3ZjFmMTU1YzFiNGIxNTY0Mzg0ZDFjNzYyOTQy
 - Groome Transportation (`groome-transportation`): https://data.trilliumtransit.com/gtfs/groometransportation-us/groometransportation-us.zip
 - Groome Transportation (Greenride) (`groome-transportation-greenride`): https://data.trilliumtransit.com/gtfs/greenride-co-us/greenride-co-us.zip
 - Groome Transportation - Arizona Shuttle (`groome-transportation-arizona-shuttle`): https://data.trilliumtransit.com/gtfs/arizonashuttle-az-us/arizonashuttle-az-us.zip
 - Groome Transportation - Colorado Springs Shuttle (`groome-transportation-colorado-springs-shuttle`): https://data.trilliumtransit.com/gtfs/coloradoshuttle-co-us/coloradoshuttle-co-us.zip
-- GRTC Transit System (`grtc-transit-system`): https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/grtc.zip
+- GRTC Transit System (`grtc-transit-system`): https://www.ridegrtc.com/wp-content/uploads/2025/02/gtfs.zip
 - Guadalupe Flyer (`guadalupe-flyer`): https://data.trilliumtransit.com/gtfs/guadalupeflyer-ca-us/guadalupeflyer-ca-us.zip
 - Harford Transit LINK (`harford-transit-link`): https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Harford_GTFS.zip
 - Hawai'i Mass Transit Agency (Hele-On Bus) (`hawai-i-mass-transit-agency-hele-on-bus`): http://www.heleonbus.org/transit-info-and-statistics/MTA_FEED4.zip
-- HDPT (`harrisonburg-department-of-public-transportation-hdpt`): http://harrisonburgva.gov/sites/default/files/Transit/files/gtfs/google_transit_Working%20%281%29.zip
 - Herkimer-Oneida Counties Transportation Study (HOCTS) (`herkimer-oneida-counties-transportation-study-hocts`): https://s3.amazonaws.com/datatools-511ny/public/Oneida_County_Rural_Transit.zip
 - Hernando County Transit (TheBus) (`hernando-county-transit-thebus`): https://data.trilliumtransit.com/gtfs/thehernandoexpress-fl-us/thehernandoexpress-fl-us.zip
 - Homage: DʼArling Direct (`homage-d-arling-direct`): https://data.trilliumtransit.com/gtfs/homage-wa-us/homage-wa-us.zip
 - Hornell Area Transit (`hornell-area-transit`): https://s3.amazonaws.com/datatools-511ny/public/Hornell_Area_Transit.zip
-- Huntington Park Express (`huntington-park-express`): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/huntingtonpark-ca-us/huntingtonpark-ca-us.zip
 - Huntington Park Express (`huntington-park-express-2648`): https://www.hpca.gov/DocumentCenter/View/11702
 - Indian Trails, Detroit Ann Arbor Express (`indian-trails-detroit-ann-arbor-express`): https://data.trilliumtransit.com/gtfs/indiantrails-mi-us/indiantrails-mi-us.zip
 - IndyGo (`indygo`): https://transitfeeds.com/p/indygo/210/latest/download
 - Jackson Transit Authority (`jackson-transit-authority`): https://data.trilliumtransit.com/gtfs/jackson-tn-us/jackson-tn-us.zip
 - Jamestown S'klallam (`jamestown-s-klallam`): https://mjcaction.com/MJC_GTFS_Public/sevencedars_google_transit.zip
-- JAUNT Inc (`jaunt-inc`): https://e8vkzj229xs.exactdn.com/wp-content/uploads/2022/04/GTFS-4.11.2022.zip
 - JeffCo Express (`jeffco-express`): https://data.trilliumtransit.com/gtfs/jeffersoncounty-mo-us/jeffersoncounty-mo-us.zip
 - JFK Airtrain (`jfk-airtrain`): https://s3.amazonaws.com/datatools-511ny/public/Airtrain_JFK.zip
 - Jonesboro Economical Transportation (JET) (`jonesboro-economical-transportation-jet`): http://www.jonesboro.org/DocumentCenter/View/2432
@@ -200,7 +333,6 @@ The Mobility Database lists the same download URL we already track, so there is 
 - La Puente LINK (`la-puente-link-2250`): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/lapuente-ca-us/lapuente-ca-us.zip
 - Lakeland Area Mass Transit (`lakeland-area-mass-transit`): https://ftis.org/PostFileDownload.aspx?id=313A0
 - LakeXpress (`lakexpress`): https://ftis.org/PostFileDownload.aspx?id=450A0
-- Lane Transit District (LTD) (`lane-transit-district-ltd`): https://www.ltd.org/files/library/ltdgtfs.zip
 - Lehigh and Northampton Transportation Authority (LANTA) (`lehigh-and-northampton-transportation-authority-lanta`): https://github.com/LANTA-Transportation-Authority/GTFS-data/raw/master/lanta_gtfs_feed.zip
 - LimoLiner (`limoliner`): https://data.trilliumtransit.com/gtfs/limoliner-ma-us/limoliner-ma-us.zip
 - Livermore Amador Valley Transit Authority (`livermore-amador-valley-transit-authority`): http://webwatch.lavta.org/TMGTFSRealTimeWebService/GTFS-Static/google_transit.zip
@@ -212,7 +344,6 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Madison County Transit (`madison-county-transit-1145`): https://transitfeeds.com/p/madison-county-transit/1146/latest/download
 - Massachusetts Ferry Service (`massachusetts-ferry-service`): https://transitfeeds.com/p/massdot/109/latest/download
 - MATBUS (`matbus`): https://transitfeeds.com/p/matbus/833/latest/download
-- Memphis Area Transit Authority (`memphis-area-transit-authority-2352`): http://mata.cadavl.com:5053/MATA/GTFS/GTFS_MATA.zip
 - METRO Houston (`metro-houston-2060`): https://metro.resourcespace.com/pages/download.php?ref=4835&ext=zip
 - Metropolitan Area Commuter System (`metropolitan-area-commuter-system`): https://www.fnsb.gov/DocumentCenter/View/690/General-Transit-Feed-Specification-ZIP
 - Metropolitan Tulsa Transit Authority (MTTA) (`metropolitan-tulsa-transit-authority-mtta`): http://gtfs.tulsatransit.org/google_transit.zip
@@ -220,20 +351,16 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Microsoft Shuttles (`microsoft-shuttles`): https://github.com/cookieguru/microsoft-gtfs/releases/download/20150518150359/gtfs_20150518150359.zip
 - Middletown Area Transit (`middletown-area-transit-2324`): https://data.trilliumtransit.com/gtfs/middletown-ny-us/middletown-ny-us.zip
 - Modesto Area Express (`modesto-area-express`): https://www.modestoareaexpress.com/preview-gtfs.zip
-- Monroe County Transportation Authority (MCTA) (`monroe-county-transportation-authority-mcta`): https://www.gomcta.com/google_transit.zip
+- Monroe County Transportation Authority (MCTA) (`monroe-county-transportation-authority-mcta`): https://ponytracker.availtec.com/InfoPoint/gtfs-zip.ashx
 - MOOver (`moover`): https://data.trilliumtransit.com/gtfs/dvtamoover-vt-us/dvtamoover-vt-us.zip
 - Morro Bay Transit (`morro-bay-transit-2059`): https://www.morrobayca.gov/DocumentCenter/View/19231/Morro-Bay-GTFS-Data-Updated-20240510
 - Mountain Express (MtnExp) (`mountain-express-mtnexp`): https://mjcaction.com/MJC_GTFS_Public/cb_mtnexpress_google_transit.zip
 - Mountain Lynx Transit Flex (`mountain-lynx-transit-2447`): https://data.trilliumtransit.com/gtfs/districtthree-va-us/districtthree-va-us--flex-v2.zip
-- Mountain Metropolitan Transit (`mountain-metropolitan-transit-2356`): https://coloradosprings.gov/sites/default/files/google_transit_0.zip
 - Mountain Rides Transportation Authority (MRTA) (`mountain-rides-transportation-authority-mrta`): https://data.trilliumtransit.com/gtfs/mountainrides-id-us/mountainrides-id-us.zip
 - Mt. Bachelor (`mt-bachelor`): https://oregon-gtfs.trilliumtransit.com/gtfs_data/mtbachelor-or-us/mtbachelor-or-us.zip
 - Muletown Trolley (`muletown-trolley`): https://www.sctdd.org/wp-content/uploads/2025/02/gtfs_muletown.zip
-- Muncie Indiana Transit System (MITS) (`muncie-indiana-transit-system-mits`): http://www.mitsbus.org/wp-content/uploads/2016/11/GTFS.zip
-- Münchner Verkehrs- und Tarifverbund (MVV) (`mvv-munchen`): https://www.mvv-muenchen.de/fileadmin/mediapool/02-Fahrplanauskunft/03-Downloads/openData/mvv_gtfs.zip
 - Nevada County Connects (Gold Country Stage) (`nevada-county-connects-gold-country-stage`): https://data.trilliumtransit.com/gtfs/goldcountrystage-ca-us/goldcountrystage-ca-us.zip
 - New York Trailways (`new-york-trailways`): https://s3.amazonaws.com/datatools-511ny/public/Trailways-NYT.zip
-- Niagara Frontier Transportation Authority (NFTA) (`niagara-frontier-transportation-authority-nfta`): http://www.nfta.com/metro/__googletransit/google_transit.zip
 - Nisqually Transit (`nisqually-transit`): https://data.trilliumtransit.com/gtfs/nisqually-wa-us/nisqually-wa-us.zip
 - North Central Regional Transit District (NCRTD) (`north-central-regional-transit-district-ncrtd`): https://www.ncrtd.org/wp-content/uploads/2021/05/gtfs-5.12.21.zip
 - NorthWest POINT (`northwest-point`): https://oregon-gtfs.trilliumtransit.com/gtfs_data/northwestpoint-or-us/northwestpoint-or-us.zip
@@ -251,31 +378,24 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Puget Sound Express (`puget-sound-express`): https://mjcaction.com/MJC_GTFS_Public/pse_google_transit.zip
 - Qline Detroit (`qline-detroit`): https://data.trilliumtransit.com/gtfs/qline-mi-us/qline-mi-us.zip
 - Queen Anne's County Ride (`queen-anne-s-county-ride`): https://github.com/mobilityequity/maryland-local-gtfs/raw/master/QA_GTFS.zip
-- Rabbit Transit (`rabbit-transit`): http://www.rabbittransit.org/infopoint/gtfs/google_transit.zip
 - Redding Area Bus Authority Flex (`redding-area-bus-authority-2853`): https://rabagtfs.z5.web.core.windows.net/rabagtfs_flex.zip
 - Redwood Coast Transit (RCT) (`redwood-coast-transit-rct`): https://data.trilliumtransit.com/gtfs/delnorte-ca-us/delnorte-ca-us.zip
 - Regional Transit Service (`regional-transit-service`): https://s3.amazonaws.com/datatools-511ny/public/RTS-Wyoming.zip
 - Regional Transit Service Seneca (RTS Seneca) (`regional-transit-service-seneca-rts-seneca`): https://s3.amazonaws.com/datatools-511ny/public/RTS-Seneca.zip
 - reLAXsan (`relaxsan`): https://relaxsan.s3.amazonaws.com/gtfs.zip
 - RIDE Sitka (`ride-sitka`): https://transitfeeds.com/p/ride-sitka/713/latest/download
-- Ridgecrest Transit (`ridgecrest-transit`): https://www.ridgecrest-ca.gov/DocumentCenter/View/7499/Ridgecrest_gtfszip
 - Ridgerunner (`ridgerunner`): https://data.trilliumtransit.com/gtfs/cityofridgecrest-ca-us/cityofridgecrest-ca-us.zip
 - Rio Metro Regional Transit District (`rio-metro-regional-transit-district`): https://www.riometro.org/DocumentCenter/View/2195/nmrailrunner_google_transit
 - Rio Vista Delta Breeze (`rio-vista-delta-breeze`): https://data.trilliumtransit.com/gtfs/riovista-ca-us/riovista-ca-us.zip
 - RoadRunner (`roadrunner`): https://data.trilliumtransit.com/gtfs/naipta-az-us/naipta-az-us.zip
 - Rochester City Lines (`rochester-city-lines`): https://transitfeeds.com/p/rochester-city-lines/774/latest/download
 - Rock Region Metro (`rock-region-metro-2264`): https://rrmetro.org/gtfs.zip
-- Rockford Mass Transit District (`rockford-mass-transit-district`): https://dfef8f.p3cdn2.secureserver.net/wp-content/uploads/2023/08/RMTD_GTFS_AUGUST_2023.zip
-- Rosemead Explorer (`rosemead-explorer`): https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/rosemead-ca-us/rosemead-ca-us.zip
-- Sacramento Regional Transit (SacRT) (`sacramento-regional-transit-sacrt-2137`): https://www.sacrt.com/wp-content/uploads/google_transit.zip
-- SamTrans (`samtrans`): http://api.511.org/transit/datafeeds?operator_id=SM
 - San Juan Capistrano Free Weekend Trolley (`san-juan-capistrano-free-weekend-trolley`): https://data.trilliumtransit.com/gtfs/sanjuancapistrano-ca-us/sanjuancapistrano-ca-us.zip
 - San Leandro Links (`san-leandro-links`): https://data.trilliumtransit.com/gtfs/sanleandro-ca-us/sanleandro-ca-us.zip
 - San Miguel Authority for Regional Transportation (SMART) (`san-miguel-authority-for-regional-transportation-smart`): https://data.trilliumtransit.com/gtfs/sanmiguel-co-us/sanmiguel-co-us.zip
 - Sandia Shuttle (`sandia-shuttle`): https://data.trilliumtransit.com/gtfs/sandiashuttle-nm-us/sandiashuttle-nm-us.zip
 - Sanford Trolley (`sanford-trolley`): https://transitfeeds.com/p/sanford-trolley/947/latest/download
 - Santa Fe Trails (`santa-fe-trails`): https://mjcaction.com/MJC_GTFS_Public/santafetrails_google_transit.zip
-- Santa Rosa CityBus (`santa-rosa-citybus`): https://srcity.org/DocumentCenter/View/21635/google_transit
 - Santa Rosa CityBus (`santa-rosa-citybus-1986`): https://www.srcity.org/DocumentCenter/View/38683/Santa_Rosa_GTFS
 - Schuyler County Transit (`schuyler-county-transit`): https://s3.amazonaws.com/datatools-511ny/public/Schuyler_County_Public_Transit.zip
 - Seattle Children's Hospital Shuttle (`seattle-children-s-hospital-shuttle`): https://gtfs.sound.obaweb.org/prod/98_gtfs.zip
@@ -288,14 +408,13 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Simi Valley Transit (`simi-valley-transit`): https://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip
 - Sioux Area Metro (SAM) (`sioux-area-metro-sam`): https://data.trilliumtransit.com/gtfs/siouxareametro-sd-us/siouxareametro-sd-us.zip
 - Sonoma County Airport Express (`sonoma-county-airport-express`): https://data.trilliumtransit.com/gtfs/airportexpressinc-ca-us/airportexpressinc-ca-us.zip
-- South Florida Regional Transportation Authority (Tri-Rail) (`south-florida-regional-transportation-authority-tri-rail`): http://www.tri-rail.com/GTDF/Current/google_transit.zip
 - South Lane Wheels (`south-lane-wheels`): https://oregon-gtfs-trilliumtransit.com/gtfs_data/southlanewheels-or-us/southlanewheels-or-us.zip
 - South Portland (`south-portland-2641`): https://gtfs.remix.com/South_Portland_Bus_ME_US.zip
 - SouthWest POINT (`southwest-point`): https://oregon-gtfs.trilliumtransit.com/gtfs_data/southwestpoint-or-us/southwestpoint-or-us.zip
 - St Lawrence County Public Transit (`st-lawrence-county-public-transit`): https://s3.amazonaws.com/datatools-511ny/public/St_Lawrence_County_Public_Transit.zip
 - St. Mary's Transit System (STS) (`st-mary-s-transit-system-sts`): https://github.com/mobilityequity/maryland-local-gtfs/raw/master/SM_GTFS.zip
 - Stagecoach Transportation Services (STS) (`stagecoach-transportation-services-sts`): https://data.trilliumtransit.com/gtfs/stagecoach-vt-us/stagecoach-vt-us.zip
-- Stanislaus Regional Transit (StaRT) (`stanislaus-regional-transit-start`): https://data.trilliumtransit.com/gtfs/stanislaus-ca-us/stanislaus-ca-us.zip
+- Stanislaus Regional Transit (StaRT) (`stanislaus-regional-transit-start`): https://stanrta.rideralerts.com/InfoPoint/gtfs-zip.ashx
 - Stanislaus Regional Transit Authority (`stanislaus-regional-transit-authority`): https://data.trilliumtransit.com/gtfs/stanrta-ca-us/stanrta-ca-us--flex-v2.zip
 - StarMetro (`starmetro`): https://data.trilliumtransit.com/gtfs/starmetro-fl-us/starmetro-fl-us.zip
 - STCP (Sociedade de Transportes Colectivos do Porto) (`stcp-porto`): https://opendata.porto.digital/dataset/5275c986-592c-43f5-8f87-aabbd4e4f3a4/resource/89a6854f-2ea3-4ba0-8d2f-6558a9df2a98/download/horarios_gtfs_stcp_16_04_2025.zip
@@ -304,17 +423,14 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Steuben County Transit (`steuben-county-transit`): https://s3.amazonaws.com/datatools-511ny/public/Steuben_County_Transit.zip
 - SunLine Transit Agency (`sunline-transit-agency`): http://www.sunline.org/transit/google_transit.zip
 - Sunshine Bus Company (`sunshine-bus-company`): https://data.trilliumtransit.com/gtfs/sunshinebuscompany-fl-us/sunshinebuscompany-fl-us.zip
-- SunTran (`suntran-2354`): https://www.suntran.com/wp-content/uploads/2024/07/SunTranGTFS.zip
 - SunTran (`suntran-343`): https://data.trilliumtransit.com/gtfs/suntran-fl-us/suntran-fl-us.zip
 - Taft Area Transit (`taft-area-transit`): https://data.trilliumtransit.com/gtfs/taft-ca-us/taft-ca-us.zip
 - Tehama Rural Area Express (TRAX), Susanville Indian Rancheria Public Transportation Program (`tehama-rural-area-express-trax-susanville-indian-rancheria-public-transportation-program`): https://data.trilliumtransit.com/gtfs/tehama-ca-us/tehama-ca-us.zip
 - Terre Haute Transit Utility (`terre-haute-transit-utility`): https://data.trilliumtransit.com/gtfs/terrehautetransit-in-us/terrehautetransit-in-us.zip
 - The Victoria Clipper (`the-victoria-clipper`): https://addtransit.com/gtfsfile/42017/TheVictoriaClipper.zip
 - Thousand Oaks Transit - Kanan Shuttle (`thousand-oaks-transit-kanan-shuttle`): https://data.trilliumtransit.com/gtfs/kananshuttle-ca-us/kananshuttle-ca-us.zip
-- Tideline Water Taxi (`tideline-water-taxi`): http://trilliumtransit.com/transit_feeds/tidelinewatertaxi-ca-us/tidelinewatertaxi-ca-us.zip
 - Torrance Transit (`torrance-transit`): https://transit.torranceca.gov/home/showdocument?id=16673
 - Town of Mountain Village (`town-of-mountain-village`): https://data.trilliumtransit.com/gtfs/mountainvillage-co-us/mountainvillage-co-us.zip
-- Transfort – City of Fort Collins (Transfort) (`transfort-city-of-fort-collins-transfort`): http://www.ridetransfort.com/img/site_specific/uploads/google_transit.zip
 - Transit Orange / Newburgh Local Transit (`transit-orange-newburgh-local-transit`): https://s3.amazonaws.com/datatools-511ny/public/Newburgh_Bus.zip
 - Tri Delta Transit (`tri-delta-transit`): https://transitfeeds.com/p/tri-delta-transit/1148/latest/download
 - TSC Transit Flex (`tsc-transit`): https://data.trilliumtransit.com/gtfs/tsctransit-co-us/tsctransit-co-us--flex-v2.zip
@@ -328,7 +444,7 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Verde Lynx (`verde-lynx`): https://data.trilliumtransit.com/gtfs/verdelynx-az-us/verdelynx-az-us.zip
 - Victor Valley Transit Authority (VVTA) (`victor-valley-transit-authority-vvta`): https://data.trilliumtransit.com/gtfs/victorville-ca-us/victorville-ca-us.zip
 - Village of Cooperstown Trolly System (`village-of-cooperstown-trolly-system`): https://s3.amazonaws.com/datatools-511ny/public/Village_of_Cooperstown_Trolley_System.zip
-- Virginia Breeze (`virginia-breeze`): https://data.trilliumtransit.com/gtfs/virginiabreeze-va-us/virginiabreeze-va-us.zip
+- Virginia Breeze (`virginia-breeze`): https://maps.tds.ai/download-feed/virginia-breeze-gtfs
 - Virginia Railway Express (VRE) (`virginia-railway-express-vre`): https://www.vre.org/gtfs/google_transit.zip
 - Votran (`votran`): https://ftis.org/PostFileDownload.aspx?id=425A0
 - Water Avenue Shuttle (`water-avenue-shuttle`): https://oregon-gtfs.trilliumtransit.com/gtfs_data/ceic-or-us/ceic-or-us.zip
@@ -336,9 +452,6 @@ The Mobility Database lists the same download URL we already track, so there is 
 - Waukesha Metro Transit (`waukesha-metro-transit`): https://data.trilliumtransit.com/gtfs/waukeshacounty-wi-us/waukeshacounty-wi-us.zip
 - West Berkeley Shuttle (`west-berkeley-shuttle`): https://data.trilliumtransit.com/gtfs/westberkeleyshuttle-ca-us/westberkeleyshuttle-ca-us.zip
 - Westchester County Bee-Line System (WCDOT) (`westchester-county-bee-line-system-wcdot-2353`): https://planning.westchestergov.com/images/stories/zip/GTFS.zip
-- Western Reserve Transit Authority (`western-reserve-transit-authority`): https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/western-reserve-transit-authority.zip
-- Wichita Transit (`wichita-transit`): https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/blob/master/wichita-transit.zip?raw=true
 - Williamsburg Area Transit Authority (WATA) (`williamsburg-area-transit-authority-wata`): http://www.gowata.org/DocumentCenter/View/500
 - Yates Transit Service (`yates-transit-service`): https://s3.amazonaws.com/datatools-511ny/public/Yates_Transit_Service.zip
-- Yolo County Transportation District (Yolobus) (`yolo-county-transportation-district-yolobus`): http://www.yolobus.com/GTFS/google_transit.zip
 - Yosemite Area Regional Transportation System (YARTS) (`yosemite-area-regional-transportation-system-yarts-2394`): https://www.planeteria.com/gtfs/yosemite-ca-us/yosemite-ca-us-gtfs.zip

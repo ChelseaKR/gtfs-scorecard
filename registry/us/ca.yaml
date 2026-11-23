@@ -484,13 +484,14 @@ agencies:
       vehicle_positions: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/position_updates.pb
       service_alerts: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/alerts.pb
 
+  # Mobility Database mdb-877 is deprecated and redirects to mdb-3099; the feed URL follows it (ADR 0069).
   - id: city-of-tracy-tracer
     name: City of Tracy (TRACER)
     organization_id: city-of-tracy
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://data.trilliumtransit.com/gtfs/tracy-ca-us/tracy-ca-us.zip
-    mdb_id: 877
+    static_gtfs_url: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/gtfs.zip
+    mdb_id: 3099
     license_note: No stated data license in the Mobility Database; verify before publishing.
     rt_urls:
       trip_updates: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/trip_updates.pb
