@@ -172,12 +172,13 @@ agencies:
     mdb_id: 278
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-279 is deprecated and redirects to mdb-3532; the feed URL follows it (ADR 0069).
   - id: clallam-transit-system
     name: Clallam Transit System
     subdivision_code: US-WA
     subdivision_name: Washington
-    static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/clallam_google_transit.zip
-    mdb_id: 279
+    static_gtfs_url: https://irp.cdn-website.com/0eaf265e/files/uploaded/clallam_transit_gtfs.zip
+    mdb_id: 3532
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: island-transit
